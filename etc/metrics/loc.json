@@ -1,0 +1,710 @@
+{
+  "generatedAt": "2025-08-21T12:17:28.993Z",
+  "root": "/home/dilbert/Documents/dev/SWISS",
+  "totals": {
+    "packages": 9,
+    "files": 154,
+    "total": 14620,
+    "nonEmpty": 12605
+  },
+  "packages": [
+    {
+      "name": "@swissjs/core",
+      "path": "packages/core",
+      "total": 7697,
+      "nonEmpty": 6637,
+      "files": 80,
+      "byFile": {
+        "packages/core/src/__tests__/capability-manager.test.ts": {
+          "total": 269,
+          "nonEmpty": 226
+        },
+        "packages/core/src/__tests__/context.test.ts": {
+          "total": 68,
+          "nonEmpty": 54
+        },
+        "packages/core/src/__tests__/core.test.ts": {
+          "total": 7,
+          "nonEmpty": 6
+        },
+        "packages/core/src/__tests__/hooks-multi-plugin.test.ts": {
+          "total": 50,
+          "nonEmpty": 39
+        },
+        "packages/core/src/__tests__/hooks-ordering.test.ts": {
+          "total": 41,
+          "nonEmpty": 33
+        },
+        "packages/core/src/__tests__/plugin-manager.test.ts": {
+          "total": 187,
+          "nonEmpty": 162
+        },
+        "packages/core/src/__tests__/security-gateway.test.ts": {
+          "total": 62,
+          "nonEmpty": 50
+        },
+        "packages/core/src/component/ComponentRegistry.ts": {
+          "total": 21,
+          "nonEmpty": 17
+        },
+        "packages/core/src/component/base-component.ts": {
+          "total": 58,
+          "nonEmpty": 47
+        },
+        "packages/core/src/component/component.ts": {
+          "total": 590,
+          "nonEmpty": 512
+        },
+        "packages/core/src/component/context.ts": {
+          "total": 118,
+          "nonEmpty": 109
+        },
+        "packages/core/src/component/decorators.ts": {
+          "total": 447,
+          "nonEmpty": 388
+        },
+        "packages/core/src/component/error-boundary.ts": {
+          "total": 52,
+          "nonEmpty": 46
+        },
+        "packages/core/src/component/event-system.ts": {
+          "total": 301,
+          "nonEmpty": 256
+        },
+        "packages/core/src/component/index.ts": {
+          "total": 8,
+          "nonEmpty": 8
+        },
+        "packages/core/src/component/lifecycle.ts": {
+          "total": 67,
+          "nonEmpty": 63
+        },
+        "packages/core/src/component/portals.ts": {
+          "total": 14,
+          "nonEmpty": 12
+        },
+        "packages/core/src/component/ssr.ts": {
+          "total": 55,
+          "nonEmpty": 46
+        },
+        "packages/core/src/component/types/CapabilitySet.ts": {
+          "total": 2,
+          "nonEmpty": 1
+        },
+        "packages/core/src/component/types/ComponentHook.ts": {
+          "total": 8,
+          "nonEmpty": 7
+        },
+        "packages/core/src/component/types/index.ts": {
+          "total": 69,
+          "nonEmpty": 56
+        },
+        "packages/core/src/component/types.ts": {
+          "total": 44,
+          "nonEmpty": 36
+        },
+        "packages/core/src/directives/coreDirectives.ts": {
+          "total": 58,
+          "nonEmpty": 56
+        },
+        "packages/core/src/directives/index.ts": {
+          "total": 7,
+          "nonEmpty": 6
+        },
+        "packages/core/src/directives/types/index.ts": {
+          "total": 12,
+          "nonEmpty": 9
+        },
+        "packages/core/src/example-usage.ts": {
+          "total": 138,
+          "nonEmpty": 112
+        },
+        "packages/core/src/fenestration/index.ts": {
+          "total": 19,
+          "nonEmpty": 16
+        },
+        "packages/core/src/fenestration/registry.ts": {
+          "total": 297,
+          "nonEmpty": 255
+        },
+        "packages/core/src/fenestration/types/index.ts": {
+          "total": 37,
+          "nonEmpty": 33
+        },
+        "packages/core/src/framework.ts": {
+          "total": 231,
+          "nonEmpty": 201
+        },
+        "packages/core/src/global.d.ts": {
+          "total": 19,
+          "nonEmpty": 17
+        },
+        "packages/core/src/hooks/defaultHooks.ts": {
+          "total": 73,
+          "nonEmpty": 70
+        },
+        "packages/core/src/hooks/hookContextTypes.ts": {
+          "total": 15,
+          "nonEmpty": 15
+        },
+        "packages/core/src/hooks/hookRegistry.ts": {
+          "total": 73,
+          "nonEmpty": 64
+        },
+        "packages/core/src/hooks/index.ts": {
+          "total": 13,
+          "nonEmpty": 10
+        },
+        "packages/core/src/hooks/types/index.ts": {
+          "total": 69,
+          "nonEmpty": 57
+        },
+        "packages/core/src/index.ts": {
+          "total": 66,
+          "nonEmpty": 54
+        },
+        "packages/core/src/jsx-dev-runtime.ts": {
+          "total": 12,
+          "nonEmpty": 11
+        },
+        "packages/core/src/jsx-runtime.ts": {
+          "total": 12,
+          "nonEmpty": 11
+        },
+        "packages/core/src/plugins/index.ts": {
+          "total": 2,
+          "nonEmpty": 2
+        },
+        "packages/core/src/plugins/plugin-types.ts": {
+          "total": 11,
+          "nonEmpty": 10
+        },
+        "packages/core/src/plugins/pluginInterface.ts": {
+          "total": 22,
+          "nonEmpty": 19
+        },
+        "packages/core/src/plugins/pluginManager.ts": {
+          "total": 436,
+          "nonEmpty": 407
+        },
+        "packages/core/src/plugins/types/hooks-contract.ts": {
+          "total": 52,
+          "nonEmpty": 46
+        },
+        "packages/core/src/plugins/types/index.ts": {
+          "total": 110,
+          "nonEmpty": 98
+        },
+        "packages/core/src/reactivity/batch.ts": {
+          "total": 42,
+          "nonEmpty": 37
+        },
+        "packages/core/src/reactivity/context.ts": {
+          "total": 106,
+          "nonEmpty": 89
+        },
+        "packages/core/src/reactivity/effect.ts": {
+          "total": 128,
+          "nonEmpty": 109
+        },
+        "packages/core/src/reactivity/index.ts": {
+          "total": 13,
+          "nonEmpty": 10
+        },
+        "packages/core/src/reactivity/integration.ts": {
+          "total": 89,
+          "nonEmpty": 82
+        },
+        "packages/core/src/reactivity/reactive.ts": {
+          "total": 159,
+          "nonEmpty": 132
+        },
+        "packages/core/src/reactivity/signals.ts": {
+          "total": 296,
+          "nonEmpty": 251
+        },
+        "packages/core/src/reactivity/store.ts": {
+          "total": 80,
+          "nonEmpty": 78
+        },
+        "packages/core/src/reactivity/types/index.ts": {
+          "total": 38,
+          "nonEmpty": 30
+        },
+        "packages/core/src/renderer/index.ts": {
+          "total": 1,
+          "nonEmpty": 1
+        },
+        "packages/core/src/renderer/renderer.ts": {
+          "total": 607,
+          "nonEmpty": 520
+        },
+        "packages/core/src/renderer/unified-renderer.ts": {
+          "total": 83,
+          "nonEmpty": 69
+        },
+        "packages/core/src/runtime/adapters/bun-adapter.ts": {
+          "total": 82,
+          "nonEmpty": 69
+        },
+        "packages/core/src/runtime/adapters/node-adapter.ts": {
+          "total": 84,
+          "nonEmpty": 71
+        },
+        "packages/core/src/runtime/dev-server.ts": {
+          "total": 270,
+          "nonEmpty": 234
+        },
+        "packages/core/src/runtime/index.ts": {
+          "total": 9,
+          "nonEmpty": 8
+        },
+        "packages/core/src/runtime/runtime-adapter.ts": {
+          "total": 1,
+          "nonEmpty": 1
+        },
+        "packages/core/src/runtime/runtime-detector.ts": {
+          "total": 129,
+          "nonEmpty": 114
+        },
+        "packages/core/src/runtime/runtime-service.ts": {
+          "total": 95,
+          "nonEmpty": 75
+        },
+        "packages/core/src/runtime/types/index.ts": {
+          "total": 57,
+          "nonEmpty": 51
+        },
+        "packages/core/src/security/capabilities.ts": {
+          "total": 23,
+          "nonEmpty": 19
+        },
+        "packages/core/src/security/capability-manager.ts": {
+          "total": 409,
+          "nonEmpty": 344
+        },
+        "packages/core/src/security/gateway.ts": {
+          "total": 46,
+          "nonEmpty": 36
+        },
+        "packages/core/src/security/index.ts": {
+          "total": 19,
+          "nonEmpty": 15
+        },
+        "packages/core/src/security/types/index.ts": {
+          "total": 34,
+          "nonEmpty": 27
+        },
+        "packages/core/src/types/index.ts": {
+          "total": 33,
+          "nonEmpty": 26
+        },
+        "packages/core/src/types/routing.ts": {
+          "total": 11,
+          "nonEmpty": 10
+        },
+        "packages/core/src/utils/deepMerge.ts": {
+          "total": 116,
+          "nonEmpty": 109
+        },
+        "packages/core/src/utils/generateSSRId.ts": {
+          "total": 59,
+          "nonEmpty": 54
+        },
+        "packages/core/src/utils/html.ts": {
+          "total": 98,
+          "nonEmpty": 83
+        },
+        "packages/core/src/utils/index.ts": {
+          "total": 3,
+          "nonEmpty": 3
+        },
+        "packages/core/src/vdom/diffing.ts": {
+          "total": 51,
+          "nonEmpty": 44
+        },
+        "packages/core/src/vdom/index.ts": {
+          "total": 10,
+          "nonEmpty": 8
+        },
+        "packages/core/src/vdom/types/index.ts": {
+          "total": 27,
+          "nonEmpty": 21
+        },
+        "packages/core/src/vdom/vdom.ts": {
+          "total": 67,
+          "nonEmpty": 54
+        }
+      }
+    },
+    {
+      "name": "@swissjs/cli",
+      "path": "packages/cli",
+      "total": 3169,
+      "nonEmpty": 2717,
+      "files": 19,
+      "byFile": {
+        "packages/cli/src/__tests__/cli.test.ts": {
+          "total": 7,
+          "nonEmpty": 6
+        },
+        "packages/cli/src/commands/build.ts": {
+          "total": 514,
+          "nonEmpty": 456
+        },
+        "packages/cli/src/commands/compile.ts": {
+          "total": 185,
+          "nonEmpty": 155
+        },
+        "packages/cli/src/commands/create.ts": {
+          "total": 261,
+          "nonEmpty": 224
+        },
+        "packages/cli/src/commands/dev.ts": {
+          "total": 266,
+          "nonEmpty": 236
+        },
+        "packages/cli/src/commands/forge.ts": {
+          "total": 262,
+          "nonEmpty": 219
+        },
+        "packages/cli/src/commands/init.ts": {
+          "total": 49,
+          "nonEmpty": 44
+        },
+        "packages/cli/src/commands/serve.ts": {
+          "total": 191,
+          "nonEmpty": 168
+        },
+        "packages/cli/src/forge/dependency-manager.ts": {
+          "total": 50,
+          "nonEmpty": 41
+        },
+        "packages/cli/src/forge/file-generator.ts": {
+          "total": 330,
+          "nonEmpty": 276
+        },
+        "packages/cli/src/forge/prompt-engine.ts": {
+          "total": 282,
+          "nonEmpty": 239
+        },
+        "packages/cli/src/forge/registry.ts": {
+          "total": 320,
+          "nonEmpty": 261
+        },
+        "packages/cli/src/forge/template-engine.ts": {
+          "total": 141,
+          "nonEmpty": 116
+        },
+        "packages/cli/src/index.ts": {
+          "total": 47,
+          "nonEmpty": 40
+        },
+        "packages/cli/src/main.ts": {
+          "total": 4,
+          "nonEmpty": 3
+        },
+        "packages/cli/src/types/ambient.d.ts": {
+          "total": 4,
+          "nonEmpty": 3
+        },
+        "packages/cli/src/types/index.ts": {
+          "total": 126,
+          "nonEmpty": 112
+        },
+        "packages/cli/src/types/template.types.ts": {
+          "total": 43,
+          "nonEmpty": 38
+        },
+        "packages/cli/src/utils/compileUiFiles.ts": {
+          "total": 87,
+          "nonEmpty": 80
+        }
+      }
+    },
+    {
+      "name": "@swissjs/compiler",
+      "path": "packages/compiler",
+      "total": 2043,
+      "nonEmpty": 1796,
+      "files": 13,
+      "byFile": {
+        "packages/compiler/src/index.test.ts": {
+          "total": 69,
+          "nonEmpty": 63
+        },
+        "packages/compiler/src/index.ts": {
+          "total": 163,
+          "nonEmpty": 145
+        },
+        "packages/compiler/src/optimizer.ts": {
+          "total": 22,
+          "nonEmpty": 21
+        },
+        "packages/compiler/src/template-parser.ts": {
+          "total": 979,
+          "nonEmpty": 850
+        },
+        "packages/compiler/src/transformers/capability-annot.ts": {
+          "total": 73,
+          "nonEmpty": 64
+        },
+        "packages/compiler/src/transformers/capability-def-annot.ts": {
+          "total": 59,
+          "nonEmpty": 50
+        },
+        "packages/compiler/src/transformers/component-decorators.ts": {
+          "total": 116,
+          "nonEmpty": 97
+        },
+        "packages/compiler/src/transformers/diagnostics.ts": {
+          "total": 13,
+          "nonEmpty": 11
+        },
+        "packages/compiler/src/transformers/index.ts": {
+          "total": 1,
+          "nonEmpty": 1
+        },
+        "packages/compiler/src/transformers/lifecycle-render-decorators.ts": {
+          "total": 255,
+          "nonEmpty": 233
+        },
+        "packages/compiler/src/transformers/plugin-service-decorators.ts": {
+          "total": 159,
+          "nonEmpty": 142
+        },
+        "packages/compiler/src/transformers/provides-annot.ts": {
+          "total": 63,
+          "nonEmpty": 56
+        },
+        "packages/compiler/src/transformers/utils.ts": {
+          "total": 71,
+          "nonEmpty": 63
+        }
+      }
+    },
+    {
+      "name": "@swissjs/plugin-file-router",
+      "path": "packages/plugins/file-router",
+      "total": 932,
+      "nonEmpty": 776,
+      "files": 19,
+      "byFile": {
+        "packages/plugins/file-router/src/__tests__/plugin.test.ts": {
+          "total": 25,
+          "nonEmpty": 20
+        },
+        "packages/plugins/file-router/src/core/index.ts": {
+          "total": 9,
+          "nonEmpty": 7
+        },
+        "packages/plugins/file-router/src/core/matcher.ts": {
+          "total": 52,
+          "nonEmpty": 43
+        },
+        "packages/plugins/file-router/src/core/plugin.ts": {
+          "total": 196,
+          "nonEmpty": 166
+        },
+        "packages/plugins/file-router/src/core/scanner.ts": {
+          "total": 77,
+          "nonEmpty": 71
+        },
+        "packages/plugins/file-router/src/core/transformer.ts": {
+          "total": 94,
+          "nonEmpty": 80
+        },
+        "packages/plugins/file-router/src/core/utils.ts": {
+          "total": 52,
+          "nonEmpty": 45
+        },
+        "packages/plugins/file-router/src/dev/index.ts": {
+          "total": 3,
+          "nonEmpty": 3
+        },
+        "packages/plugins/file-router/src/dev/server.ts": {
+          "total": 51,
+          "nonEmpty": 41
+        },
+        "packages/plugins/file-router/src/dev/watcher.ts": {
+          "total": 46,
+          "nonEmpty": 34
+        },
+        "packages/plugins/file-router/src/index.ts": {
+          "total": 22,
+          "nonEmpty": 19
+        },
+        "packages/plugins/file-router/src/types/config.ts": {
+          "total": 57,
+          "nonEmpty": 45
+        },
+        "packages/plugins/file-router/src/types/dev.ts": {
+          "total": 36,
+          "nonEmpty": 28
+        },
+        "packages/plugins/file-router/src/types/index.ts": {
+          "total": 9,
+          "nonEmpty": 7
+        },
+        "packages/plugins/file-router/src/types/route.ts": {
+          "total": 31,
+          "nonEmpty": 26
+        },
+        "packages/plugins/file-router/src/utils/cache.ts": {
+          "total": 54,
+          "nonEmpty": 47
+        },
+        "packages/plugins/file-router/src/utils/index.ts": {
+          "total": 8,
+          "nonEmpty": 6
+        },
+        "packages/plugins/file-router/src/utils/path.ts": {
+          "total": 52,
+          "nonEmpty": 40
+        },
+        "packages/plugins/file-router/src/utils/route.ts": {
+          "total": 58,
+          "nonEmpty": 48
+        }
+      }
+    },
+    {
+      "name": "@swissjs/security",
+      "path": "packages/security",
+      "total": 261,
+      "nonEmpty": 228,
+      "files": 5,
+      "byFile": {
+        "packages/security/src/__tests__/engine.test.ts": {
+          "total": 27,
+          "nonEmpty": 21
+        },
+        "packages/security/src/engine.ts": {
+          "total": 130,
+          "nonEmpty": 113
+        },
+        "packages/security/src/index.ts": {
+          "total": 10,
+          "nonEmpty": 9
+        },
+        "packages/security/src/types.ts": {
+          "total": 59,
+          "nonEmpty": 53
+        },
+        "packages/security/src/validator.ts": {
+          "total": 35,
+          "nonEmpty": 32
+        }
+      }
+    },
+    {
+      "name": "@swissjs/swiss-extension",
+      "path": "packages/devtools/swiss_extension",
+      "total": 229,
+      "nonEmpty": 193,
+      "files": 4,
+      "byFile": {
+        "packages/devtools/swiss_extension/src/background.ts": {
+          "total": 53,
+          "nonEmpty": 45
+        },
+        "packages/devtools/swiss_extension/src/content.ts": {
+          "total": 54,
+          "nonEmpty": 46
+        },
+        "packages/devtools/swiss_extension/src/injected.ts": {
+          "total": 55,
+          "nonEmpty": 47
+        },
+        "packages/devtools/swiss_extension/src/panel.ts": {
+          "total": 67,
+          "nonEmpty": 55
+        }
+      }
+    },
+    {
+      "name": "@swissjs/plugin-web-storage",
+      "path": "packages/plugins/web-storage",
+      "total": 206,
+      "nonEmpty": 180,
+      "files": 10,
+      "byFile": {
+        "packages/plugins/web-storage/src/__tests__/plugin.test.ts": {
+          "total": 30,
+          "nonEmpty": 25
+        },
+        "packages/plugins/web-storage/src/index.ts": {
+          "total": 24,
+          "nonEmpty": 23
+        },
+        "packages/plugins/web-storage/src/plugin.ts": {
+          "total": 31,
+          "nonEmpty": 28
+        },
+        "packages/plugins/web-storage/src/public/capabilities.ts": {
+          "total": 20,
+          "nonEmpty": 16
+        },
+        "packages/plugins/web-storage/src/public/services.ts": {
+          "total": 4,
+          "nonEmpty": 3
+        },
+        "packages/plugins/web-storage/src/public/types.ts": {
+          "total": 16,
+          "nonEmpty": 13
+        },
+        "packages/plugins/web-storage/src/runtime/env.ts": {
+          "total": 4,
+          "nonEmpty": 3
+        },
+        "packages/plugins/web-storage/src/runtime/indexed.ts": {
+          "total": 31,
+          "nonEmpty": 27
+        },
+        "packages/plugins/web-storage/src/runtime/local.ts": {
+          "total": 23,
+          "nonEmpty": 21
+        },
+        "packages/plugins/web-storage/src/runtime/session.ts": {
+          "total": 23,
+          "nonEmpty": 21
+        }
+      }
+    },
+    {
+      "name": "@swissjs/utils",
+      "path": "packages/utils",
+      "total": 47,
+      "nonEmpty": 46,
+      "files": 2,
+      "byFile": {
+        "packages/utils/src/fixDtsExtensions.ts": {
+          "total": 46,
+          "nonEmpty": 45
+        },
+        "packages/utils/src/index.ts": {
+          "total": 1,
+          "nonEmpty": 1
+        }
+      }
+    },
+    {
+      "name": "@swissjs/vite-plugin-swiss",
+      "path": "packages/plugins/vite-plugin-swiss",
+      "total": 36,
+      "nonEmpty": 32,
+      "files": 2,
+      "byFile": {
+        "packages/plugins/vite-plugin-swiss/src/__tests__/vite-plugin-swiss.test.ts": {
+          "total": 7,
+          "nonEmpty": 6
+        },
+        "packages/plugins/vite-plugin-swiss/src/index.ts": {
+          "total": 29,
+          "nonEmpty": 26
+        }
+      }
+    }
+  ],
+  "note": "Lines counted as total and non-empty (non-empty excludes blank lines). Comments are included as non-empty for simplicity."
+}

@@ -1,0 +1,70 @@
+name: Docs CI
+
+on:
+  pull_request:
+    paths:
+      - "docs/**"
+      - ".github/workflows/docs.yml"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "typedoc.*"
+    branches:
+      - develop
+      - staging
+      - release
+  push:
+    branches: [release]
+    paths:
+      - "docs/**"
+      - ".github/workflows/docs.yml"
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        env: [develop, staging, release]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
+      - name: Install deps
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify docs determinism (strict) and build
+        run: |
+          pnpm -w docs:api
+          pnpm -w docs:api:index
+          pnpm -w docs:build
+
+      - name: Redact internal markers in API docs (staging/release)
+        if: ${{ matrix.env != 'develop' }}
+        run: |
+          node scripts/docs-redactor.mjs --check || {
+            echo "Sensitive tokens found in docs artifacts. Failing per policy.";
+            exit 1;
+          }
+        shell: bash
+
+      - name: Upload API docs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-docs-${{ matrix.env }}
+          path: docs/api
+
+      - name: Upload built site artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vitepress-site-${{ matrix.env }}
+          path: docs/.vitepress/dist

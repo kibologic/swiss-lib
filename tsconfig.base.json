@@ -1,0 +1,69 @@
+{
+  "extends": "../config/tsconfig.base.json",
+  "compilerOptions": {
+    "types": [
+      "node"
+    ],
+    "typeRoots": [
+      "./node_modules/@types",
+      "../node_modules/@types"
+    ],
+    "moduleResolution": "node16",
+    "moduleDetection": "force",
+    "verbatimModuleSyntax": true,
+    "composite": true,
+    "baseUrl": ".",
+    "paths": {
+      "@swissjs/core": [
+        "./packages/core/src/index.ts",
+        "./packages/core/dist/index.mjs"
+      ],
+      "@swissjs/core/*": [
+        "./packages/core/src/*",
+        "./packages/core/dist/*"
+      ],
+      "@swissjs/security": [
+        "./packages/security/dist/index.js"
+      ],
+      "@swissjs/security/*": [
+        "./packages/security/dist/*"
+      ],
+      "@swissjs/compiler": [
+        "./packages/compiler/dist/index"
+      ],
+      "@swissjs/compiler/*": [
+        "./packages/compiler/dist/*"
+      ],
+      "@swissjs/cli": [
+        "./packages/cli/dist/index"
+      ],
+      "@swissjs/cli/*": [
+        "./packages/cli/dist/*"
+      ],
+      "@swissjs/swite": [
+        "./packages/swite/dist/index"
+      ],
+      "@swissjs/swite/*": [
+        "./packages/swite/dist/*"
+      ],
+      "@swissjs/testing": [
+        "./packages/testing/dist/index"
+      ],
+      "@swissjs/testing/*": [
+        "./packages/testing/dist/*"
+      ],
+      "@swissjs/capability": [
+        "./packages/plugins/capability/dist/index"
+      ],
+      "@swissjs/capability/*": [
+        "./packages/plugins/capability/dist/*"
+      ],
+      "@swissjs/plugin-*": [
+        "./packages/plugins/*/dist/index"
+      ],
+      "@plugins/*": [
+        "./packages/plugins/*/dist"
+      ]
+    }
+  }
+}

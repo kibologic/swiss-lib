@@ -1,0 +1,804 @@
+{
+  "schemaVersion": "2.0",
+  "id": 0,
+  "name": "@swissjs/compiler",
+  "variant": "project",
+  "kind": 1,
+  "flags": {},
+  "children": [
+    {
+      "id": 5,
+      "name": "UiCompiler",
+      "variant": "declaration",
+      "kind": 128,
+      "flags": {},
+      "children": [
+        {
+          "id": 6,
+          "name": "constructor",
+          "variant": "declaration",
+          "kind": 512,
+          "flags": {},
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 21,
+              "character": 2,
+              "url": "https://github.com/ThembaMzumara/SWISS/blob/ade3f7cc6514dd74888c53a676153b46861a9749/packages/compiler/src/index.ts#L21"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 7,
+              "name": "UiCompiler",
+              "variant": "signature",
+              "kind": 16384,
+              "flags": {},
+              "sources": [
+                {
+                  "fileName": "index.ts",
+                  "line": 21,
+                  "character": 2,
+                  "url": "https://github.com/ThembaMzumara/SWISS/blob/ade3f7cc6514dd74888c53a676153b46861a9749/packages/compiler/src/index.ts#L21"
+                }
+              ],
+              "parameters": [
+                {
+                  "id": 8,
+                  "name": "options",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {},
+                  "type": {
+                    "type": "reference",
+                    "target": 1,
+                    "name": "CompileOptions",
+                    "package": "@swissjs/compiler"
+                  },
+                  "defaultValue": "{}"
+                }
+              ],
+              "type": {
+                "type": "reference",
+                "target": 5,
+                "name": "UiCompiler",
+                "package": "@swissjs/compiler"
+              }
+            }
+          ]
+        },
+        {
+          "id": 14,
+          "name": "compile",
+          "variant": "declaration",
+          "kind": 2048,
+          "flags": {},
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 42,
+              "character": 2,
+              "url": "https://github.com/ThembaMzumara/SWISS/blob/ade3f7cc6514dd74888c53a676153b46861a9749/packages/compiler/src/index.ts#L42"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 15,
+              "name": "compile",
+              "variant": "signature",
+              "kind": 4096,
+              "flags": {},
+              "sources": [
+                {
+                  "fileName": "index.ts",
+                  "line": 42,
+                  "character": 2,
+                  "url": "https://github.com/ThembaMzumara/SWISS/blob/ade3f7cc6514dd74888c53a676153b46861a9749/packages/compiler/src/index.ts#L42"
+                }
+              ],
+              "parameters": [
+                {
+                  "id": 16,
+                  "name": "source",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {},
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "string"
+                  }
+                },
+                {
+                  "id": 17,
+                  "name": "filePath",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {},
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "string"
+                  }
+                }
+              ],
+              "type": {
+                "type": "intrinsic",
+                "name": "string"
+              }
+            }
+          ]
+        },
+        {
+          "id": 22,
+          "name": "compileDirectory",
+          "variant": "declaration",
+          "kind": 2048,
+          "flags": {},
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 121,
+              "character": 8,
+              "url": "https://github.com/ThembaMzumara/SWISS/blob/ade3f7cc6514dd74888c53a676153b46861a9749/packages/compiler/src/index.ts#L121"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 23,
+              "name": "compileDirectory",
+              "variant": "signature",
+              "kind": 4096,
+              "flags": {},
+              "sources": [
+                {
+                  "fileName": "index.ts",
+                  "line": 121,
+                  "character": 8,
+                  "url": "https://github.com/ThembaMzumara/SWISS/blob/ade3f7cc6514dd74888c53a676153b46861a9749/packages/compiler/src/index.ts#L121"
+                }
+              ],
+              "parameters": [
+                {
+                  "id": 24,
+                  "name": "inputDir",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {},
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "string"
+                  }
+                },
+                {
+                  "id": 25,
+                  "name": "outputDir",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {},
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "string"
+                  }
+                }
+              ],
+              "type": {
+                "type": "reference",
+                "target": {
+                  "packageName": "typescript",
+                  "packagePath": "lib/lib.es5.d.ts",
+                  "qualifiedName": "Promise"
+                },
+                "typeArguments": [
+                  {
+                    "type": "intrinsic",
+                    "name": "void"
+                  }
+                ],
+                "name": "Promise",
+                "package": "typescript"
+              }
+            }
+          ]
+        },
+        {
+          "id": 10,
+          "name": "compileFile",
+          "variant": "declaration",
+          "kind": 2048,
+          "flags": {},
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 30,
+              "character": 8,
+              "url": "https://github.com/ThembaMzumara/SWISS/blob/ade3f7cc6514dd74888c53a676153b46861a9749/packages/compiler/src/index.ts#L30"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 11,
+              "name": "compileFile",
+              "variant": "signature",
+              "kind": 4096,
+              "flags": {},
+              "sources": [
+                {
+                  "fileName": "index.ts",
+                  "line": 30,
+                  "character": 8,
+                  "url": "https://github.com/ThembaMzumara/SWISS/blob/ade3f7cc6514dd74888c53a676153b46861a9749/packages/compiler/src/index.ts#L30"
+                }
+              ],
+              "parameters": [
+                {
+                  "id": 12,
+                  "name": "filePath",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {},
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "string"
+                  }
+                },
+                {
+                  "id": 13,
+                  "name": "outputPath",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isOptional": true
+                  },
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "string"
+                  }
+                }
+              ],
+              "type": {
+                "type": "reference",
+                "target": {
+                  "packageName": "typescript",
+                  "packagePath": "lib/lib.es5.d.ts",
+                  "qualifiedName": "Promise"
+                },
+                "typeArguments": [
+                  {
+                    "type": "intrinsic",
+                    "name": "string"
+                  }
+                ],
+                "name": "Promise",
+                "package": "typescript"
+              }
+            }
+          ]
+        },
+        {
+          "id": 29,
+          "name": "watch",
+          "variant": "declaration",
+          "kind": 2048,
+          "flags": {},
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 145,
+              "character": 8,
+              "url": "https://github.com/ThembaMzumara/SWISS/blob/ade3f7cc6514dd74888c53a676153b46861a9749/packages/compiler/src/index.ts#L145"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 30,
+              "name": "watch",
+              "variant": "signature",
+              "kind": 4096,
+              "flags": {},
+              "sources": [
+                {
+                  "fileName": "index.ts",
+                  "line": 145,
+                  "character": 8,
+                  "url": "https://github.com/ThembaMzumara/SWISS/blob/ade3f7cc6514dd74888c53a676153b46861a9749/packages/compiler/src/index.ts#L145"
+                }
+              ],
+              "parameters": [
+                {
+                  "id": 31,
+                  "name": "inputPath",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {},
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "string"
+                  }
+                },
+                {
+                  "id": 32,
+                  "name": "outputPath",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {
+                    "isOptional": true
+                  },
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "string"
+                  }
+                }
+              ],
+              "type": {
+                "type": "reference",
+                "target": {
+                  "packageName": "typescript",
+                  "packagePath": "lib/lib.es5.d.ts",
+                  "qualifiedName": "Promise"
+                },
+                "typeArguments": [
+                  {
+                    "type": "intrinsic",
+                    "name": "void"
+                  }
+                ],
+                "name": "Promise",
+                "package": "typescript"
+              }
+            }
+          ]
+        }
+      ],
+      "groups": [
+        {
+          "title": "Constructors",
+          "children": [6]
+        },
+        {
+          "title": "Methods",
+          "children": [14, 22, 10, 29]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "index.ts",
+          "line": 18,
+          "character": 13,
+          "url": "https://github.com/ThembaMzumara/SWISS/blob/ade3f7cc6514dd74888c53a676153b46861a9749/packages/compiler/src/index.ts#L18"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "name": "CompileOptions",
+      "variant": "declaration",
+      "kind": 256,
+      "flags": {},
+      "children": [
+        {
+          "id": 3,
+          "name": "module",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 14,
+              "character": 2,
+              "url": "https://github.com/ThembaMzumara/SWISS/blob/ade3f7cc6514dd74888c53a676153b46861a9749/packages/compiler/src/index.ts#L14"
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": {
+              "packageName": "typescript",
+              "packagePath": "lib/typescript.d.ts",
+              "qualifiedName": "ts.ModuleKind"
+            },
+            "name": "ModuleKind",
+            "package": "typescript",
+            "qualifiedName": "ts.ModuleKind"
+          }
+        },
+        {
+          "id": 4,
+          "name": "sourceMap",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 15,
+              "character": 2,
+              "url": "https://github.com/ThembaMzumara/SWISS/blob/ade3f7cc6514dd74888c53a676153b46861a9749/packages/compiler/src/index.ts#L15"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "boolean"
+          }
+        },
+        {
+          "id": 2,
+          "name": "target",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 13,
+              "character": 2,
+              "url": "https://github.com/ThembaMzumara/SWISS/blob/ade3f7cc6514dd74888c53a676153b46861a9749/packages/compiler/src/index.ts#L13"
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": {
+              "packageName": "typescript",
+              "packagePath": "lib/typescript.d.ts",
+              "qualifiedName": "ts.ScriptTarget"
+            },
+            "name": "ScriptTarget",
+            "package": "typescript",
+            "qualifiedName": "ts.ScriptTarget"
+          }
+        }
+      ],
+      "groups": [
+        {
+          "title": "Properties",
+          "children": [3, 4, 2]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "index.ts",
+          "line": 12,
+          "character": 17,
+          "url": "https://github.com/ThembaMzumara/SWISS/blob/ade3f7cc6514dd74888c53a676153b46861a9749/packages/compiler/src/index.ts#L12"
+        }
+      ]
+    },
+    {
+      "id": 37,
+      "name": "css",
+      "variant": "declaration",
+      "kind": 64,
+      "flags": {},
+      "sources": [
+        {
+          "fileName": "index.ts",
+          "line": 175,
+          "character": 13,
+          "url": "https://github.com/ThembaMzumara/SWISS/blob/ade3f7cc6514dd74888c53a676153b46861a9749/packages/compiler/src/index.ts#L175"
+        }
+      ],
+      "signatures": [
+        {
+          "id": 38,
+          "name": "css",
+          "variant": "signature",
+          "kind": 4096,
+          "flags": {},
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 175,
+              "character": 19,
+              "url": "https://github.com/ThembaMzumara/SWISS/blob/ade3f7cc6514dd74888c53a676153b46861a9749/packages/compiler/src/index.ts#L175"
+            }
+          ],
+          "parameters": [
+            {
+              "id": 39,
+              "name": "strings",
+              "variant": "param",
+              "kind": 32768,
+              "flags": {},
+              "type": {
+                "type": "reference",
+                "target": {
+                  "packageName": "typescript",
+                  "packagePath": "lib/lib.es5.d.ts",
+                  "qualifiedName": "TemplateStringsArray"
+                },
+                "name": "TemplateStringsArray",
+                "package": "typescript"
+              }
+            },
+            {
+              "id": 40,
+              "name": "values",
+              "variant": "param",
+              "kind": 32768,
+              "flags": {
+                "isRest": true
+              },
+              "type": {
+                "type": "array",
+                "elementType": {
+                  "type": "intrinsic",
+                  "name": "unknown"
+                }
+              }
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        }
+      ]
+    },
+    {
+      "id": 33,
+      "name": "html",
+      "variant": "declaration",
+      "kind": 64,
+      "flags": {},
+      "sources": [
+        {
+          "fileName": "index.ts",
+          "line": 166,
+          "character": 13,
+          "url": "https://github.com/ThembaMzumara/SWISS/blob/ade3f7cc6514dd74888c53a676153b46861a9749/packages/compiler/src/index.ts#L166"
+        }
+      ],
+      "signatures": [
+        {
+          "id": 34,
+          "name": "html",
+          "variant": "signature",
+          "kind": 4096,
+          "flags": {},
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 166,
+              "character": 20,
+              "url": "https://github.com/ThembaMzumara/SWISS/blob/ade3f7cc6514dd74888c53a676153b46861a9749/packages/compiler/src/index.ts#L166"
+            }
+          ],
+          "parameters": [
+            {
+              "id": 35,
+              "name": "strings",
+              "variant": "param",
+              "kind": 32768,
+              "flags": {},
+              "type": {
+                "type": "reference",
+                "target": {
+                  "packageName": "typescript",
+                  "packagePath": "lib/lib.es5.d.ts",
+                  "qualifiedName": "TemplateStringsArray"
+                },
+                "name": "TemplateStringsArray",
+                "package": "typescript"
+              }
+            },
+            {
+              "id": 36,
+              "name": "values",
+              "variant": "param",
+              "kind": 32768,
+              "flags": {
+                "isRest": true
+              },
+              "type": {
+                "type": "array",
+                "elementType": {
+                  "type": "intrinsic",
+                  "name": "unknown"
+                }
+              }
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        }
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "title": "Classes",
+      "children": [5]
+    },
+    {
+      "title": "Interfaces",
+      "children": [1]
+    },
+    {
+      "title": "Functions",
+      "children": [37, 33]
+    }
+  ],
+  "packageName": "@swissjs/compiler",
+  "packageVersion": "0.1.0",
+  "symbolIdMap": {
+    "0": {
+      "packageName": "@swissjs/compiler",
+      "packagePath": "src/index.ts",
+      "qualifiedName": ""
+    },
+    "1": {
+      "packageName": "@swissjs/compiler",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "CompileOptions"
+    },
+    "2": {
+      "packageName": "@swissjs/compiler",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "CompileOptions.target"
+    },
+    "3": {
+      "packageName": "@swissjs/compiler",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "CompileOptions.module"
+    },
+    "4": {
+      "packageName": "@swissjs/compiler",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "CompileOptions.sourceMap"
+    },
+    "5": {
+      "packageName": "@swissjs/compiler",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "UiCompiler"
+    },
+    "6": {
+      "packageName": "@swissjs/compiler",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "UiCompiler.__constructor"
+    },
+    "7": {
+      "packageName": "@swissjs/compiler",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "UiCompiler"
+    },
+    "8": {
+      "packageName": "@swissjs/compiler",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "options"
+    },
+    "10": {
+      "packageName": "@swissjs/compiler",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "UiCompiler.compileFile"
+    },
+    "11": {
+      "packageName": "@swissjs/compiler",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "UiCompiler.compileFile"
+    },
+    "12": {
+      "packageName": "@swissjs/compiler",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "filePath"
+    },
+    "13": {
+      "packageName": "@swissjs/compiler",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "outputPath"
+    },
+    "14": {
+      "packageName": "@swissjs/compiler",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "UiCompiler.compile"
+    },
+    "15": {
+      "packageName": "@swissjs/compiler",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "UiCompiler.compile"
+    },
+    "16": {
+      "packageName": "@swissjs/compiler",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "source"
+    },
+    "17": {
+      "packageName": "@swissjs/compiler",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "filePath"
+    },
+    "22": {
+      "packageName": "@swissjs/compiler",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "UiCompiler.compileDirectory"
+    },
+    "23": {
+      "packageName": "@swissjs/compiler",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "UiCompiler.compileDirectory"
+    },
+    "24": {
+      "packageName": "@swissjs/compiler",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "inputDir"
+    },
+    "25": {
+      "packageName": "@swissjs/compiler",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "outputDir"
+    },
+    "29": {
+      "packageName": "@swissjs/compiler",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "UiCompiler.watch"
+    },
+    "30": {
+      "packageName": "@swissjs/compiler",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "UiCompiler.watch"
+    },
+    "31": {
+      "packageName": "@swissjs/compiler",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "inputPath"
+    },
+    "32": {
+      "packageName": "@swissjs/compiler",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "outputPath"
+    },
+    "33": {
+      "packageName": "@swissjs/compiler",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "html"
+    },
+    "34": {
+      "packageName": "@swissjs/compiler",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "html"
+    },
+    "35": {
+      "packageName": "@swissjs/compiler",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "strings"
+    },
+    "36": {
+      "packageName": "@swissjs/compiler",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "values"
+    },
+    "37": {
+      "packageName": "@swissjs/compiler",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "css"
+    },
+    "38": {
+      "packageName": "@swissjs/compiler",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "css"
+    },
+    "39": {
+      "packageName": "@swissjs/compiler",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "strings"
+    },
+    "40": {
+      "packageName": "@swissjs/compiler",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "values"
+    }
+  },
+  "files": {
+    "entries": {
+      "1": "src/index.ts"
+    },
+    "reflections": {
+      "1": 0
+    }
+  }
+}

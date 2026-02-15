@@ -1,0 +1,182 @@
+{
+  "schemaVersion": "2.0",
+  "id": 0,
+  "name": "vscode-swiss",
+  "variant": "project",
+  "kind": 1,
+  "flags": {},
+  "children": [
+    {
+      "id": 1,
+      "name": "activate",
+      "variant": "declaration",
+      "kind": 64,
+      "flags": {},
+      "sources": [
+        {
+          "fileName": "index.ts",
+          "line": 14,
+          "character": 16
+        }
+      ],
+      "signatures": [
+        {
+          "id": 2,
+          "name": "activate",
+          "variant": "signature",
+          "kind": 4096,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Activates the SwissJS VSCode extension"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 14,
+              "character": 16
+            }
+          ],
+          "parameters": [
+            {
+              "id": 3,
+              "name": "context",
+              "variant": "param",
+              "kind": 32768,
+              "flags": {},
+              "type": {
+                "type": "reference",
+                "target": {
+                  "packageName": "@types/vscode",
+                  "packagePath": "index.d.ts",
+                  "qualifiedName": "\"vscode\".ExtensionContext"
+                },
+                "name": "ExtensionContext",
+                "package": "@types/vscode",
+                "qualifiedName": "\"vscode\".ExtensionContext"
+              }
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "void"
+          }
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "deactivate",
+      "variant": "declaration",
+      "kind": 64,
+      "flags": {},
+      "sources": [
+        {
+          "fileName": "index.ts",
+          "line": 29,
+          "character": 16
+        }
+      ],
+      "signatures": [
+        {
+          "id": 5,
+          "name": "deactivate",
+          "variant": "signature",
+          "kind": 4096,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Deactivates the SwissJS VSCode extension"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 29,
+              "character": 16
+            }
+          ],
+          "type": {
+            "type": "union",
+            "types": [
+              {
+                "type": "intrinsic",
+                "name": "undefined"
+              },
+              {
+                "type": "reference",
+                "target": {
+                  "packageName": "@types/vscode",
+                  "packagePath": "index.d.ts",
+                  "qualifiedName": "Thenable"
+                },
+                "typeArguments": [
+                  {
+                    "type": "intrinsic",
+                    "name": "void"
+                  }
+                ],
+                "name": "Thenable",
+                "package": "@types/vscode"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "title": "Functions",
+      "children": [1, 4]
+    }
+  ],
+  "packageName": "vscode-swiss",
+  "symbolIdMap": {
+    "0": {
+      "packageName": "vscode-swiss",
+      "packagePath": "src/index.ts",
+      "qualifiedName": ""
+    },
+    "1": {
+      "packageName": "vscode-swiss",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "activate"
+    },
+    "2": {
+      "packageName": "vscode-swiss",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "activate"
+    },
+    "3": {
+      "packageName": "vscode-swiss",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "context"
+    },
+    "4": {
+      "packageName": "vscode-swiss",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "deactivate"
+    },
+    "5": {
+      "packageName": "vscode-swiss",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "deactivate"
+    }
+  },
+  "files": {
+    "entries": {
+      "1": "src/index.ts"
+    },
+    "reflections": {
+      "1": 0
+    }
+  }
+}

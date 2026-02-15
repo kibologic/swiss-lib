@@ -1,0 +1,40 @@
+name: Changesets Version
+
+on:
+  push:
+    branches:
+      - develop
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: pnpm
+
+      - name: Install deps
+        run: pnpm install --frozen-lockfile
+
+      - name: Create version PR
+        uses: changesets/action@v1
+        with:
+          version: pnpm release:version
+          title: "chore(release): version packages (Changesets)"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

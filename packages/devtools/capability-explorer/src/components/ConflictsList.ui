@@ -1,0 +1,45 @@
+import { SwissComponent } from '@swissjs/core';
+import type { CapabilityConflict } from '../services/DataService.js';
+
+interface ConflictsListProps {
+  conflicts: CapabilityConflict[];
+  onConflictSelect: (conflict: CapabilityConflict) => void;
+}
+
+export default class ConflictsList extends SwissComponent<ConflictsListProps> {
+  constructor(props: ConflictsListProps) {
+    super(props);
+  }
+
+  render() {
+    return (
+      <div className="conflicts-list">
+        {this.props.conflicts.length === 0 ? (
+          <div className="no-conflicts">
+            <div className="success-icon">✅</div>
+            <div className="message">No capability conflicts detected</div>
+          </div>
+        ) : (
+          <div className="conflict-items">
+            {this.props.conflicts.map(conflict => (
+              <div 
+                key={`${conflict.componentId}-${conflict.capability}`}
+                className="conflict-item"
+                onClick={() => this.props.onConflictSelect(conflict)}
+              >
+                <div className="conflict-header">
+                  <span className="component-name">{conflict.componentName}</span>
+                  <span className="capability-name">{conflict.capability}</span>
+                </div>
+                <div className="conflict-details">
+                  <span className="reason">{conflict.reason}</span>
+                  <span className="component-id">#{conflict.componentId.slice(-8)}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+}

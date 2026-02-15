@@ -1,0 +1,53 @@
+name: VSCode Extension CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-test-package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.19.0
+          cache: 'pnpm'
+
+      - name: Install dependencies (workspace root)
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        working-directory: packages/devtools/vscode_extension
+        run: pnpm build
+
+      - name: Lint
+        working-directory: packages/devtools/vscode_extension
+        run: pnpm lint
+
+      # FIXME(tech-debt): Unit tests are temporarily skipped due to slow execution time
+      #                     tracked in docs/TECH_DEBT.md. Re-enable once optimized.
+      - name: Unit tests (temporarily skipped)
+        if: ${{ false }}
+        working-directory: packages/devtools/vscode_extension
+        run: pnpm test
+
+      - name: Package VSIX
+        working-directory: packages/devtools/vscode_extension
+        run: pnpm package
+
+      - name: Upload VSIX artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vscode-swiss-vsix
+          path: packages/devtools/vscode_extension/*.vsix

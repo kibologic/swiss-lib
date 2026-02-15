@@ -1,0 +1,22 @@
+// Test Swiss syntax transformations
+component TestComponent {
+  state { let count: number = 0; }
+  
+  reactive let message: string = "Hello";
+  
+  computed get doubled() {
+    return this.count * 2;
+  }
+  
+  mount {
+    console.log('Component mounted');
+  }
+  
+  unmount {
+    console.log('Component unmounted');
+  }
+  
+  effect {
+    console.log('Effect running');
+  }
+}

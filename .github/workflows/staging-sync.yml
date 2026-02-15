@@ -1,0 +1,39 @@
+name: Sync to Staging
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Run in dry-run mode (no push)"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  sync-staging:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Run Sync Script
+        run: |
+          chmod +x ./scripts/sync-staging.sh
+          if [ "${{ inputs.dry_run }}" == "true" ]; then
+            ./scripts/sync-staging.sh --dry-run
+          else
+            ./scripts/sync-staging.sh
+          fi
+
+      - name: Push to Staging
+        if: inputs.dry_run != true
+        run: |
+          git push origin staging

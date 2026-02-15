@@ -1,0 +1,76 @@
+{
+  "name": "@swissjs/core",
+  "version": "0.1.0",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./browser": {
+      "import": "./dist/browser.js",
+      "types": "./dist/browser.d.ts"
+    },
+    "./jsx-runtime": {
+      "import": "./dist/jsx-runtime.js",
+      "types": "./dist/jsx-runtime.d.ts"
+    },
+    "./jsx-dev-runtime": "./dist/jsx-dev-runtime.js",
+    "./types/*": {
+      "import": "./dist/types/*.js",
+      "types": "./dist/types/*.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "src/global.d.ts"
+  ],
+  "dependencies": {
+    "@swissjs/utils": "workspace:*",
+    "@swissjs/security": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.19",
+    "@types/node": "18.19.121",
+    "chokidar": "^3.5.3",
+    "express": "^4.21.0",
+    "fs-extra": "^11.2.0",
+    "pnpm": "^10.14.0",
+    "reflect-metadata": "^0.2.2",
+    "ts-node": "^10.9.2",
+    "typescript": "5.8.2"
+  },
+  "scripts": {
+    "build": "tsc -b && node scripts/inject-version.js",
+    "dev": "tsc -b --watch",
+    "test": "vitest run",
+    "test:watch": "vitest src/__tests__",
+    "test:coverage": "vitest run --coverage",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist node_modules && rm -f tsconfig.tsbuildinfo",
+    "lint": "eslint src --ext .ts,.tsx",
+    "docs:api": "typedoc",
+    "bench": "node __benchmarks__/run.js"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Themba Mzumara",
+    "email": "themba@swissjs.dev",
+    "url": "https://github.com/ThembaMzumara"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ThembaMzumara/SWISS.git"
+  },
+  "homepage": "https://github.com/ThembaMzumara/SWISS#readme",
+  "bugs": {
+    "url": "https://github.com/ThembaMzumara/SWISS/issues"
+  },
+  "keywords": [
+    "swissjs",
+    "framework"
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "schemaVersion": "2.0",
+  "id": 0,
+  "name": "@swissjs/vite-plugin-swiss",
+  "variant": "project",
+  "kind": 1,
+  "flags": {},
+  "children": [
+    {
+      "id": 1,
+      "name": "swissPlugin",
+      "variant": "declaration",
+      "kind": 64,
+      "flags": {},
+      "sources": [
+        {
+          "fileName": "index.ts",
+          "line": 4,
+          "character": 16,
+          "url": "https://github.com/ThembaMzumara/SWISS/blob/ade3f7cc6514dd74888c53a676153b46861a9749/packages/plugins/vite-plugin-swiss/src/index.ts#L4"
+        }
+      ],
+      "signatures": [
+        {
+          "id": 2,
+          "name": "swissPlugin",
+          "variant": "signature",
+          "kind": 4096,
+          "flags": {},
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 4,
+              "character": 16,
+              "url": "https://github.com/ThembaMzumara/SWISS/blob/ade3f7cc6514dd74888c53a676153b46861a9749/packages/plugins/vite-plugin-swiss/src/index.ts#L4"
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": {
+              "packageName": "vite",
+              "packagePath": "dist/node/index.d.ts",
+              "qualifiedName": "Plugin"
+            },
+            "name": "Plugin",
+            "package": "vite"
+          }
+        }
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "title": "Functions",
+      "children": [1]
+    }
+  ],
+  "packageName": "@swissjs/vite-plugin-swiss",
+  "packageVersion": "0.1.1",
+  "symbolIdMap": {
+    "0": {
+      "packageName": "@swissjs/vite-plugin-swiss",
+      "packagePath": "src/index.ts",
+      "qualifiedName": ""
+    },
+    "1": {
+      "packageName": "@swissjs/vite-plugin-swiss",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "swissPlugin"
+    },
+    "2": {
+      "packageName": "@swissjs/vite-plugin-swiss",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "swissPlugin"
+    }
+  },
+  "files": {
+    "entries": {
+      "1": "src/index.ts"
+    },
+    "reflections": {
+      "1": 0
+    }
+  }
+}

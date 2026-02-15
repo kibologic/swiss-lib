@@ -1,0 +1,53 @@
+name: Feature request
+description: Suggest an idea for this project
+labels: ["type:feature"]
+body:
+  - type: checkboxes
+    attributes:
+      label: Checks
+      options:
+        - label: I have searched existing issues
+          required: true
+  - type: textarea
+    attributes:
+      label: Problem statement / motivation
+      description: What problem does this feature solve?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Proposed solution
+      description: Describe the solution you'd like, with examples
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Alternatives considered
+      description: Any alternative solutions or features you've considered
+    validations:
+      required: false
+  - type: input
+    attributes:
+      label: Affected area / package(s)
+      placeholder: e.g., @swissjs/cli, @swissjs/core
+  - type: dropdown
+    attributes:
+      label: Area
+      options:
+        - area:core
+        - area:cli
+        - area:plugins
+        - area:docs
+        - area:devtools
+        - area:vscode
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: Priority
+      options:
+        - priority:high
+        - priority:medium
+        - priority:low
+    validations:
+      required: false

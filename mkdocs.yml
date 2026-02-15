@@ -1,0 +1,150 @@
+site_name: SwissJS Framework
+site_description: SwissJS Framework Documentation
+site_url: https://swissjs.dev/
+repo_url: https://github.com/ThembaMzumara/SWISS
+repo_name: SWISS
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Quick Start: docs/getting-started/quick-start.md
+      - Installation: docs/getting-started/installation.md
+      - Development Setup: docs/getting-started/development-setup.md
+  - Core Concepts:
+      - Components: docs/concepts/components.md
+      - Directives: docs/concepts/directives.md
+      - Reactivity: docs/concepts/reactivity.md
+      - Routing: docs/concepts/routing.md
+  - Architecture:
+      - Overview: docs/architecture/overview.md
+      - Component System: docs/architecture/component-system.md
+      - Renderer: docs/architecture/renderer.md
+      - Compiler: docs/architecture/compiler.md
+      - Modularization: docs/architecture/modularization.md
+  - Guides:
+      - Path Resolution: docs/guides/path-resolution.md
+      - Import Rewriting: docs/guides/import-rewriting.md
+      - Error Handling: docs/guides/error-handling.md
+      - Testing: docs/guides/testing.md
+      - Development Workflow: docs/guides/development-workflow.md
+  - Packages:
+      - Core: docs/packages/core.md
+      - Compiler: docs/packages/compiler.md
+      - Router: docs/packages/router.md
+      - Swite: docs/packages/swite.md
+      - CLI: docs/packages/cli.md
+      - Plugins: docs/packages/plugins.md
+  - Security:
+      - Overview: docs/security/overview.md
+      - Capabilities: docs/security/capabilities.md
+      - Gateway: docs/security/gateway.md
+  - API Reference:
+      - Core API: docs/api/core.md
+      - Component API: docs/api/components.md
+      - Hooks API: docs/api/hooks.md
+  - Development:
+      - Contributing: docs/development/contributing.md
+      - Build System: docs/development/build-system.md
+      - Versioning: docs/development/versioning.md
+      - Tech Debt: docs/development/tech-debt.md
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.expand
+    - navigation.indexes
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.share
+    - search.suggest
+    - content.code.copy
+    - content.code.annotate
+    - content.action.edit
+    - content.action.view
+    - header.autohide
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  font:
+    text: Roboto
+    code: Roboto Mono
+  language: en
+  icon:
+    repo: fontawesome/brands/github
+    logo: material/library
+
+markdown_extensions:
+  - admonition
+  - codehilite:
+      css_class: highlight
+      use_pygments: true
+  - toc:
+      permalink: true
+      title: Table of Contents
+  - attr_list
+  - md_in_html
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.mark
+  - pymdownx.tilde
+  - pymdownx.caret
+  - pymdownx.keys
+  - pymdownx.magiclink
+  - pymdownx.snippets
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+plugins:
+  - search:
+      separator: '[\s\-\.]+'
+      min_search_length: 2
+      lang: en
+  - git-revision-date-localized:
+      type: datetime
+      timezone: UTC
+      locale: en
+      enable_creation_date: true
+  - awesome-pages
+  - macros
+  - minify:
+      minify_html: true
+
+extra:
+  generator: false
+  version:
+    provider: mike
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/ThembaMzumara/SWISS
+    - icon: fontawesome/solid/paper-plane
+      link: mailto:contact@swissjs.dev
+
+docs_dir: docs
+site_dir: site
+
+copyright: >
+  Copyright &copy; 2025 Themba Mzumara

@@ -1,0 +1,30 @@
+name: SAST ESLint
+
+on:
+  pull_request:
+    branches: [develop]
+    paths:
+      - "**/*.ts"
+      - "**/*.tsx"
+      - ".eslintrc.sast.cjs"
+      - "package.json"
+  push:
+    branches: [develop]
+    paths:
+      - "**/*.ts"
+      - "**/*.tsx"
+      - ".eslintrc.sast.cjs"
+
+jobs:
+  lint-sast:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+      - run: pnpm install --frozen-lockfile
+      - name: Run ESLint (SAST)
+        run: pnpm lint:sast

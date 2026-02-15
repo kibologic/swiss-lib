@@ -1,0 +1,37 @@
+name: Dependency Audit
+
+on:
+  pull_request:
+    branches: [develop]
+    paths:
+      - "pnpm-lock.yaml"
+      - ".github/workflows/deps-audit.yml"
+  schedule:
+    - cron: "0 3 * * *"
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+      - run: pnpm install --frozen-lockfile
+      - name: PNPM Audit (fail on high/critical)
+        run: |
+          pnpm audit --json > audit.json || true
+          node -e '
+            const fs = require("fs");
+            const data = JSON.parse(fs.readFileSync("audit.json","utf8"));
+            let highOrCritical = 0;
+            (data.advisories||[]).forEach(a=>{ if(["high","critical"].includes((a.severity||"").toLowerCase())) highOrCritical++; });
+            // pnpm v8/10 formats differ; fallback severity from vulnerabilities summary
+            if (data.vulnerabilities) {
+              highOrCritical += (data.vulnerabilities.high||0) + (data.vulnerabilities.critical||0);
+            }
+            if (highOrCritical>0) { console.error(`Found ${highOrCritical} high/critical vulnerabilities`); process.exit(1); }
+            console.log("No high/critical vulnerabilities found");
+          '

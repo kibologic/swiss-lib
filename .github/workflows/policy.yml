@@ -1,0 +1,31 @@
+name: Policy Checks
+
+on:
+  pull_request:
+    branches: [develop]
+    paths:
+      - "scripts/**"
+      - "packages/**"
+      - ".github/workflows/policy.yml"
+  push:
+    branches: [develop]
+    paths:
+      - "scripts/**"
+      - "packages/**"
+
+jobs:
+  policy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+      - run: pnpm install --frozen-lockfile
+      - name: Run policy scripts
+        run: |
+          pnpm check:barrels
+          pnpm check:policy
+          pnpm check:ui-format

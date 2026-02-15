@@ -1,0 +1,34 @@
+{
+  "name": "swissjs-docs-runner",
+  "private": true,
+  "type": "module",
+  "version": "0.0.0",
+  "description": "Pinned TypeDoc + TS env to generate docs without monorepo version conflicts",
+  "scripts": {
+    "generate": "node generate.mjs"
+  },
+  "dependencies": {
+    "swissjs-monorepo": "file:../..",
+    "typedoc": "0.28.9",
+    "typedoc-plugin-markdown": "4.8.0",
+    "typescript": "5.8.2"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Themba Mzumara",
+    "email": "themba@swissjs.dev",
+    "url": "https://github.com/ThembaMzumara"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ThembaMzumara/SWISS.git"
+  },
+  "homepage": "https://github.com/ThembaMzumara/SWISS#readme",
+  "bugs": {
+    "url": "https://github.com/ThembaMzumara/SWISS/issues"
+  },
+  "keywords": [
+    "swissjs",
+    "framework"
+  ]
+}

@@ -1,0 +1,96 @@
+name: Mirror to Public Repo
+
+on:
+  push:
+    branches:
+      - release
+  workflow_dispatch:
+  schedule:
+    # Daily at 06:00 UTC to keep public mirror in sync even if no pushes occur
+    - cron: "0 6 * * *"
+
+jobs:
+  mirror:
+    name: Mirror release -> public main
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          # Do not persist the default GITHUB_TOKEN credentials.
+          # We'll push using the GitHub App token generated below.
+          persist-credentials: false
+
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: SwissLibrary
+
+      - name: Push to public mirror with App token
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          # Optional secrets to override mirror target without changing the file
+          PUBLIC_REPO: ${{ secrets.PUBLIC_REPO }} # e.g. org/repo (preferred)
+          PUBLIC_OWNER: ${{ secrets.PUBLIC_OWNER || github.repository_owner }}
+          PUBLIC_REPO_NAME: ${{ secrets.PUBLIC_REPO_NAME || 'SwissLibrary' }}
+        run: |
+          set -euo pipefail
+          if [ -n "${PUBLIC_REPO:-}" ]; then
+            TARGET_REPO="${PUBLIC_REPO}"
+          else
+            TARGET_REPO="${PUBLIC_OWNER}/${PUBLIC_REPO_NAME}"
+          fi
+          echo "Mirroring release -> ${TARGET_REPO}#main using GitHub App token (clean export)"
+
+          # Make sure no default auth header from actions/checkout interferes
+          git config --global --unset-all http.https://github.com/.extraheader || true
+
+          # Build a clean mirror repo that excludes CI workflows (and other private-only paths)
+          MIRROR_DIR="mirror"
+          rm -rf "${MIRROR_DIR}" && mkdir -p "${MIRROR_DIR}"
+          # Use rsync if available for robust copying; otherwise fall back to tar
+          if command -v rsync >/dev/null 2>&1; then
+            rsync -a --delete \
+              --exclude ".git/" \
+              --exclude ".github/workflows/" \
+              --exclude ".github/ISSUE_TEMPLATE/" \
+              --exclude "tools/" \
+              --exclude "scripts/" \
+              --exclude "etc/" \
+              --exclude "docs/internal/" \
+              ./ "${MIRROR_DIR}/"
+          else
+            tar -cf - \
+              --exclude=".git" \
+              --exclude=".github/workflows" \
+              --exclude=".github/ISSUE_TEMPLATE" \
+              --exclude="tools" \
+              --exclude="scripts" \
+              --exclude="etc" \
+              --exclude="docs/internal" \
+              . | (cd "${MIRROR_DIR}" && tar -xf -)
+          fi
+
+          # Initialize a fresh git repo inside the mirror directory
+          cd "${MIRROR_DIR}"
+          git init
+          # Use inline identity to avoid relying on global config in hosted runners
+          git -c user.name="SWISS Release Bot" -c user.email="bot@swissjs.dev" add -A
+          git -c user.name="SWISS Release Bot" -c user.email="bot@swissjs.dev" \
+            commit -m "mirror: publish release snapshot at ${GITHUB_SHA}"
+          git branch -M main
+
+          # Prefer mapping all github.com traffic to include the app token
+          git config --global url."https://x-access-token:${GH_TOKEN}@github.com/".insteadOf "https://github.com/"
+
+          # Set remote and force-push main
+          git remote add public "https://github.com/${TARGET_REPO}.git" || \
+            git remote set-url public "https://github.com/${TARGET_REPO}.git"
+          git push --force public main

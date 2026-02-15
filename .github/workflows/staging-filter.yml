@@ -1,0 +1,58 @@
+name: Staging Filter
+
+on:
+  pull_request:
+    branches: [staging]
+
+jobs:
+  pr-block-disallowed-paths:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+      - name: Block if disallowed paths are present in PR head
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Checking PR head for presence of disallowed paths..."
+
+          BLOCKED_PATTERNS=(
+            "docs/internal/"
+            "docs/devnotes/"
+            "docs_old/"
+            ".changeset/"
+            ".cursor/"
+            ".github/"
+            ".husky/"
+            "jira/"
+            ".turbo/"
+            "node_modules/"
+            "pnpm-lock.yaml"
+            ".eslintignore"
+            ".gitleaks.toml"
+            ".nvmrc"
+            "CODEOWNERS"
+          )
+
+          blocked=false
+          blocked_files=""
+
+          for bp in "${BLOCKED_PATTERNS[@]}"; do
+            matches=$(git ls-files -- "$bp"* 2>/dev/null || true)
+            if [[ -n "$matches" ]]; then
+              blocked=true
+              blocked_files+="$matches"$'\n'
+            fi
+          done
+
+          if [[ "$blocked" == true ]]; then
+            echo "❌ Blocked paths detected in PR head:"
+            echo -e "$blocked_files"
+            echo "Remove these from the PR branch to proceed."
+            exit 1
+          fi
+
+          echo "✅ No blocked paths found in PR head."

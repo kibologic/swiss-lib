@@ -1,0 +1,49 @@
+name: Security Scan (CodeQL)
+
+on:
+  push:
+    branches: [release, staging, develop, feature/phase6]
+  pull_request:
+    branches: [release, staging, develop, feature/phase6]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  analyze:
+    name: Analyze (CodeQL)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ["javascript"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node (20.x)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          queries: security-and-quality
+
+      # For JavaScript/TypeScript, autobuild is typically sufficient
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{matrix.language}}"
+        continue-on-error: true
