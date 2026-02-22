@@ -4,6 +4,7 @@ packages:
   - "packages/devtools/swiss_extension"
   - "packages/devtools/vscode_extension"
   - "apps/*"
+  - "../tools/*"
 
 onlyBuiltDependencies:
   - esbuild
