@@ -120,7 +120,7 @@
   "dependencies": {
     "@swissjs/compiler": "workspace:*",
     "@swissjs/utils": "workspace:*",
-    "@swissjs/swite": "workspace:*",
+    "@swissjs/swite": "github:kibologic/swite",
     "commander": "^14.0.0",
     "express": "^5.1.0",
     "fs-extra": "^11.3.0",
@@ -136,11 +136,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ThembaMzumara/SWISS.git"
+    "url": "git+https://github.com/kibologic/swiss-lib.git"
   },
-  "homepage": "https://github.com/ThembaMzumara/SWISS#readme",
+  "homepage": "https://github.com/kibologic/swiss-lib#readme",
   "bugs": {
-    "url": "https://github.com/ThembaMzumara/SWISS/issues"
+    "url": "https://github.com/kibologic/swiss-lib/issues"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx,mjs,cjs,ui,uix}": [
