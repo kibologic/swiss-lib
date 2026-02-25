@@ -2,7 +2,9 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-> **The Operating System for Modern African Business** — a modern, capability-based web framework built TypeScript-first with its own custom syntax, compiler, and dev server.
+> **"We got tired of waiting for someone else to build it."**
+>
+> A modern, capability-based web framework built TypeScript-first with its own custom syntax, compiler, and dev server. We just wanted fast software.
 
 ---
 
