@@ -9,13 +9,16 @@
 // Apps using @swissjs/core should include reflect-metadata in their dependencies.
 import "reflect-metadata";
 
-// Core framework exports
+import { SwissApp } from "./framework/index.js";
+
 export {
   SwissFramework,
   SwissApp,
   framework,
   SWISS_VERSION,
 } from "./framework/index.js";
+
+export const mount = SwissApp.mount;
 
 // Plugin system
 export * from "./plugins/index.js";
@@ -50,7 +53,12 @@ export {
 } from "./security/gateway.js";
 
 // Error handling (explicit to avoid duplicate ErrorBoundary/withErrorBoundary from component)
-export { ErrorReporter, createErrorBoundary, type ErrorContext, type ErrorReport } from "./error/index.js";
+export {
+  ErrorReporter,
+  createErrorBoundary,
+  type ErrorContext,
+  type ErrorReport,
+} from "./error/index.js";
 
 // Devtools
 export {
@@ -58,7 +66,7 @@ export {
   setDevtoolsBridge,
   isDevtoolsEnabled,
   isTelemetryEnabled,
-  InMemoryBridge
+  InMemoryBridge,
 } from "./devtools/bridge.js";
 export type {
   DevtoolsBridge,
@@ -68,16 +76,20 @@ export type {
   ComponentId,
   CapabilityName,
   DevtoolsEvent,
-  DevtoolsEventCategory
+  DevtoolsEventCategory,
 } from "./devtools/bridge.js";
 
 // Fenestration
 export * from "./fenestration/registry.js";
 
-
 // Utils
 export { html, escapeHTML, unsafe, css, classNames } from "./utils/html.js";
-export { logger, setDebugFlags, PerfTimer, type DebugFlags } from "./utils/logger.js";
+export {
+  logger,
+  setDebugFlags,
+  PerfTimer,
+  type DebugFlags,
+} from "./utils/logger.js";
 
 // Routing types
 export type {

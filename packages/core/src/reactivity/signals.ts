@@ -4,9 +4,14 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-import { Effect, trackEffect, getCurrentEffect, setCurrentEffect } from './effect.js';
-import type { SignalOptions } from './types/index.js';
-export type { SignalOptions } from './types/index.js';
+import {
+  Effect,
+  trackEffect,
+  getCurrentEffect,
+  setCurrentEffect,
+} from "./effect.js";
+import type { SignalOptions } from "./types/index.js";
+export type { SignalOptions } from "./types/index.js";
 
 const defaultEquals = <T>(a: T, b: T) => a === b;
 
@@ -24,7 +29,7 @@ function flushBatch() {
   if (batchedSignals.size > 0) {
     const signals = Array.from(batchedSignals);
     batchedSignals.clear();
-    signals.forEach(signal => signal.notify());
+    signals.forEach((signal) => signal.notify());
   }
 }
 
@@ -37,7 +42,7 @@ function hasCapability(capability: string): boolean {
 
 function withSecurityContext(capabilities: string[], fn: () => void) {
   const prevCapabilities = new Set(currentCapabilities);
-  capabilities.forEach(cap => currentCapabilities.add(cap));
+  capabilities.forEach((cap) => currentCapabilities.add(cap));
   try {
     fn();
   } finally {
@@ -68,7 +73,9 @@ export class Signal<T> {
     if (getCurrentEffect()) {
       // Security check
       if (this.capability && !hasCapability(this.capability)) {
-        throw new Error(`Access denied to signal '${this.name}'. Missing capability: ${this.capability}`);
+        throw new Error(
+          `Access denied to signal '${this.name}'. Missing capability: ${this.capability}`,
+        );
       }
     }
     return this._value;
@@ -76,12 +83,14 @@ export class Signal<T> {
 
   set value(newValue: T) {
     if (this.equals(this._value, newValue)) return;
-    console.log(`[Signal] Setting value for ${this.name || 'unnamed'} from ${this._value} to ${newValue}`);
     // Security check for writes
     if (this.capability && !hasCapability(this.capability)) {
-      throw new Error(`Write access denied to signal '${this.name}'. Missing capability: ${this.capability}`);
+      throw new Error(
+        `Write access denied to signal '${this.name}'. Missing capability: ${this.capability}`,
+      );
     }
     this._value = newValue;
+
     addToBatch(this);
     if (!isBatching) {
       this.notify();
@@ -114,7 +123,7 @@ export class Signal<T> {
    * Notify all subscribers of changes
    */
   notify() {
-    this.subscribers.forEach(sub => sub());
+    this.subscribers.forEach((sub) => sub());
   }
 
   // Security-enhanced access
@@ -154,7 +163,7 @@ export class ComputedSignal<T> extends Signal<T> {
 
   private updateValue() {
     // Clear previous dependencies
-    this.dependencies.forEach(dep => {
+    this.dependencies.forEach((dep) => {
       dep.unsubscribe(() => this.effect.execute());
     });
     this.dependencies.clear();
@@ -170,13 +179,12 @@ export class ComputedSignal<T> extends Signal<T> {
       this.dirty = false;
 
       // Store new dependencies
-      this.effect.dependencies.forEach(dep => {
+      this.effect.dependencies.forEach((dep) => {
         this.dependencies.add(dep);
         dep.subscribe(() => this.effect.execute());
       });
-
     } catch (error) {
-      console.error('Error computing signal value:', error);
+      console.error("Error computing signal value:", error);
       this.dirty = false;
     } finally {
       // Restore previous effect context
@@ -191,11 +199,17 @@ export class ComputedSignal<T> extends Signal<T> {
 }
 
 // Factory functions with enhanced options
-export function signal<T>(initialValue: T, options?: SignalOptions<T>): Signal<T> {
+export function signal<T>(
+  initialValue: T,
+  options?: SignalOptions<T>,
+): Signal<T> {
   return new Signal(initialValue, options);
 }
 
-export function computed<T>(computeFn: () => T, options?: SignalOptions<T>): Signal<T> {
+export function computed<T>(
+  computeFn: () => T,
+  options?: SignalOptions<T>,
+): Signal<T> {
   return new ComputedSignal(computeFn, options);
 }
 
@@ -206,7 +220,7 @@ export function bindToElement(
   element: HTMLElement,
   property: string,
   sig: Signal<unknown>,
-  options: { twoWay?: boolean } = {}
+  options: { twoWay?: boolean } = {},
 ) {
   // Type-safe element access
   const el = element as unknown as Record<string, unknown>;
@@ -215,8 +229,8 @@ export function bindToElement(
   el[property] = sig.value as unknown;
 
   // Element -> Signal
-  if (options.twoWay && typeof el[property] !== 'undefined') {
-    element.addEventListener('input', () => {
+  if (options.twoWay && typeof el[property] !== "undefined") {
+    element.addEventListener("input", () => {
       sig.value = el[property] as unknown;
     });
   }
@@ -248,20 +262,29 @@ export function batch(fn: () => void) {
 /**
  * Serialize signal state for SSR
  */
-export function serializeSignalState(component: unknown): Record<string, unknown> {
+export function serializeSignalState(
+  component: unknown,
+): Record<string, unknown> {
   const state: Record<string, unknown> = {};
 
   // Capture all signal values from component
-  const comp = component as unknown as { _signals?: Record<string, Signal<unknown>>; _computed?: Record<string, Signal<unknown>> };
+  const comp = component as unknown as {
+    _signals?: Record<string, Signal<unknown>>;
+    _computed?: Record<string, Signal<unknown>>;
+  };
   if (comp._signals) {
-    for (const [key, signal] of Object.entries(comp._signals as Record<string, Signal<unknown>>)) {
+    for (const [key, signal] of Object.entries(
+      comp._signals as Record<string, Signal<unknown>>,
+    )) {
       state[key] = signal.value as unknown;
     }
   }
 
   // Capture computed values
   if (comp._computed) {
-    for (const [key, computed] of Object.entries(comp._computed as Record<string, Signal<unknown>>)) {
+    for (const [key, computed] of Object.entries(
+      comp._computed as Record<string, Signal<unknown>>,
+    )) {
       state[key] = computed.value as unknown;
     }
   }
@@ -272,14 +295,23 @@ export function serializeSignalState(component: unknown): Record<string, unknown
 /**
  * Deserialize signal state for hydration
  */
-export function deserializeSignalState(root: unknown, serialized: Record<string, unknown>): void {
+export function deserializeSignalState(
+  root: unknown,
+  serialized: Record<string, unknown>,
+): void {
   if (!root || !serialized) return;
 
   // Find all signals in the component tree and update their values
   const walk = (node: unknown) => {
-    const n = node as { _signals?: Record<string, Signal<unknown>>; _computed?: Record<string, Signal<unknown>>; children?: unknown[] };
+    const n = node as {
+      _signals?: Record<string, Signal<unknown>>;
+      _computed?: Record<string, Signal<unknown>>;
+      children?: unknown[];
+    };
     if (n._signals) {
-      for (const [key, signal] of Object.entries(n._signals as Record<string, Signal<unknown>>)) {
+      for (const [key, signal] of Object.entries(
+        n._signals as Record<string, Signal<unknown>>,
+      )) {
         if (key in serialized) {
           signal.value = serialized[key] as unknown;
         }
@@ -287,7 +319,9 @@ export function deserializeSignalState(root: unknown, serialized: Record<string,
     }
 
     if (n._computed) {
-      for (const [key, computed] of Object.entries(n._computed as Record<string, Signal<unknown>>)) {
+      for (const [key, computed] of Object.entries(
+        n._computed as Record<string, Signal<unknown>>,
+      )) {
         if (key in serialized) {
           computed.value = serialized[key] as unknown;
         }

@@ -5,7 +5,7 @@
  */
 
 import { reactive } from "../reactivity/reactive.js";
-import { effect } from "../reactivity/effect.js";
+import { effect, untrack } from "../reactivity/effect.js";
 import { type EffectDisposer } from "../reactivity/types/index.js";
 import type { SwissComponent } from "./component.js";
 import type { BaseComponentState } from "./types/index.js";
@@ -14,7 +14,9 @@ import { logger } from "../utils/logger.js";
 /**
  * Manages reactivity setup for components
  */
-export class ReactivityManager<S extends BaseComponentState = BaseComponentState> {
+export class ReactivityManager<
+  S extends BaseComponentState = BaseComponentState,
+> {
   private _reactivitySetup: boolean = false;
   private _effects: Set<EffectDisposer> = new Set();
 
@@ -26,20 +28,22 @@ export class ReactivityManager<S extends BaseComponentState = BaseComponentState
   public setupReactivity(): void {
     // Prevent multiple calls to setupReactivity
     if (this._reactivitySetup) {
-      logger.lifecycle(`${this.component.constructor.name}: setupReactivity already called, skipping`);
+      logger.lifecycle(
+        `${this.component.constructor.name}: setupReactivity already called, skipping`,
+      );
       return;
     }
     this._reactivitySetup = true;
 
     logger.lifecycle(`${this.component.constructor.name}: setupReactivity`);
     const renderEffect = effect(() => {
-      // CRITICAL: The render() method accesses state properties (e.g., this.state.sidebarCollapsed)
-      // This access happens during render, which triggers the Proxy get trap
-      // The get trap tracks this effect as a listener for those specific properties
-      
-      // Call performUpdate which will call safeRender internally
-      // performUpdate handles all the DOM update logic
-      (this.component as any).performUpdate();
+      // Run render inside the effect so state reads are tracked by Signal/Effect.
+      const newVNode = this.component.safeRender();
+
+      // Commit DOM outside of tracking to avoid DOM reads registering as dependencies.
+      untrack(() => {
+        (this.component as any).commitVNode(newVNode);
+      });
     });
     this.trackEffect(renderEffect);
   }
@@ -49,7 +53,7 @@ export class ReactivityManager<S extends BaseComponentState = BaseComponentState
    */
   public ensureStateReactive(): void {
     // Only make state reactive if it's not already reactive
-    if (!(this.component.state as any).__listeners) {
+    if (!(this.component.state as any).__reactive) {
       this.component.state = reactive(this.component.state as S) as S;
     }
   }
@@ -76,4 +80,3 @@ export class ReactivityManager<S extends BaseComponentState = BaseComponentState
     return this._reactivitySetup;
   }
 }
-

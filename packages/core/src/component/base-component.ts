@@ -73,12 +73,6 @@ export class BaseComponent<
       updates = updater as Partial<S>;
     }
 
-    console.log("[BaseComponent] setState called with updates:", updates);
-    console.log(
-      "[BaseComponent] State is reactive?",
-      !!(this.state as any).__listeners,
-    );
-
     // Set properties individually to trigger Proxy setters (reactivity)
     // The reactive system will automatically trigger effects (which call performUpdate)
     // No need to manually call scheduleUpdate() - that would cause double renders
@@ -86,40 +80,16 @@ export class BaseComponent<
       if (updates.hasOwnProperty(key)) {
         const oldValue = (this.state as any)[key];
         const newValue = updates[key];
-        
+
         // CRITICAL: Skip update if value hasn't actually changed (prevents infinite loops)
         // Use strict equality check - Proxy setter will also check, but this prevents unnecessary work
         if (oldValue === newValue) {
-          console.log(
-            `[BaseComponent] Value unchanged for ${String(key)}, skipping update`,
-          );
           continue;
         }
-        
-        // CRITICAL: Don't log complex objects (like ES Modules) that can't be converted to strings
-        // Use JSON.stringify with try/catch or typeof check
-        const oldValueStr =
-          typeof oldValue === "object" && oldValue !== null
-            ? "[Object]"
-            : String(oldValue);
-        const newValuePreview =
-          typeof newValue === "object" && newValue !== null
-            ? "[Object]"
-            : String(newValue);
-        console.log(
-          `[BaseComponent] Setting ${String(key)}: ${oldValueStr} -> ${newValuePreview}`,
-        );
+
         // This assignment triggers the Proxy setter in reactive.ts
         // which notifies listeners and triggers the render effect
         (this.state as any)[key] = newValue;
-        const actualValue = (this.state as any)[key];
-        const actualValueStr =
-          typeof actualValue === "object" && actualValue !== null
-            ? "[Object]"
-            : String(actualValue);
-        console.log(
-          `[BaseComponent] After set, ${String(key)} = ${actualValueStr}`,
-        );
       }
     }
   }

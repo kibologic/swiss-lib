@@ -8,7 +8,11 @@
 
 import type { SwissComponent } from "../component/component.js";
 import type { VNode, VElement, ComponentVNode } from "../vdom/vdom.js";
-import { vnodeMetadata, componentInstances, domToHostComponent } from "./storage.js";
+import {
+  vnodeMetadata,
+  componentInstances,
+  domToHostComponent,
+} from "./storage.js";
 import {
   isSignal,
   isTextVNode,
@@ -18,6 +22,54 @@ import {
 } from "./types.js";
 import { DiffingError } from "./errors.js";
 import { clearRenderCache } from "./render-cache.js";
+
+function applyRenderedOutput(
+  hostDom: HTMLElement,
+  vnode: ComponentVNode,
+  oldRendered: VNode | undefined,
+  newRendered: VNode,
+  renderComponentFn: RenderComponentFn,
+  createDOMNodeFn: CreateDOMNodeFn,
+  cleanupNodeFn: (node: Node) => void,
+  canUpdateInPlaceFn: (dom: Node, newVNode: VNode, oldVNode?: VNode) => boolean,
+  updateDOMNodeFn: UpdateDOMNodeFn,
+) {
+  if (newRendered == null || typeof newRendered === "boolean") {
+    const parent = hostDom.parentNode;
+    if (parent) {
+      parent.removeChild(hostDom);
+      cleanupNodeFn(hostDom);
+    }
+    return;
+  }
+
+  // Link internal tree root to the host DOM.
+  if (typeof newRendered === "object" && newRendered !== null) {
+    (newRendered as any).dom = hostDom;
+  }
+
+  // Preserve identity across renders.
+  if (oldRendered) {
+    transferDOMReferencesFromOldTree(newRendered, oldRendered, hostDom);
+  }
+
+  if (canUpdateInPlaceFn(hostDom, newRendered, oldRendered)) {
+    updateDOMNodeFn(hostDom, newRendered);
+    const updatedRendered = vnodeMetadata.get(hostDom) || newRendered;
+    propagateDOMReferences(updatedRendered, hostDom);
+    vnodeMetadata.set(hostDom, updatedRendered);
+  } else {
+    const newDom = createDOMNodeFn(newRendered);
+    const parent = hostDom.parentNode;
+    if (parent && hostDom.parentNode === parent) {
+      parent.replaceChild(newDom, hostDom);
+    } else if (parent) {
+      parent.appendChild(newDom);
+    }
+    if (newDom !== hostDom) cleanupNodeFn(hostDom);
+    propagateDOMReferences(newRendered, newDom);
+  }
+}
 
 /**
  * Propagates DOM references from the actual DOM tree to the VNode tree.
@@ -119,7 +171,11 @@ function transferDOMReferencesFromOldTree(
       const searchForMatchingComponent = (
         element: HTMLElement,
         targetType: any,
-      ): { instance: any; dom: HTMLElement; vnode: VNode | undefined } | null => {
+      ): {
+        instance: any;
+        dom: HTMLElement;
+        vnode: VNode | undefined;
+      } | null => {
         const instance = componentInstances.get(element);
         if (instance && instance.constructor === targetType) {
           const vnode = vnodeMetadata.get(element);
@@ -136,12 +192,25 @@ function transferDOMReferencesFromOldTree(
 
       // For each new component child, try to find a matching old component by type
       for (const newChild of newChildren) {
-        if (newChild && isComponentVNode(newChild) && typeof newChild === "object" && newChild !== null) {
+        if (
+          newChild &&
+          isComponentVNode(newChild) &&
+          typeof newChild === "object" &&
+          newChild !== null
+        ) {
           // Check if already matched by index
           const alreadyMatched = oldChildren.some((oldChild, idx) => {
-            if (oldChild && isComponentVNode(oldChild) && oldChild.type === newChild.type) {
+            if (
+              oldChild &&
+              isComponentVNode(oldChild) &&
+              oldChild.type === newChild.type
+            ) {
               const oldChildDom = (oldChild as any).dom;
-              if (oldChildDom && idx < newChildren.length && newChildren[idx] === newChild) {
+              if (
+                oldChildDom &&
+                idx < newChildren.length &&
+                newChildren[idx] === newChild
+              ) {
                 return true; // Already matched by index
               }
             }
@@ -156,7 +225,12 @@ function transferDOMReferencesFromOldTree(
               (newChild as any).__componentInstance = found.instance;
               (newChild as any).dom = found.dom;
               // Recursively transfer for the component's rendered tree
-              transferDOMReferencesFromOldTree(newChild, found.vnode, found.dom, visited);
+              transferDOMReferencesFromOldTree(
+                newChild,
+                found.vnode,
+                found.dom,
+                visited,
+              );
             }
           }
         }
@@ -212,7 +286,12 @@ function transferDOMReferencesFromOldTree(
       if (newRendered && oldRendered) {
         // Transfer references from old rendered tree to new rendered tree
         // This allows nested components to be reused even when parent changes
-        transferDOMReferencesFromOldTree(newRendered, oldRendered, domNode, visited);
+        transferDOMReferencesFromOldTree(
+          newRendered,
+          oldRendered,
+          domNode,
+          visited,
+        );
       }
     }
   }
@@ -283,7 +362,7 @@ function propagateDOMReferences(
             if (
               candidateDom.nodeType === Node.ELEMENT_NODE &&
               (candidateDom as HTMLElement).tagName.toLowerCase() ===
-              childVNode.type.toLowerCase()
+                childVNode.type.toLowerCase()
             ) {
               matchingDom = candidateDom;
               domChildIndex++;
@@ -518,10 +597,7 @@ export function updateElementNode(
       return;
     if (i >= domChildren.length) return;
     const childDom = domChildren[i];
-    if (
-      isComponentVNode(newChild) &&
-      childDom instanceof HTMLElement
-    ) {
+    if (isComponentVNode(newChild) && childDom instanceof HTMLElement) {
       // Prefer host (parent that rendered this root) when it matches type - fixes root update when parent renders single child component (e.g. EventBusProvider → Shell)
       const direct = componentInstances.get(childDom);
       const host = domToHostComponent.get(childDom);
@@ -532,14 +608,11 @@ export function updateElementNode(
         (newChild as any).dom = childDom;
         (newChild as any).__componentInstance = instance;
       }
-    } else if (
-      isElementVNode(newChild) &&
-      childDom instanceof HTMLElement
-    ) {
+    } else if (isElementVNode(newChild) && childDom instanceof HTMLElement) {
       if (
         childDom.nodeType === Node.ELEMENT_NODE &&
         (childDom as HTMLElement).tagName.toLowerCase() ===
-        (newChild as any).type?.toLowerCase()
+          (newChild as any).type?.toLowerCase()
       ) {
         (newChild as any).dom = childDom;
       }
@@ -548,7 +621,10 @@ export function updateElementNode(
 
   reconcilePropsFn(dom, oldProps, newProps);
   // Skip child reconciliation for containers that own their DOM (e.g. xterm). Prevents wiping imperative children.
-  if (!(dom instanceof HTMLElement) || dom.getAttribute?.("data-preserve-children") == null) {
+  if (
+    !(dom instanceof HTMLElement) ||
+    dom.getAttribute?.("data-preserve-children") == null
+  ) {
     reconcileChildrenFn(dom, oldChildren, newChildren);
   }
 
@@ -576,81 +652,48 @@ export function updateComponentNode(
 ) {
   const oldRendered = vnodeMetadata.get(dom);
 
-  let existingInstance = (vnode as any).__componentInstance;
+  let existingInstance: SwissComponent | undefined = (vnode as any)
+    .__componentInstance;
   if (!(existingInstance && existingInstance.constructor === vnode.type)) {
     existingInstance = undefined;
   }
 
   if (!existingInstance) {
-    existingInstance = componentInstances.get(dom);
-    if (!(existingInstance && existingInstance.constructor === vnode.type)) {
-      existingInstance = undefined;
+    const direct = componentInstances.get(dom);
+    if (direct && direct.constructor === vnode.type) {
+      existingInstance = direct;
     }
   }
 
-  if (
-    !existingInstance &&
-    oldVNode &&
-    isComponentVNode(oldVNode) &&
-    (oldVNode as any).__componentInstance
-  ) {
-    const instanceFromOld = (oldVNode as any).__componentInstance;
-    if (instanceFromOld.constructor === vnode.type) {
-      existingInstance = instanceFromOld;
+  if (!existingInstance && oldVNode && isComponentVNode(oldVNode)) {
+    const fromOld = (oldVNode as any).__componentInstance;
+    if (fromOld && fromOld.constructor === vnode.type) {
+      existingInstance = fromOld;
     }
   }
 
-  if (
-    !existingInstance &&
-    oldRendered &&
-    (oldRendered as any).__componentInstance
-  ) {
-    const instanceFromRendered = (oldRendered as any).__componentInstance;
-    if (instanceFromRendered.constructor === vnode.type) {
-      existingInstance = instanceFromRendered;
-    }
-  }
-
-  if (!existingInstance && dom instanceof HTMLElement) {
-    for (const child of Array.from(dom.children)) {
-      const childInstance = componentInstances.get(child as HTMLElement);
-      if (childInstance && childInstance.constructor === vnode.type) {
-        existingInstance = childInstance;
-        break;
-      }
-    }
-  }
-
-  if (!existingInstance && dom instanceof HTMLElement && dom.parentElement) {
-    const parentInstance = componentInstances.get(dom.parentElement);
-    if (parentInstance && parentInstance.constructor === vnode.type) {
-      existingInstance = parentInstance;
+  if (!existingInstance && oldRendered) {
+    const fromRendered = (oldRendered as any).__componentInstance;
+    if (fromRendered && fromRendered.constructor === vnode.type) {
+      existingInstance = fromRendered;
     }
   }
 
   if (existingInstance && existingInstance.constructor === vnode.type) {
+    (existingInstance as any)._initialized = true;
+    (existingInstance as any).__initialized = true;
+    if (vnode.props) {
+      existingInstance.props = vnode.props;
+    }
+    clearRenderCache(existingInstance);
+
     if (typeof vnode === "object" && vnode !== null) {
       (vnode as any).__componentInstance = existingInstance;
-      // CRITICAL FIX: Preserve DOM reference IMMEDIATELY before any rendering
-      // This ensures the new VNode knows it owns the existing DOM element
       (vnode as any).dom = dom;
     }
 
     const preservedDomNode = (existingInstance as any)._domNode || dom;
-
-    (existingInstance as any)._initialized = true;
-    (existingInstance as any).__initialized = true;
-
-    // CRITICAL FIX: Update component props before re-rendering
-    // Without this, components keep old props with stale closures in event handlers
-    if (vnode.props) {
-      existingInstance.props = vnode.props;
-    }
-
-    // CRITICAL: Clear render cache so this component re-runs render() and sees updated context
-    clearRenderCache(existingInstance);
     const newRendered = renderComponentFn(vnode, existingInstance);
-
     const newInstance =
       newRendered && typeof newRendered === "object" && newRendered !== null
         ? (newRendered as any).__componentInstance
@@ -666,134 +709,18 @@ export function updateComponentNode(
       (newInstance as any)._domNode = preservedDomNode || dom;
     }
 
-    if (newRendered != null && typeof newRendered !== "boolean") {
-      // CRITICAL: Link the new internal tree root to the host DOM
-      if (typeof newRendered === "object" && newRendered !== null) {
-        (newRendered as any).dom = dom;
-      }
-
-      // CRITICAL FIX: Transfer DOM references from old rendered tree to new rendered tree
-      // This must happen BEFORE updateDOMNode so reconciliation can find existing DOM nodes
-      // This prevents components from being recreated when they should be updated
-      if (oldRendered) {
-        transferDOMReferencesFromOldTree(newRendered, oldRendered, dom);
-      }
-
-      if (canUpdateInPlaceFn(dom, newRendered, oldRendered)) {
-        updateDOMNodeFn(dom, newRendered);
-
-        // CRITICAL: After updateDOMNode completes, get the updated tree and propagate DOM references
-        const updatedRendered = vnodeMetadata.get(dom) || newRendered;
-        propagateDOMReferences(updatedRendered, dom);
-        if (updatedRendered !== newRendered) {
-          Object.assign(newRendered, updatedRendered);
-        }
-      } else {
-        const newDom = createDOMNodeFn(newRendered);
-        const parent = dom.parentNode;
-        if (parent && dom.parentNode === parent) {
-          parent.replaceChild(newDom, dom);
-        } else if (parent) {
-          // Node was moved - append instead
-          parent.appendChild(newDom);
-        }
-        if (newDom !== dom) cleanupNodeFn(dom);
-        propagateDOMReferences(newRendered, newDom);
-      }
-
-      // CRITICAL: Re-get the rendered tree from metadata and save it to ensure all DOM references are preserved
-      const finalRendered = vnodeMetadata.get(dom) || newRendered;
-      vnodeMetadata.set(dom, finalRendered);
-    } else {
-      const parent = dom.parentNode;
-      if (parent) {
-        parent.removeChild(dom);
-        cleanupNodeFn(dom);
-      }
-    }
+    applyRenderedOutput(
+      dom,
+      vnode,
+      oldRendered as VNode | undefined,
+      newRendered as VNode,
+      renderComponentFn,
+      createDOMNodeFn,
+      cleanupNodeFn,
+      canUpdateInPlaceFn,
+      updateDOMNodeFn,
+    );
     return;
-  }
-
-  if (!existingInstance && (vnode as any).__componentInstance) {
-    const instanceFromVNode = (vnode as any).__componentInstance;
-    if (instanceFromVNode.constructor === vnode.type) {
-      existingInstance = instanceFromVNode;
-      // CRITICAL FIX: Preserve DOM reference IMMEDIATELY
-      if (typeof vnode === "object" && vnode !== null) {
-        (vnode as any).dom = dom;
-      }
-      const preservedDomNode = (existingInstance as any)._domNode || dom;
-      (existingInstance as any)._initialized = true;
-      (existingInstance as any).__initialized = true;
-      // CRITICAL FIX: Update component props before re-rendering
-      if (vnode.props) {
-        existingInstance.props = vnode.props;
-      }
-      clearRenderCache(existingInstance);
-      const newRendered = renderComponentFn(vnode, existingInstance);
-      const newInstance =
-        newRendered && typeof newRendered === "object" && newRendered !== null
-          ? (newRendered as any).__componentInstance
-          : undefined;
-      if (newInstance) {
-        componentInstances.set(dom, newInstance);
-        if (typeof vnode === "object" && vnode !== null) {
-          (vnode as any).__componentInstance = newInstance;
-        }
-        if (newInstance._vnode) {
-          (newInstance._vnode as any).dom = dom;
-        }
-        (newInstance as any)._domNode = preservedDomNode || dom;
-      }
-      if (newRendered != null && typeof newRendered !== "boolean") {
-        // CRITICAL: Link the new internal tree root to the host DOM
-        if (typeof newRendered === "object" && newRendered !== null) {
-          (newRendered as any).dom = dom;
-        }
-
-        // CRITICAL FIX: Transfer DOM references from old rendered tree to new rendered tree
-        // This must happen BEFORE updateDOMNode so reconciliation can find existing DOM nodes
-        // This prevents components from being recreated when they should be updated
-        if (oldRendered) {
-          transferDOMReferencesFromOldTree(newRendered, oldRendered, dom);
-        }
-
-        if (canUpdateInPlaceFn(dom, newRendered, oldRendered)) {
-          updateDOMNodeFn(dom, newRendered);
-
-          // CRITICAL: After updateDOMNode completes, get the updated tree and propagate DOM references
-          const updatedRendered = vnodeMetadata.get(dom) || newRendered;
-          propagateDOMReferences(updatedRendered, dom);
-          if (updatedRendered !== newRendered) {
-            Object.assign(newRendered, updatedRendered);
-          }
-        } else {
-          const newDom = createDOMNodeFn(newRendered);
-          const parent = dom.parentNode;
-          if (parent) {
-            // Check if dom is still a child of parent before replacing
-            if (dom.parentNode === parent) {
-              parent.replaceChild(newDom, dom);
-            } else {
-              // Node was moved - append instead
-              parent.appendChild(newDom);
-            }
-          }
-          if (newDom !== dom) cleanupNodeFn(dom);
-          propagateDOMReferences(newRendered, newDom);
-        }
-
-        // CRITICAL: Save the UPDATED tree to metadata (now with all DOM references)
-        vnodeMetadata.set(dom, newRendered);
-      } else {
-        const parent = dom.parentNode;
-        if (parent) {
-          parent.removeChild(dom);
-          cleanupNodeFn(dom);
-        }
-      }
-      return;
-    }
   }
 
   if (oldVNode && isComponentVNode(oldVNode) && oldVNode.type === vnode.type) {
@@ -812,7 +739,6 @@ export function updateComponentNode(
       : dom;
 
     if (existingInstance) {
-      // CRITICAL FIX: Update component props before re-rendering
       if (vnode.props) {
         existingInstance.props = vnode.props;
       }
@@ -835,52 +761,17 @@ export function updateComponentNode(
       (newInstance as any)._domNode = preservedDomNode || dom;
     }
 
-    if (newRendered != null && typeof newRendered !== "boolean") {
-      // CRITICAL: Link the new internal tree root to the host DOM
-      if (typeof newRendered === "object" && newRendered !== null) {
-        (newRendered as any).dom = dom;
-      }
-
-      // CRITICAL FIX: Transfer DOM references from old rendered tree to new rendered tree
-      // This must happen BEFORE updateDOMNode so reconciliation can find existing DOM nodes
-      // This prevents components from being recreated when they should be updated
-      if (oldRendered) {
-        transferDOMReferencesFromOldTree(newRendered, oldRendered, dom);
-      }
-
-      if (canUpdateInPlaceFn(dom, newRendered, oldRendered)) {
-        updateDOMNodeFn(dom, newRendered);
-
-        // CRITICAL: After updateDOMNode completes, get the updated tree and propagate DOM references
-        const updatedRendered = vnodeMetadata.get(dom) || newRendered;
-        propagateDOMReferences(updatedRendered, dom);
-        if (updatedRendered !== newRendered) {
-          Object.assign(newRendered, updatedRendered);
-        }
-      } else {
-        const newDom = createDOMNodeFn(newRendered);
-        const parent = dom.parentNode;
-        if (parent && dom.parentNode === parent) {
-          parent.replaceChild(newDom, dom);
-        } else if (parent) {
-          // Node was moved - append instead
-          parent.appendChild(newDom);
-        }
-        if (newDom !== dom) cleanupNodeFn(dom);
-        propagateDOMReferences(newRendered, newDom);
-      }
-
-      // CRITICAL: Re-get the rendered tree from metadata (it may have been updated during reconciliation)
-      // and save it to ensure all DOM references are preserved
-      const finalRendered = vnodeMetadata.get(dom) || newRendered;
-      vnodeMetadata.set(dom, finalRendered);
-    } else {
-      const parent = dom.parentNode;
-      if (parent) {
-        parent.removeChild(dom);
-        cleanupNodeFn(dom);
-      }
-    }
+    applyRenderedOutput(
+      dom,
+      vnode,
+      oldRendered as VNode | undefined,
+      newRendered as VNode,
+      renderComponentFn,
+      createDOMNodeFn,
+      cleanupNodeFn,
+      canUpdateInPlaceFn,
+      updateDOMNodeFn,
+    );
     return;
   } else {
     // Component types don't match (e.g., LoginPage → ForgotPasswordPage)
@@ -891,31 +782,26 @@ export function updateComponentNode(
     // from the old rendered tree to the new one. This allows nested components
     // (Stack, Card, Input, Button) to be reused across page changes.
     // We search the old DOM tree for matching component types and transfer their references
-    if (newRendered && oldRendered && typeof newRendered === "object" && newRendered !== null) {
+    if (
+      newRendered &&
+      oldRendered &&
+      typeof newRendered === "object" &&
+      newRendered !== null
+    ) {
       // Transfer references before creating new DOM - this allows reconciliation to find existing components
       transferDOMReferencesFromOldTree(newRendered, oldRendered, dom);
     }
 
-    // Try to update in place if possible (reconciliation will handle component reuse)
-    if (newRendered && canUpdateInPlaceFn(dom, newRendered, oldRendered)) {
-      updateDOMNodeFn(dom, newRendered);
-      const updatedRendered = vnodeMetadata.get(dom) || newRendered;
-      propagateDOMReferences(updatedRendered, dom);
-      vnodeMetadata.set(dom, updatedRendered);
-    } else {
-      // Can't update in place - create new DOM but preserve component instances via transfer
-      const newDom = createDOMNodeFn(newRendered);
-      const parent = dom.parentNode;
-      if (parent && dom.parentNode === parent) {
-        parent.replaceChild(newDom, dom);
-      } else if (parent) {
-        // Node was moved - append instead
-        parent.appendChild(newDom);
-      }
-      if (newDom !== dom) cleanupNodeFn(dom);
-      if (newRendered && typeof newRendered === "object" && newRendered !== null) {
-        propagateDOMReferences(newRendered, newDom);
-      }
-    }
+    applyRenderedOutput(
+      dom,
+      vnode,
+      oldRendered as VNode | undefined,
+      newRendered as VNode,
+      renderComponentFn,
+      createDOMNodeFn,
+      cleanupNodeFn,
+      canUpdateInPlaceFn,
+      updateDOMNodeFn,
+    );
   }
 }

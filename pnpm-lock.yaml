@@ -16,9 +16,6 @@ importers:
       '@swissjs/compiler':
         specifier: workspace:*
         version: link:packages/compiler
-      '@swissjs/swite':
-        specifier: workspace:*
-        version: link:packages/swite
       '@swissjs/utils':
         specifier: file:packages/utils
         version: link:packages/utils
@@ -52,7 +49,7 @@ importers:
         version: 9.32.0
       '@types/bun':
         specifier: ^1.2.19
-        version: 1.2.19
+        version: 1.2.19(@types/react@19.2.14)
       '@types/chalk':
         specifier: ^2.2.4
         version: 2.2.4
@@ -173,9 +170,6 @@ importers:
       '@swissjs/compiler':
         specifier: workspace:*
         version: link:../compiler
-      '@swissjs/swite':
-        specifier: workspace:*
-        version: link:../swite
       '@swissjs/utils':
         specifier: file:../utils
         version: link:../utils
@@ -219,6 +213,9 @@ importers:
         specifier: ^10.1.0
         version: 10.2.0
     devDependencies:
+      '@types/bun':
+        specifier: ^1.2.19
+        version: 1.2.19(@types/react@19.2.14)
       '@types/compression':
         specifier: ^1.7.5
         version: 1.8.1
@@ -252,6 +249,9 @@ importers:
       pnpm:
         specifier: ^10.12.4
         version: 10.14.0
+      typescript:
+        specifier: 5.8.2
+        version: 5.8.2
 
   packages/compiler:
     dependencies:
@@ -320,6 +320,9 @@ importers:
       jsdom:
         specifier: ^25.0.1
         version: 25.0.1
+      typescript:
+        specifier: 5.8.2
+        version: 5.8.2
       vitest:
         specifier: ^3.2.4
         version: 3.2.4(@types/node@18.19.121)(@vitest/ui@3.2.4)(jsdom@25.0.1)(lightningcss@1.30.2)
@@ -333,12 +336,33 @@ importers:
         specifier: file:../utils
         version: link:../utils
     devDependencies:
+      '@types/bun':
+        specifier: ^1.2.19
+        version: 1.2.19(@types/react@19.2.14)
+      '@types/node':
+        specifier: 18.19.121
+        version: 18.19.121
+      chokidar:
+        specifier: ^3.5.3
+        version: 3.6.0
+      express:
+        specifier: ^4.21.0
+        version: 4.21.2
+      fs-extra:
+        specifier: ^11.2.0
+        version: 11.3.0
       pnpm:
         specifier: ^10.14.0
         version: 10.14.0
+      reflect-metadata:
+        specifier: ^0.2.2
+        version: 0.2.2
       ts-node:
         specifier: ^10.9.2
-        version: 10.9.2(@types/node@24.2.0)(typescript@5.9.2)
+        version: 10.9.2(@types/node@18.19.121)(typescript@5.8.2)
+      typescript:
+        specifier: 5.8.2
+        version: 5.8.2
 
   packages/css:
     dependencies:
@@ -451,9 +475,15 @@ importers:
         specifier: ^5.2.0
         version: 5.4.19(@types/node@18.19.121)(lightningcss@1.30.2)
     devDependencies:
+      '@types/express':
+        specifier: ^4.17.21
+        version: 4.17.23
       '@types/node':
         specifier: 18.19.121
         version: 18.19.121
+      express:
+        specifier: ^4.21.0
+        version: 4.21.2
       pnpm:
         specifier: ^10.14.0
         version: 10.14.0
@@ -495,6 +525,12 @@ importers:
 
   packages/security:
     devDependencies:
+      '@types/bun':
+        specifier: ^1.2.19
+        version: 1.2.19(@types/react@19.2.14)
+      '@types/node':
+        specifier: 18.19.121
+        version: 18.19.121
       typedoc:
         specifier: ^0.28.7
         version: 0.28.8(typescript@5.8.2)
@@ -507,46 +543,6 @@ importers:
       vitest:
         specifier: ^3.2.4
         version: 3.2.4(@types/node@18.19.121)(@vitest/ui@3.2.4)(jsdom@25.0.1)(lightningcss@1.30.2)
-
-  packages/swite:
-    dependencies:
-      '@swissjs/compiler':
-        specifier: workspace:*
-        version: link:../compiler
-      '@swissjs/plugin-file-router':
-        specifier: workspace:*
-        version: link:../plugins/file-router
-      chalk:
-        specifier: ^5.3.0
-        version: 5.4.1
-      chokidar:
-        specifier: ^3.5.3
-        version: 3.6.0
-      es-module-lexer:
-        specifier: ^1.3.1
-        version: 1.7.0
-      esbuild:
-        specifier: ^0.21.5
-        version: 0.21.5
-      express:
-        specifier: ^4.18.2
-        version: 4.21.2
-      ws:
-        specifier: ^8.14.2
-        version: 8.18.3
-    devDependencies:
-      '@types/express':
-        specifier: ^4.17.21
-        version: 4.17.23
-      '@types/node':
-        specifier: 18.19.121
-        version: 18.19.121
-      '@types/ws':
-        specifier: ^8.5.8
-        version: 8.18.1
-      typescript:
-        specifier: ^5.0.0
-        version: 5.8.2
 
   packages/utils:
     devDependencies:
@@ -562,6 +558,9 @@ importers:
       pnpm:
         specifier: ^10.14.0
         version: 10.14.0
+      typescript:
+        specifier: 5.8.2
+        version: 5.8.2
 
 packages:
 
@@ -2718,9 +2717,6 @@ packages:
   '@types/node@18.19.121':
     resolution: {integrity: sha512-bHOrbyztmyYIi4f1R0s17QsPs1uyyYnGcXeZoGEd227oZjry0q6XQBQxd82X1I57zEfwO8h9Xo+Kl5gX1d9MwQ==}
 
-  '@types/node@24.2.0':
-    resolution: {integrity: sha512-3xyG3pMCq3oYCNg7/ZP+E1ooTaGB4cG8JWRsqqOYQdbWNY4zbaV0Ennrd7stjiJEFZCaybcIgpTjJWHRfBSIDw==}
-
   '@types/normalize-package-data@2.4.4':
     resolution: {integrity: sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==}
 
@@ -2729,6 +2725,9 @@ packages:
 
   '@types/range-parser@1.2.7':
     resolution: {integrity: sha512-hKormJbkJqzQGhziax5PItDUTMAM9uE2XXQmM37dyd4hVM+5aVl7oVxMVUiVQn2oCQFN/LKCZdvSM0pFRqbSmQ==}
+
+  '@types/react@19.2.14':
+    resolution: {integrity: sha512-ilcTH/UniCkMdtexkoCN0bI7pMcJDvmQFPvuPvmEaYA/NSfFTAgdUSLAoVjaRJm7+6PvcM+q1zYOwS4wTYMF9w==}
 
   '@types/sarif@2.1.7':
     resolution: {integrity: sha512-kRz0VEkJqWLf1LLVN4pT1cg1Z9wAuvI6L97V3m2f5B76Tg8d413ddvLBPTEHAZJlnn4XSvu0FkZtViCQGVyrXQ==}
@@ -2759,9 +2758,6 @@ packages:
 
   '@types/web-bluetooth@0.0.21':
     resolution: {integrity: sha512-oIQLCGWtcFZy2JW77j9k8nHzAOpqMHLQejDA48XXMWH6tjCQHz5RCFz1bzsmROyL6PUm+LLnUiI4BCn221inxA==}
-
-  '@types/ws@8.18.1':
-    resolution: {integrity: sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg==}
 
   '@types/yargs-parser@21.0.3':
     resolution: {integrity: sha512-I4q9QU9MQv4oEOz4tAHJtNz1cwuLxn2F3xcc2iV5WdqLPpUnj30aUuxt1mAxYTG+oe8CZMV/+6rU4S4gRDzqtQ==}
@@ -3826,6 +3822,9 @@ packages:
 
   csstype@3.1.3:
     resolution: {integrity: sha512-M1uQkMl8rQK/szD0LNhtqxIPLpimGm8sOBwU7lLnCpSbTyY3yeU1Vc7l4KT5zT4s/yOxHH5O7tIuuLOCnLADRw==}
+
+  csstype@3.2.3:
+    resolution: {integrity: sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ==}
 
   damerau-levenshtein@1.0.8:
     resolution: {integrity: sha512-sdQSFB7+llfUcQHUQO3+B8ERRj0Oa4w9POWMI/puGtuf7gFywGmkaLCElnudfTiKZV+NvHqL0ifzdrI8Ro7ESA==}
@@ -7074,11 +7073,6 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
-  typescript@5.9.2:
-    resolution: {integrity: sha512-CWBzXQrc/qOkhidw1OzBTQuYRbfyxDXJMVJ1XNwUHGROVmuaeiEm3OslpZ1RV96d7SKKjZKrSJu3+t/xlw3R9A==}
-    engines: {node: '>=14.17'}
-    hasBin: true
-
   uc.micro@1.0.6:
     resolution: {integrity: sha512-8Y75pvTYkLJW2hWQHXxoqRgV7qb9B+9vFEtidML+7koHUFapnVJAZ6cKs+Qjz5Aw3aZWHMC6u0wJE3At+nSGwA==}
 
@@ -7102,9 +7096,6 @@ packages:
 
   undici-types@5.26.5:
     resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
-
-  undici-types@7.10.0:
-    resolution: {integrity: sha512-t5Fy/nfn+14LuOc2KNYg75vZqClpAiqscVvMygNnlsHBFpSXdJaYtXMcdNLpl/Qvc3P2cB3s6lOV51nqsFq4ag==}
 
   undici@7.15.0:
     resolution: {integrity: sha512-7oZJCPvvMvTd0OlqWsIxTuItTpJBpU1tcbVl24FMn3xt3+VSunwUasmfPJRE57oNO1KsZ4PgA1xTdAX4hq8NyQ==}
@@ -9936,9 +9927,9 @@ snapshots:
       '@types/connect': 3.4.38
       '@types/node': 18.19.121
 
-  '@types/bun@1.2.19':
+  '@types/bun@1.2.19(@types/react@19.2.14)':
     dependencies:
-      bun-types: 1.2.19
+      bun-types: 1.2.19(@types/react@19.2.14)
     transitivePeerDependencies:
       - '@types/react'
 
@@ -10098,15 +10089,15 @@ snapshots:
     dependencies:
       undici-types: 5.26.5
 
-  '@types/node@24.2.0':
-    dependencies:
-      undici-types: 7.10.0
-
   '@types/normalize-package-data@2.4.4': {}
 
   '@types/qs@6.14.0': {}
 
   '@types/range-parser@1.2.7': {}
+
+  '@types/react@19.2.14':
+    dependencies:
+      csstype: 3.2.3
 
   '@types/sarif@2.1.7': {}
 
@@ -10138,10 +10129,6 @@ snapshots:
   '@types/vscode@1.104.0': {}
 
   '@types/web-bluetooth@0.0.21': {}
-
-  '@types/ws@8.18.1':
-    dependencies:
-      '@types/node': 18.19.121
 
   '@types/yargs-parser@21.0.3': {}
 
@@ -11118,9 +11105,10 @@ snapshots:
 
   builtin-modules@3.3.0: {}
 
-  bun-types@1.2.19:
+  bun-types@1.2.19(@types/react@19.2.14):
     dependencies:
       '@types/node': 18.19.121
+      '@types/react': 19.2.14
 
   bundle-name@4.1.0:
     dependencies:
@@ -11429,6 +11417,8 @@ snapshots:
       rrweb-cssom: 0.8.0
 
   csstype@3.1.3: {}
+
+  csstype@3.2.3: {}
 
   damerau-levenshtein@1.0.8: {}
 
@@ -15168,24 +15158,6 @@ snapshots:
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
 
-  ts-node@10.9.2(@types/node@24.2.0)(typescript@5.9.2):
-    dependencies:
-      '@cspotcode/source-map-support': 0.8.1
-      '@tsconfig/node10': 1.0.11
-      '@tsconfig/node12': 1.0.11
-      '@tsconfig/node14': 1.0.3
-      '@tsconfig/node16': 1.0.4
-      '@types/node': 24.2.0
-      acorn: 8.15.0
-      acorn-walk: 8.3.4
-      arg: 4.1.3
-      create-require: 1.1.1
-      diff: 4.0.2
-      make-error: 1.3.6
-      typescript: 5.9.2
-      v8-compile-cache-lib: 3.0.1
-      yn: 3.1.1
-
   tsconfig-paths@3.15.0:
     dependencies:
       '@types/json5': 0.0.29
@@ -15346,8 +15318,6 @@ snapshots:
 
   typescript@5.8.2: {}
 
-  typescript@5.9.2: {}
-
   uc.micro@1.0.6: {}
 
   uc.micro@2.1.0: {}
@@ -15367,8 +15337,6 @@ snapshots:
   underscore@1.13.7: {}
 
   undici-types@5.26.5: {}
-
-  undici-types@7.10.0: {}
 
   undici@7.15.0: {}
 

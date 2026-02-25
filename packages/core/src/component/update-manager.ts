@@ -17,6 +17,14 @@ import type { SwissComponent } from "./component.js";
 import { expandSlots } from "../renderer/component-rendering.js";
 import { logger } from "../utils/logger.js";
 
+function scheduleMicrotask(fn: () => void) {
+  if (typeof queueMicrotask === "function") {
+    queueMicrotask(fn);
+  } else {
+    Promise.resolve().then(fn);
+  }
+}
+
 /**
  * Manages component updates and DOM reconciliation
  */
@@ -36,18 +44,25 @@ export class UpdateManager {
       clearRenderCache(this.component);
       this.updateScheduled = true;
       const c = this.component as any;
-      const isChildComponent = !c._container && c._domNode && c._domNode instanceof HTMLElement;
+      const isChildComponent =
+        !c._container && c._domNode && c._domNode instanceof HTMLElement;
       if (isChildComponent) {
-        logger.reactivity(`${this.component.constructor.name}: update (immediate, child component)`);
+        logger.reactivity(
+          `${this.component.constructor.name}: update (immediate, child component)`,
+        );
         try {
           this.performUpdate();
         } finally {
           this.updateScheduled = false;
         }
       } else {
-        logger.reactivity(`${this.component.constructor.name}: update scheduled`);
-        requestAnimationFrame(() => {
-          logger.updates(`${this.component.constructor.name}: rAF callback`);
+        logger.reactivity(
+          `${this.component.constructor.name}: update scheduled`,
+        );
+        scheduleMicrotask(() => {
+          logger.updates(
+            `${this.component.constructor.name}: microtask callback`,
+          );
           try {
             this.performUpdate();
           } finally {
@@ -56,7 +71,9 @@ export class UpdateManager {
         });
       }
     } else {
-      logger.reactivity(`${this.component.constructor.name}: update already scheduled`);
+      logger.reactivity(
+        `${this.component.constructor.name}: update already scheduled`,
+      );
     }
   }
 
@@ -65,10 +82,6 @@ export class UpdateManager {
    */
   public performUpdate(): void {
     try {
-      if (typeof window !== "undefined") {
-        const c = this.component as any;
-        console.log(`[Swiss] ${this.component.constructor.name}.performUpdate() container=${!!c._container} vnode=${!!c._vnode} dom=${!!c._domNode}`);
-      }
       // Skip first update for components just created in createDOMNode (DOM already correct)
       if ((this.component as any)._skipNextUpdate) {
         (this.component as any)._skipNextUpdate = false;
@@ -76,15 +89,16 @@ export class UpdateManager {
       }
 
       // CRITICAL: Prevent infinite re-render loops
-      const now = typeof performance !== "undefined" && performance.now
-        ? performance.now()
-        : Date.now();
-      
+      const now =
+        typeof performance !== "undefined" && performance.now
+          ? performance.now()
+          : Date.now();
+
       // Reset counter if more than 1 second has passed
       if (now - this.lastUpdateTime > 1000) {
         this.updateCount = 0;
       }
-      
+
       // Throttle updates to prevent infinite loops
       if (this.updateCount >= this.MAX_UPDATES_PER_SECOND) {
         logger.warn(
@@ -92,10 +106,10 @@ export class UpdateManager {
         );
         return;
       }
-      
+
       this.updateCount++;
       this.lastUpdateTime = now;
-      
+
       const t0 = now;
 
       // Always render to track dependencies
@@ -130,9 +144,14 @@ export class UpdateManager {
         (this.component as any)._domNode instanceof HTMLElement
       ) {
         this.refreshChildDomNode();
-        logger.updates(`${this.component.constructor.name}: using updateWithDomNode (child component)`);
+        logger.updates(
+          `${this.component.constructor.name}: using updateWithDomNode (child component)`,
+        );
         this.updateWithDomNode(newVNode);
-        const t1 = typeof performance !== "undefined" && performance.now ? performance.now() : Date.now();
+        const t1 =
+          typeof performance !== "undefined" && performance.now
+            ? performance.now()
+            : Date.now();
         this.component.executeHookPhase("updated");
         this.reportUpdateMetrics(t0, t1);
         return;
@@ -148,7 +167,9 @@ export class UpdateManager {
         if (domNode instanceof HTMLElement && domNode.parentElement) {
           container = domNode.parentElement as HTMLElement;
           (this.component as any)._container = container;
-          logger.updates(`${this.component.constructor.name}: found container from DOM parent`);
+          logger.updates(
+            `${this.component.constructor.name}: found container from DOM parent`,
+          );
         }
       }
 
@@ -194,7 +215,9 @@ export class UpdateManager {
 
   private updateRootComponent(container: HTMLElement, newVNode: VNode): void {
     const oldVNode = (this.component as any)._vnode;
-    logger.updates(`${this.component.constructor.name}: root update (container, oldVNode=${!!oldVNode})`);
+    logger.updates(
+      `${this.component.constructor.name}: root update (container, oldVNode=${!!oldVNode})`,
+    );
 
     if ((this.component as any)._container !== container) {
       (this.component as any)._container = container;
@@ -214,20 +237,26 @@ export class UpdateManager {
     // (e.g., from "Loading..." div to actual app content)
     const oldDom = oldVNode && (oldVNode as any).dom;
     const isOldDomDirectChild = oldDom && oldDom.parentElement === container;
-    
+
     // CRITICAL: Only replace container if:
     // 1. No old DOM exists (initial render) AND container is empty
     // 2. Old DOM exists but is NOT a direct child (structure changed externally)
     // DO NOT replace if old DOM is a direct child - use updateDOMNode instead
     // This prevents infinite re-render loops where container content is replaced unnecessarily
-    const shouldReplaceContainer = 
+    const shouldReplaceContainer =
       (!oldDom && !container.firstChild) || // Initial render, empty container
-      (oldDom && !isOldDomDirectChild && container.firstChild && container.firstChild !== oldDom); // Structure changed externally
+      (oldDom &&
+        !isOldDomDirectChild &&
+        container.firstChild &&
+        container.firstChild !== oldDom); // Structure changed externally
 
     if (shouldReplaceContainer && oldVNode) {
-      logger.updates(`${this.component.constructor.name}: root structure changed, replacing container`);
+      logger.updates(
+        `${this.component.constructor.name}: root structure changed, replacing container`,
+      );
       untrack(() => {
-        if (container && container instanceof HTMLElement) renderToDOM(newVNode, container);
+        if (container && container instanceof HTMLElement)
+          renderToDOM(newVNode, container);
         if (container && container.firstChild) {
           (this.component as any)._domNode = container.firstChild;
           (newVNode as any).dom = container.firstChild;
@@ -290,9 +319,7 @@ export class UpdateManager {
       // When root already has DOM children and we bound them above, still update root props
       // (e.g. class) then run full updateDOMNode so child components get new props (e.g. AppNavSidebar open/closed).
       const rootAlreadyHasContent =
-        rootDom &&
-        rootDom.childNodes &&
-        rootDom.childNodes.length > 0;
+        rootDom && rootDom.childNodes && rootDom.childNodes.length > 0;
       const oldProps = (oldVNode as any).props ?? {};
       const newProps = (newVNode as any).props ?? {};
       if (rootAlreadyHasContent && rootHasBoundChildren) {
@@ -304,15 +331,21 @@ export class UpdateManager {
         (newVNode as any).dom = (oldVNode as any).dom;
         (this.component as any)._domNode = (oldVNode as any).dom;
       });
-      logger.updates(`${this.component.constructor.name}: updateDOMNode completed`);
+      logger.updates(
+        `${this.component.constructor.name}: updateDOMNode completed`,
+      );
     } else {
       // Initial render
       if (!container || !(container instanceof HTMLElement)) {
-        logger.warn(`Skipping renderToDOM for ${this.component.constructor.name}: container invalid`);
+        logger.warn(
+          `Skipping renderToDOM for ${this.component.constructor.name}: container invalid`,
+        );
         (this.component as any)._vnode = newVNode;
         return;
       }
-      logger.updates(`${this.component.constructor.name}: renderToDOM (initial)`);
+      logger.updates(
+        `${this.component.constructor.name}: renderToDOM (initial)`,
+      );
       untrack(() => {
         renderToDOM(newVNode, container);
         if (container.firstChild && !(this.component as any)._domNode) {
@@ -338,19 +371,27 @@ export class UpdateManager {
     const c = this.component as any;
     const current = c._domNode;
     let parent: HTMLElement | null =
-      c._container ?? (current?.parentElement ?? null) ?? (c._vnode?.dom?.parentElement ?? null);
+      c._container ??
+      current?.parentElement ??
+      null ??
+      c._vnode?.dom?.parentElement ??
+      null;
 
     const findIn = (root: HTMLElement): boolean => {
       for (let i = 0; i < root.children.length; i++) {
         const el = root.children[i];
         if (!(el instanceof HTMLElement)) continue;
-        const instance = componentInstances.get(el) ?? domToHostComponent.get(el);
+        const instance =
+          componentInstances.get(el) ?? domToHostComponent.get(el);
         if (instance === this.component) {
           if (el !== current) {
             c._domNode = el;
             c._container = root;
-            if (c._vnode && typeof c._vnode === "object") (c._vnode as any).dom = el;
-            logger.updates(`${this.component.constructor.name}: refreshed _domNode from live DOM`);
+            if (c._vnode && typeof c._vnode === "object")
+              (c._vnode as any).dom = el;
+            logger.updates(
+              `${this.component.constructor.name}: refreshed _domNode from live DOM`,
+            );
           }
           return true;
         }
@@ -361,8 +402,13 @@ export class UpdateManager {
 
     if (parent && parent instanceof HTMLElement && findIn(parent)) return;
 
-    const app = typeof document !== "undefined" ? document.querySelector("#app") : null;
-    if (app && app instanceof HTMLElement && app.firstElementChild instanceof HTMLElement) {
+    const app =
+      typeof document !== "undefined" ? document.querySelector("#app") : null;
+    if (
+      app &&
+      app instanceof HTMLElement &&
+      app.firstElementChild instanceof HTMLElement
+    ) {
       findIn(app.firstElementChild);
     }
   }
@@ -420,7 +466,9 @@ export class UpdateManager {
         const oldVNode = (this.component as any)._vnode;
         untrack(() => {
           if (oldVNode && (oldVNode as any).dom) {
-            logger.updates(`${this.component.constructor.name}: updateDOMNode (recovered root)`);
+            logger.updates(
+              `${this.component.constructor.name}: updateDOMNode (recovered root)`,
+            );
             updateDOMNode((oldVNode as any).dom, newVNode);
             (newVNode as any).dom = (oldVNode as any).dom;
           } else {
@@ -443,7 +491,9 @@ export class UpdateManager {
       }
     }
 
-    logger.updates(`${this.component.constructor.name}: child update, updateDOMNode()`);
+    logger.updates(
+      `${this.component.constructor.name}: child update, updateDOMNode()`,
+    );
     untrack(() => {
       updateDOMNode(domNode, newVNode);
       (this.component as any)._vnode = newVNode;
@@ -455,7 +505,9 @@ export class UpdateManager {
   }
 
   private handleNoUpdatePath(newVNode: VNode): void {
-    logger.updates(`${this.component.constructor.name}: no update path (no container/vnode/dom)`);
+    logger.updates(
+      `${this.component.constructor.name}: no update path (no container/vnode/dom)`,
+    );
 
     let domNode: Node | null = null;
     if ((this.component as any)._domNode) {
@@ -538,14 +590,12 @@ export class UpdateManager {
     if (typeof document !== "undefined") {
       const rootContainer =
         document.querySelector("#app") ||
-        document.querySelector("[data-app-root]") ||
-        document.body;
+        document.querySelector("[data-app-root]");
       if (
         rootContainer &&
         rootContainer instanceof HTMLElement &&
         (rootContainer.id === "app" ||
-          rootContainer.hasAttribute("data-app-root") ||
-          rootContainer === document.body)
+          rootContainer.hasAttribute("data-app-root"))
       ) {
         (this.component as any)._container = rootContainer;
         if (
@@ -556,16 +606,15 @@ export class UpdateManager {
         ) {
           (newVNode as any).__componentInstance = this.component;
         }
-        logger.updates(`${this.component.constructor.name}: recovered root container, initial render`);
+        logger.updates(
+          `${this.component.constructor.name}: recovered root container, initial render`,
+        );
         untrack(() => {
-          if (rootContainer && rootContainer instanceof HTMLElement) renderToDOM(newVNode, rootContainer);
+          if (rootContainer && rootContainer instanceof HTMLElement)
+            renderToDOM(newVNode, rootContainer);
         });
         const firstChild = rootContainer.firstChild;
-        if (
-          firstChild &&
-          typeof newVNode === "object" &&
-          newVNode !== null
-        ) {
+        if (firstChild && typeof newVNode === "object" && newVNode !== null) {
           (newVNode as { dom?: Node }).dom = firstChild;
           (this.component as any)._vnode = newVNode;
           (this.component as any)._domNode = firstChild;
@@ -574,7 +623,9 @@ export class UpdateManager {
       }
     }
 
-    logger.updates(`${this.component.constructor.name}: no update path, waiting for renderer`);
+    logger.updates(
+      `${this.component.constructor.name}: no update path, waiting for renderer`,
+    );
   }
 
   private reportUpdateMetrics(t0: number, t1: number): void {

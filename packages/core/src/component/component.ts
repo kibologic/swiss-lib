@@ -6,9 +6,14 @@
 
 // Renderer imports
 import { renderToDOM, updateDOMNode } from "../renderer/renderer.js";
-import { type VNode, createElement, Fragment, renderToString } from "../vdom/vdom.js";
+import {
+  type VNode,
+  createElement,
+  Fragment,
+  renderToString,
+} from "../vdom/vdom.js";
 
-// Reactivity imports  
+// Reactivity imports
 import { reactive } from "../reactivity/reactive.js";
 import { untrack } from "../reactivity/effect.js";
 import { type EffectDisposer } from "../reactivity/types/index.js";
@@ -25,8 +30,13 @@ import {
 import { LifecycleManager } from "./lifecycle.js";
 import { SwissContext, cleanupContextSubscriptions } from "./context.js";
 import { createPortal, useSlot } from "./portals.js";
-import { serverInit, hydrate as hydrateSSR } from "./ssr.js";
-import { getLifecycleMetadata, OnMount, OnUpdate, OnUnmount } from "./decorators/index.js";
+import { serverInit, hydrateSSR } from "./ssr.js";
+import {
+  getLifecycleMetadata,
+  OnMount,
+  OnUpdate,
+  OnUnmount,
+} from "./decorators/index.js";
 import { logger } from "../utils/logger.js";
 
 // Plugin & security imports
@@ -75,6 +85,7 @@ export class SwissComponent<
   protected _isMounted: boolean = false;
   protected _isServer: boolean = typeof window === "undefined";
   protected _container: HTMLElement | null = null;
+  protected _domNode: Node | null = null;
   protected _vnode: VNode | null = null;
   protected _portals: Map<HTMLElement, VNode> = new Map();
   protected _errorHandlingPhase: boolean = false;
@@ -306,24 +317,30 @@ export class SwissComponent<
     this.validateCapabilities();
 
     // Hook onMount() into the mounted lifecycle phase if it exists
-    if (typeof (this as any).onMount === 'function') {
-      this._lifecycle.on('mounted', async () => {
+    if (typeof (this as any).onMount === "function") {
+      this._lifecycle.on("mounted", async () => {
         try {
           await (this as any).onMount();
         } catch (error) {
-          console.error(`[Component] Error in onMount() for ${this.constructor.name}:`, error);
-          this.captureError(error, 'mounted');
+          console.error(
+            `[Component] Error in onMount() for ${this.constructor.name}:`,
+            error,
+          );
+          this.captureError(error, "mounted");
         }
       });
     }
     // Swiss syntax: mount { } compiles to private mounted() { } — call it on mounted (not mount(container))
-    if (typeof (this as any).mounted === 'function') {
-      this._lifecycle.on('mounted', () => {
+    if (typeof (this as any).mounted === "function") {
+      this._lifecycle.on("mounted", () => {
         try {
           (this as any).mounted();
         } catch (error) {
-          console.error(`[Component] Error in mounted() for ${this.constructor.name}:`, error);
-          this.captureError(error, 'mounted');
+          console.error(
+            `[Component] Error in mounted() for ${this.constructor.name}:`,
+            error,
+          );
+          this.captureError(error, "mounted");
         }
       });
     }
@@ -366,16 +383,10 @@ export class SwissComponent<
   // ===== Update Management - Delegated =====
   /** Schedule a re-render (RAF). Use this or scheduleUpdate() after state changes. */
   public update(): void {
-    if (typeof window !== "undefined") {
-      console.log(`[Swiss] ${this.constructor.name}.update()`);
-    }
     this.updateManager.scheduleUpdate();
   }
 
   public scheduleUpdate(): void {
-    if (typeof window !== "undefined") {
-      console.log(`[Swiss] ${this.constructor.name}.scheduleUpdate()`);
-    }
     this.updateManager.scheduleUpdate();
   }
 
@@ -402,9 +413,9 @@ export class SwissComponent<
     }
 
     try {
-      this.executeHookPhase("beforeRender");
+      void this.executeHookPhase("beforeRender");
       const vnode = this.render();
-      this.executeHookPhase("afterRender");
+      void this.executeHookPhase("afterRender");
       if (vnode === undefined || vnode === null) {
         this.captureError(
           vnode === undefined
@@ -421,13 +432,43 @@ export class SwissComponent<
     }
   }
 
+  public commitVNode(newVNode: VNode): void {
+    if ((this as any)._mounting) return;
+    const container = this._container;
+    const oldVNode = this._vnode;
+
+    if (!container) return;
+
+    if (
+      typeof newVNode === "object" &&
+      newVNode !== null &&
+      "type" in newVNode &&
+      typeof (newVNode as any).type === "function"
+    ) {
+      (newVNode as any).__componentInstance = this;
+    }
+
+    if (oldVNode && (oldVNode as any).dom) {
+      updateDOMNode((oldVNode as any).dom, newVNode);
+      (newVNode as any).dom = (oldVNode as any).dom;
+    } else {
+      renderToDOM(newVNode, container);
+      if (container.firstChild) {
+        (newVNode as any).dom = container.firstChild;
+      }
+    }
+
+    this._vnode = newVNode;
+    this._domNode = (newVNode as any).dom ?? (this as any)._domNode;
+  }
+
   public renderErrorFallback(): VNode {
     const info =
       this._capturedError ??
       (this.error != null &&
-        typeof this.error === "object" &&
-        "phase" in this.error &&
-        "error" in this.error
+      typeof this.error === "object" &&
+      "phase" in this.error &&
+      "error" in this.error
         ? (this.error as SwissErrorInfo)
         : null);
     const phase = info?.phase ?? "N/A";
@@ -454,39 +495,30 @@ export class SwissComponent<
   public mount(container: HTMLElement): void {
     if (this._isMounted) return;
     if (!container || !(container instanceof HTMLElement)) {
-      logger.error(`mount() called for ${this.constructor.name} with invalid container:`, container);
+      logger.error(
+        `mount() called for ${this.constructor.name} with invalid container:`,
+        container,
+      );
       return;
     }
 
     this._container = container;
 
-    logger.lifecycle(`${this.constructor.name}: mount() initial render`);
-    const initialVNode = this.safeRender();
+    // Prevent the initial render effect from committing DOM until beforeMount has fired.
+    (this as any)._mounting = true;
 
-    if (
-      typeof initialVNode === "object" &&
-      initialVNode !== null &&
-      "type" in initialVNode
-    ) {
-      (initialVNode as any).__componentInstance = this;
-    }
-
-    untrack(() => {
-      renderToDOM(initialVNode, container);
-    });
-
-    this._vnode = initialVNode;
-    if (
-      container.firstChild &&
-      typeof initialVNode === "object" &&
-      initialVNode !== null
-    ) {
-      (initialVNode as { dom?: Node }).dom = container.firstChild;
-      logger.lifecycle(`${this.constructor.name}: mount() set _vnode.dom`);
-    }
-
+    // Initialize reactivity BEFORE any DOM commit. The render effect will execute immediately.
     this.initialize();
     this.executeHookPhase("beforeMount");
+
+    // Allow commits now that beforeMount has run.
+    (this as any)._mounting = false;
+
+    // Perform the first DOM commit explicitly (reactivity is now established for subsequent updates).
+    untrack(() => {
+      this.commitVNode(this.safeRender());
+    });
+
     this._isMounted = true;
     this.bindEventHandlers();
     this.executeHookPhase("mounted");
@@ -495,7 +527,7 @@ export class SwissComponent<
       try {
         const parentId =
           (this as unknown as { _parent?: SwissComponent | null })._parent?.[
-          "_devtoolsId"
+            "_devtoolsId"
           ] ?? null;
         const consumes =
           (this.constructor as typeof SwissComponent).requires ?? [];
@@ -550,7 +582,9 @@ export class SwissComponent<
         handler.method
       ];
       if (typeof method !== "function") {
-        logger.warn(`Event handler method '${handler.method}' not found on ${this.constructor.name}`);
+        logger.warn(
+          `Event handler method '${handler.method}' not found on ${this.constructor.name}`,
+        );
         continue;
       }
 
@@ -558,7 +592,9 @@ export class SwissComponent<
         handler.options.capability &&
         !CapabilityManager.has(handler.options.capability, this)
       ) {
-        logger.warn(`Missing capability '${handler.options.capability}' for event handler '${handler.method}'`);
+        logger.warn(
+          `Missing capability '${handler.options.capability}' for event handler '${handler.method}'`,
+        );
         continue;
       }
 
@@ -619,16 +655,20 @@ export class SwissComponent<
       }
 
       this._portals.forEach((_, portalContainer) => {
-        if (portalContainer && portalContainer.innerHTML !== undefined) portalContainer.innerHTML = "";
+        if (portalContainer && portalContainer.innerHTML !== undefined)
+          portalContainer.innerHTML = "";
       });
 
       this._hooks = [];
       // Swiss syntax: unmount { } compiles to private unmount() { } — call it before teardown
-      if (typeof (this as any).unmount === 'function') {
+      if (typeof (this as any).unmount === "function") {
         try {
           (this as any).unmount();
         } catch (error) {
-          console.error(`[Component] Error in unmount() for ${this.constructor.name}:`, error);
+          console.error(
+            `[Component] Error in unmount() for ${this.constructor.name}:`,
+            error,
+          );
         }
       }
       this.executeHookPhase("unmounted");
@@ -721,4 +761,3 @@ export {
   hydrateSSR as hydrate,
   renderToString,
 };
-

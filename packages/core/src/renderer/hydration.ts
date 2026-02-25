@@ -5,14 +5,17 @@
  */
 
 import type { VNode, VElement, ComponentVNode } from "../vdom/vdom.js";
-import { vnodeMetadata } from "./storage.js";
+import { vnodeMetadata, componentInstances } from "./storage.js";
 import { isTextVNode, isElementVNode, isComponentVNode } from "./types.js";
 import { DiffingError } from "./errors.js";
 import { reconcileProps } from "./props-updates.js";
 
 // Forward declarations for functions passed as parameters
 type RenderToDOMFn = (vnode: VNode, container: HTMLElement) => void;
-type RenderComponentFn = (vnode: ComponentVNode, existingInstance?: any) => VNode;
+type RenderComponentFn = (
+  vnode: ComponentVNode,
+  existingInstance?: any,
+) => VNode;
 type CreateDOMNodeFn = (vnode: VNode | null | undefined | boolean) => Node;
 type UpdateDOMNodeFn = (dom: Node, vnode: VNode) => void;
 
@@ -52,12 +55,25 @@ export function hydrate(
               child.key === key,
           );
           if (component) {
-            hydrateIsland(component, island.parentElement as HTMLElement, renderToDOMFn, createDOMNodeFn, renderComponentFn, updateDOMNodeFn);
+            hydrateIsland(
+              component,
+              island.parentElement as HTMLElement,
+              renderToDOMFn,
+              createDOMNodeFn,
+              renderComponentFn,
+              updateDOMNodeFn,
+            );
           }
         }
       });
     } else {
-      hydrateDOM(root, container.firstChild as Node, createDOMNodeFn, renderComponentFn, updateDOMNodeFn);
+      hydrateDOM(
+        root,
+        container.firstChild as Node,
+        createDOMNodeFn,
+        renderComponentFn,
+        updateDOMNodeFn,
+      );
     }
   } catch (e) {
     console.error("Hydration mismatch:", e);
@@ -82,9 +98,21 @@ export function hydrateDOM(
   if (isTextVNode(vnode)) {
     hydrateTextNode(vnode, domNode);
   } else if (isElementVNode(vnode)) {
-    hydrateElementNode(vnode, domNode as HTMLElement, createDOMNodeFn, renderComponentFn, updateDOMNodeFn);
+    hydrateElementNode(
+      vnode,
+      domNode as HTMLElement,
+      createDOMNodeFn,
+      renderComponentFn,
+      updateDOMNodeFn,
+    );
   } else if (isComponentVNode(vnode)) {
-    hydrateComponentNode(vnode, domNode as HTMLElement, renderComponentFn, createDOMNodeFn, updateDOMNodeFn);
+    hydrateComponentNode(
+      vnode,
+      domNode as HTMLElement,
+      renderComponentFn,
+      createDOMNodeFn,
+      updateDOMNodeFn,
+    );
   }
 }
 
@@ -103,11 +131,23 @@ function hydrateIsland(
     if (islandStart && islandEnd) {
       const islandContent = islandStart.nextSibling;
       if (islandContent) {
-        hydrateDOM(component, islandContent, createDOMNodeFn, renderComponentFn, updateDOMNodeFn);
+        hydrateDOM(
+          component,
+          islandContent,
+          createDOMNodeFn,
+          renderComponentFn,
+          updateDOMNodeFn,
+        );
       }
     } else {
       if (container.firstChild) {
-        hydrateDOM(component, container.firstChild, createDOMNodeFn, renderComponentFn, updateDOMNodeFn);
+        hydrateDOM(
+          component,
+          container.firstChild,
+          createDOMNodeFn,
+          renderComponentFn,
+          updateDOMNodeFn,
+        );
       } else {
         renderToDOMFn(component, container);
       }
@@ -127,7 +167,13 @@ function hydrateTextNode(vnode: string, domNode: Node) {
   vnodeMetadata.set(domNode, vnode as unknown as VNode);
 }
 
-function hydrateElementNode(vnode: VElement, domNode: HTMLElement, createDOMNodeFn: CreateDOMNodeFn, renderComponentFn: RenderComponentFn, updateDOMNodeFn: UpdateDOMNodeFn) {
+function hydrateElementNode(
+  vnode: VElement,
+  domNode: HTMLElement,
+  createDOMNodeFn: CreateDOMNodeFn,
+  renderComponentFn: RenderComponentFn,
+  updateDOMNodeFn: UpdateDOMNodeFn,
+) {
   if (domNode.tagName.toLowerCase() !== vnode.type.toLowerCase()) {
     throw new DiffingError(
       `Element type mismatch: expected ${vnode.type}, got ${domNode.tagName}`,
@@ -151,7 +197,13 @@ function hydrateElementNode(vnode: VElement, domNode: HTMLElement, createDOMNode
   newVChildren.forEach((child, index) => {
     const domChild = domChildren[index];
     if (domChild) {
-      hydrateDOM(child, domChild, createDOMNodeFn, renderComponentFn, updateDOMNodeFn);
+      hydrateDOM(
+        child,
+        domChild,
+        createDOMNodeFn,
+        renderComponentFn,
+        updateDOMNodeFn,
+      );
     } else {
       const newDom = createDOMNodeFn(child);
       domNode.appendChild(newDom);
@@ -163,8 +215,49 @@ function hydrateElementNode(vnode: VElement, domNode: HTMLElement, createDOMNode
   }
 }
 
-function hydrateComponentNode(vnode: ComponentVNode, domNode: HTMLElement, renderComponentFn: RenderComponentFn, createDOMNodeFn: CreateDOMNodeFn, updateDOMNodeFn: UpdateDOMNodeFn) {
-  const rendered = renderComponentFn(vnode);
-  hydrateDOM(rendered, domNode, createDOMNodeFn, renderComponentFn, updateDOMNodeFn);
-}
+function hydrateComponentNode(
+  vnode: ComponentVNode,
+  domNode: HTMLElement,
+  renderComponentFn: RenderComponentFn,
+  createDOMNodeFn: CreateDOMNodeFn,
+  updateDOMNodeFn: UpdateDOMNodeFn,
+) {
+  // Reuse an existing instance if it is already registered for this DOM node.
+  let existingInstance = (vnode as any).__componentInstance as any;
+  if (!(existingInstance && existingInstance.constructor === vnode.type)) {
+    existingInstance = componentInstances.get(domNode);
+    if (!(existingInstance && existingInstance.constructor === vnode.type)) {
+      existingInstance = undefined;
+    }
+  }
 
+  // Render component output using the existing instance when possible.
+  const rendered = renderComponentFn(vnode, existingInstance);
+
+  // Capture the instance created/used by renderComponent.
+  const instanceFromRender =
+    rendered && typeof rendered === "object" && rendered !== null
+      ? (rendered as any).__componentInstance
+      : undefined;
+
+  const finalInstance = instanceFromRender || existingInstance;
+  if (finalInstance) {
+    componentInstances.set(domNode, finalInstance);
+    if (typeof vnode === "object" && vnode !== null) {
+      (vnode as any).__componentInstance = finalInstance;
+      (vnode as any).dom = domNode;
+    }
+    // Ensure the instance tracks its host DOM node.
+    (finalInstance as any)._domNode =
+      (finalInstance as any)._domNode || domNode;
+  }
+
+  // Hydrate the rendered VNode tree against existing DOM.
+  hydrateDOM(
+    rendered,
+    domNode,
+    createDOMNodeFn,
+    renderComponentFn,
+    updateDOMNodeFn,
+  );
+}

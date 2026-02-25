@@ -8,7 +8,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import type { VNode, ComponentVNode } from "../vdom/vdom.js";
-import { componentInstances, domToHostComponent, vnodeMetadata } from "./storage.js";
+import {
+  componentInstances,
+  domToHostComponent,
+  vnodeMetadata,
+} from "./storage.js";
 import {
   getKey,
   canUpdateInPlace,
@@ -40,22 +44,12 @@ export function reconcileChildren(
   const newKeyMap = new Map<string | number, { vnode: VNode; index: number }>();
 
   // Build a map of DOM nodes by id for fallback matching
-  // Search recursively in the parent's subtree, not just direct children
   const domByIdMap = new Map<string, Node>();
-  const collectElementsById = (element: HTMLElement) => {
-    if (element.id) {
-      domByIdMap.set(element.id, element);
-    }
-    // Recursively search children
-    for (const child of Array.from(element.children)) {
-      if (child instanceof HTMLElement) {
-        collectElementsById(child);
-      }
-    }
-  };
   oldChildNodes.forEach((node) => {
     if (node instanceof HTMLElement) {
-      collectElementsById(node);
+      if (node.id) {
+        domByIdMap.set(node.id, node);
+      }
     }
   });
 
@@ -81,46 +75,8 @@ export function reconcileChildren(
       }
     }
 
-    // Additional fallback: If still no dom and we have an element VNode,
-    // try to find it by recursively searching the parent's DOM tree
-    if (!dom && isElementVNode(vnode)) {
-      const findInDOM = (
-        element: HTMLElement,
-        targetVNode: VNode,
-      ): Node | null => {
-        if (!isElementVNode(targetVNode)) return null;
-        // Check if this element matches by id
-        if (
-          targetVNode.props?.id &&
-          element.id === String(targetVNode.props.id)
-        ) {
-          return element;
-        }
-        // Check if this element matches by tag name and position
-        if (element.tagName.toLowerCase() === targetVNode.type.toLowerCase()) {
-          return element;
-        }
-        // Recursively search children
-        for (const child of Array.from(element.children)) {
-          if (child instanceof HTMLElement) {
-            const found = findInDOM(child, targetVNode);
-            if (found) return found;
-          }
-        }
-        return null;
-      };
-
-      if (parent instanceof HTMLElement) {
-        const foundDom = findInDOM(parent, vnode);
-        if (foundDom) {
-          dom = foundDom;
-          // Set the dom reference on the old VNode
-          if (typeof vnode === "object" && vnode !== null) {
-            (vnode as any).dom = dom;
-          }
-        }
-      }
-    }
+    // We intentionally do not scan DOM subtrees to find matches.
+    // Identity must come from keys / direct vnode.dom references.
 
     if (dom) oldKeyMap.set(key, { vnode, index, dom });
   });
@@ -143,151 +99,8 @@ export function reconcileChildren(
     const key = getKey(newVNode, newIndex);
     let oldEntry = oldKeyMap.get(key);
 
-    // CRITICAL FIX: For component VNodes, try to match by position FIRST before key matching
-    // This is essential for preserving component instances during parent re-renders (e.g., typing in inputs)
-    // When a parent re-renders, it creates new VNodes for children, but the DOM structure is stable
-    if (!oldEntry && isComponentVNode(newVNode)) {
-      // Try to match by position in the DOM - this is the most reliable during re-renders
-      const domChildren = Array.from(parent.childNodes);
-      if (newIndex < domChildren.length) {
-        const childDom = domChildren[newIndex];
-        if (childDom instanceof HTMLElement) {
-          const direct = componentInstances.get(childDom);
-          const host = domToHostComponent.get(childDom);
-          const instance =
-            (host && host.constructor === newVNode.type ? host : null) ||
-            (direct && direct.constructor === newVNode.type ? direct : null);
-          if (instance) {
-            // Found matching instance at same position - this is likely the same component
-            const metadataVNode = vnodeMetadata.get(childDom);
-            const oldChild = newIndex < oldChildren.length ? oldChildren[newIndex] : null;
-            
-            // Use oldChild if it matches, otherwise use metadataVNode, otherwise create synthetic
-            const matchingOldVNode = 
-              (oldChild && isComponentVNode(oldChild) && oldChild.type === newVNode.type)
-                ? oldChild
-                : (metadataVNode && isComponentVNode(metadataVNode) && metadataVNode.type === newVNode.type)
-                ? metadataVNode
-                : ({ type: newVNode.type } as ComponentVNode);
-            
-            // Restore references
-            if (typeof matchingOldVNode === "object" && matchingOldVNode !== null) {
-              (matchingOldVNode as any).__componentInstance = instance;
-              (matchingOldVNode as any).dom = childDom;
-            }
-            
-            // CRITICAL: Transfer instance to new VNode immediately
-            if (typeof newVNode === "object" && newVNode !== null) {
-              (newVNode as any).__componentInstance = instance;
-              (newVNode as any).dom = childDom;
-            }
-            
-            oldEntry = {
-              vnode: matchingOldVNode,
-              index: newIndex,
-              dom: childDom,
-            };
-            oldKeyMap.set(key, oldEntry);
-          }
-        }
-      }
-    }
-
-    // CRITICAL FIX: For component VNodes, try to match by component instance even if key doesn't match
-    // This prevents recreating components that should be updated
-    if (!oldEntry && isComponentVNode(newVNode)) {
-      // Try to find a matching component by type and instance in the existing DOM
-      const domChildren = Array.from(parent.childNodes);
-      for (let i = 0; i < domChildren.length; i++) {
-        const childDom = domChildren[i];
-        if (childDom instanceof HTMLElement) {
-          const direct = componentInstances.get(childDom);
-          const host = domToHostComponent.get(childDom);
-          const instance =
-            (host && host.constructor === newVNode.type ? host : null) ||
-            (direct && direct.constructor === newVNode.type ? direct : null);
-          if (instance) {
-            // Found a matching component instance - try to find the corresponding old VNode
-            // First check if there's an old VNode at this position
-            if (i < oldChildren.length) {
-              const oldChild = oldChildren[i];
-              if (
-                isComponentVNode(oldChild) &&
-                oldChild.type === newVNode.type
-              ) {
-                // Match found! Create an entry for it
-                if (typeof oldChild === "object" && oldChild !== null) {
-                  (oldChild as any).dom = childDom;
-                  (oldChild as any).__componentInstance = instance;
-                }
-                oldEntry = {
-                  vnode: oldChild,
-                  index: i,
-                  dom: childDom,
-                };
-                // CRITICAL: Transfer instance to new VNode immediately
-                if (typeof newVNode === "object" && newVNode !== null) {
-                  (newVNode as any).__componentInstance = instance;
-                  (newVNode as any).dom = childDom;
-                }
-                // Add to map for future lookups
-                oldKeyMap.set(key, oldEntry);
-                break;
-              }
-            }
-            // If no old VNode at this position, create entry from the DOM node
-            // This handles the case where the old VNode tree is missing but DOM exists
-            const metadataVNode = vnodeMetadata.get(childDom);
-            if (
-              metadataVNode &&
-              isComponentVNode(metadataVNode) &&
-              metadataVNode.type === newVNode.type
-            ) {
-              // Restore instance reference on metadata VNode
-              if (typeof metadataVNode === "object" && metadataVNode !== null) {
-                (metadataVNode as any).__componentInstance = instance;
-                (metadataVNode as any).dom = childDom;
-              }
-              oldEntry = {
-                vnode: metadataVNode,
-                index: i,
-                dom: childDom,
-              };
-              // CRITICAL: Transfer instance to new VNode immediately
-              if (typeof newVNode === "object" && newVNode !== null) {
-                (newVNode as any).__componentInstance = instance;
-                (newVNode as any).dom = childDom;
-              }
-              oldKeyMap.set(key, oldEntry);
-              break;
-            }
-            // Last resort: match by instance even without old VNode
-            // This handles the case where old VNode tree is completely lost
-            if (typeof newVNode === "object" && newVNode !== null) {
-              (newVNode as any).__componentInstance = instance;
-              (newVNode as any).dom = childDom;
-              // Create a synthetic old entry from the instance
-              const syntheticOldVNode =
-                metadataVNode || ({ type: newVNode.type } as ComponentVNode);
-              if (
-                typeof syntheticOldVNode === "object" &&
-                syntheticOldVNode !== null
-              ) {
-                (syntheticOldVNode as any).__componentInstance = instance;
-                (syntheticOldVNode as any).dom = childDom;
-              }
-              oldEntry = {
-                vnode: syntheticOldVNode,
-                index: i,
-                dom: childDom,
-              };
-              oldKeyMap.set(key, oldEntry);
-              break;
-            }
-          }
-        }
-      }
-    }
+    // For components we do not bypass keys and do not scan the DOM.
+    // If a component has no stable key, it will be keyed by index via getKey().
 
     // ENHANCEMENT: Aggressive ID Matching - try ID matching BEFORE key matching fails
     // This ensures DOM identity is restored early in the process
@@ -425,92 +238,11 @@ export function reconcileChildren(
         newDoms.push(newDom);
       }
     } else {
-      // CRITICAL FIX: Before creating a new DOM node, check if this is a component
-      // that already exists in the DOM. This is the final fallback to prevent
-      // recreating components during re-renders when all other matching logic fails.
-      if (isComponentVNode(newVNode)) {
-        // Search the DOM for an existing component instance of this type
-        // Try position-based matching first (most reliable during re-renders)
-        const domChildren = Array.from(parent.childNodes);
-        let foundExisting = false;
-        
-        // Try to find at the expected position
-        if (newIndex < domChildren.length) {
-          const childDom = domChildren[newIndex];
-          if (childDom instanceof HTMLElement) {
-            const direct = componentInstances.get(childDom);
-            const host = domToHostComponent.get(childDom);
-            const instance =
-              (host && host.constructor === newVNode.type ? host : null) ||
-              (direct && direct.constructor === newVNode.type ? direct : null);
-            if (instance) {
-              // Found matching instance at expected position!
-              // Transfer instance and DOM reference to new VNode
-              if (typeof newVNode === "object" && newVNode !== null) {
-                (newVNode as any).__componentInstance = instance;
-                (newVNode as any).dom = childDom;
-                // Mark as initialized to prevent re-initialization
-                (instance as any)._initialized = true;
-                (instance as any).__initialized = true;
-              }
-              // Update the existing DOM node instead of creating a new one
-              updateDOMNodeFn(childDom, newVNode);
-              processedNodes.add(childDom);
-              newDoms.push(childDom);
-              foundExisting = true;
-            }
-          }
-        }
-        
-        // If not found at expected position, search all DOM children
-        if (!foundExisting) {
-          for (let i = 0; i < domChildren.length; i++) {
-            const childDom = domChildren[i];
-            if (childDom instanceof HTMLElement && !processedNodes.has(childDom)) {
-              const direct = componentInstances.get(childDom);
-              const host = domToHostComponent.get(childDom);
-              const instance =
-                (host && host.constructor === newVNode.type ? host : null) ||
-                (direct && direct.constructor === newVNode.type ? direct : null);
-              if (instance) {
-                // Found matching instance!
-                // Transfer instance and DOM reference to new VNode
-                if (typeof newVNode === "object" && newVNode !== null) {
-                  (newVNode as any).__componentInstance = instance;
-                  (newVNode as any).dom = childDom;
-                  // Mark as initialized to prevent re-initialization
-                  (instance as any)._initialized = true;
-                  (instance as any).__initialized = true;
-                }
-                // Update the existing DOM node instead of creating a new one
-                updateDOMNodeFn(childDom, newVNode);
-                processedNodes.add(childDom);
-                newDoms.push(childDom);
-                foundExisting = true;
-                break;
-              }
-            }
-          }
-        }
-        
-        // Only create new DOM if no existing instance was found
-        if (!foundExisting) {
-          const newDom = createDOMNodeFn(newVNode);
-          // Store DOM reference on the new VNode
-          if (typeof newVNode === "object" && newVNode !== null) {
-            (newVNode as any).dom = newDom;
-          }
-          newDoms.push(newDom);
-        }
-      } else {
-        // For non-component VNodes, create as normal
-        const newDom = createDOMNodeFn(newVNode);
-        // Store DOM reference on the new VNode
-        if (typeof newVNode === "object" && newVNode !== null) {
-          (newVNode as any).dom = newDom;
-        }
-        newDoms.push(newDom);
+      const newDom = createDOMNodeFn(newVNode);
+      if (typeof newVNode === "object" && newVNode !== null) {
+        (newVNode as any).dom = newDom;
       }
+      newDoms.push(newDom);
     }
   });
 
@@ -527,7 +259,10 @@ export function reconcileChildren(
   });
 
   // Remove leftover nodes (skip when parent has data-preserve-children, e.g. xterm container)
-  if (parent instanceof HTMLElement && parent.getAttribute?.("data-preserve-children") != null) {
+  if (
+    parent instanceof HTMLElement &&
+    parent.getAttribute?.("data-preserve-children") != null
+  ) {
     return;
   }
   oldChildNodes.forEach((node) => {
