@@ -1,81 +1,144 @@
-# SwissJS Framework
+# SwissJS Framework (`swiss-lib`)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A modern, capability-based web framework that prioritizes security and performance. SwissJS provides a secure, extensible runtime with compile-time transformations for building modern web applications.
+> **The Operating System for Modern African Business** — a modern, capability-based web framework built TypeScript-first with its own custom syntax, compiler, and dev server.
 
-## Quick Start
+---
 
-### Installation
+## What's in this repo?
 
-```bash
-npm create swissjs@latest my-app
-cd my-app
-npm install
-npm run dev
-```
+| Package | Description |
+|---|---|
+| `@swissjs/core` | Core framework runtime (component model, reactivity, context, rendering) |
+| `@swissjs/compiler` | Compile-time transformations for `.ui` and `.uix` files |
+| `@swissjs/components` | Base UI component library |
+| `@swissjs/router` | Client-side routing & SSR support |
+| `@swissjs/cli` | Command-line tooling |
+| `@swissjs/css` | CSS processing utilities |
+| `@swissjs/devtools` | Browser & VSCode extensions |
+| `@swissjs/plugins` | First-party plugins (web storage, file router) |
 
-### Your First Component
+---
+
+## File Extensions
+
+SwissJS uses two custom file extensions:
+
+- `.ui` — TypeScript logic, utilities, types (no JSX)
+- `.uix` — TypeScript + JSX for defining UI components (like `.tsx` but Swiss-flavored)
+
+---
+
+## Writing a Component
+
+Components extend `SwissComponent` from `@swissjs/core`:
 
 ```typescript
-// App.uix
-import { component, state } from '@swissjs/core'
+// Counter.uix
+import { SwissComponent } from '@swissjs/core';
+import type { VNode } from '@swissjs/core';
 
-@component
-@requires('dom')
-export default class App {
-  @state count = 0
+interface CounterState extends Record<string, unknown> {
+  count: number;
+}
 
-  render() {
+export class Counter extends SwissComponent<{}, CounterState> {
+  override handleMount(): void {
+    this.setState({ count: 0 });
+  }
+
+  increment(): void {
+    this.setState({ count: (this.state.count ?? 0) + 1 });
+  }
+
+  override render(): VNode {
     return (
       <div>
-        <h1>Welcome to SwissJS</h1>
-        <p>Count: {this.count}</p>
-        <button onClick={() => this.count++}>
-          Increment
-        </button>
+        <h1>Count: {this.state.count}</h1>
+        <button onClick={() => this.increment()}>+1</button>
       </div>
-    )
+    );
   }
 }
 ```
 
-## Features
+---
 
-- **Capability-Based Security**: Components declare required capabilities for fine-grained access control
-- **Compile-Time Optimizations**: Dead code elimination and tree-shaking for minimal bundle sizes
-- **Plugin System**: Extensible architecture with isolated plugin contexts
-- **TypeScript First**: Full TypeScript support with custom `.ui` and `.uix` file extensions
-- **VDOM Rendering**: Efficient virtual DOM with minimal DOM mutations
+## Mounting an App
 
-## File Extensions
+```typescript
+// index.ui
+import { SwissApp } from '@swissjs/core';
+import { Counter } from './Counter.uix';
 
-- `.ui` - Swiss files with TypeScript (logic, types, utilities)
-- `.uix` - Swiss files with TypeScript + JSX (components)
+SwissApp.mount(Counter, document.querySelector('#app')!);
+```
 
-## Documentation
+---
 
-- [Getting Started](./docs/guide/quick-start.md)
-- [API Reference](./docs/api/)
-- [Components Guide](./docs/guide/components.md)
-- [Security Model](./docs/guide/security.md)
-- [Plugin Development](./docs/guide/plugins.md)
+## Context API
 
-## Packages
+SwissJS provides a built-in context system for sharing state across the component tree:
 
-- **@swissjs/core** - Core framework runtime
-- **@swissjs/compiler** - Swiss compiler pipeline
-- **@swissjs/cli** - Command-line tools
-- **@swissjs/plugins** - First-party plugins
+```typescript
+// MyContext.ui
+import { SwissContext } from '@swissjs/core';
+
+export interface MyContextValue {
+  theme: 'light' | 'dark';
+}
+
+export const MyContext = new SwissContext<MyContextValue>('my-context');
+```
+
+Provider:
+
+```typescript
+// MyProvider.uix
+import { SwissComponent } from '@swissjs/core';
+import { MyContext } from './MyContext.ui';
+
+export class MyProvider extends SwissComponent<{ children?: unknown }, {}> {
+  override render() {
+    return MyContext.provide({ theme: 'dark' }, this.props.children, this);
+  }
+}
+```
+
+Consumer:
+
+```typescript
+const value = MyContext.use(this); // inside a render() method
+```
+
+---
+
+## Dev Server
+
+`swiss-lib` uses [`swite`](https://github.com/kibologic/swite) as its development server and build tool. Make sure `swite` is cloned alongside this repo and linked via pnpm.
+
+```bash
+# Clone both repos
+git clone https://github.com/kibologic/swiss-lib
+git clone https://github.com/kibologic/swite
+
+# Install and link
+cd swiss-lib
+pnpm install
+pnpm dev
+```
+
+---
 
 ## Contributing
 
-We welcome contributions! Please see our [Contributing Guide](./CONTRIBUTING.md) for details.
+See [CONTRIBUTING.md](https://github.com/kibologic/.github/blob/main/CONTRIBUTING.md) in the org-wide `.github` repo.
 
 ## Security
 
-For security policies and vulnerability reporting, see [SECURITY.md](./SECURITY.md).
+See [SECURITY.md](https://github.com/kibologic/.github/blob/main/SECURITY.md) for vulnerability reporting.
 
 ## License
 
-Licensed under the [MIT License](./LICENSE).
+[MIT](https://github.com/kibologic/.github/blob/main/LICENSE)
