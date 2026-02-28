@@ -108,6 +108,15 @@ export function preprocessSwissSyntax(
   // effect { ... } → private effect() { ... }
   result = result.replace(/\beffect\s*\{/g, "private effect() {");
 
+  // Transform props declarations (class field) → static propTypes
+  // `props = { ... }` at class-body level is a declarative type annotation, not a
+  // real instance field. JS class fields run AFTER super(), so leaving it as an
+  // instance field would overwrite whatever BaseComponent.constructor set in
+  // this.props. Moving it to static removes it from instance initialisation while
+  // preserving the type metadata for tooling (SG-05 fix).
+  // Match: line that starts with whitespace then `props = {` (no const/let/var).
+  result = result.replace(/^(\s+)props(\s*=\s*\{)/gm, "$1static propTypes$2");
+
   // Transform component props (export let inside component)
   // This is a bit tricky - we need to handle export let as component props
   // For now, transform to private (proper prop handling needs runtime support)
@@ -125,20 +134,106 @@ export function preprocessSwissSyntax(
 }
 
 /**
+ * Returns true when a class directly extends SwissComponent.
+ */
+function extendsSwissComponent(
+  node: ts.ClassDeclaration | ts.ClassExpression,
+): boolean {
+  if (!node.heritageClauses) return false;
+  return node.heritageClauses.some(
+    (clause) =>
+      clause.token === ts.SyntaxKind.ExtendsKeyword &&
+      clause.types.some((type) => {
+        const expr = type.expression;
+        return ts.isIdentifier(expr) && expr.text === "SwissComponent";
+      }),
+  );
+}
+
+/**
+ * Transforms `props = { ... }` instance property on a SwissComponent subclass
+ * into `static propTypes = { ... }` so it no longer overwrites `this.props`
+ * that was set by BaseComponent's constructor.
+ *
+ * Background: JS class field initializers run after `super()` returns, which
+ * means `props = { ... }` would silently clobber whatever BaseComponent wrote
+ * into `this.props`. Moving it to a static field preserves the metadata for
+ * tooling while keeping instance props exclusively framework-owned.
+ */
+function transformPropsField(
+  node: ts.ClassDeclaration | ts.ClassExpression,
+  factory: ts.NodeFactory,
+): ts.ClassDeclaration | ts.ClassExpression {
+  if (!extendsSwissComponent(node)) return node;
+
+  const newMembers = node.members.map((member) => {
+    if (
+      ts.isPropertyDeclaration(member) &&
+      ts.isIdentifier(member.name) &&
+      member.name.text === "props" &&
+      member.initializer !== undefined &&
+      !member.modifiers?.some((m) => m.kind === ts.SyntaxKind.StaticKeyword)
+    ) {
+      // props = { ... }  →  static propTypes = { ... }
+      return factory.updatePropertyDeclaration(
+        member,
+        [factory.createModifier(ts.SyntaxKind.StaticKeyword)],
+        factory.createIdentifier("propTypes"),
+        member.questionToken,
+        member.type,
+        member.initializer,
+      );
+    }
+    return member;
+  });
+
+  if (ts.isClassDeclaration(node)) {
+    return factory.updateClassDeclaration(
+      node,
+      node.modifiers,
+      node.name,
+      node.typeParameters,
+      node.heritageClauses,
+      newMembers,
+    );
+  } else {
+    return factory.updateClassExpression(
+      node,
+      node.modifiers,
+      node.name,
+      node.typeParameters,
+      node.heritageClauses,
+      newMembers,
+    );
+  }
+}
+
+/**
  * Phase 2: AST transformation
- * Adds necessary imports and performs additional transformations
+ * - Moves `props = { ... }` off instance (→ `static propTypes`) on all SwissComponent subclasses
+ * - Adds necessary @swissjs/core imports when not already present
  */
 export function swissSyntaxTransformer(): ts.TransformerFactory<ts.SourceFile> {
   return (context: ts.TransformationContext) => {
     const factory = context.factory;
 
+    function visitor(node: ts.Node): ts.VisitResult<ts.Node> {
+      if (ts.isClassDeclaration(node) || ts.isClassExpression(node)) {
+        const transformed = transformPropsField(node, factory);
+        return ts.visitEachChild(transformed, visitor, context);
+      }
+      return ts.visitEachChild(node, visitor, context);
+    }
+
     return (sourceFile: ts.SourceFile) => {
-      // Check if file needs Swiss imports (has SwissComponent reference)
       const sourceText = sourceFile.getFullText();
       const needsSwissImports = sourceText.includes("extends SwissComponent");
 
+      // Always run the props-field transformation pass
+      const transformed = ts.visitNode(sourceFile, visitor) as ts.SourceFile;
+
       if (!needsSwissImports) {
-        return sourceFile;
+        return transformed;
       }
 
       // Check if imports already exist
@@ -147,14 +242,14 @@ export function swissSyntaxTransformer(): ts.TransformerFactory<ts.SourceFile> {
         sourceText.includes("from '@swissjs/core'");
 
       if (hasSwissImports) {
-        return sourceFile;
+        return transformed;
       }
 
       // Add Swiss imports at the top
       const swissImport = createSwissImports(factory);
-      const newStatements = [swissImport, ...sourceFile.statements];
+      const newStatements = [swissImport, ...transformed.statements];
 
-      return factory.updateSourceFile(sourceFile, newStatements);
+      return factory.updateSourceFile(transformed, newStatements);
     };
   };
 }
