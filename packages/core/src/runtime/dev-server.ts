@@ -200,11 +200,7 @@ export class DevServerService {
     try {
       // Use SWITE server for development
       // Dynamic import - types will be available at runtime
-      const switeModule = (await import("@swissjs/swite")) as unknown as {
-        SwiteServer: new (config: Record<string, unknown>) => {
-          start: () => Promise<void>;
-        };
-      };
+      const switeModule = await (eval('import') as (m: string) => Promise<any>)('@swissjs/swite');
       const switeConfig: Record<string, unknown> = {
         root: runtimeService.resolve("."),
         server: {

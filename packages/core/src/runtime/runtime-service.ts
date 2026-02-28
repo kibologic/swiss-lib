@@ -41,7 +41,7 @@ export class RuntimeService {
     
     switch (runtimeType) {
       case 'bun': {
-        const { BunAdapter } = await import('./adapters/bun-adapter.js');
+        const { BunAdapter } = await (eval('import') as (m: string) => Promise<any>)('./adapters/bun-adapter.js');
         return new BunAdapter();
       }
       case 'node': {

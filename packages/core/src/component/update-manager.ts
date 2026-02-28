@@ -373,7 +373,6 @@ export class UpdateManager {
     let parent: HTMLElement | null =
       c._container ??
       current?.parentElement ??
-      null ??
       c._vnode?.dom?.parentElement ??
       null;
 

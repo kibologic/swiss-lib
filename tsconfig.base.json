@@ -1,5 +1,4 @@
 {
-  "extends": "../config/tsconfig.base.json",
   "compilerOptions": {
     "types": [
       "node"
@@ -41,10 +40,10 @@
         "./packages/cli/dist/*"
       ],
       "@swissjs/swite": [
-        "./packages/swite/dist/index"
+        "../swite/dist/index"
       ],
       "@swissjs/swite/*": [
-        "./packages/swite/dist/*"
+        "../swite/dist/*"
       ],
       "@swissjs/testing": [
         "./packages/testing/dist/index"

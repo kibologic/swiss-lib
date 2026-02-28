@@ -33,7 +33,6 @@
     "@swissjs/security": "workspace:*"
   },
   "devDependencies": {
-    "@types/bun": "^1.2.19",
     "@types/node": "18.19.121",
     "chokidar": "^3.5.3",
     "express": "^4.21.0",

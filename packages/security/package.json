@@ -24,7 +24,6 @@
     "docs:api": "typedoc"
   },
   "devDependencies": {
-    "@types/bun": "^1.2.19",
     "@types/node": "18.19.121",
     "typescript": "5.8.2",
     "vitest": "^3.2.4",

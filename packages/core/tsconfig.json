@@ -23,6 +23,7 @@
     "**/*.spec.ts",
     "src/**/*.js",
     "src/**/*.d.ts.map",
-    "src/**/*.js.map"
+    "src/**/*.js.map",
+    "src/runtime/adapters/bun-adapter.ts"
   ]
 }

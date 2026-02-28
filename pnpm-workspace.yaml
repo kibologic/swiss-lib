@@ -1,8 +1,6 @@
 packages:
   - "packages/*"
   - "packages/plugins/*"
-  - "packages/devtools/swiss_extension"
-  - "packages/devtools/vscode_extension"
   - "apps/*"
 
 onlyBuiltDependencies:
