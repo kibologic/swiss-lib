@@ -267,6 +267,23 @@ Correct on sight in every session.
 
 ---
 
+## Swiss Gaps
+> Framework issues discovered during Alpine ERP development. Each is a swiss-lib task.
+
+### SG-06 — Renderer does not handle null return from render()
+**Component:** UpgradeModal (alpine-erp)
+**Symptom:** `render()` returning `null` leaves the reactive effect unanchored. On any
+parent state change the reconciler re-mounts the component, fires render() again,
+gets null again, and cannot clean up — producing an infinite re-render loop.
+**Workaround (alpine-erp):** Conditional render guard in Shell so UpgradeModal is
+never instantiated when module is null. render() never reaches the null-return path.
+**Fix needed:** Renderer must cleanly unmount and teardown the reactive effect when
+`render()` returns null. Should insert an empty text/comment placeholder so the
+reconciler has a stable DOM anchor.
+**Priority:** High — any component using a conditional null return will hit this.
+
+---
+
 ## Manual Actions Pending
 | ID   | Action                                              | Scope        | Status  |
 |------|-----------------------------------------------------|--------------|---------|
