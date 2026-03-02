@@ -267,6 +267,18 @@ Correct on sight in every session.
 
 ---
 
+## Manual Actions Pending
+| ID   | Action                                              | Scope        | Status  |
+|------|-----------------------------------------------------|--------------|---------|
+| M-01 | Create @swissjs org on npmjs.com                   | npm          | PENDING |
+| M-02 | Create @sws org on npmjs.com                       | npm          | PENDING |
+| M-03 | Add NPM_TOKEN secret to kibologic org GitHub        | GitHub org   | PENDING |
+| M-04 | Add CHANGESET_TOKEN secret to kibologic org GitHub  | GitHub org   | PENDING |
+| M-05 | Run pnpm changeset → commit → push (v0.1.0)        | swiss-lib    | PENDING |
+| M-06 | Set branch protection on main in swiss-lib          | GitHub repo  | PENDING |
+
+---
+
 ## Notes
 - Every session starts by reading this file. Every session ends by updating it.
-- Pipeline rebuilt 2026-03-02. Next: create @swissjs npm org, add NPM_TOKEN to GitHub org secrets, then run first v0.1.0 publish.
+- Pipeline rebuilt 2026-03-02. Next: M-01 through M-06 above, then first v0.1.0 publish.
