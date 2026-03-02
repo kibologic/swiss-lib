@@ -10,7 +10,7 @@ import * as ts from "typescript";
  * Transformer for Swiss keyword syntax:
  * - `component ComponentName { }` → `export class ComponentName extends SwissComponent { }`
  * - `@capability('cap1', 'cap2')` → proper decorator syntax
- * - `state { let prop: type; }` → `private prop: type;`
+ * - `state { let prop: type = val; }` → Signal<type>-backed getter/setter pair
  * - `export let prop: type;` → `private prop: type;` (as component props)
  * - `reactive let prop: type;` → `private prop: type;` with reactivity
  * - `computed get prop() { }` → `private get prop() { }`
@@ -64,19 +64,48 @@ export function preprocessSwissSyntax(
     "export class $1 extends SwissComponent {",
   );
 
-  // Transform state blocks
-  // state { let prop: type; } → private prop: type;
+  // Transform state blocks — with-initializer FIRST to prevent partial match
+  // state { let prop: type = value; } → Signal<type>-backed getter/setter pair
   result = result.replace(
-    /\bstate\s*\{\s*let\s+(\w+)\s*:\s*([^;]+);?\s*\}/g,
-    "private $1: $2;",
+    /\bstate\s*\{\s*let\s+(\w+)\s*:\s*([^=}]+?)\s*=\s*([^;}]+?)\s*;?\s*\}/g,
+    (_match: string, name: string, type: string, init: string) => {
+      const t = type.trim();
+      const v = init.trim();
+      return (
+        `private _${name}$: Signal<${t}> = new Signal<${t}>(${v});\n` +
+        `  private get ${name}(): ${t} { return this._${name}$.value; }\n` +
+        `  private set ${name}(v: ${t}) { this._${name}$.value = v; }`
+      );
+    },
   );
 
-  // Transform state blocks with initialization
-  // state { let prop: type = value; } → private prop: type = value;
+  // state { let prop: type; } → Signal<type>-backed getter/setter pair (no initializer)
   result = result.replace(
-    /\bstate\s*\{\s*let\s+(\w+)\s*:\s*([^=]+)\s*=\s*([^;]+);?\s*\}/g,
-    "private $1: $2 = $3;",
+    /\bstate\s*\{\s*let\s+(\w+)\s*:\s*([^;=}]+?)\s*;?\s*\}/g,
+    (_match: string, name: string, type: string) => {
+      const t = type.trim();
+      return (
+        `private _${name}$: Signal<${t}> = new Signal<${t}>(undefined as unknown as ${t});\n` +
+        `  private get ${name}(): ${t} { return this._${name}$.value; }\n` +
+        `  private set ${name}(v: ${t}) { this._${name}$.value = v; }`
+      );
+    },
   );
+
+  // Inject Signal import when Signal-backed state was generated
+  if (result.includes("new Signal<")) {
+    const coreImportRegex =
+      /import\s*\{([^}]+)\}\s*from\s*['"]@swissjs\/core['"]/;
+    const importMatch = result.match(coreImportRegex);
+    if (importMatch && !importMatch[1].includes("Signal")) {
+      result = result.replace(
+        coreImportRegex,
+        `import { ${importMatch[1].trim()}, Signal } from '@swissjs/core'`,
+      );
+    } else if (!importMatch) {
+      result = `import { Signal } from '@swissjs/core';\n` + result;
+    }
+  }
 
   // Transform reactive variables
   // reactive let prop: type; → private prop: type;

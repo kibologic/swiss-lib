@@ -38,6 +38,11 @@ export class UpdateManager {
 
   /**
    * Schedules an update. Uses immediate run for child components (no container, have _domNode) so toggles feel instant.
+   *
+   * With Signal-backed state (Problem B resolved), state mutations automatically trigger
+   * re-renders via the render effect in ReactivityManager.setupReactivity(). Explicit
+   * scheduleUpdate() calls are now redundant but harmless — kept as an escape hatch for
+   * imperative updates that bypass the Signal system (e.g. external prop changes).
    */
   public scheduleUpdate(): void {
     if (!this.updateScheduled) {

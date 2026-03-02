@@ -6,12 +6,8 @@
 
 import { SwissComponent } from '../component/component.js';
 import { Signal } from './signals.js';
-import type { TrackedEffect } from './types/index.js';
 
 const contextMap = new Map<symbol, unknown>();
-
-// Global context for tracking current effect
-const currentEffect: TrackedEffect | null = null;
 
 // Batch processing state
 let inBatch = false;
@@ -74,8 +70,6 @@ export function addToBatch(signal: Signal<unknown>) {
     signal.notify();
   }
 }
-
-export { currentEffect };
 
 export function createContext<T>(defaultValue: T) {
   const key = Symbol('context');
