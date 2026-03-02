@@ -49,24 +49,23 @@ File: .changeset/config.json
 }
 ```
 
-### Pipeline (to be implemented — replaces old broken pipeline)
-Delete ALL existing .github/workflows/ files first.
-Then create:
+### Pipeline (LIVE — commit 1b6dc41, 2026-03-02)
 
-File: .github/workflows/ci.yml
+File: .github/workflows/ci.yml ✓
 Trigger: push to main, all PRs
 Jobs: pnpm install → pnpm build → pnpm test
       changeset presence check on PRs (warn only)
 
-File: .github/workflows/release.yml
-Trigger: push to main when .changeset/ has entries
-Jobs: changeset version → bump package.json versions
-      → update CHANGELOG.md → open version bump PR
+File: .github/workflows/release.yml ✓
+Trigger: push to main
+Jobs: changesets/action — creates "Version Packages" PR
+      when .changeset/ has entries; publishes to npm
+      when version PR is merged (no entries remaining)
+      GitHub releases created automatically
 
-File: .github/workflows/publish.yml
-Trigger: push to main when version bump PR merged
-Jobs: pnpm publish --access public for all MIT packages
-      → create GitHub Release → tag vX.X.X
+File: .github/workflows/publish.yml ✓
+Trigger: manual (workflow_dispatch)
+Jobs: emergency re-publish with optional dry-run mode
 
 ### Secrets required (add to kibologic org on GitHub)
 NPM_TOKEN       — npm publish authentication
@@ -80,10 +79,12 @@ GITHUB_TOKEN    — auto-provided by GitHub Actions
 4. Add as NPM_TOKEN secret in kibologic org settings
 
 ### Current pipeline status
-Old pipeline: BROKEN — hardcoded paths from old
-monorepo, wrong workspace commands, missing secrets.
-Action: delete all old workflow files before
-creating new ones.
+LIVE — 3 clean workflows shipped (commit 1b6dc41).
+18 broken old workflow files deleted.
+Secrets still needed in kibologic org GitHub settings:
+  NPM_TOKEN (npm publish authentication)
+  GITHUB_TOKEN (auto-provided by GitHub Actions)
+npm org @swissjs must be created on npmjs.com (manual, one-time).
 
 ### Known build exclusions
 @swissjs/css    — Buffer type conflict, excluded
@@ -268,3 +269,4 @@ Correct on sight in every session.
 
 ## Notes
 - Every session starts by reading this file. Every session ends by updating it.
+- Pipeline rebuilt 2026-03-02. Next: create @swissjs npm org, add NPM_TOKEN to GitHub org secrets, then run first v0.1.0 publish.
