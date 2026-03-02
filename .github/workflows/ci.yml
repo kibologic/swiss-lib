@@ -2,124 +2,58 @@ name: CI
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
   pull_request:
-    branches: [main, develop]
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  lint:
-    name: Lint
+  build-and-test:
+    name: Build & Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 10.12.4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm lint
+      - name: Checkout
+        uses: actions/checkout@v4
 
-  type-check:
-    name: Type Check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v2
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
         with:
-          version: 10.12.4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm type-check
+          version: 10
 
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v2
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          version: 10.12.4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm build
+          node-version: 18
+          cache: pnpm
 
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 10.12.4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm test -- --coverage
-      - uses: codecov/codecov-action@v3
-        if: always()
-        with:
-          files: ./coverage/lcov.info
-          fail_ci_if_error: false
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
-  e2e:
-    name: E2E Tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 10.12.4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'pnpm'
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-      - run: pnpm install --frozen-lockfile
-      - name: Install Playwright
-        run: cd ../tools/e2e && pnpm install
-      - name: Install Playwright browsers
-        run: cd ../tools/e2e && pnpm exec playwright install --with-deps
-      - name: Build apps
+      - name: Build
         run: pnpm build
-      - name: Run E2E tests
-        run: cd ../tools/e2e && pnpm test
-        env:
-          CI: true
 
-  benchmark:
-    name: Performance Benchmarks
+      - name: Test
+        run: pnpm test
+
+  changeset-check:
+    name: Changeset check
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'pull_request'
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v2
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          version: 10.12.4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm build
-      - run: pnpm bench
-      - name: Upload benchmark results
-        uses: benchmark-action/github-action-benchmark@v1
-        if: always()
-        with:
-          tool: 'customSmallerIsBetter'
-          output-file-path: __benchmarks__/results.json
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          auto-push: true
+          fetch-depth: 0
+
+      - name: Check for changeset
+        run: |
+          git fetch origin main --quiet
+          ADDED=$(git diff --name-only --diff-filter=A origin/main HEAD -- '.changeset/*.md' | grep -v README | wc -l)
+          if [ "$ADDED" -eq 0 ]; then
+            echo "::warning::No changeset added in this PR. Run 'pnpm changeset' if this PR includes publishable changes."
+          else
+            echo "Changeset found ($ADDED file(s))."
+          fi

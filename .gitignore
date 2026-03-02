@@ -109,8 +109,4 @@ docs_old/
 .husky/
 .husky-disabled/
 jira/
-.changeset/
-
-# Ignore IDE and tool configurations
-.semgrep.yml
 

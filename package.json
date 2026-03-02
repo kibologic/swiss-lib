@@ -21,7 +21,7 @@
     "link": "turbo run build && find packages -name package.json -not -path '*/node_modules/*' -execdir npm link \\;",
     "unlink": "find packages -name package.json -not -path '*/node_modules/*' -execdir npm unlink \\;",
     "format": "prettier --write \"**/*.{ts,tsx,md,ui,uix}\"",
-    "prepare": "husky install",
+    "prepare": "husky",
     "precommit:staged": "lint-staged --no-stash",
     "precommit:docs-sync": "node scripts/verify-docs-sync.mjs",
     "prepush:checks": "pnpm -w lint && pnpm -w type-check && pnpm -w check:barrels && pnpm check:policy && pnpm -w check:ui-format && cross-env CI=1 pnpm -w test",

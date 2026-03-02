@@ -1,0 +1,22 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config/schema.json",
+  "changelog": "@changesets/cli/changelog",
+  "commit": false,
+  "fixed": [],
+  "linked": [
+    [
+      "@swissjs/core",
+      "@swissjs/compiler",
+      "@swissjs/router",
+      "@swissjs/components",
+      "@swissjs/security",
+      "@swissjs/utils",
+      "@swissjs/plugin-file-router",
+      "@swissjs/plugin-web-storage"
+    ]
+  ],
+  "access": "public",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": ["@swissjs/css", "@swissjs/cli"]
+}

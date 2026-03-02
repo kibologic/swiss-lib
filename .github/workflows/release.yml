@@ -1,17 +1,20 @@
-name: Changesets Version
+name: Release
 
 on:
   push:
-    branches:
-      - develop
-  workflow_dispatch: {}
+    branches: [main]
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
 
 permissions:
   contents: write
   pull-requests: write
 
 jobs:
-  version:
+  release:
+    name: Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -21,20 +24,30 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
+        with:
+          version: 10
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 18
           cache: pnpm
+          registry-url: https://registry.npmjs.org
 
-      - name: Install deps
+      - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Create version PR
+      - name: Build
+        run: pnpm build
+
+      - name: Create Release PR or Publish
         uses: changesets/action@v1
         with:
           version: pnpm release:version
-          title: "chore(release): version packages (Changesets)"
+          publish: pnpm release:publish
+          commit: "chore: version packages"
+          title: "chore: version packages"
+          createGithubReleases: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
