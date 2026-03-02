@@ -39,24 +39,6 @@
       "@swissjs/cli/*": [
         "./packages/cli/dist/*"
       ],
-      "@swissjs/swite": [
-        "../swite/dist/index"
-      ],
-      "@swissjs/swite/*": [
-        "../swite/dist/*"
-      ],
-      "@swissjs/testing": [
-        "./packages/testing/dist/index"
-      ],
-      "@swissjs/testing/*": [
-        "./packages/testing/dist/*"
-      ],
-      "@swissjs/capability": [
-        "./packages/plugins/capability/dist/index"
-      ],
-      "@swissjs/capability/*": [
-        "./packages/plugins/capability/dist/*"
-      ],
       "@swissjs/plugin-*": [
         "./packages/plugins/*/dist/index"
       ],
