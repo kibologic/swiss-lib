@@ -1,5 +1,5 @@
 # DIRECTIVE — swiss-lib
-> Last updated: 2026-03-02 · Owner: Kibologic · Repo: kibologic/swiss-lib · License: MIT
+> Last updated: 2026-03-03 · Owner: Kibologic · Repo: kibologic/swiss-lib · License: MIT
 
 ---
 
@@ -282,7 +282,23 @@ never instantiated when module is null. render() never reaches the null-return p
 1. `component-rendering.ts` now inserts a hidden `<span data-swiss-null="true">` placeholder when `render()` returns null, giving the reconciler a stable DOM anchor and maintaining instance tracking.
 2. `component.ts` now permits `null` returns from `render()` without throwing an error.
 3. `signals.ts` now clones the subscribers Set (`Array.from(this.subscribers)`) before iterating in `notify()` to prevent V8 synchronous infinite loops from effect dependency recalculation.
-**Status:** FIXED (2026-03-03)
+**Status:** FIXED `3a8da04` (2026-03-03)
+
+---
+
+### SG-07 — safeRender() null type contract broken on first mount
+**Status:** OPEN
+**Discovered:** 2026-03-03 (audit after SG-06 fix)
+**Component:** any component whose `render()` returns null on first render
+**Symptom:** `safeRender()` declares return type `VNode` but `render()` can return null.
+`mount()` calls `this.commitVNode(this.safeRender())` directly.
+If `render()` returns null on first mount, `commitVNode` receives null —
+type contract violated, behaviour undefined.
+**Note:** UpgradeModal does not hit this path due to Shell conditional guard (alpine-erp `9610d57`).
+Any future component returning null on first render will hit this.
+**Fix needed:** `safeRender()` should return `VNode | null` and `commitVNode()` should
+handle null gracefully, or `mount()` should guard before calling `commitVNode`.
+**Priority:** Medium — not currently causing a visible bug but type contract is broken
 
 ---
 
