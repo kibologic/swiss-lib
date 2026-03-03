@@ -72,8 +72,8 @@ export function expandSlots(
     // Regular element - expand its children
     const expandedChildren = vnode.children
       ? (vnode.children
-          .map((child) => expandSlots(child, slotContent))
-          .filter((c) => c != null) as VNode[])
+        .map((child) => expandSlots(child, slotContent))
+        .filter((c) => c != null) as VNode[])
       : [];
 
     return {
@@ -249,14 +249,17 @@ export function renderComponent(
           rendered === undefined ||
           typeof rendered === "boolean"
         ) {
-          if (rendered === null) {
+          if (rendered === null || rendered === undefined) {
             console.log(
-              `[Renderer] Component ${instance.constructor.name} returned null from render(), skipping __componentInstance assignment`,
+              `[Renderer] Component ${instance.constructor.name} returned null/undefined from render(), returning placeholder to maintain instance tracking`,
             );
-            // CRITICAL: Return a placeholder fragment instead of null to prevent renderer issues
-            // This ensures the component instance is still tracked even when it returns null
-            // Fragment is a Symbol, so we return an empty array (fragments are arrays in SwissJS)
-            return [] as unknown as VNode;
+            // CRITICAL: Return a hidden element instead of null/[] to prevent renderer issues
+            // This ensures the component instance is still tracked as an object and has a persistent DOM anchor
+            return {
+              type: "span",
+              props: { style: "display: none;", "data-swiss-null": "true" },
+              children: []
+            } as unknown as VNode;
           }
           return rendered;
         }

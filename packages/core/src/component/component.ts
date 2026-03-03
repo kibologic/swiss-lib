@@ -416,15 +416,6 @@ export class SwissComponent<
       void this.executeHookPhase("beforeRender");
       const vnode = this.render();
       void this.executeHookPhase("afterRender");
-      if (vnode === undefined || vnode === null) {
-        this.captureError(
-          vnode === undefined
-            ? new Error("render() returned undefined")
-            : new Error("render() returned null"),
-          "render",
-        );
-        return this.renderErrorFallback();
-      }
       return vnode;
     } catch (error) {
       this.captureError(error, "render");

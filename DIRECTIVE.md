@@ -275,12 +275,14 @@ Correct on sight in every session.
 **Symptom:** `render()` returning `null` leaves the reactive effect unanchored. On any
 parent state change the reconciler re-mounts the component, fires render() again,
 gets null again, and cannot clean up — producing an infinite re-render loop.
+Secondary issue discovered: V8's `Set.prototype.forEach` creates an infinite loop when an effect deletes and re-adds itself during evaluation.
 **Workaround (alpine-erp):** Conditional render guard in Shell so UpgradeModal is
 never instantiated when module is null. render() never reaches the null-return path.
-**Fix needed:** Renderer must cleanly unmount and teardown the reactive effect when
-`render()` returns null. Should insert an empty text/comment placeholder so the
-reconciler has a stable DOM anchor.
-**Priority:** High — any component using a conditional null return will hit this.
+**Fix applied:** 
+1. `component-rendering.ts` now inserts a hidden `<span data-swiss-null="true">` placeholder when `render()` returns null, giving the reconciler a stable DOM anchor and maintaining instance tracking.
+2. `component.ts` now permits `null` returns from `render()` without throwing an error.
+3. `signals.ts` now clones the subscribers Set (`Array.from(this.subscribers)`) before iterating in `notify()` to prevent V8 synchronous infinite loops from effect dependency recalculation.
+**Status:** FIXED (2026-03-03)
 
 ---
 

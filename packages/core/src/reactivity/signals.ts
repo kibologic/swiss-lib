@@ -123,7 +123,13 @@ export class Signal<T> {
    * Notify all subscribers of changes
    */
   notify() {
-    this.subscribers.forEach((sub) => sub());
+    // CRITICAL FIX: We must clone the Set into an array before iterating.
+    // If we use this.subscribers.forEach directly, V8 will infinite loop because
+    // effect.execute() clears its dependencies (deleting itself from this Set)
+    // and then re-evaluates, which re-tracks the dependencies (adding itself back
+    // to the end of this Set). V8's Set iterator visits re-added elements infinitely.
+    const subs = Array.from(this.subscribers);
+    subs.forEach((sub) => sub());
   }
 
   // Security-enhanced access
