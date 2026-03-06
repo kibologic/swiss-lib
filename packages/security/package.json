@@ -15,7 +15,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "pnpm exec tsc -b",
+    "build": "./node_modules/.bin/tsc -b",
     "dev": "pnpm exec tsc -b --watch",
     "test": "pnpm exec vitest",
     "test:watch": "pnpm exec vitest --watch",
