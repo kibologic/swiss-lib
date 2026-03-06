@@ -33,7 +33,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: pnpm build
+        run: pnpm turbo run build --filter="!@swissjs/css" --filter="!@swissjs/cli"
 
       - name: Publish
         if: ${{ !inputs.dry_run }}
