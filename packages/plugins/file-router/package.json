@@ -20,14 +20,14 @@
     "vitest": "^3.2.4"
   },
   "scripts": {
-    "build": "tsc -b",
-    "dev": "tsc -b --watch",
-    "type-check": "tsc --noEmit",
-    "test": "vitest",
-    "test:watch": "vitest --watch",
+    "build": "pnpm exec tsc -b",
+    "dev": "pnpm exec tsc -b --watch",
+    "type-check": "pnpm exec tsc --noEmit",
+    "test": "pnpm exec vitest",
+    "test:watch": "pnpm exec vitest --watch",
     "clean": "rm -rf dist node_modules && rm -f tsconfig.tsbuildinfo",
-    "lint": "eslint src --ext .ts,.tsx",
-    "docs:api": "typedoc"
+    "lint": "pnpm exec eslint src --ext .ts,.tsx",
+    "docs:api": "pnpm exec typedoc"
   },
   "exports": {
     ".": {

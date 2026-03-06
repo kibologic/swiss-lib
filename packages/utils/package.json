@@ -11,11 +11,11 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "pnpm exec tsc -p tsconfig.json",
     "clean": "rm -rf dist",
-    "lint": "eslint src --ext .ts,.tsx",
+    "lint": "pnpm exec eslint src --ext .ts,.tsx",
     "test": "echo 'No tests yet'",
-    "docs:api": "typedoc"
+    "docs:api": "pnpm exec typedoc"
   },
   "devDependencies": {
     "@types/fs-extra": "^9.0.13",
