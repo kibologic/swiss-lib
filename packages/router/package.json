@@ -7,10 +7,10 @@
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc -b",
-    "dev": "tsc -b --watch",
-    "test": "vitest",
-    "lint": "eslint src"
+    "build": "pnpm exec tsc -b",
+    "dev": "pnpm exec tsc -b --watch",
+    "test": "pnpm exec vitest",
+    "lint": "pnpm exec eslint src"
   },
   "keywords": [
     "swiss",

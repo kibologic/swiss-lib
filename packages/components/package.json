@@ -12,11 +12,11 @@
     "compile:ui": "node --input-type=module -e \"import { compileUiFilesToJavaScript } from '@swissjs/cli/dist/utils/compileUiFiles.js'; await compileUiFilesToJavaScript('./src', './dist', true);\"",
     "postcompile:ui": "node -e \"require('fs').writeFileSync('dist/index.js', 'export * from \\\"./index.ts\\\";\\n')\"",
     "pretest": "pnpm compile:ui",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "lint": "eslint src --ext .ts,.tsx,.ui",
+    "test": "pnpm exec vitest run",
+    "test:watch": "pnpm exec vitest",
+    "lint": "pnpm exec eslint src --ext .ts,.tsx,.ui",
     "pretype-check": "pnpm compile:ui",
-    "type-check": "tsc -p tsconfig.typecheck.json"
+    "type-check": "pnpm exec tsc -p tsconfig.typecheck.json"
   },
   "dependencies": {
     "@swissjs/core": "workspace:*"
