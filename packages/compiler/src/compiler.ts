@@ -105,14 +105,11 @@ export class UiCompiler {
     }
 
     if (filePath.endsWith(".ui")) {
-      // Treat as Pure TS (Logic/State only)
-      let result = processImports(processedSource, filePath);
-
-      // Transform TypeScript -> JS
-      result = await this.transformTypeScriptWithEsbuild(result, filePath);
-      // Strip TypeScript-only syntax using AST-based transformer (double check)
-      result = this.stripTypeScriptSyntaxWithAST(result, filePath);
-      return result;
+      // .ui files contain JSX in render() methods — must use JSX transform pipeline
+      // (same as .uix) so output is createElement() calls, not raw JSX syntax.
+      // Using jsx:"preserve" here caused es-module-lexer to fail (CG-02).
+      const result = processImports(processedSource, filePath);
+      return this.transformJsxWithEsbuild(result, filePath);
     }
 
     // Handle .tsx files (standard TypeScript + JSX)
