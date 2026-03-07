@@ -302,6 +302,25 @@ handle null gracefully, or `mount()` should guard before calling `commitVNode`.
 
 ---
 
+### CG-02 — `.ui` pipeline emits raw JSX; es-module-lexer cannot parse it
+**Status:** FIXED `427aea1` (2026-03-07)
+**Discovered:** 2026-03-07 (alpine-erp Table.ui 500 error)
+**Symptom:** `UiCompiler.compileAsync()` routed `.ui` files through
+`transformTypeScriptWithEsbuild()` which used `jsx: "preserve"`. Raw JSX
+syntax remained in the compiled output. Swite's import-rewriter passes compiled
+code to `es-module-lexer` which cannot parse JSX, producing:
+`Parse error @:64:316` → `ERROR: Bare imports still present after rewriting`.
+**Root cause:** `.ui` files contain JSX in `render()` methods but the compiler
+treated them as pure TypeScript.
+**Fix:** Route `.ui` files through `transformJsxWithEsbuild()` (same as `.uix`),
+using `jsx: "transform"`, `jsxFactory: "createElement"`, `jsxFragment: "Fragment"`.
+Output is valid ES module JS that `es-module-lexer` can parse.
+**Workaround applied (alpine-erp):** Rewrote `Table.ui` to remove sub-render
+methods and chained ternaries — still required since component patterns also
+needed fixing independent of the pipeline bug.
+
+---
+
 ## Manual Actions Pending
 | ID   | Action                                              | Scope        | Status  |
 |------|-----------------------------------------------------|--------------|---------|
