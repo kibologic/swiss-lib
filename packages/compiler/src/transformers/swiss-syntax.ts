@@ -226,6 +226,33 @@ export function preprocessSwissSyntax(
   // Match: line that starts with whitespace then `props = {` (no const/let/var).
   result = result.replace(/^(\s+)props(\s*=\s*\{)/gm, "$1static propTypes$2");
 
+  // CG-05: Sanitize TS type keyword values inside static propTypes blocks.
+  // `compileAsync` never invokes the AST transformer, so this regex pass handles it.
+  // Matches the whole `static propTypes = { ... }` block and replaces any
+  // property value that is a bare TS type keyword with its JS runtime equivalent.
+  result = result.replace(
+    /(\bstatic propTypes\s*=\s*\{)([\s\S]*?)(\})/g,
+    (_match, open: string, body: string, close: string) => {
+      const sanitized = body.replace(
+        /:\s*(object|string|number|boolean|any|unknown|never|void)\b/g,
+        (_: string, kw: string): string => {
+          const kwMap: Record<string, string> = {
+            string: "String",
+            number: "Number",
+            boolean: "Boolean",
+            object: "Object",
+            any: "null",
+            unknown: "null",
+            never: "null",
+            void: "null",
+          };
+          return `: ${kwMap[kw]}`;
+        },
+      );
+      return open + sanitized + close;
+    },
+  );
+
   // Transform component props (export let inside component)
   // This is a bit tricky - we need to handle export let as component props
   // For now, transform to private (proper prop handling needs runtime support)
@@ -260,6 +287,58 @@ function extendsSwissComponent(
 }
 
 /**
+ * Maps TypeScript type keyword identifiers to safe JS runtime values.
+ * Used when emitting propTypes to avoid ReferenceError for lowercase TS keywords
+ * like `object`, `string`, `number`, `boolean` which are not valid JS expressions.
+ */
+const TS_TYPE_KEYWORD_MAP: Record<string, string> = {
+  string: "String",
+  number: "Number",
+  boolean: "Boolean",
+  object: "Object",
+  any: "null",
+  unknown: "null",
+  never: "null",
+  void: "null",
+  null: "null",
+  undefined: "undefined",
+};
+
+/**
+ * Given an ObjectLiteralExpression from a `props = { }` block, returns a new
+ * ObjectLiteralExpression where any property value that is a TypeScript type
+ * keyword identifier (e.g. `object`, `string`) is replaced with its safe JS
+ * runtime equivalent (e.g. `Object`, `String`, `null`).
+ */
+function sanitizePropTypesInitializer(
+  initializer: ts.Expression,
+  factory: ts.NodeFactory,
+): ts.Expression {
+  if (!ts.isObjectLiteralExpression(initializer)) return initializer;
+
+  const newProps = initializer.properties.map((prop) => {
+    if (
+      ts.isPropertyAssignment(prop) &&
+      ts.isIdentifier(prop.initializer)
+    ) {
+      const mapped = TS_TYPE_KEYWORD_MAP[prop.initializer.text];
+      if (mapped !== undefined) {
+        const newValue =
+          mapped === "null"
+            ? factory.createNull()
+            : mapped === "undefined"
+            ? factory.createIdentifier("undefined")
+            : factory.createIdentifier(mapped);
+        return factory.updatePropertyAssignment(prop, prop.name, newValue);
+      }
+    }
+    return prop;
+  });
+
+  return factory.updateObjectLiteralExpression(initializer, newProps);
+}
+
+/**
  * Transforms `props = { ... }` instance property on a SwissComponent subclass
  * into `static propTypes = { ... }` so it no longer overwrites `this.props`
  * that was set by BaseComponent's constructor.
@@ -268,6 +347,10 @@ function extendsSwissComponent(
  * means `props = { ... }` would silently clobber whatever BaseComponent wrote
  * into `this.props`. Moving it to a static field preserves the metadata for
  * tooling while keeping instance props exclusively framework-owned.
+ *
+ * CG-05: TypeScript type keyword values (object, string, etc.) in the props
+ * object literal are sanitized to their JS runtime equivalents to prevent
+ * ReferenceError at module load time.
  */
 function transformPropsField(
   node: ts.ClassDeclaration | ts.ClassExpression,
@@ -279,19 +362,42 @@ function transformPropsField(
     if (
       ts.isPropertyDeclaration(member) &&
       ts.isIdentifier(member.name) &&
-      member.name.text === "props" &&
-      member.initializer !== undefined &&
-      !member.modifiers?.some((m) => m.kind === ts.SyntaxKind.StaticKeyword)
+      member.initializer !== undefined
     ) {
-      // props = { ... }  →  static propTypes = { ... }
-      return factory.updatePropertyDeclaration(
-        member,
-        [factory.createModifier(ts.SyntaxKind.StaticKeyword)],
-        factory.createIdentifier("propTypes"),
-        member.questionToken,
-        member.type,
-        member.initializer,
-      );
+      const isPropsField =
+        member.name.text === "props" &&
+        !member.modifiers?.some((m) => m.kind === ts.SyntaxKind.StaticKeyword);
+      const isPropTypesField =
+        member.name.text === "propTypes" &&
+        member.modifiers?.some((m) => m.kind === ts.SyntaxKind.StaticKeyword);
+
+      if (isPropsField) {
+        // props = { ... }  →  static propTypes = { ... }
+        // Sanitize TS type keyword values → safe JS runtime values (CG-05)
+        const safeInitializer = sanitizePropTypesInitializer(member.initializer, factory);
+        return factory.updatePropertyDeclaration(
+          member,
+          [factory.createModifier(ts.SyntaxKind.StaticKeyword)],
+          factory.createIdentifier("propTypes"),
+          member.questionToken,
+          member.type,
+          safeInitializer,
+        );
+      }
+
+      if (isPropTypesField) {
+        // Already converted to static propTypes by the regex phase —
+        // still needs TS type keyword sanitization (CG-05)
+        const safeInitializer = sanitizePropTypesInitializer(member.initializer, factory);
+        return factory.updatePropertyDeclaration(
+          member,
+          member.modifiers,
+          member.name,
+          member.questionToken,
+          member.type,
+          safeInitializer,
+        );
+      }
     }
     return member;
   });
