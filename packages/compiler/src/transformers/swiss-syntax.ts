@@ -67,7 +67,7 @@ export function preprocessSwissSyntax(
   // Transform state blocks — with-initializer FIRST to prevent partial match
   // state { let prop: type = value; } → Signal<type>-backed getter/setter pair
   result = result.replace(
-    /\bstate\s*\{\s*let\s+(\w+)\s*:\s*([^=}]+?)\s*=\s*([^;}]+?)\s*;?\s*\}/g,
+    /\bstate\s*\{\s*let\s+(\w+)\s*:\s*([^=}]+?)\s*=\s*([\s\S]*?)\s*;\s*\}/g,
     (_match: string, name: string, type: string, init: string) => {
       const t = type.trim();
       const v = init.trim();
