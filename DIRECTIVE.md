@@ -302,6 +302,26 @@ handle null gracefully, or `mount()` should guard before calling `commitVNode`.
 
 ---
 
+### CG-03 — `fs.realpath()` leaks absolute paths into browser URLs (symlink resolution)
+**Status:** FIXED `b9abf2c` (swite, 2026-03-08)
+**Discovered:** 2026-03-08 (reflect-metadata and @alpine/* imports producing `/mnt/c/...` URLs)
+**Symptom:** pnpm symlinks in `node_modules/` (e.g. `@swissjs/core → swiss-lib/packages/core`)
+are resolved via `fs.realpath()` throughout the handler chain. Absolute filesystem paths
+(e.g. `/mnt/c/.../swiss-lib/packages/core/src/index.ts`) were passed to `toUrl()`.
+The `startsWith("/")` early-return in `toUrl()` fired before the correct `path.isAbsolute()`
+handling block, and `normalizeResult()` mangled the path (`/swiss-lib/ → /swiss-packages/`)
+producing invalid browser URLs like `/mnt/c/.../swiss-packages/...`.
+**Root cause:** `toUrl()`'s `startsWith("/")` guard does not distinguish browser URL paths
+(`/node_modules/...`) from Linux absolute filesystem paths (`/mnt/c/...`).
+**Fix:** Build a symlink registry at server startup by scanning all `node_modules` dirs for
+symlinks and mapping `realpath → /node_modules/<pkg-name>`. `toUrl()` checks the registry
+first (with `fs.realpath()` fallback for unresolved symlink segments) before any other logic.
+Files: `swite/src/resolver/symlink-registry.ts` (new), `url-resolver.ts`, `server.ts`.
+**Workaround applied:** `import-map.json` pinned `reflect-metadata` to
+`/node_modules/@swissjs/core/node_modules/reflect-metadata/Reflect.js`.
+
+---
+
 ### CG-02 — `.ui` pipeline emits raw JSX; es-module-lexer cannot parse it
 **Status:** FIXED `427aea1` (2026-03-07)
 **Discovered:** 2026-03-07 (alpine-erp Table.ui 500 error)
