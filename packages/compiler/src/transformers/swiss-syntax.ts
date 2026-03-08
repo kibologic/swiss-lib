@@ -27,6 +27,109 @@ export interface SwissSyntaxOptions {
 }
 
 /**
+ * Parses the content of a `state { }` block and generates a Signal-backed
+ * getter/setter pair. Uses a character-by-character depth counter so that
+ * initializers containing nested braces (e.g. `{}`, `{ key: true }`) are
+ * captured correctly. Fixes CG-04.
+ */
+function parseAndReplaceStateBlock(blockContent: string): string {
+  const letMatch = /^\s*let\s+(\w+)\s*:\s*/.exec(blockContent);
+  if (!letMatch) return `{${blockContent}}`;
+
+  const name = letMatch[1];
+  let i = letMatch[0].length;
+
+  // Read type: everything until `=` or `;` at brace-depth 0
+  let typeStart = i;
+  let depth = 0;
+  while (i < blockContent.length) {
+    const ch = blockContent[i];
+    if (ch === "{" || ch === "(" || ch === "[") depth++;
+    else if (ch === "}" || ch === ")" || ch === "]") depth--;
+    else if (depth === 0 && (ch === "=" || ch === ";")) break;
+    i++;
+  }
+  const type = blockContent.slice(typeStart, i).trim();
+
+  if (blockContent[i] !== "=") {
+    // No initializer
+    return (
+      `private _${name}$: Signal<${type}> = new Signal<${type}>(undefined as unknown as ${type});\n` +
+      `  private get ${name}(): ${type} { return this._${name}$.value; }\n` +
+      `  private set ${name}(v: ${type}) { this._${name}$.value = v; }`
+    );
+  }
+
+  // Skip '=' and leading whitespace
+  i++;
+  while (i < blockContent.length && /\s/.test(blockContent[i])) i++;
+
+  // Read initializer: everything until `;` at depth 0
+  const initStart = i;
+  depth = 0;
+  while (i < blockContent.length) {
+    const ch = blockContent[i];
+    if (ch === "{" || ch === "(" || ch === "[") depth++;
+    else if (ch === "}" || ch === ")" || ch === "]") depth--;
+    else if (depth === 0 && ch === ";") break;
+    i++;
+  }
+  const initializer = blockContent.slice(initStart, i).trim();
+
+  return (
+    `private _${name}$: Signal<${type}> = new Signal<${type}>(${initializer});\n` +
+    `  private get ${name}(): ${type} { return this._${name}$.value; }\n` +
+    `  private set ${name}(v: ${type}) { this._${name}$.value = v; }`
+  );
+}
+
+/**
+ * Iterates through `source` replacing every `state { ... }` block using
+ * brace-depth counting so the outer closing brace is always found correctly,
+ * even when the initializer contains nested object literals. Fixes CG-04.
+ */
+function transformStateBlocks(source: string): string {
+  let result = "";
+  let pos = 0;
+  const statePattern = /\bstate\s*\{/g;
+
+  let match: RegExpExecArray | null;
+  while ((match = statePattern.exec(source)) !== null) {
+    result += source.slice(pos, match.index);
+
+    // Last char of the match is `{`
+    const braceOpen = match.index + match[0].length - 1;
+    let depth = 0;
+    let braceClose = -1;
+    for (let i = braceOpen; i < source.length; i++) {
+      if (source[i] === "{") depth++;
+      else if (source[i] === "}") {
+        depth--;
+        if (depth === 0) {
+          braceClose = i;
+          break;
+        }
+      }
+    }
+
+    if (braceClose === -1) {
+      // Malformed block — leave remainder unchanged
+      result += source.slice(match.index);
+      pos = source.length;
+      break;
+    }
+
+    const blockContent = source.slice(braceOpen + 1, braceClose);
+    result += parseAndReplaceStateBlock(blockContent);
+    pos = braceClose + 1;
+    statePattern.lastIndex = pos;
+  }
+
+  result += source.slice(pos);
+  return result;
+}
+
+/**
  * Phase 1: Lexical transformation (string-based preprocessing)
  * Converts Swiss syntax to valid TypeScript before AST parsing
  */
@@ -64,33 +167,10 @@ export function preprocessSwissSyntax(
     "export class $1 extends SwissComponent {",
   );
 
-  // Transform state blocks — with-initializer FIRST to prevent partial match
-  // state { let prop: type = value; } → Signal<type>-backed getter/setter pair
-  result = result.replace(
-    /\bstate\s*\{\s*let\s+(\w+)\s*:\s*([^=}]+?)\s*=\s*([\s\S]*?)\s*;\s*\}/g,
-    (_match: string, name: string, type: string, init: string) => {
-      const t = type.trim();
-      const v = init.trim();
-      return (
-        `private _${name}$: Signal<${t}> = new Signal<${t}>(${v});\n` +
-        `  private get ${name}(): ${t} { return this._${name}$.value; }\n` +
-        `  private set ${name}(v: ${t}) { this._${name}$.value = v; }`
-      );
-    },
-  );
-
-  // state { let prop: type; } → Signal<type>-backed getter/setter pair (no initializer)
-  result = result.replace(
-    /\bstate\s*\{\s*let\s+(\w+)\s*:\s*([^;=}]+?)\s*;?\s*\}/g,
-    (_match: string, name: string, type: string) => {
-      const t = type.trim();
-      return (
-        `private _${name}$: Signal<${t}> = new Signal<${t}>(undefined as unknown as ${t});\n` +
-        `  private get ${name}(): ${t} { return this._${name}$.value; }\n` +
-        `  private set ${name}(v: ${t}) { this._${name}$.value = v; }`
-      );
-    },
-  );
+  // Transform state blocks using brace-depth parsing (CG-04)
+  // Handles object literal initializers like `{}` and `{ key: true }` that
+  // the previous `[^;}]+?` regex could not capture correctly.
+  result = transformStateBlocks(result);
 
   // Inject Signal import when Signal-backed state was generated
   if (result.includes("new Signal<")) {
