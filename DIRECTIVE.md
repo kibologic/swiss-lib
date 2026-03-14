@@ -322,6 +322,25 @@ Files: `swite/src/resolver/symlink-registry.ts` (new), `url-resolver.ts`, `serve
 
 ---
 
+### CG-06 — async mount() overrides base class mount(container), preventing setupReactivity()
+**Status:** FIXED `898a49d` (2026-03-14)
+**Discovered:** 2026-03-14 (POS terminal stuck in loading state after await)
+**Symptom:** Signal updates after `await` inside `async mount()` didn't trigger re-renders.
+Component stayed permanently in loading state.
+**Root cause:** The compiler's `mount` → `mounted` transform used `/\bmount\s*\{/g`, which
+only matched the brace-only form (`mount { }`). When a user wrote `async mount() { }` with
+explicit parentheses, the transform was skipped. The compiled class had `async mount()` as an
+instance method, silently overriding the base class `mount(container: HTMLElement)`. The
+framework calls `component.mount(container)` which hit the user's override instead — so
+`initialize()` → `setupReactivity()` never ran, no render Effect was created, and Signal
+changes after `await` never triggered re-renders.
+**Fix:** Added two new regex transforms in `swiss-syntax.ts` before the brace-only pattern:
+- `async mount()` → `async mounted()`
+- `mount()` → `private mounted()`
+File: `packages/compiler/src/transformers/swiss-syntax.ts`
+
+---
+
 ### CG-02 — `.ui` pipeline emits raw JSX; es-module-lexer cannot parse it
 **Status:** FIXED `427aea1` (2026-03-07)
 **Discovered:** 2026-03-07 (alpine-erp Table.ui 500 error)
