@@ -206,6 +206,11 @@ export function preprocessSwissSyntax(
   result = result.replace(/\bcomputed\s+get\s+(\w+)\s*\(/g, "private get $1(");
 
   // Transform lifecycle hooks - mount (emit "mounted" to avoid clashing with base mount(container))
+  // CG-06: also handle async mount() / mount() with explicit parens, which bypass the brace-only pattern
+  // async mount() { ... } → async mounted() { ... }
+  result = result.replace(/\basync\s+mount\s*\(\s*\)\s*\{/g, "async mounted() {");
+  // mount() { ... } → private mounted() { ... }
+  result = result.replace(/\bmount\s*\(\s*\)\s*\{/g, "private mounted() {");
   // mount { ... } → private mounted() { ... }
   result = result.replace(/\bmount\s*\{/g, "private mounted() {");
 
