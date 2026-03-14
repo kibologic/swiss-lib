@@ -428,7 +428,14 @@ export class SwissComponent<
     const container = this._container;
     const oldVNode = this._vnode;
 
-    if (!container) return;
+    // Resolve the existing DOM node.
+    // dom-creation.ts calls initialize() (and therefore setupReactivity()) WITHOUT going
+    // through mount(container), so _container is never set for child components.
+    // We must still be able to commit reactive updates using the existing DOM node.
+    const existingDom: Node | null =
+      (oldVNode && (oldVNode as any).dom) || (this as any)._domNode || null;
+
+    if (!container && !existingDom) return;
 
     if (
       typeof newVNode === "object" &&
@@ -439,13 +446,15 @@ export class SwissComponent<
       (newVNode as any).__componentInstance = this;
     }
 
-    if (oldVNode && (oldVNode as any).dom) {
-      updateDOMNode((oldVNode as any).dom, newVNode);
-      (newVNode as any).dom = (oldVNode as any).dom;
+    if (existingDom) {
+      // Update in-place — works for both root and child components
+      updateDOMNode(existingDom, newVNode);
+      (newVNode as any).dom = existingDom;
     } else {
-      renderToDOM(newVNode, container);
-      if (container.firstChild) {
-        (newVNode as any).dom = container.firstChild;
+      // Initial render into container (only reachable when container is set)
+      renderToDOM(newVNode, container!);
+      if (container!.firstChild) {
+        (newVNode as any).dom = container!.firstChild;
       }
     }
 
