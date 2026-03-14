@@ -368,6 +368,10 @@ needed fixing independent of the pipeline bug.
 
 ---
 
+### CG-08 — Draggable modal: document.addEventListener() called from mounted() in a child component. Need to verify event listeners attach correctly and are cleaned up on unmount. If not supported, needs unmounted() lifecycle hook. Priority: medium — blocks draggable modals in @alpine/ui
+
+---
+
 ## Manual Actions Pending
 | ID   | Action                                              | Scope        | Status  |
 |------|-----------------------------------------------------|--------------|---------|
