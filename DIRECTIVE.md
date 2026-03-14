@@ -334,10 +334,18 @@ instance method, silently overriding the base class `mount(container: HTMLElemen
 framework calls `component.mount(container)` which hit the user's override instead — so
 `initialize()` → `setupReactivity()` never ran, no render Effect was created, and Signal
 changes after `await` never triggered re-renders.
-**Fix:** Added two new regex transforms in `swiss-syntax.ts` before the brace-only pattern:
+**Fix (part 1 — compiler):** Added two new regex transforms in `swiss-syntax.ts` before the brace-only pattern:
 - `async mount()` → `async mounted()`
 - `mount()` → `private mounted()`
-File: `packages/compiler/src/transformers/swiss-syntax.ts`
+File: `packages/compiler/src/transformers/swiss-syntax.ts` (`898a49d`)
+
+**Fix (part 2 — root cause):** `dom-creation.ts` calls `initialize()` directly without going
+through `mount(container)`, so `_container` is never set for child components. When the render
+effect fired post-await, `commitVNode()` exited early at `if (!container) return`, silently
+dropping all reactive DOM updates. Fixed in `commitVNode()`: resolve existing DOM node from
+`oldVNode.dom` or `_domNode` first; use `updateDOMNode` in-place when available, only require
+`container` for the initial render with no existing DOM node.
+File: `packages/core/src/component/component.ts` (`adc44dd`)
 
 ---
 
