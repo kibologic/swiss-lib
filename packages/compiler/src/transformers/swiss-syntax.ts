@@ -271,6 +271,49 @@ export function preprocessSwissSyntax(
     "private $1: $2 = $3; // component prop",
   );
 
+  // CG-new: If this file has no class wrapper (bare .uix without `component` keyword),
+  // wrap the non-import body in `export default class extends SwissComponent { ... }`.
+  // This prevents class-member syntax (private, getters, setters) from landing at root scope.
+  const hasClassWrapper = /\bclass\s+\w*\s*(extends\s+\w+\s*)?\{/.test(result);
+  if (!hasClassWrapper && filePath && filePath.endsWith(".uix")) {
+    // Split into import lines and body lines
+    const lines = result.split("\n");
+    const importLines: string[] = [];
+    const bodyLines: string[] = [];
+    let pastImports = false;
+    for (const line of lines) {
+      if (!pastImports && /^\s*import\s/.test(line)) {
+        importLines.push(line);
+      } else {
+        pastImports = true;
+        bodyLines.push(line);
+      }
+    }
+
+    // Inject SwissComponent into core import or add a new one
+    const hasCoreImport = importLines.some((l) => l.includes("@swissjs/core"));
+    if (hasCoreImport) {
+      // Patch existing core import to include SwissComponent if missing
+      for (let i = 0; i < importLines.length; i++) {
+        if (importLines[i].includes("@swissjs/core") && !importLines[i].includes("SwissComponent")) {
+          importLines[i] = importLines[i].replace(
+            /import\s*\{([^}]+)\}/,
+            (_m: string, named: string) => `import { ${named.trim()}, SwissComponent }`,
+          );
+        }
+      }
+    } else {
+      importLines.push(`import { SwissComponent } from '@swissjs/core';`);
+    }
+
+    // Indent body and wrap in class
+    const indentedBody = bodyLines
+      .map((l) => (l.trim() === "" ? "" : `  ${l}`))
+      .join("\n");
+
+    result = importLines.join("\n") + "\n\nexport default class extends SwissComponent {\n" + indentedBody + "\n}\n";
+  }
+
   return result;
 }
 
