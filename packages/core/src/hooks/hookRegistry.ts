@@ -76,4 +76,17 @@ export class HookRegistry {
     }
     return out;
   }
+
+  registerHook(hookName: string, _options?: { priority: number }) {
+    if (!this.hooks.has(hookName)) {
+      this.hooks.set(hookName, []);
+    }
+  }
+
+  getStats() {
+    return {
+      totalHooks: this.hooks.size,
+      activeHooks: Array.from(this.hooks.keys()),
+    };
+  }
 }
