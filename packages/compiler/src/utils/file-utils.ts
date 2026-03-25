@@ -6,8 +6,9 @@ export async function findFiles(dir: string, ext: string): Promise<string[]> {
   const entries = await fs.readdir(dir, { withFileTypes: true });
   
   for (const entry of entries) {
+    if (entry.name === 'node_modules') continue;
     const fullPath = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
+    if (entry.isDirectory() || entry.isSymbolicLink()) {
       files.push(...await findFiles(fullPath, ext));
     } else if (entry.name.endsWith(ext)) {
       files.push(fullPath);
