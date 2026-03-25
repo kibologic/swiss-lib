@@ -6,16 +6,16 @@
 export function processImports(source: string, filePath: string): string {
   let processed = source;
 
-  // Transform .uix imports to .js for build environments
+  // Transform .uix imports to .tsx for build environments
   processed = processed.replace(
     /from\s+['"](\.\/[^'"]+)\.uix['"]/g,
-    "from '$1.js'"
+    "from '$1.tsx'"
   );
 
-  // Transform .ui imports to .js for build environments  
+  // Transform .ui imports to .tsx for build environments
   processed = processed.replace(
     /from\s+['"](\.\/[^'"]+)\.ui['"]/g,
-    "from '$1.js'"
+    "from '$1.tsx'"
   );
 
   // Check for invalid imports

@@ -643,10 +643,11 @@ async function copyTypeScriptFilesToTemp(
     await fs.ensureDir(dest);
 
     for (const entry of entries) {
+      if (entry.name === 'node_modules') continue;
       const srcPath = path.join(src, entry.name);
       const destPath = path.join(dest, entry.name);
 
-      if (entry.isDirectory()) {
+      if (entry.isDirectory() || entry.isSymbolicLink()) {
         await copyRecursive(srcPath, destPath);
       } else if (
         (entry.name.endsWith(".ts") ||
@@ -694,9 +695,10 @@ export async function compileUiFilesToTemp(
     const files: string[] = [];
     const items = await fs.readdir(dir);
     for (const item of items) {
+      if (item === 'node_modules') continue;
       const fullPath = path.join(dir, item);
       const stat = await fs.stat(fullPath);
-      if (stat.isDirectory()) {
+      if (stat.isDirectory() || stat.isSymbolicLink()) {
         files.push(...(await findUiFiles(fullPath)));
       } else if (item.endsWith(".ui") || item.endsWith(".uix")) {
         files.push(fullPath);
