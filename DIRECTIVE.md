@@ -287,7 +287,7 @@ never instantiated when module is null. render() never reaches the null-return p
 ---
 
 ### SG-07 — safeRender() null type contract broken on first mount
-**Status:** OPEN
+**Status:** FIXED (2026-03-26)
 **Discovered:** 2026-03-03 (audit after SG-06 fix)
 **Component:** any component whose `render()` returns null on first render
 **Symptom:** `safeRender()` declares return type `VNode` but `render()` can return null.
@@ -296,9 +296,10 @@ If `render()` returns null on first mount, `commitVNode` receives null —
 type contract violated, behaviour undefined.
 **Note:** UpgradeModal does not hit this path due to Shell conditional guard (alpine-erp `9610d57`).
 Any future component returning null on first render will hit this.
-**Fix needed:** `safeRender()` should return `VNode | null` and `commitVNode()` should
-handle null gracefully, or `mount()` should guard before calling `commitVNode`.
-**Priority:** Medium — not currently causing a visible bug but type contract is broken
+**Fix:** `safeRender()` return type changed to `VNode | null`. All callers guarded:
+`mount()` untrack block, `reactivity-setup.ts` render effect, and `update-manager.ts`
+update dispatch all check `!== null` before passing to `commitVNode`.
+Files: `packages/core/src/component/component.ts`, `reactivity-setup.ts`, `update-manager.ts`
 
 ---
 
@@ -368,7 +369,24 @@ needed fixing independent of the pipeline bug.
 
 ---
 
-### CG-08 — Draggable modal: document.addEventListener() called from mounted() in a child component. Need to verify event listeners attach correctly and are cleaned up on unmount. If not supported, needs unmounted() lifecycle hook. Priority: medium — blocks draggable modals in @alpine/ui
+### CG-08 — unmount { } collides with public async unmount() on base SwissComponent
+**Status:** FIXED (2026-03-26)
+**Discovered:** 2026-03-26 (audit after CG-06 fix; same class of bug as mount collision)
+**Symptom:** `unmount { }` compiled to `private unmount()`, colliding with the public
+`async unmount()` method on the base `SwissComponent` class. The user's teardown hook
+was never called, and `unmountComponent()` dispatch looked for `.unmount` which is the
+base class method, not the user hook.
+**Fix (part 1 — compiler):** Added two new regex transforms in `swiss-syntax.ts` before
+the brace-only pattern (mirrors CG-06 mount fix):
+- `async unmount()` → `async unmounted()`
+- `unmount()` → `private unmounted()`
+- `unmount {` → `private unmounted() {`
+Updated JSDoc at top of file.
+File: `packages/compiler/src/transformers/swiss-syntax.ts`
+
+**Fix (part 2 — runtime dispatch):** `unmountComponent()` now checks for `unmounted`
+instead of `unmount` so the compiled hook is actually called during teardown.
+File: `packages/core/src/component/component.ts`
 
 ---
 
@@ -381,6 +399,16 @@ needed fixing independent of the pipeline bug.
 | M-04 | Add CHANGESET_TOKEN secret to kibologic org GitHub  | GitHub org   | PENDING |
 | M-05 | Run pnpm changeset → commit → push (v0.1.0)        | swiss-lib    | PENDING |
 | M-06 | Set branch protection on main in swiss-lib          | GitHub repo  | PENDING |
+
+---
+
+## Session Log
+
+### 2026-03-26
+- Fixed SG-07: safeRender() return type changed to `VNode | null`, all commitVNode callers (mount(), reactivity-setup.ts render effect, update-manager.ts update dispatch) guarded against null
+- Fixed CG-08: `unmount{}` → `unmounted()`, `unmountComponent()` dispatches `unmounted()`, compiler transforms updated with explicit-paren forms mirroring CG-06 mount fix
+- tsc -b result: [see commit]
+- Commit: [see git log]
 
 ---
 

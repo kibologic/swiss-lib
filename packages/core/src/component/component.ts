@@ -407,7 +407,7 @@ export class SwissComponent<
     return e != null && typeof e === "object" && "phase" in e && "error" in e;
   }
 
-  public safeRender(): VNode {
+  public safeRender(): VNode | null {
     if (this.hasCapturedErrorInfo()) {
       return this.renderErrorFallback();
     }
@@ -516,7 +516,8 @@ export class SwissComponent<
 
     // Perform the first DOM commit explicitly (reactivity is now established for subsequent updates).
     untrack(() => {
-      this.commitVNode(this.safeRender());
+      const vnode = this.safeRender();
+      if (vnode !== null) this.commitVNode(vnode);
     });
 
     this._isMounted = true;
@@ -660,13 +661,13 @@ export class SwissComponent<
       });
 
       this._hooks = [];
-      // Swiss syntax: unmount { } compiles to private unmount() { } — call it before teardown
-      if (typeof (this as any).unmount === "function") {
+      // Swiss syntax: unmount { } compiles to private unmounted() { } — call it before teardown
+      if (typeof (this as any).unmounted === "function") {
         try {
-          (this as any).unmount();
+          (this as any).unmounted();
         } catch (error) {
           console.error(
-            `[Component] Error in unmount() for ${this.constructor.name}:`,
+            `[Component] Error in unmounted() for ${this.constructor.name}:`,
             error,
           );
         }

@@ -42,7 +42,7 @@ export class ReactivityManager<
 
       // Commit DOM outside of tracking to avoid DOM reads registering as dependencies.
       untrack(() => {
-        (this.component as any).commitVNode(newVNode);
+        if (newVNode !== null) (this.component as any).commitVNode(newVNode);
       });
     });
     this.trackEffect(renderEffect);
