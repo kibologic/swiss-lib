@@ -402,6 +402,28 @@ File: `packages/core/src/component/component.ts`
 
 ---
 
+## Open Issues
+
+### Pre-existing check failures (not regressions — present before 2026-03-26 cleanup)
+
+- **OI-01** `check:barrels` — `@swissjs/css` has default-export barrel violations
+  Status: pre-existing, not blocking
+  Command: `pnpm check:barrels`
+
+- **OI-02** `check:ui-format` — style tags present in `packages/components` (Button.uix, Input.uix, Modal.uix)
+  Status: pre-existing, not blocking
+  Command: `pnpm check:ui-format`
+
+- **OI-03** `check:policy` — `packages/devtools` has deep import violations into `@swissjs/core/browser`
+  Status: pre-existing, not blocking
+  Command: `pnpm check:policy`
+
+- **OI-04** `@swissjs/css` test runner — no test files found, causes `pnpm test` to report failure on that package
+  Status: pre-existing, not blocking
+  Command: `pnpm test` (fails only on css package)
+
+---
+
 ## Session Log
 
 ### 2026-03-26
@@ -414,6 +436,8 @@ File: `packages/core/src/component/component.ts`
 - Surgical edit: check:policy — removed check-public-barrels reference
 - Surgical edit: reset — removed 4 dead script references
 - Pre-existing check failures unchanged (css default-export, ui-format style tags, devtools deep imports)
+- Logged OI-01 through OI-04 as pre-existing open issues
+- Removed api-report-build.mjs and api-report-check.mjs (unreachable — npm script keys already removed)
 - tsc -b result: [see commit]
 - Commit: [see git log]
 
