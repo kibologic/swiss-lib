@@ -16,7 +16,7 @@ import * as ts from "typescript";
  * - `computed get prop() { }` → `private get prop() { }`
  * - `effect { }` → `private effect() { }`
  * - `mount { }` → `private mounted() { }` (lifecycle hook; does not override public mount(container))
- * - `unmount { }` → `private unmount() { }`
+ * - `unmount { }` → `private unmounted() { }`
  */
 
 export interface SwissSyntaxOptions {
@@ -214,9 +214,14 @@ export function preprocessSwissSyntax(
   // mount { ... } → private mounted() { ... }
   result = result.replace(/\bmount\s*\{/g, "private mounted() {");
 
-  // Transform lifecycle hooks - unmount
-  // unmount { ... } → private unmount() { ... }
-  result = result.replace(/\bunmount\s*\{/g, "private unmount() {");
+  // Transform lifecycle hooks - unmount (emit "unmounted" to avoid clashing with base async unmount())
+  // CG-08: also handle async unmount() / unmount() with explicit parens, which bypass the brace-only pattern
+  // async unmount() { ... } → async unmounted() { ... }
+  result = result.replace(/\basync\s+unmount\s*\(\s*\)\s*\{/g, "async unmounted() {");
+  // unmount() { ... } → private unmounted() { ... }
+  result = result.replace(/\bunmount\s*\(\s*\)\s*\{/g, "private unmounted() {");
+  // unmount { ... } → private unmounted() { ... }
+  result = result.replace(/\bunmount\s*\{/g, "private unmounted() {");
 
   // Transform lifecycle hooks - effect
   // effect { ... } → private effect() { ... }
