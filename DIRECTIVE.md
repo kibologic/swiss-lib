@@ -407,6 +407,13 @@ File: `packages/core/src/component/component.ts`
 ### 2026-03-26
 - Fixed SG-07: safeRender() return type changed to `VNode | null`, all commitVNode callers (mount(), reactivity-setup.ts render effect, update-manager.ts update dispatch) guarded against null
 - Fixed CG-08: `unmount{}` → `unmounted()`, `unmountComponent()` dispatches `unmounted()`, compiler transforms updated with explicit-paren forms mirroring CG-06 mount fix
+- Deleted obsolete root docs (BRANCH_TRACKING, BUILD_GUIDE, BUILD_STRATEGY, CRITICAL_BUG_FIX, SCRIPTS_ANALYSIS, README-PUBLIC, docs/PHASE6_PLAN, docs-public/)
+- Deleted 13 obsolete scripts and 3 tools (docs pipeline, staging scripts, unused checkers)
+- Deleted packages/component-before-modularization.ts
+- Removed 10 dead npm script keys from package.json (api:build, api:check, check:promotion, docs:tsdoc-coverage, docs:tasks, docs:filter, docs:filter:dry, check:src-artifacts, check:tsconfig-outdir, precommit:docs-sync)
+- Surgical edit: check:policy — removed check-public-barrels reference
+- Surgical edit: reset — removed 4 dead script references
+- Pre-existing check failures unchanged (css default-export, ui-format style tags, devtools deep imports)
 - tsc -b result: [see commit]
 - Commit: [see git log]
 
