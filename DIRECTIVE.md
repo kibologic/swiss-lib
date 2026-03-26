@@ -470,6 +470,44 @@ File: `packages/core/src/component/component.ts`
 - D-07: packages/compiler/src/types.ts :: TransformResult — defined, never referenced
 - D-08: packages/compiler/src/types.ts :: TransformerContext — defined, never referenced
 
+### packages/cli analysis — 2026-03-26
+
+#### TODO — broken features, needs implementation decision
+- T-07: packages/cli/src/forge/dependency-manager.ts — installDependencies, addDependency, initGit all stubs. `swiss create` completes silently with nothing installed, no git repo created.
+- T-08: packages/cli/src/forge/registry.ts :: downloadTemplate — throws "not implemented". Remote HTTP template install fully broken.
+- T-09: packages/cli/src/commands/build.ts — header comment says deprecated until Swite ready. Swite is now at 0.2.0 — needs wiring, not left deprecated.
+
+#### LEFTOVER — safe to delete in cleanup pass
+- L-09: packages/cli/src/commands/init.ts — tombstoned command. Registered in index.ts, prints easter egg, exits with code 1. Remove registration and file.
+
+#### DEAD CODE — never called, never imported
+- D-09: packages/cli/src/forge/file-generator.ts :: generateProject — public method, no caller
+- D-10: packages/cli/src/forge/file-generator.ts :: generateFromTemplate — public method, no caller
+- D-11: packages/cli/src/forge/file-generator.ts :: generateDirectory — public method, no caller
+- D-12: packages/cli/src/forge/file-generator.ts :: validateTemplateStructure — public method, no caller
+- D-13: packages/cli/src/forge/file-generator.ts :: getGeneratedFiles — public method, no caller
+- D-14: packages/cli/src/forge/file-generator.ts :: getGeneratedDirectories — public method, no caller
+- D-15: packages/cli/src/forge/file-generator.ts :: cleanup — public method, no caller
+- D-16: packages/cli/src/types/index.ts :: PromptConfig — defined, never imported
+- D-17: packages/cli/src/types/index.ts :: TemplateVariables — defined, never imported
+- D-18: packages/cli/src/types/index.ts :: TemplateEngineOptions — defined, never imported
+- D-19: packages/cli/src/types/index.ts :: TemplateValidationResult — defined, never imported
+- D-20: packages/cli/src/types/index.ts :: SwissForgeConfig — defined, never imported
+- D-21: packages/cli/src/forge/template-engine.ts :: processTemplate — defined, never called (callers use processTemplateString or processTemplateFiles)
+- D-22: packages/cli/src/forge/template-engine.ts :: analyzeTemplate — public method, no external caller
+- D-23: packages/cli/src/forge/template-engine.ts :: getTemplateVariables — only called by analyzeTemplate (dead)
+- D-24: packages/cli/src/forge/template-engine.ts :: validateTemplate — only called by analyzeTemplate (dead)
+- D-25: packages/cli/src/forge/prompt-engine.ts :: selectTemplate — public method, never called
+- D-26: packages/cli/src/forge/prompt-engine.ts :: confirmGeneration — public method, never called
+- D-27: packages/cli/src/workspace/WorkspaceManager.ts :: getSwissPackages — public method, no caller
+- D-28: packages/cli/src/commands/build.ts :: getOutputStructure — commented-out function
+- D-29: packages/cli/src/commands/build.ts :: createBuildConfig — commented-out function
+- D-30: packages/cli/src/commands/init.ts :: initCommand — tombstoned, registered but exits code 1 (see L-09)
+- D-31: packages/cli/src/forge/forge.ts :: initializeRegistry (ESM bug) — FIXED in a112bd9
+
+#### FIXED in this session
+- forge.ts :: initializeRegistry __dirname ESM bug — fixed in a112bd9
+
 ---
 
 ## Session Log
@@ -491,6 +529,7 @@ File: `packages/core/src/component/component.ts`
 - Logged compiler analysis findings L-03 L-04 L-05 L-08 T-06 U-01 U-02 D-01 through D-08
 - Started cli package analysis
 - Fixed forge.ts :: initializeRegistry __dirname ESM bug — forge subcommands now resolve registry path correctly
+- Logged CLI analysis findings T-07 through T-09, L-09, D-09 through D-31
 
 ---
 
