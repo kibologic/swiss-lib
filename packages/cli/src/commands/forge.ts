@@ -8,8 +8,12 @@ import { Command } from 'commander';
 import path from 'path';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
+import { fileURLToPath } from 'url';
 import { Registry } from '../forge/registry.js';
 import type { TemplateMetadata } from '../types/template.types.js';
+
+// ESM-compatible __dirname for resolving template paths at runtime
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export const forgeCommand = new Command('forge')
   .description('Manage Swiss Forge templates')

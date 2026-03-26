@@ -490,6 +490,7 @@ File: `packages/core/src/component/component.ts`
 - Commit: [see git log]
 - Logged compiler analysis findings L-03 L-04 L-05 L-08 T-06 U-01 U-02 D-01 through D-08
 - Started cli package analysis
+- Fixed forge.ts :: initializeRegistry __dirname ESM bug — forge subcommands now resolve registry path correctly
 
 ---
 
