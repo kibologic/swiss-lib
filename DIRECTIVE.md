@@ -445,6 +445,31 @@ File: `packages/core/src/component/component.ts`
 - **T-05** `packages/core/src/component/update-manager.ts` line 640 — explicit TODO: devtools bridge broken in browser builds
   Action: fix or remove devtools bridge integration before production
 
+### packages/compiler analysis — 2026-03-26
+
+#### LEFTOVER — safe to delete in cleanup pass
+- L-03: packages/compiler/src/optimizer.ts — no-op file, never imported, legacy artifact
+- L-04: packages/compiler/src/transformers/capability-def-annot.ts — not in barrel, no production import
+- L-05: packages/compiler/src/transformers/component-decorators.ts — fully orphaned, no imports anywhere
+- L-08: packages/compiler/src/transformers/provides-annot.ts — fully orphaned, no imports anywhere
+
+#### TODO
+- T-06: packages/compiler/src/optimizer.ts :: optimizeTypeScript — stub, returns source unchanged (part of L-03)
+
+#### UNCLEAR — test coverage exists but no production caller
+- U-01: packages/compiler/src/transformers/lifecycle-render-decorators.ts — test-only reference, no production caller, may be planned but never wired into pipeline
+- U-02: packages/compiler/src/transformers/plugin-service-decorators.ts — same pattern as U-01
+
+#### DEAD CODE — never called, never imported
+- D-01: packages/compiler/src/compiler.ts :: transformTypeScriptWithEsbuild — private method, never called
+- D-02: packages/compiler/src/compiler.ts :: stripTypeScriptSyntaxWithAST — private method, never called, superseded by esbuild path
+- D-03: packages/compiler/src/transformers/jsx/jsx-transformer.ts :: visitor — exported but never imported anywhere
+- D-04: packages/compiler/src/transformers/jsx/jsx-factories.ts :: createMemberAccess — never called anywhere
+- D-05: packages/compiler/src/utils/file-utils.ts :: readFileIfExists — never imported anywhere
+- D-06: packages/compiler/src/types.ts :: FileInfo — defined, never referenced
+- D-07: packages/compiler/src/types.ts :: TransformResult — defined, never referenced
+- D-08: packages/compiler/src/types.ts :: TransformerContext — defined, never referenced
+
 ---
 
 ## Session Log
@@ -463,6 +488,8 @@ File: `packages/core/src/component/component.ts`
 - Removed api-report-build.mjs and api-report-check.mjs (unreachable — npm script keys already removed)
 - tsc -b result: [see commit]
 - Commit: [see git log]
+- Logged compiler analysis findings L-03 L-04 L-05 L-08 T-06 U-01 U-02 D-01 through D-08
+- Started cli package analysis
 
 ---
 
