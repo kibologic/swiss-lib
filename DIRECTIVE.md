@@ -422,6 +422,29 @@ File: `packages/core/src/component/component.ts`
   Status: pre-existing, not blocking
   Command: `pnpm test` (fails only on css package)
 
+### Core package analysis findings (2026-03-26)
+
+- **L-01** `packages/core/src/example-usage.ts` — leftover demo file, no imports from any other source file
+  Action: safe to delete
+
+- **L-02** `packages/core/src/framework.ts` — empty file, 0 lines, not imported anywhere
+  Action: safe to delete
+
+- **T-01** `packages/core/src/component/portals.ts :: createPortal` — stub, throws "not implemented"
+  Action: implement or remove before production
+
+- **T-02** `packages/core/src/component/portals.ts :: useSlot` — stub, returns empty array always
+  Action: implement or remove before production
+
+- **T-03** `packages/core/src/runtime/adapters/node-adapter.ts :: NodeAdapter` — template stub, no real render logic
+  Action: implement or remove before production
+
+- **T-04** `packages/core/src/runtime/adapters/bun-adapter.ts :: BunAdapter` — template stub, no real render logic
+  Action: implement or remove before production
+
+- **T-05** `packages/core/src/component/update-manager.ts` line 640 — explicit TODO: devtools bridge broken in browser builds
+  Action: fix or remove devtools bridge integration before production
+
 ---
 
 ## Session Log
