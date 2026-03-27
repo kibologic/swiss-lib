@@ -591,6 +591,12 @@ File: `packages/core/src/component/component.ts`
 - Commit: ffe7fda
 - Fixed T-09: build command wired to Swite 0.2.0, deprecated header removed
 - Commit: c3e0f27
+- Fixed L-21: findPolicyForRequest now actually matches request path/method against configured policies
+  - Added RoutePolicy interface and createPolicyValidationMiddleware to validation-middleware.ts
+  - findPolicyForRequest performs prefix path match + optional case-insensitive method match
+  - Empty policies array now logs a warning at wiring time instead of silently bypassing validation
+  - Exported RoutePolicy, PolicyValidationMiddlewareOptions, createPolicyValidationMiddleware from barrel
+  - Commit: [hash]
 
 ### 2026-03-26
 - Fixed SG-07: safeRender() return type changed to `VNode | null`, all commitVNode callers (mount(), reactivity-setup.ts render effect, update-manager.ts update dispatch) guarded against null
