@@ -586,6 +586,8 @@ File: `packages/core/src/component/component.ts`
 - getStats() now returns { totalHooks, hooks: Record<string, number> } in both files
 - tsc -b packages/core clean
 - Commit: 84f3a93
+- Fixed D-37: parseURL/buildURL now guard window.location with typeof window check — safe in SSR/Node
+- Commit: [hash]
 
 ### 2026-03-26
 - Fixed SG-07: safeRender() return type changed to `VNode | null`, all commitVNode callers (mount(), reactivity-setup.ts render effect, update-manager.ts update dispatch) guarded against null
