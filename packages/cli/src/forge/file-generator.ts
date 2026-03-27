@@ -10,12 +10,6 @@ import chalk from 'chalk';
 import type { TemplateContext, TemplateFile, GenerationOptions, FileGenerationResult } from '../types/template.types.js';
 import { TemplateEngine } from './template-engine.js';
 
-interface ProjectGenerationOptions {
-  dryRun?: boolean;
-  verbose?: boolean;
-  overwrite?: boolean;
-}
-
 export class FileGenerator {
   private generatedFiles: string[] = [];
   private generatedDirs: string[] = [];
@@ -77,41 +71,6 @@ export class FileGenerator {
     return result;
   }
 
-  async generateProject(
-    projectPath: string,
-    templateFiles: TemplateFile[],
-    context: TemplateContext,
-    options: ProjectGenerationOptions = {}
-  ): Promise<void> {
-    const { dryRun = false, verbose = false, overwrite = false } = options;
-
-    // Check if project directory exists
-    if (await fs.pathExists(projectPath)) {
-      if (!overwrite) {
-        throw new Error(`Directory ${projectPath} already exists. Use --overwrite to overwrite.`);
-      }
-    }
-
-    if (verbose) {
-      console.log(chalk.gray(`Generating project at: ${projectPath}`));
-    }
-
-    // Create project directory
-    if (!dryRun) {
-      await fs.ensureDir(projectPath);
-      this.generatedDirs.push(projectPath);
-    }
-
-    // Process and generate files
-    for (const templateFile of templateFiles) {
-      await this.generateFile(projectPath, templateFile, context, { dryRun, verbose });
-    }
-
-    if (verbose) {
-      console.log(chalk.green(`✅ Generated ${this.generatedFiles.length} files in ${this.generatedDirs.length} directories`));
-    }
-  }
-
   private async generateFile(
     projectPath: string,
     templateFile: TemplateFile,
@@ -155,36 +114,6 @@ export class FileGenerator {
 
   private async copyBinaryFile(sourcePath: string, destPath: string): Promise<void> {
     await fs.copy(sourcePath, destPath);
-  }
-
-  async generateDirectory(dirPath: string, options: { dryRun: boolean; verbose: boolean }): Promise<void> {
-    const { dryRun, verbose } = options;
-
-    if (verbose) {
-      console.log(chalk.gray(`${dryRun ? '[DRY RUN] ' : ''}Creating directory: ${dirPath}`));
-    }
-
-    await fs.ensureDir(dirPath);
-    this.generatedDirs.push(dirPath);
-  }
-
-  async generateFromTemplate(
-    templateDir: string,
-    projectPath: string,
-    context: TemplateContext,
-    options: ProjectGenerationOptions = {}
-  ): Promise<void> {
-    if (options.verbose === true) {
-      console.log(chalk.gray(`Reading template from: ${templateDir}`));
-    }
-
-    const templateFiles = await this.readTemplateFiles(templateDir);
-
-    if (options.verbose === true) {
-      console.log(chalk.gray(`Found ${templateFiles.length} template files`));
-    }
-
-    await this.generateProject(projectPath, templateFiles, context, options);
   }
 
   private async readTemplateFiles(templateDir: string): Promise<TemplateFile[]> {
@@ -263,77 +192,4 @@ export class FileGenerator {
     }
   }
 
-  async validateTemplateStructure(templateDir: string): Promise<{
-    isValid: boolean;
-    errors: string[];
-    warnings: string[];
-  }> {
-    const errors: string[] = [];
-    const warnings: string[] = [];
-
-    // Check required files
-    const requiredFiles = ['template.json', 'prompts.json'];
-    for (const file of requiredFiles) {
-      const filePath = path.join(templateDir, file);
-      if (!(await fs.pathExists(filePath))) {
-        errors.push(`Required file missing: ${file}`);
-      }
-    }
-
-    // Check files directory
-    const filesDir = path.join(templateDir, 'files');
-    if (!(await fs.pathExists(filesDir))) {
-      errors.push('Required directory missing: files/');
-    }
-
-    // Validate template.json
-    try {
-      const templateJsonPath = path.join(templateDir, 'template.json');
-      if (await fs.pathExists(templateJsonPath)) {
-        const templateJson = await fs.readJson(templateJsonPath);
-        if (!templateJson.name) {
-          errors.push('template.json missing required field: name');
-        }
-        if (!templateJson.version) {
-          warnings.push('template.json missing version field');
-        }
-      }
-    } catch (_error) {
-      errors.push('Invalid template.json format');
-      void _error;
-    }
-
-    // Validate prompts.json
-    try {
-      const promptsJsonPath = path.join(templateDir, 'prompts.json');
-      if (await fs.pathExists(promptsJsonPath)) {
-        const promptsJson = await fs.readJson(promptsJsonPath);
-        if (!Array.isArray(promptsJson.prompts)) {
-          errors.push('prompts.json must have prompts array');
-        }
-      }
-    } catch (_error) {
-      errors.push('Invalid prompts.json format');
-      void _error;
-    }
-
-    return {
-      isValid: errors.length === 0,
-      errors,
-      warnings
-    };
-  }
-
-  getGeneratedFiles(): string[] {
-    return [...this.generatedFiles];
-  }
-
-  getGeneratedDirectories(): string[] {
-    return [...this.generatedDirs];
-  }
-
-  cleanup(): void {
-    this.generatedFiles = [];
-    this.generatedDirs = [];
-  }
 }

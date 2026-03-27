@@ -5,12 +5,6 @@ export interface RouteMatch {
   branches?: RouteMatch[]; // Helper for nested matches if needed
 }
 
-export interface RouteMatch {
-  path: string;
-  params: Record<string, string>;
-  route: any; // TODO: Type as Route
-}
-
 export function matchRoute(
   routes: any[],
   path: string,

@@ -45,26 +45,10 @@ export interface TemplateMetadata {
     defaultRegistry?: string;
   }
   
-  export interface PromptConfig {
-    name: string;
-    type: 'input' | 'select' | 'confirm' | 'multiselect' | 'number';
-    message: string;
-    default?: unknown;
-    choices?: string[] | { name: string; value: unknown }[];
-    validate?: ValidatorConfig;
-    when?: (answers: Record<string, unknown>) => boolean;
-    filter?: FilterConfig;
-    transformer?: TransformerConfig;
-  }
-  
-  export interface TemplateVariables {
-    [key: string]: unknown;
-  }
-  
   export interface GenerationOptions {
     outputPath: string;
     templatePath: string;
-    variables: TemplateVariables;
+    variables: Record<string, unknown>;
     overwrite?: boolean;
     skipInstall?: boolean;
     skipGit?: boolean;
@@ -79,40 +63,12 @@ export interface TemplateMetadata {
     errors: string[];
   }
   
-  export interface TemplateEngineOptions {
-    helpers?: Record<string, (...args: unknown[]) => unknown>;
-    partials?: Record<string, string>;
-    noEscape?: boolean;
-  }
-  
   export interface DependencyInstallOptions {
     packageManager: 'npm' | 'yarn' | 'pnpm';
     skipInstall?: boolean;
     dev?: boolean;
   }
   
-  export interface TemplateValidationResult {
-    valid: boolean;
-    errors: string[];
-    warnings: string[];
-  }
-  
-  export interface SwissForgeConfig {
-    templates: {
-      builtin: string[];
-      community: string[];
-    };
-    registry: {
-      url: string;
-      cacheTimeout: number;
-    };
-    generation: {
-      defaultPackageManager: 'npm' | 'yarn' | 'pnpm';
-      gitInit: boolean;
-      installDependencies: boolean;
-    };
-  }
-
   export interface ValidatorConfig {
     required?: boolean;
     minLength?: number;
