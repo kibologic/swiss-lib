@@ -68,18 +68,11 @@ export class Router {
   }
 
   public async push(path: string) {
-    console.log('[Router] push() called with path:', path)
     if (await this.runGuards(path)) {
       if (typeof window !== "undefined") {
-        console.log('[Router] Pushing to history:', path)
         history.pushState(null, "", path);
-        console.log('[Router] Calling handlePopState()')
         this.handlePopState();
-      } else {
-        console.warn('[Router] push() called but window is undefined')
       }
-    } else {
-      console.warn('[Router] push() blocked by route guards for path:', path)
     }
   }
 

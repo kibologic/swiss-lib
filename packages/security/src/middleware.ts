@@ -172,11 +172,20 @@ export function createCorsMiddleware(options: {
     credentials = false
   } = options;
 
+  const isWildcard = origins.includes('*');
+
+  if (isWildcard && credentials) {
+    throw new Error('CORS misconfiguration: credentials: true cannot be used with wildcard origin');
+  }
+
   return (req: any, res: any, next: any) => {
     const origin = req.get('Origin');
-    
-    if (origins.includes('*') || (origin && origins.includes(origin))) {
-      res.setHeader('Access-Control-Allow-Origin', origin || '*');
+
+    if (isWildcard) {
+      // Never reflect origin when wildcard is configured — always use static '*'
+      res.setHeader('Access-Control-Allow-Origin', '*');
+    } else if (origin && origins.includes(origin)) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
     }
 
     res.setHeader('Access-Control-Allow-Methods', methods.join(', '));
@@ -267,7 +276,8 @@ function addSecurityHeadersToResponse(res: any, customHeaders: any = {}) {
   };
 
   // Content Security Policy
-  const defaultCSP = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'";
+  // unsafe-inline removed — use nonces or hashes for inline scripts/styles
+  const defaultCSP = "default-src 'self'; script-src 'self'; style-src 'self'";
   
   // Apply headers
   const headers = { ...defaultHeaders, ...customHeaders };

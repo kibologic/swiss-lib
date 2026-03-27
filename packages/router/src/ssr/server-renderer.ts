@@ -36,6 +36,7 @@ export class ServerRenderer {
 
     // TODO: Integrate with @swissjs/core renderToString
     // For now, return a placeholder
+    const safeData = JSON.stringify(data).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026');
     const html = `
       <!DOCTYPE html>
       <html>
@@ -49,7 +50,7 @@ export class ServerRenderer {
             <!-- Data: ${JSON.stringify(data)} -->
           </div>
           <script>
-            window.__SWISS_DATA__ = ${JSON.stringify(data)};
+            window.__SWISS_DATA__ = ${safeData};
           </script>
         </body>
       </html>
