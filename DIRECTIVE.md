@@ -508,9 +508,63 @@ File: `packages/core/src/component/component.ts`
 #### FIXED in this session
 - forge.ts :: initializeRegistry __dirname ESM bug — fixed in a112bd9
 
+### packages/components analysis — 2026-03-27
+
+#### CODE QUALITY
+- L-10: packages/components/src/index.ui — temp shim duplicates all 3 components inline, will diverge from .uix sources — needs to import from .uix files
+
+#### TODO
+- D-32: packages/components/src/ui/Modal.uix — no focus trap, WCAG 2.1 SC 2.1.2 violation
+
+### packages/css analysis — 2026-03-27
+
+#### TODO (stubs)
+- D-33: packages/css/assets/images.ts :: optimizeImage, generatePlaceholder — async stubs, always return placeholder
+- D-34: packages/css/utils/index.ts :: extractCriticalCSS — no-op, inlines entire stylesheet as critical
+- L-11: packages/css/compiler/optimize.ts :: optimizeForProduction — calls all 3 feature flag stubs silently
+
+### packages/devtools analysis — 2026-03-27
+
+#### CODE QUALITY
+- D-35: packages/devtools/swiss_extension/src/content.ts:58 — window.postMessage(msg, '*') — internal messages visible to any frame — should use window.location.origin
+
+#### TEST QUALITY
+- T-11: packages/devtools/fenestration_explorer tests — entire test file is expect(true).toBe(true) — no real coverage
+
+### packages/plugins analysis — 2026-03-27
+
+#### FUNCTIONAL BUGS
+- L-15: packages/plugins/file-router/core/scanner.ts:44 — scanDirectory never updates routePrefix on recursion — nested routes get wrong prefix
+- L-16: packages/plugins/file-router/core/transformer.ts:96 — matchRoute replaces ALL * not just wildcards — over-permissive matching
+
+#### TEST QUALITY
+- T-12: packages/plugins/file-router tests — only test constructor shape, no real coverage
+
+### packages/router analysis — 2026-03-27
+
+#### FUNCTIONAL BUGS
+- D-37: packages/router/src/core/stateful-router.ts:78,127 — parseURL/buildURL call window.location without SSR guard — throws in Node/SSR environments
+- L-17: packages/router/src/core/matcher.ts — RouteMatch interface declared twice, branches property missing from second declaration
+
+### packages/security analysis — 2026-03-27
+
+#### FUNCTIONAL BUGS
+- L-21: packages/security/src/middleware.ts:343 — findPolicyForRequest always returns undefined — body validation entirely inert
+- L-22: packages/security/src/services/validator.ts:17 — schema cache key uses JSON.stringify without stable property order — duplicate cache entries possible
+
+### packages/utils analysis — 2026-03-27
+
+#### CODE QUALITY
+- L-23: packages/utils/src/fixDtsExtensions.ts — extension regex false-positives on dotted directory names
+- L-24: packages/utils/src/fixDtsExtensions.ts — .js files not processed, only .d.ts
+
 ---
 
 ## Session Log
+
+### 2026-03-27
+- Logged analysis findings for components, css, devtools, plugins, router, security, utils packages
+- Security fixes in progress (L-19, D-38, L-20, D-36, L-13, L-18)
 
 ### 2026-03-26
 - Fixed SG-07: safeRender() return type changed to `VNode | null`, all commitVNode callers (mount(), reactivity-setup.ts render effect, update-manager.ts update dispatch) guarded against null
