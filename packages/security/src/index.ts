@@ -25,8 +25,11 @@ export { ValidatorService, type ValidationRule, type CompiledSchema } from "./se
 export {
   createRateLimitMiddleware,
   createValidationMiddleware,
+  createPolicyValidationMiddleware,
   createSecurityHeadersMiddleware,
   type RateLimitMiddlewareOptions,
   type ValidationMiddlewareOptions,
+  type PolicyValidationMiddlewareOptions,
+  type RoutePolicy,
   type SecurityHeadersOptions,
 } from "./middleware/index.js";
