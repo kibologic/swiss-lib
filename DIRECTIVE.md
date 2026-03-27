@@ -4,7 +4,9 @@
 ---
 
 ## Status
-`ACTIVE DEVELOPMENT` — Core packages building. Compiler SG-05 fix shipped. Problem B (reactivity unification) in progress.
+Version 0.2.0. All security vulnerabilities fixed. Dead code cleanup complete.
+Core, compiler, cli, router, security, plugins, devtools all passing tsc.
+Known open issues logged as deferred to v0.3.0.
 
 ---
 
@@ -597,6 +599,9 @@ File: `packages/core/src/component/component.ts`
   - Empty policies array now logs a warning at wiring time instead of silently bypassing validation
   - Exported RoutePolicy, PolicyValidationMiddlewareOptions, createPolicyValidationMiddleware from barrel
   - Commit: ce82ebf
+- Cut v0.2.0 — bumped package.json, wrote CHANGELOG.md
+- Full rebuild clean, tests passing (OI-04 pre-existing only)
+- Commit: [hash]
 
 ### 2026-03-26
 - Fixed SG-07: safeRender() return type changed to `VNode | null`, all commitVNode callers (mount(), reactivity-setup.ts render effect, update-manager.ts update dispatch) guarded against null
