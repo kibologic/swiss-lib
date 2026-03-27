@@ -596,7 +596,7 @@ File: `packages/core/src/component/component.ts`
   - findPolicyForRequest performs prefix path match + optional case-insensitive method match
   - Empty policies array now logs a warning at wiring time instead of silently bypassing validation
   - Exported RoutePolicy, PolicyValidationMiddlewareOptions, createPolicyValidationMiddleware from barrel
-  - Commit: [hash]
+  - Commit: ce82ebf
 
 ### 2026-03-26
 - Fixed SG-07: safeRender() return type changed to `VNode | null`, all commitVNode callers (mount(), reactivity-setup.ts render effect, update-manager.ts update dispatch) guarded against null
