@@ -40,8 +40,9 @@ export class RouteScanner {
         const fullPath = path.join(dirPath, entry.name);
         
         if (entry.isDirectory()) {
-          // Recursively scan subdirectories
-          await this.scanDirectory(fullPath, routes, routePrefix);
+          // Recursively scan subdirectories — append segment so nested routes get the correct prefix
+          const childPrefix = routePrefix ? `${routePrefix}/${entry.name}` : entry.name;
+          await this.scanDirectory(fullPath, routes, childPrefix);
           continue;
         }
         
