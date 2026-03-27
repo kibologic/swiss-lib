@@ -582,6 +582,10 @@ File: `packages/core/src/component/component.ts`
 - Fixed 1 silent data loss bug (D-36 IndexedDB)
 - Removed 2 debug console.log statements (L-13, L-18)
 - Commit: c810ce2
+- Fixed hookRegistry.ts / hookRegistryExtensions.ts type divergence
+- getStats() now returns { totalHooks, hooks: Record<string, number> } in both files
+- tsc -b packages/core clean
+- Commit: [hash]
 
 ### 2026-03-26
 - Fixed SG-07: safeRender() return type changed to `VNode | null`, all commitVNode callers (mount(), reactivity-setup.ts render effect, update-manager.ts update dispatch) guarded against null

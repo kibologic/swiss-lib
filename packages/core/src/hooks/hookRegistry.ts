@@ -83,10 +83,12 @@ export class HookRegistry {
     }
   }
 
-  getStats() {
+  getStats(): { totalHooks: number; hooks: Record<string, number> } {
     return {
       totalHooks: this.hooks.size,
-      activeHooks: Array.from(this.hooks.keys()),
+      hooks: Object.fromEntries(
+        Array.from(this.hooks.entries()).map(([name, list]) => [name, list.length])
+      ),
     };
   }
 }
