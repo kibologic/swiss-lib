@@ -589,6 +589,8 @@ File: `packages/core/src/component/component.ts`
 - Fixed L-15: scanDirectory now passes updated routePrefix on recursion
 - Fixed L-16: matchRoute wildcard replace now scoped to bare * segments only
 - Commit: ffe7fda
+- Fixed T-09: build command wired to Swite 0.2.0, deprecated header removed
+- Commit: [hash]
 
 ### 2026-03-26
 - Fixed SG-07: safeRender() return type changed to `VNode | null`, all commitVNode callers (mount(), reactivity-setup.ts render effect, update-manager.ts update dispatch) guarded against null
