@@ -144,16 +144,6 @@ export function getCompletions(
         isInAttribute = !isInAttributeValue && attributeRegex.test(htmlTextUntilPosition);
         isInTagName = !isInAttributeValue && !isInAttribute && tagNameRegex.test(htmlTextUntilPosition);
         
-        // Debug logging (remove in production)
-        console.log('DEBUG Completions:', {
-          offset,
-          relativeOffset,
-          htmlTextUntilPosition: JSON.stringify(htmlTextUntilPosition),
-          isInTagName,
-          isInAttribute,
-          isInAttributeValue
-        });
-        
         break;
       }
     }

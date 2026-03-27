@@ -525,6 +525,9 @@ File: `packages/core/src/component/component.ts`
 
 ### packages/devtools analysis — 2026-03-27
 
+#### FIXED (2026-03-27)
+- FIXED L-13: DEBUG console.log removed from devtools/vscode_extension/src/server/language/completions.ts
+
 #### CODE QUALITY
 - D-35: packages/devtools/swiss_extension/src/content.ts:58 — window.postMessage(msg, '*') — internal messages visible to any frame — should use window.location.origin
 
@@ -532,6 +535,9 @@ File: `packages/core/src/component/component.ts`
 - T-11: packages/devtools/fenestration_explorer tests — entire test file is expect(true).toBe(true) — no real coverage
 
 ### packages/plugins analysis — 2026-03-27
+
+#### FIXED (2026-03-27)
+- FIXED D-36: createIndexedStorage now uses real IndexedDB with in-memory fallback + warning
 
 #### FUNCTIONAL BUGS
 - L-15: packages/plugins/file-router/core/scanner.ts:44 — scanDirectory never updates routePrefix on recursion — nested routes get wrong prefix
@@ -542,11 +548,19 @@ File: `packages/core/src/component/component.ts`
 
 ### packages/router analysis — 2026-03-27
 
+#### FIXED (2026-03-27)
+- FIXED L-19: XSS in router/ssr/server-renderer.ts — route data now JSON-serialised with entity escaping
+- FIXED L-18: Debug console.log/warn removed from router/core/router.ts push() and handlePopState()
+
 #### FUNCTIONAL BUGS
 - D-37: packages/router/src/core/stateful-router.ts:78,127 — parseURL/buildURL call window.location without SSR guard — throws in Node/SSR environments
 - L-17: packages/router/src/core/matcher.ts — RouteMatch interface declared twice, branches property missing from second declaration
 
 ### packages/security analysis — 2026-03-27
+
+#### FIXED (2026-03-27)
+- FIXED D-38: CORS credentials wildcard in security/middleware.ts — throws at config time if credentials + wildcard
+- FIXED L-20: CSP unsafe-inline removed from defaults in security/middleware.ts
 
 #### FUNCTIONAL BUGS
 - L-21: packages/security/src/middleware.ts:343 — findPolicyForRequest always returns undefined — body validation entirely inert
@@ -564,7 +578,10 @@ File: `packages/core/src/component/component.ts`
 
 ### 2026-03-27
 - Logged analysis findings for components, css, devtools, plugins, router, security, utils packages
-- Security fixes in progress (L-19, D-38, L-20, D-36, L-13, L-18)
+- Fixed 3 security vulnerabilities (L-19 XSS, D-38 CORS, L-20 CSP)
+- Fixed 1 silent data loss bug (D-36 IndexedDB)
+- Removed 2 debug console.log statements (L-13, L-18)
+- Commit: [see git log]
 
 ### 2026-03-26
 - Fixed SG-07: safeRender() return type changed to `VNode | null`, all commitVNode callers (mount(), reactivity-setup.ts render effect, update-manager.ts update dispatch) guarded against null
