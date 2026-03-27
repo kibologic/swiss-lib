@@ -155,17 +155,3 @@ function transformAttributes(attributes: ts.JsxAttributes): ts.Expression {
     ? factory.createObjectLiteralExpression(properties, true)
     : factory.createObjectLiteralExpression([], false);
 }
-
-// Helper visitor function for nested JSX
-export const visitor = (node: ts.Node): ts.Node => {
-  if (ts.isJsxElement(node)) {
-    return transformJsxElement(node);
-  }
-  if (ts.isJsxSelfClosingElement(node)) {
-    return transformJsxSelfClosingElement(node);
-  }
-  if (ts.isJsxFragment(node)) {
-    return transformJsxFragment(node);
-  }
-  return node;
-};

@@ -25,14 +25,3 @@ export async function ensureDirectoryExists(dir: string): Promise<void> {
     }
   }
 }
-
-export async function readFileIfExists(filePath: string): Promise<string | null> {
-  try {
-    return await fs.readFile(filePath, 'utf-8');
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
-      return null;
-    }
-    throw error;
-  }
-}

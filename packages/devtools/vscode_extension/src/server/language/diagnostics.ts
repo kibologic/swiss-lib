@@ -148,16 +148,3 @@ function createNodeDiagnostic(document: TextDocument, node: { range: { start: { 
   return createDiagnostic(document, node.range.start.offset, node.range.end.offset, severity, message);
 }
 
-/**
- * Validates a specific portion of the document (for incremental validation)
- */
-export function validateTextDocument(
-  document: TextDocument,
-  _contentChanges: { range: { start: number; end: number } }[]
-): Diagnostic[] {
-  // For now, just revalidate the whole document
-  // In the future, we could optimize this to only validate the changed portions
-  // Touch the parameter to satisfy no-unused-vars without changing behavior
-  void _contentChanges.length;
-  return validateDocument(document);
-}

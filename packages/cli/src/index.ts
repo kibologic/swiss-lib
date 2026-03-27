@@ -13,7 +13,6 @@ import { buildCommand } from './commands/build.js';
 import { devCommand } from './commands/dev.js';
 import { serveCommand } from './commands/serve.js';
 import { compileCommand } from './commands/compile.js';
-import { initCommand } from './commands/init.js';
 import { createPluginCommand } from './commands/create-plugin.js';
 import { createWorkspaceCommand } from './commands/workspace.js';
 
@@ -33,7 +32,6 @@ program.addCommand(buildCommand);
 program.addCommand(devCommand);
 program.addCommand(serveCommand);
 program.addCommand(compileCommand);
-program.addCommand(initCommand);
 program.addCommand(createPluginCommand);
 program.addCommand(createWorkspaceCommand());
 

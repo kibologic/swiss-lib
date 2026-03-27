@@ -65,24 +65,3 @@ export function createJsxFragmentFactory(
       : []
   );
 }
-
-// Helper function to create property access for nested components
-export function createMemberAccess(
-  expression: string,
-  name: string | ts.Identifier
-): ts.PropertyAccessExpression {
-  const parts = expression.split('.');
-  let current: ts.Expression = factory.createIdentifier(parts[0]);
-  
-  for (let i = 1; i < parts.length; i++) {
-    current = factory.createPropertyAccessExpression(
-      current,
-      factory.createIdentifier(parts[i])
-    );
-  }
-  
-  return factory.createPropertyAccessExpression(
-    current,
-    typeof name === 'string' ? factory.createIdentifier(name) : name
-  );
-}
