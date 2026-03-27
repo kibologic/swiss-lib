@@ -581,7 +581,7 @@ File: `packages/core/src/component/component.ts`
 - Fixed 3 security vulnerabilities (L-19 XSS, D-38 CORS, L-20 CSP)
 - Fixed 1 silent data loss bug (D-36 IndexedDB)
 - Removed 2 debug console.log statements (L-13, L-18)
-- Commit: [see git log]
+- Commit: c810ce2
 
 ### 2026-03-26
 - Fixed SG-07: safeRender() return type changed to `VNode | null`, all commitVNode callers (mount(), reactivity-setup.ts render effect, update-manager.ts update dispatch) guarded against null
