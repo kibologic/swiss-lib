@@ -538,10 +538,8 @@ File: `packages/core/src/component/component.ts`
 
 #### FIXED (2026-03-27)
 - FIXED D-36: createIndexedStorage now uses real IndexedDB with in-memory fallback + warning
-
-#### FUNCTIONAL BUGS
-- L-15: packages/plugins/file-router/core/scanner.ts:44 — scanDirectory never updates routePrefix on recursion — nested routes get wrong prefix
-- L-16: packages/plugins/file-router/core/transformer.ts:96 — matchRoute replaces ALL * not just wildcards — over-permissive matching
+- FIXED L-15: scanDirectory now passes updated routePrefix on recursion — nested routes get correct prefix
+- FIXED L-16: matchRoute wildcard replace now scoped to bare * segments only — foo*bar no longer becomes foo.*bar
 
 #### TEST QUALITY
 - T-12: packages/plugins/file-router tests — only test constructor shape, no real coverage
@@ -588,6 +586,9 @@ File: `packages/core/src/component/component.ts`
 - Commit: 84f3a93
 - Fixed D-37: parseURL/buildURL now guard window.location with typeof window check — safe in SSR/Node
 - Commit: 2c388a7
+- Fixed L-15: scanDirectory now passes updated routePrefix on recursion
+- Fixed L-16: matchRoute wildcard replace now scoped to bare * segments only
+- Commit: [hash]
 
 ### 2026-03-26
 - Fixed SG-07: safeRender() return type changed to `VNode | null`, all commitVNode callers (mount(), reactivity-setup.ts render effect, update-manager.ts update dispatch) guarded against null
