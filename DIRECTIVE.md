@@ -601,7 +601,7 @@ File: `packages/core/src/component/component.ts`
   - Commit: ce82ebf
 - Cut v0.2.0 — bumped package.json, wrote CHANGELOG.md
 - Full rebuild clean, tests passing (OI-04 pre-existing only)
-- Commit: [hash]
+- Commit: 5350869
 
 ### 2026-03-26
 - Fixed SG-07: safeRender() return type changed to `VNode | null`, all commitVNode callers (mount(), reactivity-setup.ts render effect, update-manager.ts update dispatch) guarded against null
