@@ -588,7 +588,7 @@ File: `packages/core/src/component/component.ts`
 - Commit: 2c388a7
 - Fixed L-15: scanDirectory now passes updated routePrefix on recursion
 - Fixed L-16: matchRoute wildcard replace now scoped to bare * segments only
-- Commit: [hash]
+- Commit: ffe7fda
 
 ### 2026-03-26
 - Fixed SG-07: safeRender() return type changed to `VNode | null`, all commitVNode callers (mount(), reactivity-setup.ts render effect, update-manager.ts update dispatch) guarded against null
