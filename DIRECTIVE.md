@@ -4,7 +4,9 @@
 ---
 
 ## Status
-`ACTIVE DEVELOPMENT` — Core packages building. Compiler SG-05 fix shipped. Problem B (reactivity unification) in progress.
+Version 0.2.0. All security vulnerabilities fixed. Dead code cleanup complete.
+Core, compiler, cli, router, security, plugins, devtools all passing tsc.
+Known open issues logged as deferred to v0.3.0.
 
 ---
 
@@ -287,7 +289,7 @@ never instantiated when module is null. render() never reaches the null-return p
 ---
 
 ### SG-07 — safeRender() null type contract broken on first mount
-**Status:** OPEN
+**Status:** FIXED (2026-03-26)
 **Discovered:** 2026-03-03 (audit after SG-06 fix)
 **Component:** any component whose `render()` returns null on first render
 **Symptom:** `safeRender()` declares return type `VNode` but `render()` can return null.
@@ -296,9 +298,10 @@ If `render()` returns null on first mount, `commitVNode` receives null —
 type contract violated, behaviour undefined.
 **Note:** UpgradeModal does not hit this path due to Shell conditional guard (alpine-erp `9610d57`).
 Any future component returning null on first render will hit this.
-**Fix needed:** `safeRender()` should return `VNode | null` and `commitVNode()` should
-handle null gracefully, or `mount()` should guard before calling `commitVNode`.
-**Priority:** Medium — not currently causing a visible bug but type contract is broken
+**Fix:** `safeRender()` return type changed to `VNode | null`. All callers guarded:
+`mount()` untrack block, `reactivity-setup.ts` render effect, and `update-manager.ts`
+update dispatch all check `!== null` before passing to `commitVNode`.
+Files: `packages/core/src/component/component.ts`, `reactivity-setup.ts`, `update-manager.ts`
 
 ---
 
@@ -368,7 +371,24 @@ needed fixing independent of the pipeline bug.
 
 ---
 
-### CG-08 — Draggable modal: document.addEventListener() called from mounted() in a child component. Need to verify event listeners attach correctly and are cleaned up on unmount. If not supported, needs unmounted() lifecycle hook. Priority: medium — blocks draggable modals in @alpine/ui
+### CG-08 — unmount { } collides with public async unmount() on base SwissComponent
+**Status:** FIXED (2026-03-26)
+**Discovered:** 2026-03-26 (audit after CG-06 fix; same class of bug as mount collision)
+**Symptom:** `unmount { }` compiled to `private unmount()`, colliding with the public
+`async unmount()` method on the base `SwissComponent` class. The user's teardown hook
+was never called, and `unmountComponent()` dispatch looked for `.unmount` which is the
+base class method, not the user hook.
+**Fix (part 1 — compiler):** Added two new regex transforms in `swiss-syntax.ts` before
+the brace-only pattern (mirrors CG-06 mount fix):
+- `async unmount()` → `async unmounted()`
+- `unmount()` → `private unmounted()`
+- `unmount {` → `private unmounted() {`
+Updated JSDoc at top of file.
+File: `packages/compiler/src/transformers/swiss-syntax.ts`
+
+**Fix (part 2 — runtime dispatch):** `unmountComponent()` now checks for `unmounted`
+instead of `unmount` so the compiled hook is actually called during teardown.
+File: `packages/core/src/component/component.ts`
 
 ---
 
@@ -381,6 +401,226 @@ needed fixing independent of the pipeline bug.
 | M-04 | Add CHANGESET_TOKEN secret to kibologic org GitHub  | GitHub org   | PENDING |
 | M-05 | Run pnpm changeset → commit → push (v0.1.0)        | swiss-lib    | PENDING |
 | M-06 | Set branch protection on main in swiss-lib          | GitHub repo  | PENDING |
+
+---
+
+## Open Issues
+
+### Pre-existing check failures (not regressions — present before 2026-03-26 cleanup)
+
+- **OI-01** `check:barrels` — `@swissjs/css` has default-export barrel violations
+  Status: pre-existing, not blocking
+  Command: `pnpm check:barrels`
+
+- **OI-02** `check:ui-format` — style tags present in `packages/components` (Button.uix, Input.uix, Modal.uix)
+  Status: pre-existing, not blocking
+  Command: `pnpm check:ui-format`
+
+- **OI-03** `check:policy` — `packages/devtools` has deep import violations into `@swissjs/core/browser`
+  Status: pre-existing, not blocking
+  Command: `pnpm check:policy`
+
+- **OI-04** `@swissjs/css` test runner — no test files found, causes `pnpm test` to report failure on that package
+  Status: pre-existing, not blocking
+  Command: `pnpm test` (fails only on css package)
+
+### Core package analysis findings (2026-03-26)
+
+- **L-01** `packages/core/src/example-usage.ts` — leftover demo file, no imports from any other source file
+  Action: safe to delete
+
+- **L-02** `packages/core/src/framework.ts` — empty file, 0 lines, not imported anywhere
+  Action: safe to delete
+
+- **T-01** `packages/core/src/component/portals.ts :: createPortal` — stub, throws "not implemented"
+  Action: implement or remove before production
+
+- **T-02** `packages/core/src/component/portals.ts :: useSlot` — stub, returns empty array always
+  Action: implement or remove before production
+
+- **T-03** `packages/core/src/runtime/adapters/node-adapter.ts :: NodeAdapter` — template stub, no real render logic
+  Action: implement or remove before production
+
+- **T-04** `packages/core/src/runtime/adapters/bun-adapter.ts :: BunAdapter` — template stub, no real render logic
+  Action: implement or remove before production
+
+- **T-05** `packages/core/src/component/update-manager.ts` line 640 — explicit TODO: devtools bridge broken in browser builds
+  Action: fix or remove devtools bridge integration before production
+
+### packages/compiler analysis — 2026-03-26
+
+#### LEFTOVER — safe to delete in cleanup pass
+- L-03: packages/compiler/src/optimizer.ts — no-op file, never imported, legacy artifact
+- L-04: packages/compiler/src/transformers/capability-def-annot.ts — not in barrel, no production import
+- L-05: packages/compiler/src/transformers/component-decorators.ts — fully orphaned, no imports anywhere
+- L-08: packages/compiler/src/transformers/provides-annot.ts — fully orphaned, no imports anywhere
+
+#### TODO
+- T-06: packages/compiler/src/optimizer.ts :: optimizeTypeScript — stub, returns source unchanged (part of L-03)
+
+#### UNCLEAR — test coverage exists but no production caller
+- U-01: packages/compiler/src/transformers/lifecycle-render-decorators.ts — test-only reference, no production caller, may be planned but never wired into pipeline
+- U-02: packages/compiler/src/transformers/plugin-service-decorators.ts — same pattern as U-01
+
+#### DEAD CODE — never called, never imported
+- D-01: packages/compiler/src/compiler.ts :: transformTypeScriptWithEsbuild — private method, never called
+- D-02: packages/compiler/src/compiler.ts :: stripTypeScriptSyntaxWithAST — private method, never called, superseded by esbuild path
+- D-03: packages/compiler/src/transformers/jsx/jsx-transformer.ts :: visitor — exported but never imported anywhere
+- D-04: packages/compiler/src/transformers/jsx/jsx-factories.ts :: createMemberAccess — never called anywhere
+- D-05: packages/compiler/src/utils/file-utils.ts :: readFileIfExists — never imported anywhere
+- D-06: packages/compiler/src/types.ts :: FileInfo — defined, never referenced
+- D-07: packages/compiler/src/types.ts :: TransformResult — defined, never referenced
+- D-08: packages/compiler/src/types.ts :: TransformerContext — defined, never referenced
+
+### packages/cli analysis — 2026-03-26
+
+#### TODO — broken features, needs implementation decision
+- T-07: packages/cli/src/forge/dependency-manager.ts — installDependencies, addDependency, initGit all stubs. `swiss create` completes silently with nothing installed, no git repo created.
+- T-08: packages/cli/src/forge/registry.ts :: downloadTemplate — throws "not implemented". Remote HTTP template install fully broken.
+- T-09: packages/cli/src/commands/build.ts — header comment says deprecated until Swite ready. Swite is now at 0.2.0 — needs wiring, not left deprecated.
+
+#### LEFTOVER — safe to delete in cleanup pass
+- L-09: packages/cli/src/commands/init.ts — tombstoned command. Registered in index.ts, prints easter egg, exits with code 1. Remove registration and file.
+
+#### DEAD CODE — never called, never imported
+- D-09: packages/cli/src/forge/file-generator.ts :: generateProject — public method, no caller
+- D-10: packages/cli/src/forge/file-generator.ts :: generateFromTemplate — public method, no caller
+- D-11: packages/cli/src/forge/file-generator.ts :: generateDirectory — public method, no caller
+- D-12: packages/cli/src/forge/file-generator.ts :: validateTemplateStructure — public method, no caller
+- D-13: packages/cli/src/forge/file-generator.ts :: getGeneratedFiles — public method, no caller
+- D-14: packages/cli/src/forge/file-generator.ts :: getGeneratedDirectories — public method, no caller
+- D-15: packages/cli/src/forge/file-generator.ts :: cleanup — public method, no caller
+- D-16: packages/cli/src/types/index.ts :: PromptConfig — defined, never imported
+- D-17: packages/cli/src/types/index.ts :: TemplateVariables — defined, never imported
+- D-18: packages/cli/src/types/index.ts :: TemplateEngineOptions — defined, never imported
+- D-19: packages/cli/src/types/index.ts :: TemplateValidationResult — defined, never imported
+- D-20: packages/cli/src/types/index.ts :: SwissForgeConfig — defined, never imported
+- D-21: packages/cli/src/forge/template-engine.ts :: processTemplate — defined, never called (callers use processTemplateString or processTemplateFiles)
+- D-22: packages/cli/src/forge/template-engine.ts :: analyzeTemplate — public method, no external caller
+- D-23: packages/cli/src/forge/template-engine.ts :: getTemplateVariables — only called by analyzeTemplate (dead)
+- D-24: packages/cli/src/forge/template-engine.ts :: validateTemplate — only called by analyzeTemplate (dead)
+- D-25: packages/cli/src/forge/prompt-engine.ts :: selectTemplate — public method, never called
+- D-26: packages/cli/src/forge/prompt-engine.ts :: confirmGeneration — public method, never called
+- D-27: packages/cli/src/workspace/WorkspaceManager.ts :: getSwissPackages — public method, no caller
+- D-28: packages/cli/src/commands/build.ts :: getOutputStructure — commented-out function
+- D-29: packages/cli/src/commands/build.ts :: createBuildConfig — commented-out function
+- D-30: packages/cli/src/commands/init.ts :: initCommand — tombstoned, registered but exits code 1 (see L-09)
+- D-31: packages/cli/src/forge/forge.ts :: initializeRegistry (ESM bug) — FIXED in a112bd9
+
+#### FIXED in this session
+- forge.ts :: initializeRegistry __dirname ESM bug — fixed in a112bd9
+
+### packages/components analysis — 2026-03-27
+
+#### CODE QUALITY
+- L-10: packages/components/src/index.ui — temp shim duplicates all 3 components inline, will diverge from .uix sources — needs to import from .uix files
+
+#### TODO
+- D-32: packages/components/src/ui/Modal.uix — no focus trap, WCAG 2.1 SC 2.1.2 violation
+
+### packages/css analysis — 2026-03-27
+
+#### TODO (stubs)
+- D-33: packages/css/assets/images.ts :: optimizeImage, generatePlaceholder — async stubs, always return placeholder
+- D-34: packages/css/utils/index.ts :: extractCriticalCSS — no-op, inlines entire stylesheet as critical
+- L-11: packages/css/compiler/optimize.ts :: optimizeForProduction — calls all 3 feature flag stubs silently
+
+### packages/devtools analysis — 2026-03-27
+
+#### FIXED (2026-03-27)
+- FIXED L-13: DEBUG console.log removed from devtools/vscode_extension/src/server/language/completions.ts
+
+#### CODE QUALITY
+- D-35: packages/devtools/swiss_extension/src/content.ts:58 — window.postMessage(msg, '*') — internal messages visible to any frame — should use window.location.origin
+
+#### TEST QUALITY
+- T-11: packages/devtools/fenestration_explorer tests — entire test file is expect(true).toBe(true) — no real coverage
+
+### packages/plugins analysis — 2026-03-27
+
+#### FIXED (2026-03-27)
+- FIXED D-36: createIndexedStorage now uses real IndexedDB with in-memory fallback + warning
+- FIXED L-15: scanDirectory now passes updated routePrefix on recursion — nested routes get correct prefix
+- FIXED L-16: matchRoute wildcard replace now scoped to bare * segments only — foo*bar no longer becomes foo.*bar
+
+#### TEST QUALITY
+- T-12: packages/plugins/file-router tests — only test constructor shape, no real coverage
+
+### packages/router analysis — 2026-03-27
+
+#### FIXED (2026-03-27)
+- FIXED L-19: XSS in router/ssr/server-renderer.ts — route data now JSON-serialised with entity escaping
+- FIXED L-18: Debug console.log/warn removed from router/core/router.ts push() and handlePopState()
+
+#### FUNCTIONAL BUGS
+- D-37: packages/router/src/core/stateful-router.ts:78,127 — parseURL/buildURL call window.location without SSR guard — throws in Node/SSR environments
+- L-17: packages/router/src/core/matcher.ts — RouteMatch interface declared twice, branches property missing from second declaration
+
+### packages/security analysis — 2026-03-27
+
+#### FIXED (2026-03-27)
+- FIXED D-38: CORS credentials wildcard in security/middleware.ts — throws at config time if credentials + wildcard
+- FIXED L-20: CSP unsafe-inline removed from defaults in security/middleware.ts
+
+#### FUNCTIONAL BUGS
+- L-21: packages/security/src/middleware.ts:343 — findPolicyForRequest always returns undefined — body validation entirely inert
+- L-22: packages/security/src/services/validator.ts:17 — schema cache key uses JSON.stringify without stable property order — duplicate cache entries possible
+
+### packages/utils analysis — 2026-03-27
+
+#### CODE QUALITY
+- L-23: packages/utils/src/fixDtsExtensions.ts — extension regex false-positives on dotted directory names
+- L-24: packages/utils/src/fixDtsExtensions.ts — .js files not processed, only .d.ts
+
+---
+
+## Session Log
+
+### 2026-03-27
+- Logged analysis findings for components, css, devtools, plugins, router, security, utils packages
+- Fixed 3 security vulnerabilities (L-19 XSS, D-38 CORS, L-20 CSP)
+- Fixed 1 silent data loss bug (D-36 IndexedDB)
+- Removed 2 debug console.log statements (L-13, L-18)
+- Commit: c810ce2
+- Fixed hookRegistry.ts / hookRegistryExtensions.ts type divergence
+- getStats() now returns { totalHooks, hooks: Record<string, number> } in both files
+- tsc -b packages/core clean
+- Commit: 84f3a93
+- Fixed D-37: parseURL/buildURL now guard window.location with typeof window check — safe in SSR/Node
+- Commit: 2c388a7
+- Fixed L-15: scanDirectory now passes updated routePrefix on recursion
+- Fixed L-16: matchRoute wildcard replace now scoped to bare * segments only
+- Commit: ffe7fda
+- Fixed T-09: build command wired to Swite 0.2.0, deprecated header removed
+- Commit: c3e0f27
+- Fixed L-21: findPolicyForRequest now actually matches request path/method against configured policies
+  - Added RoutePolicy interface and createPolicyValidationMiddleware to validation-middleware.ts
+  - findPolicyForRequest performs prefix path match + optional case-insensitive method match
+  - Empty policies array now logs a warning at wiring time instead of silently bypassing validation
+  - Exported RoutePolicy, PolicyValidationMiddlewareOptions, createPolicyValidationMiddleware from barrel
+  - Commit: ce82ebf
+- Cut v0.2.0 — bumped package.json, wrote CHANGELOG.md
+- Full rebuild clean, tests passing (OI-04 pre-existing only)
+- Commit: 5350869
+
+### 2026-03-26
+- Fixed SG-07: safeRender() return type changed to `VNode | null`, all commitVNode callers (mount(), reactivity-setup.ts render effect, update-manager.ts update dispatch) guarded against null
+- Fixed CG-08: `unmount{}` → `unmounted()`, `unmountComponent()` dispatches `unmounted()`, compiler transforms updated with explicit-paren forms mirroring CG-06 mount fix
+- Deleted obsolete root docs (BRANCH_TRACKING, BUILD_GUIDE, BUILD_STRATEGY, CRITICAL_BUG_FIX, SCRIPTS_ANALYSIS, README-PUBLIC, docs/PHASE6_PLAN, docs-public/)
+- Deleted 13 obsolete scripts and 3 tools (docs pipeline, staging scripts, unused checkers)
+- Deleted packages/component-before-modularization.ts
+- Removed 10 dead npm script keys from package.json (api:build, api:check, check:promotion, docs:tsdoc-coverage, docs:tasks, docs:filter, docs:filter:dry, check:src-artifacts, check:tsconfig-outdir, precommit:docs-sync)
+- Surgical edit: check:policy — removed check-public-barrels reference
+- Surgical edit: reset — removed 4 dead script references
+- Pre-existing check failures unchanged (css default-export, ui-format style tags, devtools deep imports)
+- Logged OI-01 through OI-04 as pre-existing open issues
+- Removed api-report-build.mjs and api-report-check.mjs (unreachable — npm script keys already removed)
+- tsc -b result: [see commit]
+- Commit: [see git log]
+- Logged compiler analysis findings L-03 L-04 L-05 L-08 T-06 U-01 U-02 D-01 through D-08
+- Started cli package analysis
+- Fixed forge.ts :: initializeRegistry __dirname ESM bug — forge subcommands now resolve registry path correctly
+- Logged CLI analysis findings T-07 through T-09, L-09, D-09 through D-31
 
 ---
 

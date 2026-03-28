@@ -55,5 +55,5 @@ window.addEventListener('message', (event: MessageEvent) => {
 chrome.runtime.onMessage.addListener((msg: unknown) => {
   // Messages from panel -> forward to page via window
   if (!isPanelToPageMsg(msg)) return
-  window.postMessage(msg, '*')
+  window.postMessage(msg, window.location.origin)
 })

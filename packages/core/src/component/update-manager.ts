@@ -152,6 +152,7 @@ export class UpdateManager {
         logger.updates(
           `${this.component.constructor.name}: using updateWithDomNode (child component)`,
         );
+        if (newVNode === null) return;
         this.updateWithDomNode(newVNode);
         const t1 =
           typeof performance !== "undefined" && performance.now
@@ -188,6 +189,8 @@ export class UpdateManager {
       logger.updates(
         `${this.component.constructor.name}: performUpdate (container=${!!container}, vnode=${!!(this.component as any)._vnode}, dom=${hasDomNode})`,
       );
+
+      if (newVNode === null) return;
 
       if (container) {
         this.updateRootComponent(container, newVNode);

@@ -167,11 +167,6 @@ export class ValidatorService {
     return compiled.validate(value);
   }
 
-  addCustomRule(_name: string, _rule: ValidationRule): void {
-    // This allows extending validation with custom rules
-    // Implementation would depend on specific requirements
-  }
-
   clearCache(): void {
     this.compiledSchemas.clear();
   }
