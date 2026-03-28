@@ -8,9 +8,6 @@ import { Command } from "commander";
 import chalk from "chalk";
 import path from "path";
 import fs from "fs-extra";
-// TODO: Build command needs to be reimplemented with SWITE bundler
-// Vite has been removed - this command is deprecated until SWITE build is ready
-// Removed unused imports: compileUiFilesToJavaScript, fixDtsExtensions, spawnSync
 
 type ProjectType = "component" | "library" | "plugin";
 
@@ -472,7 +469,7 @@ function getEntryPoint(
 //           entry: entryPoint,
 //           name: projectType === "plugin" ? "SwissJSPlugin" : "SwissJSLibrary",
 //           // formats: sanitizeFormats(swissConfig.build?.formats),
-//           formats: ["es", "cjs"], // Default formats since build is deprecated
+//           formats: ["es", "cjs"],
 //         },
 //         rollupOptions: {
 //           external: swissConfig.build?.external || ["@swissjs/core"],

@@ -4,7 +4,6 @@ import * as fsp from "node:fs/promises";
 import { transform } from "esbuild";
 import type { CompileOptions } from "./types.js";
 import { processImports } from "./transformers/import-processor.js";
-import { typeSyntaxStripperTransformer } from "./transformers/type-syntax-stripper.js";
 import { findFiles, ensureDirectoryExists } from "./utils/file-utils.js";
 import {
   findTypeScriptFiles,
@@ -173,61 +172,6 @@ export class UiCompiler {
       // Return original source on error
       return source;
     }
-  }
-
-  private async transformTypeScriptWithEsbuild(
-    source: string,
-    filePath: string,
-  ): Promise<string> {
-    try {
-      // .ui files can contain JSX in render() — use tsx loader so esbuild parses JSX
-      const loader = filePath.endsWith(".ui") ? "tsx" : "ts";
-      const result = await transform(source, {
-        loader,
-        target: "es2020",
-        format: "esm",
-        treeShaking: true,
-        jsx: "preserve",
-        tsconfigRaw: {
-          compilerOptions: {
-            experimentalDecorators: true,
-          },
-        },
-      });
-
-      console.log(`[ESBUILD] Code length: ${result.code.length}`);
-      console.log(`[ESBUILD] Code start: ${result.code.substring(0, 100).replace(/\n/g, "\\n")}`);
-      return result.code;
-    } catch (error) {
-      console.error(
-        `[TypeScript Transform] esbuild ERROR in ${filePath}:`,
-        error,
-      );
-      // THROW error so we see it in browser 500
-      throw error;
-      // return source;
-    }
-  }
-
-  private stripTypeScriptSyntaxWithAST(
-    source: string,
-    filePath: string,
-  ): string {
-    const scriptKind = filePath.endsWith(".ui")
-      ? ts.ScriptKind.TSX
-      : ts.ScriptKind.TS;
-    const sourceFile = ts.createSourceFile(
-      filePath,
-      source,
-      ts.ScriptTarget.Latest,
-      true,
-      scriptKind,
-    );
-    const result = ts.transform(sourceFile, [typeSyntaxStripperTransformer()]);
-    const printer = ts.createPrinter();
-    const output = printer.printFile(result.transformed[0] as ts.SourceFile);
-    result.dispose();
-    return output;
   }
 
   // Strip JSDoc comments from source code

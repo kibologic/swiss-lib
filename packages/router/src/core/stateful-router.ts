@@ -75,8 +75,9 @@ export class StatefulRouter extends Router {
   /**
    * Parse URL into route state
    */
-  parseURL(url: string = window.location.href): RouteState {
-    const urlObj = new URL(url, window.location.origin);
+  parseURL(url: string = typeof window !== 'undefined' ? window.location.href : '/'): RouteState {
+    const base = typeof window !== 'undefined' ? window.location.origin : 'http://localhost';
+    const urlObj = new URL(url, base);
     const path = urlObj.pathname;
     const query: Record<string, string> = {};
 
@@ -124,7 +125,8 @@ export class StatefulRouter extends Router {
    * Build URL from route state
    */
   buildURL(state: RouteState): string {
-    const url = new URL(state.path, window.location.origin);
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost';
+    const url = new URL(state.path, origin);
 
     // Add regular query params
     Object.entries(state.query).forEach(([key, value]) => {

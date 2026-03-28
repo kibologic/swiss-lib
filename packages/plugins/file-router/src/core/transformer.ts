@@ -93,9 +93,10 @@ export class PathTransformer {
     const params: Record<string, string> = {};
     
     // Convert pattern to regex
+    // Only replace bare * wildcard segments (not * embedded inside segment names)
     const regexPattern = pattern
       .replace(/:[^/]+/g, '([^/]+)')
-      .replace(/\*/g, '.*');
+      .replace(/(?<![^/])\*(?![^/])/g, '[^/]+');
     
     const regex = new RegExp(`^${regexPattern}$`);
     const match = path.match(regex);

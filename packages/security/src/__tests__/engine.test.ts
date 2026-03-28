@@ -9,19 +9,19 @@ import { InMemorySecurityEngine } from '../engine.js';
 import type { SecurityPolicy } from '../types.js';
 
 describe('@swissjs/security engine', () => {
-  it('allows when no policy denies', () => {
+  it('allows when no policy denies', async () => {
     const eng = new InMemorySecurityEngine();
-    const ok = eng.evaluate('storage:read', { layer: 'runtime' });
+    const ok = await eng.evaluate('storage:read', { layer: 'runtime' });
     expect(ok).toBe(true);
   });
 
-  it('enforces role requirement', () => {
+  it('enforces role requirement', async () => {
     const eng = new InMemorySecurityEngine();
     const policy: SecurityPolicy = { id: 'storage:*', target: 'storage:*', roles: ['admin'] };
     eng.registerPolicy(policy);
 
-    const denied = eng.evaluate('storage:write', { layer: 'runtime', roles: ['user'] });
-    const allowed = eng.evaluate('storage:write', { layer: 'runtime', roles: ['admin'] });
+    const denied = await eng.evaluate('storage:write', { layer: 'runtime', roles: ['user'] });
+    const allowed = await eng.evaluate('storage:write', { layer: 'runtime', roles: ['admin'] });
 
     expect(denied).toBe(false);
     expect(allowed).toBe(true);
