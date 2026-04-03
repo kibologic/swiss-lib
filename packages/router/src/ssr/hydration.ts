@@ -1,5 +1,5 @@
 
-import { SwissComponent } from '@swissjs/core';
+import { SwissComponent } from '@kibologic/core';
 
 export interface HydrationData {
     route: string;

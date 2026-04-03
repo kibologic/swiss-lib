@@ -8,7 +8,7 @@ import fs from "fs-extra";
 import path from "path";
 import chalk from "chalk";
 import * as ts from "typescript";
-import { fixDtsExtensions as sharedFixDtsExtensions } from "@swissjs/utils";
+import { fixDtsExtensions as sharedFixDtsExtensions } from "@kibologic/utils";
 export { sharedFixDtsExtensions as fixDtsExtensions };
 
 export async function compileUiFilesToJavaScript(
@@ -48,7 +48,7 @@ export async function compileUiFilesToJavaScript(
   );
 
   try {
-    const { UiCompiler } = await import("@swissjs/compiler");
+    const { UiCompiler } = await import("@kibologic/compiler");
     const compiler = new UiCompiler({
       outputFormat: "javascript",
       target: ts.ScriptTarget.ES2020,
@@ -70,7 +70,7 @@ export async function compileUiFilesToJavaScript(
           ),
         );
       let jsCode = await compiler.compileFile(file);
-      // Remove any import of createElement or Fragment from @swissjs/core (legacy guard)
+      // Remove any import of createElement or Fragment from @kibologic/core (legacy guard)
       jsCode = jsCode.replace(
         /import\s*\{[^}]*createElement[^}]*\}[^;]*;?\n?/g,
         "",
@@ -117,7 +117,7 @@ export async function compileUiFilesToJavaScript(
     const tempTsConfig = {
       extends: path.relative(outDir, path.join(process.cwd(), "tsconfig.json")),
       compilerOptions: {
-        types: ["@swissjs/core"],
+        types: ["@kibologic/core"],
       },
       include: ["**/*"],
     };

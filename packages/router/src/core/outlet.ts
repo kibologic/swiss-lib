@@ -1,4 +1,4 @@
-import { SwissComponent, createElement } from "@swissjs/core";
+import { SwissComponent, createElement } from "@kibologic/core";
 
 // Mock of an Outlet component
 // In a real implementation this would use Context to find the matching child route

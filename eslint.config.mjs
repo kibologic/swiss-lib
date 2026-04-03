@@ -32,15 +32,15 @@ export default defineConfig([
   {
     files: ["packages/**/src/**/*.{ts,tsx,js,ui,uix}"],
     rules: {
-      // Forbid deep imports into @swissjs/* internal src trees
+      // Forbid deep imports into @kibologic/* internal src trees
       "no-restricted-imports": [
         "error",
         {
           patterns: [
             {
-              group: ["@swissjs/*/src/**"],
+              group: ["@kibologic/*/src/**"],
               message:
-                "Deep imports into @swissjs/*/src/** are forbidden; use the package barrel @swissjs/<pkg>.",
+                "Deep imports into @kibologic/*/src/** are forbidden; use the package barrel @kibologic/<pkg>.",
             },
           ],
         },

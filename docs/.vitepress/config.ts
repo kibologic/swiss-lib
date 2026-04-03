@@ -89,20 +89,20 @@ export default defineConfig({
         {
           text: "API Reference",
           items: [
-            { text: "@swissjs/core", link: "/api/core/" },
-            { text: "@swissjs/compiler", link: "/api/compiler/" },
-            { text: "@swissjs/cli", link: "/api/cli/" },
-            { text: "@swissjs/utils", link: "/api/utils/" },
+            { text: "@kibologic/core", link: "/api/core/" },
+            { text: "@kibologic/compiler", link: "/api/compiler/" },
+            { text: "@kibologic/cli", link: "/api/cli/" },
+            { text: "@kibologic/utils", link: "/api/utils/" },
             {
-              text: "@swissjs/vite-plugin-swiss",
+              text: "@kibologic/vite-plugin-swiss",
               link: "/api/vite-plugin-swiss/",
             },
             {
-              text: "@swissjs/plugin-file-router",
+              text: "@kibologic/plugin-file-router",
               link: "/api/plugin-file-router/",
             },
             {
-              text: "@swissjs/plugin-web-storage",
+              text: "@kibologic/plugin-web-storage",
               link: "/api/plugin-web-storage/",
             },
           ],

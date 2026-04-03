@@ -34,7 +34,7 @@ export class ServerRenderer {
     const leafMatch = matches[matches.length - 1];
     const Component = leafMatch.route.component;
 
-    // TODO: Integrate with @swissjs/core renderToString
+    // TODO: Integrate with @kibologic/core renderToString
     // For now, return a placeholder
     const safeData = JSON.stringify(data).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026');
     const html = `

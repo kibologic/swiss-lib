@@ -1,5 +1,5 @@
 {
-  "name": "@swissjs/swiss-extension",
+  "name": "@kibologic/swiss-extension",
   "version": "0.1.0",
   "type": "module",
   "private": true,
@@ -38,5 +38,9 @@
   "keywords": [
     "swissjs",
     "framework"
-  ]
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  }
 }

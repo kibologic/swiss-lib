@@ -4,7 +4,7 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// Core gateway adapter kept decoupled from @swissjs/security at type level
+// Core gateway adapter kept decoupled from @kibologic/security at type level
 // to avoid project reference rootDir/include issues.
 
 // Minimal local replicas of the security types
@@ -26,7 +26,7 @@ export interface SecurityGateway {
   auditPlugin: (plugin: { name: string; version?: string; requiredCapabilities?: string[] }) => ValidationResult;
 }
 
-// Internal holder; core does not implement security, it delegates to package @swissjs/security
+// Internal holder; core does not implement security, it delegates to package @kibologic/security
 let _gateway: SecurityGateway | null = null;
 
 export function setSecurityGateway(gw: SecurityGateway) {

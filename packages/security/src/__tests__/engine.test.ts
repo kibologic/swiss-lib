@@ -8,7 +8,7 @@ import { describe, it, expect } from 'vitest';
 import { InMemorySecurityEngine } from '../engine.js';
 import type { SecurityPolicy } from '../types.js';
 
-describe('@swissjs/security engine', () => {
+describe('@kibologic/security engine', () => {
   it('allows when no policy denies', async () => {
     const eng = new InMemorySecurityEngine();
     const ok = await eng.evaluate('storage:read', { layer: 'runtime' });

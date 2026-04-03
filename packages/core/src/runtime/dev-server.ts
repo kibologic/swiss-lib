@@ -200,7 +200,7 @@ export class DevServerService {
     try {
       // Use SWITE server for development
       // Dynamic import - types will be available at runtime
-      const switeModule = await (eval('import') as (m: string) => Promise<any>)('@swissjs/swite');
+      const switeModule = await (eval('import') as (m: string) => Promise<any>)('@kibologic/swite');
       const switeConfig: Record<string, unknown> = {
         root: runtimeService.resolve("."),
         server: {
@@ -213,7 +213,7 @@ export class DevServerService {
           // SwissJS SWITE plugins would be imported here
         ],
         optimizeDeps: {
-          include: ["@swissjs/core"],
+          include: ["@kibologic/core"],
         },
       };
 

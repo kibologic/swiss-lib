@@ -4,7 +4,7 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-import { getDevtoolsBridge, type GraphSnapshot, type ComponentNodePayload } from '@swissjs/core';
+import { getDevtoolsBridge, type GraphSnapshot, type ComponentNodePayload } from '@kibologic/core';
 
 export interface ComponentNode extends ComponentNodePayload {
   children?: ComponentNode[];

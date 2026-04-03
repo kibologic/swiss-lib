@@ -1,5 +1,5 @@
 {
-  "name": "@swissjs/devtools-runtime-inspector",
+  "name": "@kibologic/devtools-runtime-inspector",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@swissjs/core": "workspace:*"
+    "@kibologic/core": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.8.2",
@@ -32,5 +32,9 @@
   "keywords": [
     "swissjs",
     "framework"
-  ]
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  }
 }

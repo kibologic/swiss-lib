@@ -1,12 +1,12 @@
 {
-  "name": "@swissjs/plugin-file-router",
+  "name": "@kibologic/plugin-file-router",
   "version": "1.0.0",
   "description": "File-based routing plugin for SwissJS",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
   "dependencies": {
-    "@swissjs/core": "workspace:*"
+    "@kibologic/core": "workspace:*"
   },
   "peerDependencies": {
     "vite": "^5.2.0"
@@ -52,7 +52,9 @@
     }
   },
   "sideEffects": false,
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "license": "MIT",
   "author": {
     "name": "Themba Mzumara",
@@ -67,5 +69,12 @@
   "bugs": {
     "url": "https://github.com/ThembaMzumara/SWISS/issues"
   },
-  "keywords": ["swissjs", "framework"]
+  "keywords": [
+    "swissjs",
+    "framework"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  }
 }

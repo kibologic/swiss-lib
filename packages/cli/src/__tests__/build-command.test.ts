@@ -15,7 +15,7 @@ const fixturesPath = path.join(__dirname, "__fixtures__");
 const tempDir = path.join(fixturesPath, ".temp");
 
 // Mock the UiCompiler
-vi.mock("@swissjs/compiler", () => ({
+vi.mock("@kibologic/compiler", () => ({
   UiCompiler: vi.fn().mockImplementation(() => ({
     compileFile: vi.fn(async (filePath: string) => {
       const content = await fs.readFile(filePath, "utf-8");

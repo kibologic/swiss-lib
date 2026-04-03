@@ -10,7 +10,7 @@ import { preprocessSwissSyntax } from "../src/transformers/swiss-syntax";
 describe("Signal-backed state transforms (Problem B)", () => {
   it("transforms state with initializer into Signal getter/setter", () => {
     const source = `
-import { SwissComponent } from '@swissjs/core';
+import { SwissComponent } from '@kibologic/core';
 component Counter {
   state { let count: number = 0; }
 }
@@ -29,7 +29,7 @@ component Counter {
 
   it("transforms state with string initializer", () => {
     const source = `
-import { SwissComponent } from '@swissjs/core';
+import { SwissComponent } from '@kibologic/core';
 component App {
   state { let view: string = 'checking'; }
 }
@@ -43,7 +43,7 @@ component App {
 
   it("transforms state with array initializer", () => {
     const source = `
-import { SwissComponent } from '@swissjs/core';
+import { SwissComponent } from '@kibologic/core';
 import type { AlpineModule } from '@alpine/core';
 component Shell {
   state { let modules: AlpineModule[] = []; }
@@ -58,7 +58,7 @@ component Shell {
 
   it("transforms state without initializer", () => {
     const source = `
-import { SwissComponent } from '@swissjs/core';
+import { SwissComponent } from '@kibologic/core';
 component Foo {
   state { let name: string; }
 }
@@ -70,22 +70,22 @@ component Foo {
     expect(result).toContain("private set name(v: string)");
   });
 
-  it("injects Signal into existing @swissjs/core import", () => {
+  it("injects Signal into existing @kibologic/core import", () => {
     const source = `
-import { SwissComponent } from '@swissjs/core';
+import { SwissComponent } from '@kibologic/core';
 component Counter {
   state { let count: number = 0; }
 }
 `;
     const result = preprocessSwissSyntax(source, "Counter.uix");
 
-    expect(result).toContain("Signal } from '@swissjs/core'");
+    expect(result).toContain("Signal } from '@kibologic/core'");
     expect(result).not.toMatch(/import \{ Signal \} from '@swissjs\/core'.*import \{ Signal \}/s);
   });
 
   it("does not double-inject Signal if already imported", () => {
     const source = `
-import { SwissComponent, Signal } from '@swissjs/core';
+import { SwissComponent, Signal } from '@kibologic/core';
 component Counter {
   state { let count: number = 0; }
 }
@@ -96,14 +96,14 @@ component Counter {
       (_, i, arr) => i === arr.indexOf("Signal"),
     ).length;
     // Signal should appear in the import and in the generated code — not duplicated in import
-    const importLine = result.split("\n").find((l) => l.includes("from '@swissjs/core'")) ?? "";
+    const importLine = result.split("\n").find((l) => l.includes("from '@kibologic/core'")) ?? "";
     const importSignalCount = (importLine.match(/\bSignal\b/g) || []).length;
     expect(importSignalCount).toBe(1);
   });
 
   it("transforms multiple state blocks in one component", () => {
     const source = `
-import { SwissComponent } from '@swissjs/core';
+import { SwissComponent } from '@kibologic/core';
 component App {
   state { let view: string = 'checking'; }
   state { let loading: boolean = false; }
@@ -119,7 +119,7 @@ component App {
 
   it("does not affect state-less components", () => {
     const source = `
-import { SwissComponent } from '@swissjs/core';
+import { SwissComponent } from '@kibologic/core';
 component Pure {
   render() { return null; }
 }

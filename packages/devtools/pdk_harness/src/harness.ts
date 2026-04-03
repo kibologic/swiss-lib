@@ -4,7 +4,7 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-import type { Plugin } from '@swissjs/core';
+import type { Plugin } from '@kibologic/core';
 
 export interface HarnessResult {
   loaded: boolean;
