@@ -18,10 +18,10 @@ export default defineConfig({
       formats: ['es', 'cjs']
     },
     rollupOptions: {
-      external: ['@swissjs/core'],
+      external: ['@kibologic/core'],
       output: {
         globals: {
-          '@swissjs/core': 'SwissJS'
+          '@kibologic/core': 'SwissJS'
         }
       }
     }

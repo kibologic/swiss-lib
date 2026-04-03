@@ -153,7 +153,7 @@ for (const root of roots) {
       violations.push({
         type: 'deep-import',
         file,
-        message: `Deep import to @swissjs/*/src/* found in ${file}`,
+        message: `Deep import to @kibologic/*/src/* found in ${file}`,
       });
     }
   }

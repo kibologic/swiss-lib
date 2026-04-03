@@ -4,7 +4,7 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// Vitest JSDOM setup for @swissjs/components
+// Vitest JSDOM setup for @kibologic/components
 // - Mocks HTMLCanvasElement.prototype.getContext to prevent jsdom errors
 // - Softens window.getComputedStyle for pseudo elements to avoid axe-core crashes
 // - Extends default test timeout for slower a11y checks

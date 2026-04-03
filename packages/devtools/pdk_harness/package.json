@@ -1,5 +1,5 @@
 {
-  "name": "@swissjs/devtools-pdk-harness",
+  "name": "@kibologic/devtools-pdk-harness",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -21,5 +21,9 @@
   "keywords": [
     "swissjs",
     "framework"
-  ]
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  }
 }

@@ -1,5 +1,5 @@
 {
-  "name": "@swissjs/compiler",
+  "name": "@kibologic/compiler",
   "version": "0.1.0",
   "type": "module",
   "main": "dist/index.js",
@@ -47,5 +47,9 @@
   "keywords": [
     "swissjs",
     "framework"
-  ]
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  }
 }

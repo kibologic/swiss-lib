@@ -13,20 +13,20 @@ const repoRoot = path.resolve(process.cwd());
 const exts = new Set(['.ts', '.tsx', '.js', '.jsx', '.mts', '.cts']);
 const ignoreDirs = new Set(['node_modules', 'dist', '.turbo', '.git']);
 
-// Note: We only allow top-level package imports like @swissjs/core (no deep paths)
+// Note: We only allow top-level package imports like @kibologic/core (no deep paths)
 
 /**
- * Returns true if the import specifier is a deep import into a @swissjs/* package.
- * e.g. @swissjs/core/src/..., @swissjs/core/plugins/..., etc.
+ * Returns true if the import specifier is a deep import into a @kibologic/* package.
+ * e.g. @kibologic/core/src/..., @kibologic/core/plugins/..., etc.
  */
 const ALLOW_SUBPATHS = new Set([
-  '@swissjs/core/jsx-runtime',
-  '@swissjs/core/jsx-dev-runtime',
-  '@swissjs/core/plugins',
+  '@kibologic/core/jsx-runtime',
+  '@kibologic/core/jsx-dev-runtime',
+  '@kibologic/core/plugins',
 ]);
 
 function isDeepSwissImport(spec) {
-  if (!spec.startsWith('@swissjs/')) return false;
+  if (!spec.startsWith('@kibologic/')) return false;
   const without = spec.replace(/^@swissjs\//, '');
   // allow whitelisted public subpaths
   if (ALLOW_SUBPATHS.has(spec)) return false;
@@ -61,7 +61,7 @@ for (const file of walk(repoRoot)) {
 }
 
 if (offenders.length) {
-  console.error('Deep @swissjs/* imports are not allowed. Use package barrels only.\n');
+  console.error('Deep @kibologic/* imports are not allowed. Use package barrels only.\n');
   for (const line of offenders) console.error(line);
   process.exit(1);
 } else {

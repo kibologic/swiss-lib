@@ -134,7 +134,7 @@ export class UiCompiler {
       if (!hasCreateElementImport) {
         // Add the import at the top after other imports
         const importStatement =
-          "import { createElement, Fragment } from '@swissjs/core';\n";
+          "import { createElement, Fragment } from '@kibologic/core';\n";
 
         // Find the last import statement
         const importRegex = /^import\s+.*?from\s+['"][^'"]+['"];?\s*$/gm;

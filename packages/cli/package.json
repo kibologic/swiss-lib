@@ -1,5 +1,5 @@
 {
-  "name": "@swissjs/cli",
+  "name": "@kibologic/cli",
   "version": "0.1.1",
   "scripts": {
     "build": "tsc -b",
@@ -14,9 +14,9 @@
   },
   "type": "module",
   "dependencies": {
-    "@swissjs/compiler": "workspace:*",
-    "@swissjs/utils": "workspace:*",
-    "@swissjs/swite": "link:../../../swite",
+    "@kibologic/compiler": "workspace:*",
+    "@kibologic/utils": "workspace:*",
+    "@kibologic/swite": "link:../../../swite",
     "chalk": "^5.4.1",
     "chokidar": "^3.5.3",
     "commander": "^9.4.0",
@@ -62,5 +62,9 @@
   "keywords": [
     "swissjs",
     "framework"
-  ]
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  }
 }

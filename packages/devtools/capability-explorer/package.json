@@ -1,5 +1,5 @@
 {
-  "name": "@swissjs/capability-explorer",
+  "name": "@kibologic/capability-explorer",
   "version": "0.1.0",
   "description": "SwissJS Capability Explorer - Visual devtools for component hierarchy and capability bindings",
   "type": "module",
@@ -14,10 +14,10 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@swissjs/core": "workspace:*"
+    "@kibologic/core": "workspace:*"
   },
   "devDependencies": {
-    "@swissjs/cli": "workspace:*",
+    "@kibologic/cli": "workspace:*",
     "vite": "^5.0.0",
     "typescript": "^5.0.0",
     "@types/node": "^20.0.0",
@@ -50,5 +50,9 @@
   "homepage": "https://github.com/ThembaMzumara/SWISS#readme",
   "bugs": {
     "url": "https://github.com/ThembaMzumara/SWISS/issues"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
   }
 }

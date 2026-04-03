@@ -74,7 +74,7 @@
     "eslint-plugin-security": "^3.0.1",
     "eslint-plugin-sonarjs": "^2.0.3",
     "eslint-plugin-vitest": "^0.5.4",
-    "file-router": "link:@swissjs/plugins/file-router",
+    "file-router": "link:@kibologic/plugins/file-router",
     "globals": "^16.3.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.2",
@@ -94,8 +94,8 @@
   "pnpm": {
     "overrides": {
       "@types/node": "18.19.121",
-      "@swissjs/utils": "file:./packages/utils",
-      "@swissjs/security": "file:./packages/security"
+      "@kibologic/utils": "file:./packages/utils",
+      "@kibologic/security": "file:./packages/security"
     }
   },
   "engines": {
@@ -107,9 +107,9 @@
     "framework"
   ],
   "dependencies": {
-    "@swissjs/compiler": "workspace:*",
-    "@swissjs/utils": "workspace:*",
-    "@swissjs/swite": "github:kibologic/swite",
+    "@kibologic/compiler": "workspace:*",
+    "@kibologic/utils": "workspace:*",
+    "@kibologic/swite": "github:kibologic/swite",
     "commander": "^14.0.0",
     "express": "^5.1.0",
     "fs-extra": "^11.3.0",

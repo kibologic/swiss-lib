@@ -7,7 +7,7 @@
 import { PathTransformer } from './transformer.js';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
-import type { RouteDefinition } from '@swissjs/core';
+import type { RouteDefinition } from '@kibologic/core';
 import type { FileRouterOptions } from '../types/index.js';
 
 export class RouteScanner {

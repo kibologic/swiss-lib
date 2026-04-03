@@ -10,7 +10,7 @@ import { resolve } from 'path';
 export default defineConfig({
   resolve: {
     alias: {
-      '@swissjs/core': resolve(__dirname, '../../core/src/plugins/plugin-types.ts')
+      '@kibologic/core': resolve(__dirname, '../../core/src/plugins/plugin-types.ts')
     }
   },
   test: {

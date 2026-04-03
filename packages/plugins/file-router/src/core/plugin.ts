@@ -4,7 +4,7 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-import type { Plugin, PluginContext, RouteDefinition } from '@swissjs/core';
+import type { Plugin, PluginContext, RouteDefinition } from '@kibologic/core';
 import type { FileRouterOptions } from '../types/index.js';
 import { RouteScanner } from './scanner.js';
 

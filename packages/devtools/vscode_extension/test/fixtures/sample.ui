@@ -1,4 +1,4 @@
-import { SwissComponent, html } from '@swissjs/core';
+import { SwissComponent, html } from '@kibologic/core';
 
 export default class TestComponent extends SwissComponent {
   constructor(props: {}) {

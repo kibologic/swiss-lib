@@ -6,7 +6,7 @@
 
 // SwissJS JSX Dev Runtime Entry Point
 //
-// This file is required for SwissJS to support the modern JSX transform in development mode (TypeScript 4.1+ and SWITE/ESBuild). When users set "jsxImportSource": "@swissjs/core", dev tools and error overlays may look for this file as '@swissjs/core/jsx-dev-runtime'.
+// This file is required for SwissJS to support the modern JSX transform in development mode (TypeScript 4.1+ and SWITE/ESBuild). When users set "jsxImportSource": "@kibologic/core", dev tools and error overlays may look for this file as '@kibologic/core/jsx-dev-runtime'.
 //
 // It must export 'jsx', 'jsxs', and 'Fragment' to be compatible with the JSX dev runtime expectations. This enables SwissJS to provide a React-like developer experience, but with its own VDOM and component model, including better error messages and dev overlays.
 //

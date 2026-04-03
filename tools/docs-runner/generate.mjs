@@ -37,7 +37,7 @@ function pkgOutDirName(pkgDir) {
     if (existsSync(pkgJsonPath)) {
       const pkg = JSON.parse(readFileSync(pkgJsonPath, 'utf8'));
       if (typeof pkg.name === 'string' && pkg.name.length > 0) {
-        if (pkg.name.startsWith('@swissjs/')) outDirName = pkg.name.split('/')[1];
+        if (pkg.name.startsWith('@kibologic/')) outDirName = pkg.name.split('/')[1];
         else outDirName = pkg.name.replace(/^@/, '').replace('/', '-');
       }
     }

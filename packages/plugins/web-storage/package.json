@@ -1,5 +1,5 @@
 {
-  "name": "@swissjs/plugin-web-storage",
+  "name": "@kibologic/plugin-web-storage",
   "version": "0.1.0",
   "type": "module",
   "main": "dist/index.js",
@@ -14,7 +14,7 @@
     "dist"
   ],
   "dependencies": {
-    "@swissjs/core": "workspace:*"
+    "@kibologic/core": "workspace:*"
   },
   "devDependencies": {
     "typescript": "5.8.2",
@@ -57,5 +57,9 @@
   "keywords": [
     "swissjs",
     "framework"
-  ]
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  }
 }

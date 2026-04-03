@@ -70,13 +70,13 @@ export const buildCommand = new Command("build")
       // Load and validate project config
       const packageJson = await fs.readJson(packageJsonPath);
       if (
-        !packageJson.dependencies?.["@swissjs/core"] &&
-        !packageJson.peerDependencies?.["@swissjs/core"] &&
-        !packageJson.devDependencies?.["@swissjs/core"]
+        !packageJson.dependencies?.["@kibologic/core"] &&
+        !packageJson.peerDependencies?.["@kibologic/core"] &&
+        !packageJson.devDependencies?.["@kibologic/core"]
       ) {
         console.error(
           chalk.red(
-            "❌ Not a SwissJS project. Missing @swissjs/core dependency.",
+            "❌ Not a SwissJS project. Missing @kibologic/core dependency.",
           ),
         );
         process.exit(1);
@@ -148,8 +148,8 @@ export const buildCommand = new Command("build")
           rootDir: ".swiss-temp",
           outDir: path.relative(projectRoot, outDir),
           jsx: "react-jsx",
-          jsxImportSource: "@swissjs/core",
-          types: ["@swissjs/core"],
+          jsxImportSource: "@kibologic/core",
+          types: ["@kibologic/core"],
           module,
           moduleResolution,
         },
@@ -163,7 +163,7 @@ export const buildCommand = new Command("build")
           "📦 Compiling TypeScript (.ts/.tsx) in .swiss-temp to JavaScript in dist/ ...",
         ),
       );
-      const { UiCompiler } = await import("@swissjs/compiler");
+      const { UiCompiler } = await import("@kibologic/compiler");
       const compiler = new UiCompiler();
       const success = await compiler.compileTypeScriptToJavaScript(
         tempDir,
@@ -189,7 +189,7 @@ export const buildCommand = new Command("build")
 
       // Step 6: Build with SWITE
       console.log(chalk.blue("⚡ Building with SWITE..."));
-      const { build: switeBuild } = await import("@swissjs/swite");
+      const { build: switeBuild } = await import("@kibologic/swite");
 
       // Determine entry point
       const entryPoint = getEntryPoint(
@@ -291,7 +291,7 @@ function detectProjectType(
     .scripts?.serve;
   const hasPeerDeps = (
     packageJson as { peerDependencies?: Record<string, unknown> }
-  ).peerDependencies?.["@swissjs/core"];
+  ).peerDependencies?.["@kibologic/core"];
   const keywordsVal = (packageJson as { keywords?: unknown }).keywords;
   const hasPluginKeyword =
     Array.isArray(keywordsVal) &&
@@ -453,7 +453,7 @@ function getEntryPoint(
 //             chunkFileNames: "assets/[name].[hash].js",
 //             assetFileNames: "assets/[name].[hash].[ext]",
 //             manualChunks: {
-//               "swissjs-core": ["@swissjs/core"],
+//               "swissjs-core": ["@kibologic/core"],
 //             },
 //           },
 //         },
@@ -472,10 +472,10 @@ function getEntryPoint(
 //           formats: ["es", "cjs"],
 //         },
 //         rollupOptions: {
-//           external: swissConfig.build?.external || ["@swissjs/core"],
+//           external: swissConfig.build?.external || ["@kibologic/core"],
 //           output: {
 //             globals: {
-//               "@swissjs/core": "SwissJS",
+//               "@kibologic/core": "SwissJS",
 //             },
 //           },
 //         },
@@ -659,7 +659,7 @@ async function copyTypeScriptFilesToTemp(
         // Process imports in TypeScript files
         if (entry.name.endsWith(".ts")) {
           const source = await fs.readFile(srcPath, "utf-8");
-          const { UiCompiler } = await import("@swissjs/compiler");
+          const { UiCompiler } = await import("@kibologic/compiler");
           const compiler = new UiCompiler();
           const processed = await compiler.compile(source, srcPath);
           await fs.writeFile(destPath, processed);
@@ -685,7 +685,7 @@ export async function compileUiFilesToTemp(
   tempDir: string,
   debug = false,
 ): Promise<void> {
-  const { UiCompiler } = await import("@swissjs/compiler");
+  const { UiCompiler } = await import("@kibologic/compiler");
   const compiler = new UiCompiler({ outputFormat: "typescript" });
 
   const findUiFiles = async (dir: string): Promise<string[]> => {

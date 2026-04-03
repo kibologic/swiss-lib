@@ -26,7 +26,7 @@ export function transformWithJsx(source: string, filePath: string): string {
         .trim();
 
       // Add the import at the top of the file
-      const importStatement = "import { createElement, Fragment } from '@swissjs/core';\n\n";
+      const importStatement = "import { createElement, Fragment } from '@kibologic/core';\n\n";
       modifiedSource = importStatement + modifiedSource;
     }
 

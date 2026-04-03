@@ -1,5 +1,5 @@
 {
-  "name": "@swissjs/core",
+  "name": "@kibologic/core",
   "version": "0.1.0",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -29,8 +29,8 @@
     "src/global.d.ts"
   ],
   "dependencies": {
-    "@swissjs/utils": "workspace:*",
-    "@swissjs/security": "workspace:*"
+    "@kibologic/utils": "workspace:*",
+    "@kibologic/security": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "18.19.121",
@@ -71,5 +71,9 @@
   "keywords": [
     "swissjs",
     "framework"
-  ]
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  }
 }
