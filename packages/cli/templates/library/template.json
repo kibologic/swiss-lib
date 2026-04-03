@@ -7,7 +7,7 @@
   "tags": ["library", "module", "swissjs"],
   "capabilities": [],
   "dependencies": {
-    "@swissjs/core": "workspace:*"
+    "@kibologic/core": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^18.0.0",

@@ -1,7 +1,7 @@
 {
 	"schemaVersion": "2.0",
 	"id": 1,
-	"name": "@swissjs/compiler",
+	"name": "@kibologic/compiler",
 	"variant": "project",
 	"kind": 1,
 	"flags": {},
@@ -53,7 +53,7 @@
 										"type": "reference",
 										"target": 2,
 										"name": "CompileOptions",
-										"package": "@swissjs/compiler"
+										"package": "@kibologic/compiler"
 									},
 									"defaultValue": "{}"
 								}
@@ -62,7 +62,7 @@
 								"type": "reference",
 								"target": 6,
 								"name": "UiCompiler",
-								"package": "@swissjs/compiler"
+								"package": "@kibologic/compiler"
 							}
 						}
 					]
@@ -642,171 +642,171 @@
 			]
 		}
 	],
-	"packageName": "@swissjs/compiler",
+	"packageName": "@kibologic/compiler",
 	"packageVersion": "0.1.0",
 	"symbolIdMap": {
 		"1": {
-			"packageName": "@swissjs/compiler",
+			"packageName": "@kibologic/compiler",
 			"packagePath": "src/index.ts",
 			"qualifiedName": ""
 		},
 		"2": {
-			"packageName": "@swissjs/compiler",
+			"packageName": "@kibologic/compiler",
 			"packagePath": "src/index.ts",
 			"qualifiedName": "CompileOptions"
 		},
 		"3": {
-			"packageName": "@swissjs/compiler",
+			"packageName": "@kibologic/compiler",
 			"packagePath": "src/index.ts",
 			"qualifiedName": "CompileOptions.target"
 		},
 		"4": {
-			"packageName": "@swissjs/compiler",
+			"packageName": "@kibologic/compiler",
 			"packagePath": "src/index.ts",
 			"qualifiedName": "CompileOptions.module"
 		},
 		"5": {
-			"packageName": "@swissjs/compiler",
+			"packageName": "@kibologic/compiler",
 			"packagePath": "src/index.ts",
 			"qualifiedName": "CompileOptions.sourceMap"
 		},
 		"6": {
-			"packageName": "@swissjs/compiler",
+			"packageName": "@kibologic/compiler",
 			"packagePath": "src/index.ts",
 			"qualifiedName": "UiCompiler"
 		},
 		"7": {
-			"packageName": "@swissjs/compiler",
+			"packageName": "@kibologic/compiler",
 			"packagePath": "src/index.ts",
 			"qualifiedName": "UiCompiler.__constructor"
 		},
 		"8": {
-			"packageName": "@swissjs/compiler",
+			"packageName": "@kibologic/compiler",
 			"packagePath": "src/index.ts",
 			"qualifiedName": "UiCompiler"
 		},
 		"9": {
-			"packageName": "@swissjs/compiler",
+			"packageName": "@kibologic/compiler",
 			"packagePath": "src/index.ts",
 			"qualifiedName": "options"
 		},
 		"11": {
-			"packageName": "@swissjs/compiler",
+			"packageName": "@kibologic/compiler",
 			"packagePath": "src/index.ts",
 			"qualifiedName": "UiCompiler.compileFile"
 		},
 		"12": {
-			"packageName": "@swissjs/compiler",
+			"packageName": "@kibologic/compiler",
 			"packagePath": "src/index.ts",
 			"qualifiedName": "UiCompiler.compileFile"
 		},
 		"13": {
-			"packageName": "@swissjs/compiler",
+			"packageName": "@kibologic/compiler",
 			"packagePath": "src/index.ts",
 			"qualifiedName": "filePath"
 		},
 		"14": {
-			"packageName": "@swissjs/compiler",
+			"packageName": "@kibologic/compiler",
 			"packagePath": "src/index.ts",
 			"qualifiedName": "outputPath"
 		},
 		"15": {
-			"packageName": "@swissjs/compiler",
+			"packageName": "@kibologic/compiler",
 			"packagePath": "src/index.ts",
 			"qualifiedName": "UiCompiler.compile"
 		},
 		"16": {
-			"packageName": "@swissjs/compiler",
+			"packageName": "@kibologic/compiler",
 			"packagePath": "src/index.ts",
 			"qualifiedName": "UiCompiler.compile"
 		},
 		"17": {
-			"packageName": "@swissjs/compiler",
+			"packageName": "@kibologic/compiler",
 			"packagePath": "src/index.ts",
 			"qualifiedName": "source"
 		},
 		"18": {
-			"packageName": "@swissjs/compiler",
+			"packageName": "@kibologic/compiler",
 			"packagePath": "src/index.ts",
 			"qualifiedName": "filePath"
 		},
 		"23": {
-			"packageName": "@swissjs/compiler",
+			"packageName": "@kibologic/compiler",
 			"packagePath": "src/index.ts",
 			"qualifiedName": "UiCompiler.compileDirectory"
 		},
 		"24": {
-			"packageName": "@swissjs/compiler",
+			"packageName": "@kibologic/compiler",
 			"packagePath": "src/index.ts",
 			"qualifiedName": "UiCompiler.compileDirectory"
 		},
 		"25": {
-			"packageName": "@swissjs/compiler",
+			"packageName": "@kibologic/compiler",
 			"packagePath": "src/index.ts",
 			"qualifiedName": "inputDir"
 		},
 		"26": {
-			"packageName": "@swissjs/compiler",
+			"packageName": "@kibologic/compiler",
 			"packagePath": "src/index.ts",
 			"qualifiedName": "outputDir"
 		},
 		"30": {
-			"packageName": "@swissjs/compiler",
+			"packageName": "@kibologic/compiler",
 			"packagePath": "src/index.ts",
 			"qualifiedName": "UiCompiler.watch"
 		},
 		"31": {
-			"packageName": "@swissjs/compiler",
+			"packageName": "@kibologic/compiler",
 			"packagePath": "src/index.ts",
 			"qualifiedName": "UiCompiler.watch"
 		},
 		"32": {
-			"packageName": "@swissjs/compiler",
+			"packageName": "@kibologic/compiler",
 			"packagePath": "src/index.ts",
 			"qualifiedName": "inputPath"
 		},
 		"33": {
-			"packageName": "@swissjs/compiler",
+			"packageName": "@kibologic/compiler",
 			"packagePath": "src/index.ts",
 			"qualifiedName": "outputPath"
 		},
 		"34": {
-			"packageName": "@swissjs/compiler",
+			"packageName": "@kibologic/compiler",
 			"packagePath": "src/index.ts",
 			"qualifiedName": "html"
 		},
 		"35": {
-			"packageName": "@swissjs/compiler",
+			"packageName": "@kibologic/compiler",
 			"packagePath": "src/index.ts",
 			"qualifiedName": "html"
 		},
 		"36": {
-			"packageName": "@swissjs/compiler",
+			"packageName": "@kibologic/compiler",
 			"packagePath": "src/index.ts",
 			"qualifiedName": "strings"
 		},
 		"37": {
-			"packageName": "@swissjs/compiler",
+			"packageName": "@kibologic/compiler",
 			"packagePath": "src/index.ts",
 			"qualifiedName": "values"
 		},
 		"38": {
-			"packageName": "@swissjs/compiler",
+			"packageName": "@kibologic/compiler",
 			"packagePath": "src/index.ts",
 			"qualifiedName": "css"
 		},
 		"39": {
-			"packageName": "@swissjs/compiler",
+			"packageName": "@kibologic/compiler",
 			"packagePath": "src/index.ts",
 			"qualifiedName": "css"
 		},
 		"40": {
-			"packageName": "@swissjs/compiler",
+			"packageName": "@kibologic/compiler",
 			"packagePath": "src/index.ts",
 			"qualifiedName": "strings"
 		},
 		"41": {
-			"packageName": "@swissjs/compiler",
+			"packageName": "@kibologic/compiler",
 			"packagePath": "src/index.ts",
 			"qualifiedName": "values"
 		}

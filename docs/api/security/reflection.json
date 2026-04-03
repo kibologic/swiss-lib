@@ -1,7 +1,7 @@
 {
 	"schemaVersion": "2.0",
 	"id": 1745,
-	"name": "@swissjs/security",
+	"name": "@kibologic/security",
 	"variant": "project",
 	"kind": 1,
 	"flags": {},
@@ -38,7 +38,7 @@
 								"type": "reference",
 								"target": 1746,
 								"name": "InMemorySecurityEngine",
-								"package": "@swissjs/security"
+								"package": "@kibologic/security"
 							}
 						}
 					]
@@ -83,7 +83,7 @@
 										"type": "reference",
 										"target": 1803,
 										"name": "AuditEntry",
-										"package": "@swissjs/security"
+										"package": "@kibologic/security"
 									}
 								}
 							],
@@ -240,7 +240,7 @@
 								"type": "reference",
 								"target": 1856,
 								"name": "ValidationResult",
-								"package": "@swissjs/security"
+								"package": "@kibologic/security"
 							},
 							"implementationOf": {
 								"type": "reference",
@@ -306,7 +306,7 @@
 										"type": "reference",
 										"target": 1811,
 										"name": "SecurityContext",
-										"package": "@swissjs/security"
+										"package": "@kibologic/security"
 									}
 								}
 							],
@@ -378,7 +378,7 @@
 										"type": "reference",
 										"target": 1811,
 										"name": "SecurityContext",
-										"package": "@swissjs/security"
+										"package": "@kibologic/security"
 									}
 								},
 								{
@@ -445,7 +445,7 @@
 									"type": "reference",
 									"target": 1803,
 									"name": "AuditEntry",
-									"package": "@swissjs/security"
+									"package": "@kibologic/security"
 								}
 							},
 							"implementationOf": {
@@ -501,7 +501,7 @@
 										"type": "reference",
 										"target": 1845,
 										"name": "SecurityPolicy",
-										"package": "@swissjs/security"
+										"package": "@kibologic/security"
 									}
 								}
 							],
@@ -609,7 +609,7 @@
 												"type": "reference",
 												"target": 1811,
 												"name": "SecurityContext",
-												"package": "@swissjs/security"
+												"package": "@kibologic/security"
 											}
 										],
 										"name": "Partial",
@@ -669,7 +669,7 @@
 					"type": "reference",
 					"target": 1820,
 					"name": "SecurityGateway",
-					"package": "@swissjs/security"
+					"package": "@kibologic/security"
 				}
 			]
 		},
@@ -698,7 +698,7 @@
 						"type": "reference",
 						"target": 1811,
 						"name": "SecurityContext",
-						"package": "@swissjs/security"
+						"package": "@kibologic/security"
 					}
 				},
 				{
@@ -1145,7 +1145,7 @@
 										"type": "reference",
 										"target": 1803,
 										"name": "AuditEntry",
-										"package": "@swissjs/security"
+										"package": "@kibologic/security"
 									}
 								}
 							],
@@ -1292,7 +1292,7 @@
 								"type": "reference",
 								"target": 1856,
 								"name": "ValidationResult",
-								"package": "@swissjs/security"
+								"package": "@kibologic/security"
 							}
 						}
 					]
@@ -1348,7 +1348,7 @@
 										"type": "reference",
 										"target": 1811,
 										"name": "SecurityContext",
-										"package": "@swissjs/security"
+										"package": "@kibologic/security"
 									}
 								}
 							],
@@ -1410,7 +1410,7 @@
 										"type": "reference",
 										"target": 1811,
 										"name": "SecurityContext",
-										"package": "@swissjs/security"
+										"package": "@kibologic/security"
 									}
 								},
 								{
@@ -1467,7 +1467,7 @@
 									"type": "reference",
 									"target": 1803,
 									"name": "AuditEntry",
-									"package": "@swissjs/security"
+									"package": "@kibologic/security"
 								}
 							}
 						}
@@ -1521,7 +1521,7 @@
 												"type": "reference",
 												"target": 1811,
 												"name": "SecurityContext",
-												"package": "@swissjs/security"
+												"package": "@kibologic/security"
 											}
 										],
 										"name": "Partial",
@@ -1695,7 +1695,7 @@
 												"type": "reference",
 												"target": 1811,
 												"name": "SecurityContext",
-												"package": "@swissjs/security"
+												"package": "@kibologic/security"
 											}
 										}
 									],
@@ -1938,7 +1938,7 @@
 												"type": "reference",
 												"target": 1845,
 												"name": "SecurityPolicy",
-												"package": "@swissjs/security"
+												"package": "@kibologic/security"
 											}
 										},
 										{
@@ -1951,7 +1951,7 @@
 												"type": "reference",
 												"target": 1811,
 												"name": "SecurityContext",
-												"package": "@swissjs/security"
+												"package": "@kibologic/security"
 											}
 										}
 									],
@@ -2002,7 +2002,7 @@
 												"type": "reference",
 												"target": 1845,
 												"name": "SecurityPolicy",
-												"package": "@swissjs/security"
+												"package": "@kibologic/security"
 											}
 										}
 									],
@@ -2010,7 +2010,7 @@
 										"type": "reference",
 										"target": 1856,
 										"name": "ValidationResult",
-										"package": "@swissjs/security"
+										"package": "@kibologic/security"
 									}
 								}
 							]
@@ -2070,7 +2070,7 @@
 						"type": "reference",
 						"target": 1746,
 						"name": "InMemorySecurityEngine",
-						"package": "@swissjs/security"
+						"package": "@kibologic/security"
 					}
 				}
 			]
@@ -2106,501 +2106,501 @@
 			]
 		}
 	],
-	"packageName": "@swissjs/security",
+	"packageName": "@kibologic/security",
 	"packageVersion": "0.1.0",
 	"symbolIdMap": {
 		"1745": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/index.ts",
 			"qualifiedName": ""
 		},
 		"1746": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/engine.ts",
 			"qualifiedName": "InMemorySecurityEngine"
 		},
 		"1757": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/engine.ts",
 			"qualifiedName": "InMemorySecurityEngine.registerPolicy"
 		},
 		"1758": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/engine.ts",
 			"qualifiedName": "InMemorySecurityEngine.registerPolicy"
 		},
 		"1759": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/engine.ts",
 			"qualifiedName": "policy"
 		},
 		"1760": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/engine.ts",
 			"qualifiedName": "InMemorySecurityEngine.removePolicy"
 		},
 		"1761": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/engine.ts",
 			"qualifiedName": "InMemorySecurityEngine.removePolicy"
 		},
 		"1762": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/engine.ts",
 			"qualifiedName": "id"
 		},
 		"1763": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/engine.ts",
 			"qualifiedName": "InMemorySecurityEngine.setContextDefaults"
 		},
 		"1764": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/engine.ts",
 			"qualifiedName": "InMemorySecurityEngine.setContextDefaults"
 		},
 		"1765": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/engine.ts",
 			"qualifiedName": "defaults"
 		},
 		"1766": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/engine.ts",
 			"qualifiedName": "InMemorySecurityEngine.audit"
 		},
 		"1767": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/engine.ts",
 			"qualifiedName": "InMemorySecurityEngine.audit"
 		},
 		"1768": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/engine.ts",
 			"qualifiedName": "entry"
 		},
 		"1769": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/engine.ts",
 			"qualifiedName": "InMemorySecurityEngine.getAuditLog"
 		},
 		"1770": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/engine.ts",
 			"qualifiedName": "InMemorySecurityEngine.getAuditLog"
 		},
 		"1771": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/engine.ts",
 			"qualifiedName": "InMemorySecurityEngine.evaluate"
 		},
 		"1772": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/engine.ts",
 			"qualifiedName": "InMemorySecurityEngine.evaluate"
 		},
 		"1773": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/engine.ts",
 			"qualifiedName": "target"
 		},
 		"1774": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/engine.ts",
 			"qualifiedName": "ctx"
 		},
 		"1775": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/engine.ts",
 			"qualifiedName": "InMemorySecurityEngine.evaluateWithPolicy"
 		},
 		"1776": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/engine.ts",
 			"qualifiedName": "InMemorySecurityEngine.evaluateWithPolicy"
 		},
 		"1777": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/engine.ts",
 			"qualifiedName": "target"
 		},
 		"1778": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/engine.ts",
 			"qualifiedName": "ctx"
 		},
 		"1779": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/engine.ts",
 			"qualifiedName": "policyId"
 		},
 		"1780": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/engine.ts",
 			"qualifiedName": "InMemorySecurityEngine.auditPlugin"
 		},
 		"1781": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/engine.ts",
 			"qualifiedName": "InMemorySecurityEngine.auditPlugin"
 		},
 		"1782": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/engine.ts",
 			"qualifiedName": "plugin"
 		},
 		"1783": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/engine.ts",
 			"qualifiedName": "__type"
 		},
 		"1784": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/engine.ts",
 			"qualifiedName": "__type.name"
 		},
 		"1785": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/engine.ts",
 			"qualifiedName": "__type.version"
 		},
 		"1786": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/engine.ts",
 			"qualifiedName": "__type.requiredCapabilities"
 		},
 		"1801": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/engine.ts",
 			"qualifiedName": "getDefaultSecurityEngine"
 		},
 		"1802": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/engine.ts",
 			"qualifiedName": "getDefaultSecurityEngine"
 		},
 		"1803": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "AuditEntry"
 		},
 		"1804": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "AuditEntry.timestamp"
 		},
 		"1805": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "AuditEntry.target"
 		},
 		"1806": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "AuditEntry.policyId"
 		},
 		"1807": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "AuditEntry.context"
 		},
 		"1808": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "AuditEntry.success"
 		},
 		"1809": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "AuditEntry.reason"
 		},
 		"1810": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "AuditEntry.details"
 		},
 		"1811": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "SecurityContext"
 		},
 		"1812": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "SecurityContext.layer"
 		},
 		"1813": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "SecurityContext.componentName"
 		},
 		"1814": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "SecurityContext.pluginName"
 		},
 		"1815": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "SecurityContext.userId"
 		},
 		"1816": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "SecurityContext.tenantId"
 		},
 		"1817": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "SecurityContext.roles"
 		},
 		"1818": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "SecurityContext.permissions"
 		},
 		"1819": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "SecurityContext.meta"
 		},
 		"1820": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "SecurityGateway"
 		},
 		"1821": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "SecurityGateway.audit"
 		},
 		"1822": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "SecurityGateway.audit"
 		},
 		"1823": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "entry"
 		},
 		"1824": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "SecurityGateway.evaluate"
 		},
 		"1825": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "SecurityGateway.evaluate"
 		},
 		"1826": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "target"
 		},
 		"1827": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "ctx"
 		},
 		"1828": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "SecurityGateway.evaluateWithPolicy"
 		},
 		"1829": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "SecurityGateway.evaluateWithPolicy"
 		},
 		"1830": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "target"
 		},
 		"1831": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "ctx"
 		},
 		"1832": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "policyId"
 		},
 		"1833": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "SecurityGateway.getAuditLog"
 		},
 		"1834": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "SecurityGateway.getAuditLog"
 		},
 		"1835": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "SecurityGateway.setContextDefaults"
 		},
 		"1836": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "SecurityGateway.setContextDefaults"
 		},
 		"1837": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "defaults"
 		},
 		"1838": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "SecurityGateway.auditPlugin"
 		},
 		"1839": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "SecurityGateway.auditPlugin"
 		},
 		"1840": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "plugin"
 		},
 		"1841": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "__type"
 		},
 		"1842": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "__type.name"
 		},
 		"1843": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "__type.version"
 		},
 		"1844": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "__type.requiredCapabilities"
 		},
 		"1845": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "SecurityPolicy"
 		},
 		"1846": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "SecurityPolicy.id"
 		},
 		"1847": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "SecurityPolicy.description"
 		},
 		"1848": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "SecurityPolicy.target"
 		},
 		"1849": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "SecurityPolicy.roles"
 		},
 		"1850": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "SecurityPolicy.permissions"
 		},
 		"1851": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "SecurityPolicy.rateLimitPerMinute"
 		},
 		"1852": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "SecurityPolicy.predicate"
 		},
 		"1853": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "__type"
 		},
 		"1854": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "__type"
 		},
 		"1855": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "ctx"
 		},
 		"1856": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "ValidationResult"
 		},
 		"1857": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "ValidationResult.ok"
 		},
 		"1858": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/types.ts",
 			"qualifiedName": "ValidationResult.reasons"
 		},
 		"1859": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/validator.ts",
 			"qualifiedName": "SecurityValidator"
 		},
 		"1860": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/validator.ts",
 			"qualifiedName": "__object"
 		},
 		"1861": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/validator.ts",
 			"qualifiedName": "__object.validatePolicy"
 		},
 		"1862": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/validator.ts",
 			"qualifiedName": "__object.validatePolicy"
 		},
 		"1863": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/validator.ts",
 			"qualifiedName": "policy"
 		},
 		"1864": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/validator.ts",
 			"qualifiedName": "__object.canAccess"
 		},
 		"1865": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/validator.ts",
 			"qualifiedName": "__object.canAccess"
 		},
 		"1866": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/validator.ts",
 			"qualifiedName": "policy"
 		},
 		"1867": {
-			"packageName": "@swissjs/security",
+			"packageName": "@kibologic/security",
 			"packagePath": "src/validator.ts",
 			"qualifiedName": "ctx"
 		}

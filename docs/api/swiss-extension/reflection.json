@@ -1,15 +1,15 @@
 {
 	"schemaVersion": "2.0",
 	"id": 974,
-	"name": "@swissjs/swiss-extension",
+	"name": "@kibologic/swiss-extension",
 	"variant": "project",
 	"kind": 1,
 	"flags": {},
-	"packageName": "@swissjs/swiss-extension",
+	"packageName": "@kibologic/swiss-extension",
 	"packageVersion": "0.1.0",
 	"symbolIdMap": {
 		"974": {
-			"packageName": "@swissjs/swiss-extension",
+			"packageName": "@kibologic/swiss-extension",
 			"packagePath": "src/index.ts",
 			"qualifiedName": ""
 		}

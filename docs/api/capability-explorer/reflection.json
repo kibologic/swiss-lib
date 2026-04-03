@@ -1,7 +1,7 @@
 {
 	"schemaVersion": "2.0",
 	"id": 917,
-	"name": "@swissjs/capability-explorer",
+	"name": "@kibologic/capability-explorer",
 	"variant": "project",
 	"kind": 1,
 	"flags": {},
@@ -30,7 +30,7 @@
 								"type": "reference",
 								"target": 925,
 								"name": "DataService",
-								"package": "@swissjs/capability-explorer"
+								"package": "@kibologic/capability-explorer"
 							}
 						}
 					]
@@ -331,7 +331,7 @@
 							"type": "reference",
 							"target": 918,
 							"name": "ComponentNode",
-							"package": "@swissjs/capability-explorer"
+							"package": "@kibologic/capability-explorer"
 						}
 					}
 				}
@@ -380,81 +380,81 @@
 			]
 		}
 	],
-	"packageName": "@swissjs/capability-explorer",
+	"packageName": "@kibologic/capability-explorer",
 	"packageVersion": "0.1.0",
 	"symbolIdMap": {
 		"917": {
-			"packageName": "@swissjs/capability-explorer",
+			"packageName": "@kibologic/capability-explorer",
 			"packagePath": "src/index.ts",
 			"qualifiedName": ""
 		},
 		"918": {
-			"packageName": "@swissjs/capability-explorer",
+			"packageName": "@kibologic/capability-explorer",
 			"packagePath": "src/services/DataService.ts",
 			"qualifiedName": "ComponentNode"
 		},
 		"919": {
-			"packageName": "@swissjs/capability-explorer",
+			"packageName": "@kibologic/capability-explorer",
 			"packagePath": "src/services/DataService.ts",
 			"qualifiedName": "ComponentNode.children"
 		},
 		"920": {
-			"packageName": "@swissjs/capability-explorer",
+			"packageName": "@kibologic/capability-explorer",
 			"packagePath": "src/services/DataService.ts",
 			"qualifiedName": "CapabilityConflict"
 		},
 		"921": {
-			"packageName": "@swissjs/capability-explorer",
+			"packageName": "@kibologic/capability-explorer",
 			"packagePath": "src/services/DataService.ts",
 			"qualifiedName": "CapabilityConflict.componentId"
 		},
 		"922": {
-			"packageName": "@swissjs/capability-explorer",
+			"packageName": "@kibologic/capability-explorer",
 			"packagePath": "src/services/DataService.ts",
 			"qualifiedName": "CapabilityConflict.componentName"
 		},
 		"923": {
-			"packageName": "@swissjs/capability-explorer",
+			"packageName": "@kibologic/capability-explorer",
 			"packagePath": "src/services/DataService.ts",
 			"qualifiedName": "CapabilityConflict.capability"
 		},
 		"924": {
-			"packageName": "@swissjs/capability-explorer",
+			"packageName": "@kibologic/capability-explorer",
 			"packagePath": "src/services/DataService.ts",
 			"qualifiedName": "CapabilityConflict.reason"
 		},
 		"925": {
-			"packageName": "@swissjs/capability-explorer",
+			"packageName": "@kibologic/capability-explorer",
 			"packagePath": "src/services/DataService.ts",
 			"qualifiedName": "DataService"
 		},
 		"928": {
-			"packageName": "@swissjs/capability-explorer",
+			"packageName": "@kibologic/capability-explorer",
 			"packagePath": "src/services/DataService.ts",
 			"qualifiedName": "DataService.getSnapshot"
 		},
 		"929": {
-			"packageName": "@swissjs/capability-explorer",
+			"packageName": "@kibologic/capability-explorer",
 			"packagePath": "src/services/DataService.ts",
 			"qualifiedName": "DataService.getSnapshot"
 		},
 		"930": {
-			"packageName": "@swissjs/capability-explorer",
+			"packageName": "@kibologic/capability-explorer",
 			"packagePath": "src/services/DataService.ts",
 			"qualifiedName": "DataService.isActive"
 		},
 		"931": {
-			"packageName": "@swissjs/capability-explorer",
+			"packageName": "@kibologic/capability-explorer",
 			"packagePath": "src/services/DataService.ts",
 			"qualifiedName": "DataService.isActive"
 		},
 		"932": {
-			"packageName": "@swissjs/capability-explorer",
+			"packageName": "@kibologic/capability-explorer",
 			"packagePath": "src/services/DataService.ts",
 			"qualifiedName": "DataService.reset"
 		},
 		"933": {
-			"packageName": "@swissjs/capability-explorer",
+			"packageName": "@kibologic/capability-explorer",
 			"packagePath": "src/services/DataService.ts",
 			"qualifiedName": "DataService.reset"
 		}

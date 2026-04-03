@@ -39,7 +39,7 @@
   "author": "Themba Mzumara",
   "license": "MIT",
   "dependencies": {
-    "@kibologic/compiler": "workspace:*",
+    "@kibologic/compiler": "latest",
     "postcss": "^8.4.32",
     "lightningcss": "^1.23.0"
   },

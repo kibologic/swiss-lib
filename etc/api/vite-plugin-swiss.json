@@ -1,7 +1,7 @@
 {
   "schemaVersion": "2.0",
   "id": 0,
-  "name": "@swissjs/vite-plugin-swiss",
+  "name": "@kibologic/vite-plugin-swiss",
   "variant": "project",
   "kind": 1,
   "flags": {},
@@ -55,21 +55,21 @@
       "children": [1]
     }
   ],
-  "packageName": "@swissjs/vite-plugin-swiss",
+  "packageName": "@kibologic/vite-plugin-swiss",
   "packageVersion": "0.1.1",
   "symbolIdMap": {
     "0": {
-      "packageName": "@swissjs/vite-plugin-swiss",
+      "packageName": "@kibologic/vite-plugin-swiss",
       "packagePath": "src/index.ts",
       "qualifiedName": ""
     },
     "1": {
-      "packageName": "@swissjs/vite-plugin-swiss",
+      "packageName": "@kibologic/vite-plugin-swiss",
       "packagePath": "src/index.ts",
       "qualifiedName": "swissPlugin"
     },
     "2": {
-      "packageName": "@swissjs/vite-plugin-swiss",
+      "packageName": "@kibologic/vite-plugin-swiss",
       "packagePath": "src/index.ts",
       "qualifiedName": "swissPlugin"
     }

@@ -1,7 +1,7 @@
 {
 	"schemaVersion": "2.0",
 	"id": 1689,
-	"name": "@swissjs/plugin-web-storage",
+	"name": "@kibologic/plugin-web-storage",
 	"variant": "project",
 	"kind": 1,
 	"flags": {},
@@ -967,12 +967,12 @@
 			"type": {
 				"type": "reference",
 				"target": {
-					"packageName": "@swissjs/core",
+					"packageName": "@kibologic/core",
 					"packagePath": "dist/plugins/types/index.d.ts",
 					"qualifiedName": "Plugin"
 				},
 				"name": "Plugin",
-				"package": "@swissjs/core"
+				"package": "@kibologic/core"
 			},
 			"defaultValue": "..."
 		},
@@ -1009,7 +1009,7 @@
 						"type": "reference",
 						"target": 1723,
 						"name": "KeyValueStorageAsync",
-						"package": "@swissjs/plugin-web-storage"
+						"package": "@kibologic/plugin-web-storage"
 					}
 				}
 			]
@@ -1047,7 +1047,7 @@
 						"type": "reference",
 						"target": 1710,
 						"name": "KeyValueStorageSync",
-						"package": "@swissjs/plugin-web-storage"
+						"package": "@kibologic/plugin-web-storage"
 					}
 				}
 			]
@@ -1085,7 +1085,7 @@
 						"type": "reference",
 						"target": 1710,
 						"name": "KeyValueStorageSync",
-						"package": "@swissjs/plugin-web-storage"
+						"package": "@kibologic/plugin-web-storage"
 					}
 				}
 			]
@@ -1176,286 +1176,286 @@
 			]
 		}
 	],
-	"packageName": "@swissjs/plugin-web-storage",
+	"packageName": "@kibologic/plugin-web-storage",
 	"packageVersion": "0.1.0",
 	"symbolIdMap": {
 		"1689": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/index.ts",
 			"qualifiedName": ""
 		},
 		"1690": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/plugin.ts",
 			"qualifiedName": "WebStoragePlugin"
 		},
 		"1691": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/capabilities.ts",
 			"qualifiedName": "CAP_STORAGE_READ"
 		},
 		"1692": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/capabilities.ts",
 			"qualifiedName": "CAP_STORAGE_WRITE"
 		},
 		"1693": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/capabilities.ts",
 			"qualifiedName": "CAP_STORAGE_REMOVE"
 		},
 		"1694": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/capabilities.ts",
 			"qualifiedName": "CAP_STORAGE_CLEAR"
 		},
 		"1695": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/capabilities.ts",
 			"qualifiedName": "CAP_STORAGE_LOCAL_READ"
 		},
 		"1696": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/capabilities.ts",
 			"qualifiedName": "CAP_STORAGE_LOCAL_WRITE"
 		},
 		"1697": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/capabilities.ts",
 			"qualifiedName": "CAP_STORAGE_LOCAL_REMOVE"
 		},
 		"1698": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/capabilities.ts",
 			"qualifiedName": "CAP_STORAGE_LOCAL_CLEAR"
 		},
 		"1699": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/capabilities.ts",
 			"qualifiedName": "CAP_STORAGE_SESSION_READ"
 		},
 		"1700": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/capabilities.ts",
 			"qualifiedName": "CAP_STORAGE_SESSION_WRITE"
 		},
 		"1701": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/capabilities.ts",
 			"qualifiedName": "CAP_STORAGE_SESSION_REMOVE"
 		},
 		"1702": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/capabilities.ts",
 			"qualifiedName": "CAP_STORAGE_SESSION_CLEAR"
 		},
 		"1703": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/capabilities.ts",
 			"qualifiedName": "CAP_STORAGE_INDEXED_READ"
 		},
 		"1704": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/capabilities.ts",
 			"qualifiedName": "CAP_STORAGE_INDEXED_WRITE"
 		},
 		"1705": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/capabilities.ts",
 			"qualifiedName": "CAP_STORAGE_INDEXED_REMOVE"
 		},
 		"1706": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/capabilities.ts",
 			"qualifiedName": "CAP_STORAGE_INDEXED_CLEAR"
 		},
 		"1707": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/services.ts",
 			"qualifiedName": "STORAGE_LOCAL"
 		},
 		"1708": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/services.ts",
 			"qualifiedName": "STORAGE_SESSION"
 		},
 		"1709": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/services.ts",
 			"qualifiedName": "STORAGE_INDEXED"
 		},
 		"1710": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "KeyValueStorageSync"
 		},
 		"1711": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "KeyValueStorageSync.get"
 		},
 		"1712": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "KeyValueStorageSync.get"
 		},
 		"1713": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "key"
 		},
 		"1714": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "KeyValueStorageSync.set"
 		},
 		"1715": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "KeyValueStorageSync.set"
 		},
 		"1716": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "key"
 		},
 		"1717": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "value"
 		},
 		"1718": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "KeyValueStorageSync.remove"
 		},
 		"1719": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "KeyValueStorageSync.remove"
 		},
 		"1720": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "key"
 		},
 		"1721": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "KeyValueStorageSync.clear"
 		},
 		"1722": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "KeyValueStorageSync.clear"
 		},
 		"1723": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "KeyValueStorageAsync"
 		},
 		"1724": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "KeyValueStorageAsync.get"
 		},
 		"1725": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "KeyValueStorageAsync.get"
 		},
 		"1726": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "key"
 		},
 		"1727": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "KeyValueStorageAsync.set"
 		},
 		"1728": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "KeyValueStorageAsync.set"
 		},
 		"1729": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "key"
 		},
 		"1730": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "value"
 		},
 		"1731": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "KeyValueStorageAsync.remove"
 		},
 		"1732": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "KeyValueStorageAsync.remove"
 		},
 		"1733": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "key"
 		},
 		"1734": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "KeyValueStorageAsync.clear"
 		},
 		"1735": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "KeyValueStorageAsync.clear"
 		},
 		"1736": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "StorageNamespace"
 		},
 		"1737": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/runtime/env.ts",
 			"qualifiedName": "isBrowser"
 		},
 		"1738": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/runtime/env.ts",
 			"qualifiedName": "isBrowser"
 		},
 		"1739": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/runtime/indexed.ts",
 			"qualifiedName": "createIndexedStorage"
 		},
 		"1740": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/runtime/indexed.ts",
 			"qualifiedName": "createIndexedStorage"
 		},
 		"1741": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/runtime/local.ts",
 			"qualifiedName": "createLocalStorage"
 		},
 		"1742": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/runtime/local.ts",
 			"qualifiedName": "createLocalStorage"
 		},
 		"1743": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/runtime/session.ts",
 			"qualifiedName": "createSessionStorage"
 		},
 		"1744": {
-			"packageName": "@swissjs/plugin-web-storage",
+			"packageName": "@kibologic/plugin-web-storage",
 			"packagePath": "src/runtime/session.ts",
 			"qualifiedName": "createSessionStorage"
 		}

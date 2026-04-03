@@ -1,7 +1,7 @@
 {
 	"schemaVersion": "2.0",
 	"id": 975,
-	"name": "@swissjs/devtools-template-debugger",
+	"name": "@kibologic/devtools-template-debugger",
 	"variant": "project",
 	"kind": 1,
 	"flags": {},
@@ -30,7 +30,7 @@
 								"type": "reference",
 								"target": 980,
 								"name": "PreviewService",
-								"package": "@swissjs/devtools-template-debugger"
+								"package": "@kibologic/devtools-template-debugger"
 							}
 						}
 					]
@@ -89,7 +89,7 @@
 										"type": "reference",
 										"target": 976,
 										"name": "PreviewResult",
-										"package": "@swissjs/devtools-template-debugger"
+										"package": "@kibologic/devtools-template-debugger"
 									}
 								],
 								"name": "Promise",
@@ -204,46 +204,46 @@
 			]
 		}
 	],
-	"packageName": "@swissjs/devtools-template-debugger",
+	"packageName": "@kibologic/devtools-template-debugger",
 	"packageVersion": "0.1.0",
 	"symbolIdMap": {
 		"975": {
-			"packageName": "@swissjs/devtools-template-debugger",
+			"packageName": "@kibologic/devtools-template-debugger",
 			"packagePath": "src/index.ts",
 			"qualifiedName": ""
 		},
 		"976": {
-			"packageName": "@swissjs/devtools-template-debugger",
+			"packageName": "@kibologic/devtools-template-debugger",
 			"packagePath": "src/services/PreviewService.ts",
 			"qualifiedName": "PreviewResult"
 		},
 		"978": {
-			"packageName": "@swissjs/devtools-template-debugger",
+			"packageName": "@kibologic/devtools-template-debugger",
 			"packagePath": "src/services/PreviewService.ts",
 			"qualifiedName": "__type.html"
 		},
 		"979": {
-			"packageName": "@swissjs/devtools-template-debugger",
+			"packageName": "@kibologic/devtools-template-debugger",
 			"packagePath": "src/services/PreviewService.ts",
 			"qualifiedName": "__type.diagnostics"
 		},
 		"980": {
-			"packageName": "@swissjs/devtools-template-debugger",
+			"packageName": "@kibologic/devtools-template-debugger",
 			"packagePath": "src/services/PreviewService.ts",
 			"qualifiedName": "PreviewService"
 		},
 		"983": {
-			"packageName": "@swissjs/devtools-template-debugger",
+			"packageName": "@kibologic/devtools-template-debugger",
 			"packagePath": "src/services/PreviewService.ts",
 			"qualifiedName": "PreviewService.compileAndRender"
 		},
 		"984": {
-			"packageName": "@swissjs/devtools-template-debugger",
+			"packageName": "@kibologic/devtools-template-debugger",
 			"packagePath": "src/services/PreviewService.ts",
 			"qualifiedName": "PreviewService.compileAndRender"
 		},
 		"985": {
-			"packageName": "@swissjs/devtools-template-debugger",
+			"packageName": "@kibologic/devtools-template-debugger",
 			"packagePath": "src/services/PreviewService.ts",
 			"qualifiedName": "source"
 		}

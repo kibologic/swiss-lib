@@ -13,33 +13,33 @@
     "composite": true,
     "baseUrl": ".",
     "paths": {
-      "@swissjs/core": [
+      "@kibologic/core": [
         "./packages/core/src/index.ts",
         "./packages/core/dist/index.mjs"
       ],
-      "@swissjs/core/*": [
+      "@kibologic/core/*": [
         "./packages/core/src/*",
         "./packages/core/dist/*"
       ],
-      "@swissjs/security": [
+      "@kibologic/security": [
         "./packages/security/dist/index.js"
       ],
-      "@swissjs/security/*": [
+      "@kibologic/security/*": [
         "./packages/security/dist/*"
       ],
-      "@swissjs/compiler": [
+      "@kibologic/compiler": [
         "./packages/compiler/dist/index"
       ],
-      "@swissjs/compiler/*": [
+      "@kibologic/compiler/*": [
         "./packages/compiler/dist/*"
       ],
-      "@swissjs/cli": [
+      "@kibologic/cli": [
         "./packages/cli/dist/index"
       ],
-      "@swissjs/cli/*": [
+      "@kibologic/cli/*": [
         "./packages/cli/dist/*"
       ],
-      "@swissjs/plugin-*": [
+      "@kibologic/plugin-*": [
         "./packages/plugins/*/dist/index"
       ],
       "@plugins/*": [
