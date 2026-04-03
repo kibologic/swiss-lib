@@ -9,7 +9,7 @@
     "rootDir": "./src",
     "declaration": true,
     "jsx": "react-jsx",
-    "jsxImportSource": "@swissjs/core",
+    "jsxImportSource": "@kibologic/core",
     "noEmitOnError": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,

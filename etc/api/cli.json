@@ -1,15 +1,15 @@
 {
   "schemaVersion": "2.0",
   "id": 0,
-  "name": "@swissjs/cli",
+  "name": "@kibologic/cli",
   "variant": "project",
   "kind": 1,
   "flags": {},
-  "packageName": "@swissjs/cli",
+  "packageName": "@kibologic/cli",
   "packageVersion": "0.1.1",
   "symbolIdMap": {
     "0": {
-      "packageName": "@swissjs/cli",
+      "packageName": "@kibologic/cli",
       "packagePath": "src/index.ts",
       "qualifiedName": ""
     }

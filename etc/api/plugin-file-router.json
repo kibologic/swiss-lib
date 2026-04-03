@@ -1,7 +1,7 @@
 {
   "schemaVersion": "2.0",
   "id": 0,
-  "name": "@swissjs/plugin-file-router",
+  "name": "@kibologic/plugin-file-router",
   "variant": "project",
   "kind": 1,
   "flags": {},
@@ -844,12 +844,12 @@
               "type": {
                 "type": "reference",
                 "target": {
-                  "packageName": "@swissjs/plugin-file-router",
+                  "packageName": "@kibologic/plugin-file-router",
                   "packagePath": "src/types/dev.ts",
                   "qualifiedName": "DevServerOptions"
                 },
                 "name": "DevServerOptions",
-                "package": "@swissjs/plugin-file-router"
+                "package": "@kibologic/plugin-file-router"
               },
               "defaultValue": "{}"
             }
@@ -865,12 +865,12 @@
               {
                 "type": "reference",
                 "target": {
-                  "packageName": "@swissjs/plugin-file-router",
+                  "packageName": "@kibologic/plugin-file-router",
                   "packagePath": "src/types/dev.ts",
                   "qualifiedName": "DevServer"
                 },
                 "name": "DevServer",
-                "package": "@swissjs/plugin-file-router"
+                "package": "@kibologic/plugin-file-router"
               }
             ],
             "name": "Promise",
@@ -918,12 +918,12 @@
               "type": {
                 "type": "reference",
                 "target": {
-                  "packageName": "@swissjs/plugin-file-router",
+                  "packageName": "@kibologic/plugin-file-router",
                   "packagePath": "src/types/dev.ts",
                   "qualifiedName": "WatcherConfig"
                 },
                 "name": "WatcherConfig",
-                "package": "@swissjs/plugin-file-router"
+                "package": "@kibologic/plugin-file-router"
               }
             }
           ],
@@ -938,12 +938,12 @@
               {
                 "type": "reference",
                 "target": {
-                  "packageName": "@swissjs/plugin-file-router",
+                  "packageName": "@kibologic/plugin-file-router",
                   "packagePath": "src/types/dev.ts",
                   "qualifiedName": "FileWatcher"
                 },
                 "name": "FileWatcher",
-                "package": "@swissjs/plugin-file-router"
+                "package": "@kibologic/plugin-file-router"
               }
             ],
             "name": "Promise",
@@ -1019,7 +1019,7 @@
           "type": {
             "type": "reference",
             "target": {
-              "packageName": "@swissjs/plugin-file-router",
+              "packageName": "@kibologic/plugin-file-router",
               "packagePath": "src/utils/cache.ts",
               "qualifiedName": "RouteCache"
             },
@@ -1028,12 +1028,12 @@
                 "type": "reference",
                 "target": 49,
                 "name": "TValue",
-                "package": "@swissjs/plugin-file-router",
+                "package": "@kibologic/plugin-file-router",
                 "refersToTypeParameter": true
               }
             ],
             "name": "RouteCache",
-            "package": "@swissjs/plugin-file-router"
+            "package": "@kibologic/plugin-file-router"
           }
         }
       ]
@@ -1078,7 +1078,7 @@
                 "type": "reference",
                 "target": 4,
                 "name": "FileRouterOptions",
-                "package": "@swissjs/plugin-file-router"
+                "package": "@kibologic/plugin-file-router"
               },
               "defaultValue": "{}"
             }
@@ -1086,12 +1086,12 @@
           "type": {
             "type": "reference",
             "target": {
-              "packageName": "@swissjs/core",
+              "packageName": "@kibologic/core",
               "packagePath": "dist/plugins/types/index.d.ts",
               "qualifiedName": "Plugin"
             },
             "name": "Plugin",
-            "package": "@swissjs/core"
+            "package": "@kibologic/core"
           }
         }
       ]
@@ -1263,281 +1263,281 @@
       "children": [54, 51, 47, 1, 38, 42]
     }
   ],
-  "packageName": "@swissjs/plugin-file-router",
+  "packageName": "@kibologic/plugin-file-router",
   "packageVersion": "1.0.0",
   "symbolIdMap": {
     "0": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/index.ts",
       "qualifiedName": ""
     },
     "1": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/core/plugin.ts",
       "qualifiedName": "fileRouterPlugin"
     },
     "2": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/core/plugin.ts",
       "qualifiedName": "fileRouterPlugin"
     },
     "3": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/core/plugin.ts",
       "qualifiedName": "options"
     },
     "4": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/types/config.ts",
       "qualifiedName": "FileRouterOptions"
     },
     "5": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/types/config.ts",
       "qualifiedName": "FileRouterOptions.routesDir"
     },
     "6": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/types/config.ts",
       "qualifiedName": "FileRouterOptions.extensions"
     },
     "7": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/types/config.ts",
       "qualifiedName": "FileRouterOptions.layouts"
     },
     "8": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/types/config.ts",
       "qualifiedName": "FileRouterOptions.lazyLoading"
     },
     "9": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/types/config.ts",
       "qualifiedName": "FileRouterOptions.preloading"
     },
     "10": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/types/config.ts",
       "qualifiedName": "FileRouterOptions.transform"
     },
     "11": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/types/config.ts",
       "qualifiedName": "__type"
     },
     "12": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/types/config.ts",
       "qualifiedName": "__type"
     },
     "13": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/types/config.ts",
       "qualifiedName": "path"
     },
     "14": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/types/config.ts",
       "qualifiedName": "FileRouterOptions.dev"
     },
     "15": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/types/config.ts",
       "qualifiedName": "__type"
     },
     "16": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/types/config.ts",
       "qualifiedName": "__type.hotReload"
     },
     "17": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/types/config.ts",
       "qualifiedName": "__type.port"
     },
     "18": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/types/route.ts",
       "qualifiedName": "RouteConfig"
     },
     "19": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/types/route.ts",
       "qualifiedName": "RouteConfig.path"
     },
     "20": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/types/route.ts",
       "qualifiedName": "RouteConfig.component"
     },
     "21": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/types/route.ts",
       "qualifiedName": "RouteConfig.layout"
     },
     "22": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/types/route.ts",
       "qualifiedName": "RouteConfig.meta"
     },
     "23": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/types/route.ts",
       "qualifiedName": "__type"
     },
     "24": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/types/route.ts",
       "qualifiedName": "__type.title"
     },
     "25": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/types/route.ts",
       "qualifiedName": "__type.description"
     },
     "26": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/types/route.ts",
       "qualifiedName": "__type.guards"
     },
     "27": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/types/route.ts",
       "qualifiedName": "__type.middleware"
     },
     "28": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/types/route.ts",
       "qualifiedName": "__type.__index"
     },
     "30": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/types/route.ts",
       "qualifiedName": "LayoutConfig"
     },
     "31": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/types/route.ts",
       "qualifiedName": "LayoutConfig.component"
     },
     "32": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/types/route.ts",
       "qualifiedName": "LayoutConfig.meta"
     },
     "33": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/types/route.ts",
       "qualifiedName": "__type"
     },
     "34": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/types/route.ts",
       "qualifiedName": "__type.title"
     },
     "35": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/types/route.ts",
       "qualifiedName": "__type.description"
     },
     "36": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/types/route.ts",
       "qualifiedName": "__type.__index"
     },
     "38": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/utils/path.ts",
       "qualifiedName": "pathToRoute"
     },
     "39": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/utils/path.ts",
       "qualifiedName": "pathToRoute"
     },
     "40": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/utils/path.ts",
       "qualifiedName": "filePath"
     },
     "41": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/utils/path.ts",
       "qualifiedName": "routesDir"
     },
     "42": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/utils/path.ts",
       "qualifiedName": "routeToPath"
     },
     "43": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/utils/path.ts",
       "qualifiedName": "routeToPath"
     },
     "44": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/utils/path.ts",
       "qualifiedName": "route"
     },
     "45": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/utils/path.ts",
       "qualifiedName": "routesDir"
     },
     "46": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/utils/path.ts",
       "qualifiedName": "extensions"
     },
     "47": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/utils/cache.ts",
       "qualifiedName": "createRouteCache"
     },
     "48": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/utils/cache.ts",
       "qualifiedName": "createRouteCache"
     },
     "49": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/utils/cache.ts",
       "qualifiedName": "TValue"
     },
     "50": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/utils/cache.ts",
       "qualifiedName": "maxSize"
     },
     "51": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/dev/watcher.ts",
       "qualifiedName": "createFileWatcher"
     },
     "52": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/dev/watcher.ts",
       "qualifiedName": "createFileWatcher"
     },
     "53": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/dev/watcher.ts",
       "qualifiedName": "config"
     },
     "54": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/dev/server.ts",
       "qualifiedName": "createDevServer"
     },
     "55": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/dev/server.ts",
       "qualifiedName": "createDevServer"
     },
     "56": {
-      "packageName": "@swissjs/plugin-file-router",
+      "packageName": "@kibologic/plugin-file-router",
       "packagePath": "src/dev/server.ts",
       "qualifiedName": "options"
     }

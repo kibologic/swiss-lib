@@ -1,7 +1,7 @@
 {
   "schemaVersion": "2.0",
   "id": 0,
-  "name": "@swissjs/utils",
+  "name": "@kibologic/utils",
   "variant": "project",
   "kind": 1,
   "flags": {},
@@ -86,31 +86,31 @@
       "children": [1]
     }
   ],
-  "packageName": "@swissjs/utils",
+  "packageName": "@kibologic/utils",
   "packageVersion": "0.1.0",
   "symbolIdMap": {
     "0": {
-      "packageName": "@swissjs/utils",
+      "packageName": "@kibologic/utils",
       "packagePath": "src/index.ts",
       "qualifiedName": ""
     },
     "1": {
-      "packageName": "@swissjs/utils",
+      "packageName": "@kibologic/utils",
       "packagePath": "src/fixDtsExtensions.ts",
       "qualifiedName": "fixDtsExtensions"
     },
     "2": {
-      "packageName": "@swissjs/utils",
+      "packageName": "@kibologic/utils",
       "packagePath": "src/fixDtsExtensions.ts",
       "qualifiedName": "fixDtsExtensions"
     },
     "3": {
-      "packageName": "@swissjs/utils",
+      "packageName": "@kibologic/utils",
       "packagePath": "src/fixDtsExtensions.ts",
       "qualifiedName": "distDir"
     },
     "4": {
-      "packageName": "@swissjs/utils",
+      "packageName": "@kibologic/utils",
       "packagePath": "src/fixDtsExtensions.ts",
       "qualifiedName": "debug"
     }

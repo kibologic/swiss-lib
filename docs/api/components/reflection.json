@@ -1,7 +1,7 @@
 {
 	"schemaVersion": "2.0",
 	"id": 42,
-	"name": "@swissjs/components",
+	"name": "@kibologic/components",
 	"variant": "project",
 	"kind": 1,
 	"flags": {},
@@ -65,11 +65,11 @@
 			]
 		}
 	],
-	"packageName": "@swissjs/components",
+	"packageName": "@kibologic/components",
 	"packageVersion": "0.1.0",
 	"symbolIdMap": {
 		"42": {
-			"packageName": "@swissjs/components",
+			"packageName": "@kibologic/components",
 			"packagePath": "src/index.ts",
 			"qualifiedName": ""
 		},
@@ -79,12 +79,12 @@
 			"qualifiedName": "unknown"
 		},
 		"44": {
-			"packageName": "@swissjs/components",
+			"packageName": "@kibologic/components",
 			"packagePath": "src/index.ts",
 			"qualifiedName": "UiInput"
 		},
 		"45": {
-			"packageName": "@swissjs/components",
+			"packageName": "@kibologic/components",
 			"packagePath": "src/index.ts",
 			"qualifiedName": "UiModal"
 		}

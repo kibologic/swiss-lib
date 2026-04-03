@@ -1,7 +1,7 @@
 {
 	"schemaVersion": "2.0",
 	"id": 934,
-	"name": "@swissjs/devtools-pdk-harness",
+	"name": "@kibologic/devtools-pdk-harness",
 	"variant": "project",
 	"kind": 1,
 	"flags": {},
@@ -160,7 +160,7 @@
 								"type": "reference",
 								"target": 938,
 								"name": "HarnessResult",
-								"package": "@swissjs/devtools-pdk-harness"
+								"package": "@kibologic/devtools-pdk-harness"
 							}
 						],
 						"name": "Promise",
@@ -184,46 +184,46 @@
 			]
 		}
 	],
-	"packageName": "@swissjs/devtools-pdk-harness",
+	"packageName": "@kibologic/devtools-pdk-harness",
 	"packageVersion": "0.1.0",
 	"symbolIdMap": {
 		"934": {
-			"packageName": "@swissjs/devtools-pdk-harness",
+			"packageName": "@kibologic/devtools-pdk-harness",
 			"packagePath": "src/index.ts",
 			"qualifiedName": ""
 		},
 		"935": {
-			"packageName": "@swissjs/devtools-pdk-harness",
+			"packageName": "@kibologic/devtools-pdk-harness",
 			"packagePath": "src/harness.ts",
 			"qualifiedName": "runPluginHarness"
 		},
 		"936": {
-			"packageName": "@swissjs/devtools-pdk-harness",
+			"packageName": "@kibologic/devtools-pdk-harness",
 			"packagePath": "src/harness.ts",
 			"qualifiedName": "runPluginHarness"
 		},
 		"937": {
-			"packageName": "@swissjs/devtools-pdk-harness",
+			"packageName": "@kibologic/devtools-pdk-harness",
 			"packagePath": "src/harness.ts",
 			"qualifiedName": "plugin"
 		},
 		"938": {
-			"packageName": "@swissjs/devtools-pdk-harness",
+			"packageName": "@kibologic/devtools-pdk-harness",
 			"packagePath": "src/harness.ts",
 			"qualifiedName": "HarnessResult"
 		},
 		"939": {
-			"packageName": "@swissjs/devtools-pdk-harness",
+			"packageName": "@kibologic/devtools-pdk-harness",
 			"packagePath": "src/harness.ts",
 			"qualifiedName": "HarnessResult.loaded"
 		},
 		"940": {
-			"packageName": "@swissjs/devtools-pdk-harness",
+			"packageName": "@kibologic/devtools-pdk-harness",
 			"packagePath": "src/harness.ts",
 			"qualifiedName": "HarnessResult.activated"
 		},
 		"941": {
-			"packageName": "@swissjs/devtools-pdk-harness",
+			"packageName": "@kibologic/devtools-pdk-harness",
 			"packagePath": "src/harness.ts",
 			"qualifiedName": "HarnessResult.errors"
 		}

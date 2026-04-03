@@ -9,7 +9,7 @@
   },
   "packages": [
     {
-      "name": "@swissjs/core",
+      "name": "@kibologic/core",
       "path": "packages/core",
       "total": 7697,
       "nonEmpty": 6637,
@@ -338,7 +338,7 @@
       }
     },
     {
-      "name": "@swissjs/cli",
+      "name": "@kibologic/cli",
       "path": "packages/cli",
       "total": 3169,
       "nonEmpty": 2717,
@@ -423,7 +423,7 @@
       }
     },
     {
-      "name": "@swissjs/compiler",
+      "name": "@kibologic/compiler",
       "path": "packages/compiler",
       "total": 2043,
       "nonEmpty": 1796,
@@ -484,7 +484,7 @@
       }
     },
     {
-      "name": "@swissjs/plugin-file-router",
+      "name": "@kibologic/plugin-file-router",
       "path": "packages/plugins/file-router",
       "total": 932,
       "nonEmpty": 776,
@@ -569,7 +569,7 @@
       }
     },
     {
-      "name": "@swissjs/security",
+      "name": "@kibologic/security",
       "path": "packages/security",
       "total": 261,
       "nonEmpty": 228,
@@ -598,7 +598,7 @@
       }
     },
     {
-      "name": "@swissjs/swiss-extension",
+      "name": "@kibologic/swiss-extension",
       "path": "packages/devtools/swiss_extension",
       "total": 229,
       "nonEmpty": 193,
@@ -623,7 +623,7 @@
       }
     },
     {
-      "name": "@swissjs/plugin-web-storage",
+      "name": "@kibologic/plugin-web-storage",
       "path": "packages/plugins/web-storage",
       "total": 206,
       "nonEmpty": 180,
@@ -672,7 +672,7 @@
       }
     },
     {
-      "name": "@swissjs/utils",
+      "name": "@kibologic/utils",
       "path": "packages/utils",
       "total": 47,
       "nonEmpty": 46,
@@ -689,7 +689,7 @@
       }
     },
     {
-      "name": "@swissjs/vite-plugin-swiss",
+      "name": "@kibologic/vite-plugin-swiss",
       "path": "packages/plugins/vite-plugin-swiss",
       "total": 36,
       "nonEmpty": 32,
