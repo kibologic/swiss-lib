@@ -1,6 +1,6 @@
 {
   "name": "@kibologic/core",
-  "version": "0.1.0",
+  "version": "0.1.4",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "dist/index.d.ts",
@@ -60,10 +60,7 @@
     "email": "themba@swissjs.dev",
     "url": "https://github.com/ThembaMzumara"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/kibologic/alpine-erp-core.git"
-  },
+  "repository": "https://github.com/kibologic/alpine-erp-core",
   "homepage": "https://github.com/ThembaMzumara/SWISS#readme",
   "bugs": {
     "url": "https://github.com/ThembaMzumara/SWISS/issues"

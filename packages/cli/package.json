@@ -1,6 +1,6 @@
 {
   "name": "@kibologic/cli",
-  "version": "0.1.2",
+  "version": "0.1.5",
   "scripts": {
     "build": "tsc -b",
     "dev": "tsc -b --watch",
