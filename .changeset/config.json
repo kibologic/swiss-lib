@@ -18,5 +18,5 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["@kibologic/css", "@kibologic/cli"]
+  "ignore": ["@kibologic/css", "@kibologic/cli", "@kibologic/components", "@kibologic/capability-explorer"]
 }
