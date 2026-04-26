@@ -28,6 +28,7 @@ import {
   type ComponentHook,
 } from "./types/index.js";
 import { LifecycleManager } from "./lifecycle.js";
+import { saveFocusState, restoreFocusState } from "./focus-guard.js";
 import { SwissContext, cleanupContextSubscriptions } from "./context.js";
 import { createPortal, useSlot } from "./portals.js";
 import { serverInit, hydrateSSR } from "./ssr.js";
@@ -446,6 +447,9 @@ export class SwissComponent<
       (newVNode as any).__componentInstance = this;
     }
 
+    // Preserve input focus across reconciliation (replaceChild destroys focused DOM nodes)
+    const focusState = saveFocusState();
+
     if (existingDom) {
       // Update in-place — works for both root and child components
       updateDOMNode(existingDom, newVNode);
@@ -460,6 +464,8 @@ export class SwissComponent<
 
     this._vnode = newVNode;
     this._domNode = (newVNode as any).dom ?? (this as any)._domNode;
+
+    restoreFocusState(focusState);
   }
 
   public renderErrorFallback(): VNode {
