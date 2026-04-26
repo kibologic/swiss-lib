@@ -16,6 +16,7 @@ import { untrack } from "../reactivity/effect.js";
 import type { SwissComponent } from "./component.js";
 import { expandSlots } from "../renderer/component-rendering.js";
 import { logger } from "../utils/logger.js";
+import { saveFocusState, restoreFocusState } from "./focus-guard.js";
 
 function scheduleMicrotask(fn: () => void) {
   if (typeof queueMicrotask === "function") {
@@ -86,6 +87,8 @@ export class UpdateManager {
    * Performs the actual component update
    */
   public performUpdate(): void {
+    // Preserve input focus across reconciliation — replaceChild destroys focused DOM nodes
+    const focusState = saveFocusState();
     try {
       // Skip first update for components just created in createDOMNode (DOM already correct)
       if ((this.component as any)._skipNextUpdate) {
@@ -218,6 +221,8 @@ export class UpdateManager {
       this.component.captureError(error, "render");
       // Schedule a follow-up update so the component re-renders with the error fallback UI
       this.component.scheduleUpdate?.();
+    } finally {
+      restoreFocusState(focusState);
     }
   }
 

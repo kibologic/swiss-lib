@@ -627,3 +627,64 @@ File: `packages/core/src/component/component.ts`
 ## Notes
 - Every session starts by reading this file. Every session ends by updating it.
 - Pipeline rebuilt 2026-03-02. Next: M-01 through M-06 above, then first v0.1.0 publish.
+
+---
+
+## Branch Strategy (established 2026-04-26)
+
+Three permanent base branches: `main` (production), `staging` (pre-release verification), `development` (integration). Feature branches cut from `development`, PR to `development`, then fast-forward staging → main.
+
+---
+
+## CI/CD Blockers & Known Guards
+
+### Secret in history — RESOLVED (2026-04-26)
+`packages/security/.npmrc` previously contained a hardcoded GitHub PAT (`ghp_*`).
+Commit `2d72f55` had not been pushed. The commit was soft-reset, PAT removed, and recommitted clean as `b0fe4e8`.
+
+**Rule going forward:** Auth tokens NEVER go in `.npmrc` committed to source. CI uses `NODE_AUTH_TOKEN` env var injected via GitHub Actions secret. Local dev uses `~/.npmrc` (user-level, not tracked).
+
+### Changeset requirement
+Every PR that changes a publishable package must include a changeset file (`pnpm changeset`). The CI changeset-check is a warning, not a hard failure. Internal-only changes (non-publishable) can skip it.
+
+### prepush:checks gate
+`pnpm -w prepush:checks` runs before any push: lint → type-check → check:barrels → check:policy → check:ui-format → test. All must pass. Do not skip.
+
+### Turbo build filters
+`@swissjs/css` and `@swissjs/cli` are excluded from standard build (`--filter="!@swissjs/css" --filter="!@swissjs/cli"`). CSS has a Node.js Buffer conflict; CLI has workspace dep issues. Do not fix these without a targeted task — they are intentionally excluded.
+
+---
+
+## T-005 — Focus Guard: Input Focus Loss & Phantom Re-renders
+
+**Status:** IN PROGRESS
+**Branch:** feature/T-005-focus-guard
+**Priority:** CRITICAL — system unusable for data entry
+
+### Root cause (confirmed by source analysis)
+
+Two separate update triggers fire per keystroke in `.uix` components:
+1. **Signal effect** (`ReactivityManager.setupReactivity()`) — runs `safeRender()` + `commitVNode()` synchronously when any reactive state signal mutates. Goes through `updateDOMNode()` → reconciler.
+2. **Explicit `scheduleUpdate()`** — `.uix` compiled event handlers call `this.scheduleUpdate?.()` after setting state. Queued via `queueMicrotask`. Goes through `UpdateManager.performUpdate()` → reconciler.
+
+These are two independent code paths. They do NOT coalesce. Every keystroke triggers two full reconciliation passes.
+
+When the reconciler cannot update a DOM node in-place (`canUpdateInPlace()` returns `false`), it calls `parent.replaceChild(newDom, hostDom)` in:
+- `packages/core/src/renderer/dom-updates.ts:65`
+- `packages/core/src/renderer/reconciliation.ts:227`
+
+`replaceChild` destroys the focused DOM node. The `updateProperty()` focus guard in `props-updates.ts:160` only covers the in-place property update path — it does NOT fire when `replaceChild` is used.
+
+### Fix
+
+A shared `FocusGuard` utility (`packages/core/src/component/focus-guard.ts`) that:
+1. Saves `document.activeElement` + `selectionStart`/`selectionEnd` before reconciliation
+2. After reconciliation: if element still in DOM but lost focus → restore focus + cursor
+3. After reconciliation: if element was replaced → find replacement by `name`/`id` attribute → restore focus + cursor to replacement
+
+Applied in TWO places:
+- `SwissComponent.commitVNode()` — covers signal-effect-triggered renders
+- `UpdateManager.performUpdate()` — covers explicit `scheduleUpdate()` renders
+
+### Pattern note for .uix authors
+Do NOT call `this.scheduleUpdate?.()` in event handlers that set reactive state. Signal effects handle the re-render automatically. Explicit `scheduleUpdate()` causes a redundant second reconciliation pass. Document in DIRECTIVE when fix ships.
