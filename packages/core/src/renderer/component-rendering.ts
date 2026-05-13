@@ -250,7 +250,7 @@ export function renderComponent(
           typeof rendered === "boolean"
         ) {
           if (rendered === null || rendered === undefined) {
-            console.log(
+            console.debug(
               `[Renderer] Component ${instance.constructor.name} returned null/undefined from render(), returning placeholder to maintain instance tracking`,
             );
             // CRITICAL: Return a hidden element instead of null/[] to prevent renderer issues
