@@ -137,23 +137,25 @@ export function preprocessSwissSyntax(
   source: string,
   filePath?: string,
 ): string {
-  // Validate: Block <style> tags in .ui and .uix files
-  const styleTagRegex = /<style[^>]*>[\s\S]*?<\/style>/gi;
+  // Validate: Block bare CSS <style> tags in .ui and .uix files.
+  // JSX <style> elements whose content is a JSX expression — <style>{...}</style> —
+  // are allowed because they inject a runtime DOM style node, not embedded CSS.
+  // The negative lookahead \s*(?!\{) ensures we only match tags whose content
+  // begins with CSS text, not a JSX expression brace.
+  const styleTagRegex = /<style[^>]*>\s*(?!\{)[\s\S]*?<\/style>/gi;
   const styleTagMatches = source.match(styleTagRegex);
 
   if (styleTagMatches && styleTagMatches.length > 0) {
     const fileName = filePath ? ` in ${filePath}` : "";
     const errorMessage =
-      `[SWISS] ❌ Style tags are not allowed in .ui/.uix files${fileName}.\n\n` +
-      `Found ${styleTagMatches.length} style tag(s). Please:\n` +
+      `[SWISS] ❌ Bare CSS style tags are not allowed in .ui/.uix files${fileName}.\n\n` +
+      `Found ${styleTagMatches.length} bare style tag(s). Please:\n` +
       `1. Extract styles to a CSS file in the project's css/ directory\n` +
       `2. Link the CSS file in your setup file (index.html/index.ui/app.ui/main.ui)\n` +
       `3. Use CSS custom properties (--variable-name) for design tokens\n\n` +
-      `Example:\n` +
-      `  ❌ <style>{...}</style>\n` +
-      `  ✅ <link rel="stylesheet" href="/css/components.css" />\n\n` +
-      `Style attributes on HTML elements (like Tailwind classes) are allowed.\n` +
-      `Only <style> tags are blocked.\n`;
+      `Allowed: JSX style elements with expression content — <style>{\`...\`}</style>\n` +
+      `Blocked:  bare CSS — <style>.foo { color: red; }</style>\n\n` +
+      `Style attributes on HTML elements (like Tailwind classes) are always allowed.\n`;
 
     throw new Error(errorMessage);
   }
