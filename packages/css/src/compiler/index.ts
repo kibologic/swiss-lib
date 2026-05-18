@@ -3,6 +3,8 @@
  * Integrates with @kibologic/compiler to process CSS in .ui/.uix files
  */
 
+import postcss from 'postcss';
+import { transform } from 'lightningcss';
 import { transformCSSModule } from '../modules/transformer.js';
 import type { CSSModuleOptions } from '../modules/transformer.js';
 
@@ -19,7 +21,8 @@ export interface CompiledCSS {
 }
 
 /**
- * Compile CSS from Swiss component
+ * Compile CSS from Swiss component.
+ * Runs CSS Modules scoping → PostCSS → lightningcss (minify + autoprefixer).
  */
 export async function compileCSS(
     css: string,
@@ -29,7 +32,7 @@ export async function compileCSS(
     let processedCSS = css;
     let modules: Record<string, string> | undefined;
 
-    // CSS Modules transformation
+    // CSS Modules scoping
     if (options.modules) {
         const moduleOptions = typeof options.modules === 'object' ? options.modules : {};
         const result = transformCSSModule(processedCSS, filename, moduleOptions);
@@ -37,14 +40,25 @@ export async function compileCSS(
         modules = result.exports;
     }
 
-    // TODO: Add PostCSS processing
-    // TODO: Add autoprefixer
-    // TODO: Add minification
+    // PostCSS — pipeline is live for future plugin additions (e.g. postcss-nesting)
+    const postcssResult = await postcss([]).process(processedCSS, { from: filename, to: filename });
+    processedCSS = postcssResult.css;
 
-    return {
-        code: processedCSS,
-        modules
-    };
+    // lightningcss: minification and vendor prefixing
+    if (options.minify || options.autoprefixer) {
+        const { code } = transform({
+            filename,
+            code: Buffer.from(processedCSS),
+            minify: options.minify ?? false,
+            // Basic modern browser targets for autoprefixing via lightningcss
+            targets: options.autoprefixer
+                ? { chrome: 100 << 16, firefox: 100 << 16, safari: 15 << 16 }
+                : undefined,
+        });
+        processedCSS = new TextDecoder().decode(code);
+    }
+
+    return { code: processedCSS, modules };
 }
 
 /**
