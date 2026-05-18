@@ -5,16 +5,34 @@
  */
 
 import type { VNode } from '../vdom/vdom.js';
+import { renderToDOM } from '../renderer/renderer.js';
+import { getCurrentComponentInstance } from '../renderer/storage.js';
 
-export function createPortal(content: VNode, container: HTMLElement) {
-  // This is a placeholder for the actual implementation
-  // In the real system, this would track and render the portal
-  container.innerHTML = '';
-  // Render content to container
+const portalContainers = new Set<HTMLElement>();
+
+/**
+ * Render a VNode into an arbitrary DOM node outside the component tree.
+ * Returns a cleanup function that removes the portal content.
+ */
+export function createPortal(content: VNode, container: HTMLElement): () => void {
+  if (typeof document === 'undefined') {
+    return () => {};
+  }
+  portalContainers.add(container);
+  renderToDOM(content, container);
+  return () => {
+    container.innerHTML = '';
+    portalContainers.delete(container);
+  };
 }
 
-export function useSlot(_name: string): VNode[] {
-  // Placeholder for slot usage
-  void _name;
-  return [];
+/**
+ * Return the VNode[] projected into a named slot from the parent component.
+ * Call inside a component's render() method.
+ */
+export function useSlot(name: string): VNode[] {
+  const instance = getCurrentComponentInstance();
+  if (!instance) return [];
+  const slotMap = (instance as any)._slotContent as Map<string, VNode[]> | undefined;
+  return slotMap?.get(name) ?? [];
 }

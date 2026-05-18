@@ -156,16 +156,41 @@ export class Registry {
   }
 
   private async downloadTemplate(url: string, templateName?: string): Promise<string> {
-    void url;
-    void templateName;
-    // TODO: Implement actual download logic
-    // This would typically:
-    // 1. Download tar/zip from URL
-    // 2. Extract to community directory
-    // 3. Validate template structure
-    // 4. Update registry
-    
-    throw new Error('Template download not implemented yet');
+    const { execFile } = await import('child_process');
+    const { promisify } = await import('util');
+    const execFileAsync = promisify(execFile);
+
+    const name = templateName
+      ?? (path.basename(url).replace(/\.tar\.gz$|\.tgz$|\.zip$/, '') || 'template');
+    const targetPath = path.join(this.templatesPath, 'community', name);
+
+    if (await fs.pathExists(targetPath)) {
+      throw new Error(`Template '${name}' already exists`);
+    }
+
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch template: ${response.status} ${response.statusText}`);
+    }
+
+    const tmpFile = path.join(this.templatesPath, `.tmp-${name}.tar.gz`);
+
+    try {
+      const buffer = await response.arrayBuffer();
+      await fs.writeFile(tmpFile, Buffer.from(buffer));
+      await fs.ensureDir(targetPath);
+      await execFileAsync('tar', ['-xzf', tmpFile, '-C', targetPath, '--strip-components=1']);
+
+      if (!(await this.validateTemplate(targetPath))) {
+        await fs.remove(targetPath);
+        throw new Error('Downloaded template failed validation');
+      }
+
+      console.log(chalk.green(`✅ Template downloaded: ${name}`));
+      return targetPath;
+    } finally {
+      await fs.remove(tmpFile).catch(() => {});
+    }
   }
 
   private async linkLocalTemplate(localPath: string, templateName?: string): Promise<string> {

@@ -4,52 +4,52 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
+import { spawn } from 'child_process';
 import type { DependencyInstallOptions } from '../types/template.types.js';
 
 export class DependencyManager {
-  constructor() {
-    // TODO: Implement dependency management
-  }
-
   async installDependencies(
-    projectPath: string, 
-    dependencies: string[], 
+    projectPath: string,
+    dependencies: string[],
     options: DependencyInstallOptions
   ): Promise<void> {
     const { packageManager = 'npm', dev = false, skipInstall = false } = options;
-    
-    if (skipInstall) {
-      console.log(`Skipping dependency installation for ${dependencies.length} packages`);
-      return;
-    }
 
-    console.log(`Installing ${dependencies.length} ${dev ? 'dev ' : ''}dependencies with ${packageManager}...`);
-    
-    // TODO: Implement actual dependency installation
-    // This would typically:
-    // 1. Read existing package.json
-    // 2. Add dependencies to appropriate section
-    // 3. Run npm/yarn/pnpm install
-    // 4. Handle errors and conflicts
-    
-    for (const dep of dependencies) {
-      console.log(`  - ${dep}`);
+    if (skipInstall || dependencies.length === 0) return;
+
+    const args: string[] = ['add'];
+    if (dev) {
+      if (packageManager === 'yarn') args.push('--dev');
+      else args.push('-D');
     }
+    args.push(...dependencies);
+
+    await this.run(packageManager, args, projectPath);
   }
 
   async addDependency(name: string, version: string, dev: boolean = false): Promise<void> {
-    console.log(`Adding ${dev ? 'dev ' : ''}dependency: ${name}@${version}`);
-    // TODO: Implement actual dependency addition
+    await this.installDependencies(process.cwd(), [`${name}@${version}`], {
+      packageManager: 'npm',
+      dev,
+    });
   }
 
   async initGit(projectPath: string): Promise<void> {
-    console.log('Initializing git repository...');
-    // reference to satisfy lint until implemented
-    void projectPath;
-    // TODO: Implement actual git initialization
-    // This would typically:
-    // 1. Run git init
-    // 2. Create .gitignore
-    // 3. Make initial commit
+    await this.run('git', ['init'], projectPath);
+  }
+
+  private run(cmd: string, args: string[], cwd: string): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      const child = spawn(cmd, args, {
+        cwd,
+        stdio: 'inherit',
+        shell: process.platform === 'win32',
+      });
+      child.on('close', code => {
+        if (code === 0) resolve();
+        else reject(new Error(`'${cmd}' exited with code ${code}`));
+      });
+      child.on('error', reject);
+    });
   }
 }

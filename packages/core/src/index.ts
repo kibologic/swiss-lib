@@ -37,7 +37,7 @@ export { runtimeService } from "./runtime/runtime-service.js";
 export { DevServerService } from "./runtime/dev-server.js";
 
 // Renderer
-export { hydrate } from "./renderer/index.js";
+export { hydrate, renderToString, renderToDOM } from "./renderer/index.js";
 
 // Reactivity
 export * from "./reactivity/index.js";
