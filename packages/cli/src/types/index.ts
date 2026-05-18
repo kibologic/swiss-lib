@@ -23,20 +23,8 @@ export interface TemplateMetadata {
   
   export interface TemplateRegistry {
     version: string;
-    templates: TemplateRegistryEntry[];
+    templates: TemplateMetadata[];
     lastUpdated: string;
-  }
-  
-  export interface TemplateRegistryEntry {
-    name: string;
-    type: string;
-    version: string;
-    description: string;
-    author: string;
-    tags: string[];
-    source: 'builtin' | 'community';
-    createdAt: string;
-    updatedAt: string;
   }
   
   export interface RegistryConfig {
@@ -54,19 +42,6 @@ export interface TemplateMetadata {
     skipGit?: boolean;
     dryRun?: boolean;
     verbose?: boolean;
-  }
-  
-  export interface FileGenerationResult {
-    success: boolean;
-    filesCreated: string[];
-    filesSkipped: string[];
-    errors: string[];
-  }
-  
-  export interface DependencyInstallOptions {
-    packageManager: 'npm' | 'yarn' | 'pnpm';
-    skipInstall?: boolean;
-    dev?: boolean;
   }
   
   export interface ValidatorConfig {

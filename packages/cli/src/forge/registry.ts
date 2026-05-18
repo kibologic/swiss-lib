@@ -218,7 +218,11 @@ export class Registry {
       description: t.description,
       author: t.author,
       tags: t.tags,
+      capabilities: t.capabilities,
+      dependencies: t.dependencies,
+      devDependencies: t.devDependencies,
       source: t.source,
+      path: t.path,
       createdAt: t.createdAt,
       updatedAt: t.updatedAt
     }));

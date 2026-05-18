@@ -326,38 +326,6 @@ function detectProjectType(
   return "component";
 }
 
-// Get clear output structure for each project type
-// Get clear output structure for each project type
-// function getOutputStructure(projectType: ProjectType): {
-//   outDir: string;
-//   publicDir?: string;
-//   buildType: "app" | "lib";
-// } {
-//   switch (projectType) {
-//     case "component":
-//       return {
-//         outDir: "dist",
-//         publicDir: "public",
-//         buildType: "app",
-//       };
-//
-//     case "library":
-//       return {
-//         outDir: "dist",
-//         buildType: "lib",
-//       };
-//
-//     case "plugin":
-//       return {
-//         outDir: "dist",
-//         buildType: "lib",
-//       };
-//
-//     default:
-//       throw new Error(`Unknown project type: ${projectType}`);
-//   }
-// }
-
 // Find entry point for the project
 function getEntryPoint(
   projectType: ProjectType,
@@ -412,77 +380,6 @@ function getEntryPoint(
     `No entry point found for ${projectType} project. Expected one of: ${entryOptions[projectType].join(", ")}`,
   );
 }
-
-// Build configuration - now uses SWITE builder
-// function createBuildConfig(
-//   projectType: ProjectType,
-//   swissConfig: SwissJSConfig,
-//   srcDir: string,
-//   outDir: string,
-//   options: { mode: string; minify: boolean; sourcemap: boolean },
-// ) {
-//   const entryPoint = getEntryPoint(projectType, swissConfig, srcDir);
-//   const outputStructure = getOutputStructure(projectType);
-//
-//   const baseConfig = {
-//     root: process.cwd(),
-//     mode: options.mode,
-//     plugins: [/* swissPlugin() */], // Removed - using SWITE now
-//     esbuild: {
-//       jsx: "transform",
-//     },
-//     build: {
-//       outDir: path.relative(process.cwd(), outDir),
-//       minify: options.minify,
-//       sourcemap: options.sourcemap,
-//       emptyOutDir: false, // We already cleaned
-//     },
-//   };
-//
-//   if (outputStructure.buildType === "app") {
-//     // Component/App build
-//     return {
-//       ...baseConfig,
-//       publicDir: outputStructure.publicDir,
-//       build: {
-//         ...baseConfig.build,
-//         rollupOptions: {
-//           input: entryPoint,
-//           output: {
-//             entryFileNames: "assets/[name].[hash].js",
-//             chunkFileNames: "assets/[name].[hash].js",
-//             assetFileNames: "assets/[name].[hash].[ext]",
-//             manualChunks: {
-//               "swissjs-core": ["@kibologic/core"],
-//             },
-//           },
-//         },
-//       },
-//     };
-//   } else {
-//     // Library/Plugin build
-//     return {
-//       ...baseConfig,
-//       build: {
-//         ...baseConfig.build,
-//         lib: {
-//           entry: entryPoint,
-//           name: projectType === "plugin" ? "SwissJSPlugin" : "SwissJSLibrary",
-//           // formats: sanitizeFormats(swissConfig.build?.formats),
-//           formats: ["es", "cjs"],
-//         },
-//         rollupOptions: {
-//           external: swissConfig.build?.external || ["@kibologic/core"],
-//           output: {
-//             globals: {
-//               "@kibologic/core": "SwissJS",
-//             },
-//           },
-//         },
-//       },
-//     };
-//   }
-// }
 
 // Generate additional files for libraries and plugins
 async function generateLibraryFiles(
@@ -561,7 +458,6 @@ function showNextSteps(projectType: ProjectType, outDir: string): void {
   }
 }
 
-// (removed) findFiles was unused
 
 async function getBuildStats(
   outDir: string,
@@ -616,18 +512,6 @@ async function analyzeBundle(outDir: string): Promise<void> {
     void _error;
   }
 }
-
-// const allowedFormats: readonly LibraryFormats[] = ["es", "cjs", "umd", "iife"];
-// function sanitizeFormats(formats: unknown): LibraryFormats[] {
-//   if (!Array.isArray(formats)) return ["es", "cjs"];
-//   return (formats as unknown[])
-//     .filter(
-//       (f: unknown): f is LibraryFormats =>
-//         typeof f === "string" &&
-//         (allowedFormats as readonly string[]).includes(f),
-//     )
-//     .slice();
-// }
 
 // Copy .ts and .uix files from src to .swiss-temp
 async function copyTypeScriptFilesToTemp(
