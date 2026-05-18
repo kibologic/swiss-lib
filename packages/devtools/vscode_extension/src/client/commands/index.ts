@@ -33,8 +33,7 @@ export function registerCommands(context: vscode.ExtensionContext) {
   );
 }
 
-// Export individual command functions for better code organization
-export async function createNewComponent() {
+async function createNewComponent() {
   const componentName = await vscode.window.showInputBox({
     prompt: 'Enter component name',
     placeHolder: 'e.g., MyComponent',
@@ -111,7 +110,7 @@ export class ${componentName} extends SwissComponent<{ title?: string; descripti
   }
 }
 
-export async function previewComponent() {
+async function previewComponent() {
   const activeEditor = vscode.window.activeTextEditor;
   if (!activeEditor) {
     vscode.window.showErrorMessage('No active editor found. Please open a SwissJS component file.');

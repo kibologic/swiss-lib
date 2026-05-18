@@ -4,11 +4,5 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// Path manipulation utilities
-export { pathToRoute, routeToPath } from './path.js';
-
-// Performance caching utilities
-export { createRouteCache, RouteCache } from './cache.js';
-
 // Route utilities
-export { normalizeRoutePath, validateRoutePath } from './route.js'; 
+export { normalizeRoutePath, validateRoutePath } from './route.js';

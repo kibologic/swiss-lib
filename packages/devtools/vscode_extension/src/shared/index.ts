@@ -4,6 +4,3 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// Re-export all shared modules
-export * from './types';
-export * from './utils';
