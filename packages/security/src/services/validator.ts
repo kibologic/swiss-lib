@@ -14,7 +14,11 @@ export class ValidatorService {
   private compiledSchemas = new Map<string, CompiledSchema>();
 
   compileSchema(schema: JSONSchema, id?: string): CompiledSchema {
-    const schemaId = id || JSON.stringify(schema);
+    const schemaId = id ?? JSON.stringify(schema, (_k, v: unknown) =>
+      v !== null && typeof v === 'object' && !Array.isArray(v)
+        ? Object.fromEntries(Object.entries(v as Record<string, unknown>).sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0))
+        : v
+    );
     
     if (this.compiledSchemas.has(schemaId)) {
       return this.compiledSchemas.get(schemaId)!;

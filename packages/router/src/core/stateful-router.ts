@@ -219,7 +219,9 @@ export class StatefulRouter extends Router {
     };
 
     const url = this.buildURL(this.currentState);
-    history.replaceState(null, "", url);
+    if (typeof window !== 'undefined') {
+      history.replaceState(null, "", url);
+    }
 
     if (this.options.onStateChange) {
       this.options.onStateChange(this.currentState);
@@ -248,7 +250,7 @@ export class StatefulRouter extends Router {
     }
 
     // Restore scroll position if present
-    if (state.scroll && this.options.persistScroll) {
+    if (state.scroll && this.options.persistScroll && typeof window !== 'undefined') {
       window.scrollTo(state.scroll.x, state.scroll.y);
     }
 
@@ -259,7 +261,7 @@ export class StatefulRouter extends Router {
    * Save current scroll position to state
    */
   saveScrollPosition(): void {
-    if (!this.options.persistScroll) return;
+    if (!this.options.persistScroll || typeof window === 'undefined') return;
 
     this.updateState({
       scroll: {

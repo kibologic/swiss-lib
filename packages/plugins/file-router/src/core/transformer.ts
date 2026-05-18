@@ -54,6 +54,11 @@ export class PathTransformer {
       route = '/';
     }
 
+    // Trim trailing slash from non-root routes (produced by index files in subdirectories)
+    if (route !== '/' && route.endsWith('/')) {
+      route = route.slice(0, -1);
+    }
+
     return route;
   }
 
@@ -91,13 +96,13 @@ export class PathTransformer {
    */
   matchRoute(pattern: string, path: string): { match: boolean; params: Record<string, string> } {
     const params: Record<string, string> = {};
-    
-    // Convert pattern to regex
-    // Only replace bare * wildcard segments (not * embedded inside segment names)
-    const regexPattern = pattern
+
+    // Build regex: escape special chars first, then substitute params and wildcards
+    const escaped = pattern.replace(/[.+?^${}()|[\]\\]/g, '\\$&');
+    const regexPattern = escaped
       .replace(/:[^/]+/g, '([^/]+)')
-      .replace(/(?<![^/])\*(?![^/])/g, '[^/]+');
-    
+      .replace(/\*/g, '[^/]*');
+
     const regex = new RegExp(`^${regexPattern}$`);
     const match = path.match(regex);
     
