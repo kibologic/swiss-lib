@@ -5,7 +5,6 @@
  */
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-require-imports */
 
 import { renderToDOM, updateDOMNode } from "../renderer/renderer.js";
 import { domToHostComponent, componentInstances } from "../renderer/storage.js";
@@ -17,6 +16,7 @@ import type { SwissComponent } from "./component.js";
 import { expandSlots } from "../renderer/component-rendering.js";
 import { logger } from "../utils/logger.js";
 import { saveFocusState, restoreFocusState } from "./focus-guard.js";
+import { isDevtoolsEnabled, getDevtoolsBridge, isTelemetryEnabled } from "../devtools/bridge.js";
 
 function scheduleMicrotask(fn: () => void) {
   if (typeof queueMicrotask === "function") {
@@ -641,71 +641,34 @@ export class UpdateManager {
   }
 
   private reportUpdateMetrics(t0: number, t1: number): void {
-    // CRITICAL: Don't use require() in browser context - this causes ReferenceError
-    // TODO: Implement proper conditional import or remove devtools bridge for browser builds
-    if (typeof window !== "undefined") {
-      // Skip devtools reporting in browser environment
-      return;
-    }
+    if (!isDevtoolsEnabled()) return;
 
-    // This code path should only execute in Node.js environment
     try {
-      const {
-        getDevtoolsBridge,
-        isDevtoolsEnabled,
-        isTelemetryEnabled,
-      } = require("../devtools/bridge.js");
+      const bridge = getDevtoolsBridge();
+      const ms = Math.max(0, t1 - t0);
 
-      if (isDevtoolsEnabled()) {
+      let stateSummary: Record<string, unknown> | undefined;
+      try {
+        stateSummary = { ...(this.component.state as unknown as Record<string, unknown>) };
+      } catch {
+        stateSummary = undefined;
+      }
+
+      try {
+        bridge.onComponentUpdate({ id: (this.component as any)._devtoolsId, stateSummary });
+      } catch { /* ignore */ }
+
+      try {
+        bridge.recordEvent({ t: Date.now(), type: "render", msg: `${(this.component as any)._devtoolsId}:${ms}` });
+      } catch { /* ignore */ }
+
+      if (isTelemetryEnabled() && bridge.recordEventTyped) {
         try {
-          let stateSummary: Record<string, unknown> | undefined;
-          try {
-            stateSummary = {
-              ...(this.component.state as unknown as Record<string, unknown>),
-            };
-          } catch {
-            stateSummary = undefined;
-          }
-          getDevtoolsBridge().onComponentUpdate({
-            id: (this.component as any)._devtoolsId,
-            stateSummary,
-          });
-
-          try {
-            const ms = Math.max(0, t1 - t0);
-            getDevtoolsBridge().recordEvent({
-              t: Date.now(),
-              type: "render",
-              msg: `${(this.component as any)._devtoolsId}:${ms}`,
-            });
-          } catch {
-            /* ignore */
-          }
-
-          if (isTelemetryEnabled() && getDevtoolsBridge().recordEventTyped) {
-            try {
-              const ms = Math.max(0, t1 - t0);
-              getDevtoolsBridge().recordEventTyped!({
-                t: Date.now(),
-                category: "perf",
-                name: "render",
-                componentId: (this.component as any)._devtoolsId,
-                data: { durationMs: ms },
-              });
-            } catch {
-              /* ignore */
-            }
-          }
-        } catch (error) {
-          logger.warn(
-            "Error reporting to devtools:",
-            error instanceof Error ? error.message : error,
-          );
-        }
+          bridge.recordEventTyped({ t: Date.now(), category: "perf", name: "render", componentId: (this.component as any)._devtoolsId, data: { durationMs: ms } });
+        } catch { /* ignore */ }
       }
     } catch (error) {
-      // ignore require() errors in browser context
-      logger.warn("Could not load devtools bridge");
+      logger.warn("Error reporting to devtools:", error instanceof Error ? error.message : error);
     }
   }
 }

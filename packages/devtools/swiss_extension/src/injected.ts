@@ -22,11 +22,11 @@ function isBridge(x: unknown): x is Bridge {
 }
 
 function toPanel(type: string, result: unknown) {
-  window.postMessage({ source: 'swiss-devtools', direction: 'to-panel', type, result }, '*')
+  window.postMessage({ source: 'swiss-devtools', direction: 'to-panel', type, result }, window.location.origin || '*')
 }
 
 function toPanelError(message: string) {
-  window.postMessage({ source: 'swiss-devtools', direction: 'to-panel', type: 'error', message }, '*')
+  window.postMessage({ source: 'swiss-devtools', direction: 'to-panel', type: 'error', message }, window.location.origin || '*')
 }
 
 async function handle(type: string) {
