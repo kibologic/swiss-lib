@@ -69,7 +69,12 @@ export class UiModal {
     modal.appendChild(title);
     modal.appendChild(closeBtn);
     backdrop.appendChild(modal);
-    
+
+    // Focus trap: make modal focusable and focus it on open
+    modal.setAttribute('tabindex', '-1');
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+
     if (this.props.onClose) {
       backdrop.addEventListener('click', (e) => {
         if (e.target === backdrop) {
@@ -78,7 +83,30 @@ export class UiModal {
       });
       closeBtn.addEventListener('click', () => this.props.onClose?.());
     }
-    
+
+    // Trap focus within modal and close on Escape
+    modal.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        this.props.onClose?.();
+        return;
+      }
+      if (e.key === 'Tab') {
+        const focusable = modal.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (!focusable.length) { e.preventDefault(); return; }
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey) {
+          if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+        } else {
+          if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+        }
+      }
+    });
+
     host.appendChild(backdrop);
+    // Move focus into modal after mounting
+    requestAnimationFrame(() => modal.focus());
   }
 }
