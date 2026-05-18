@@ -25,34 +25,3 @@ export function createRouteDefinition(
   };
 }
 
-/**
- * Validate route definition
- */
-export function validateRouteDefinition(route: RouteDefinition): boolean {
-  if (!route.path || typeof route.path !== 'string') {
-    return false;
-  }
-  
-  if (!route.component || typeof route.component !== 'function') {
-    return false;
-  }
-  
-  return true;
-}
-
-/**
- * Normalize route path
- */
-export function normalizeRoutePath(path: string): string {
-  // Ensure path starts with /
-  if (!path.startsWith('/')) {
-    path = '/' + path;
-  }
-  
-  // Remove trailing slash except for root
-  if (path !== '/' && path.endsWith('/')) {
-    path = path.slice(0, -1);
-  }
-  
-  return path;
-} 

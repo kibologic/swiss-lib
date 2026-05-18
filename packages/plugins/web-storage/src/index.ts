@@ -6,7 +6,6 @@
 
 // Auto-applied barrel exports (generated from docs/reports/barrel-suggest.json)
 export * from "./plugin.js";
-export * from "./public/capabilities.js";
 export * from "./public/services.js";
 export * from "./public/types.js";
 export * from "./runtime/env.js";

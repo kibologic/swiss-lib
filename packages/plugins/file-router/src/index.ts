@@ -15,6 +15,4 @@ export * from "./dev/server.js";
 export * from "./dev/watcher.js";
 export * from "./types/dev.js";
 export * from "./types/index.js";
-export * from "./utils/cache.js";
 export * from "./utils/index.js";
-export * from "./utils/path.js";

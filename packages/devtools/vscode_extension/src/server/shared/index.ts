@@ -14,8 +14,3 @@ export * from './registry';
 // String utilities exports
 export * from './stringUtils';
 
-// Range utilities exports  
-export * from './rangeUtils';
-
-// Logging utilities exports
-export * from './logUtils';

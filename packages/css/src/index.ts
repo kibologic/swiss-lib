@@ -6,8 +6,6 @@ export * from './modules/index.js';
 // CSS Compiler
 export * from './compiler/index.js';
 export * from './compiler/optimize.js';
-export * from './compiler/hmr.js';
-export * from './compiler/types.js';
 
 // Asset handling
 export * from './assets/index.js';
