@@ -3,7 +3,7 @@
   "displayName": "SwissJS Language Support",
   "description": "Language support for SwissJS .ui files with syntax highlighting, IntelliSense, and more",
   "publisher": "swissjs",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "./dist/index.js",
   "private": true,
   "engines": {
