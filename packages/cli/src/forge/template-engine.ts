@@ -62,16 +62,6 @@ export class TemplateEngine {
     });
   }
 
-  async processTemplate(templatePath: string, context: TemplateContext): Promise<string> {
-    try {
-      const templateContent = await fs.readFile(templatePath, 'utf-8');
-      const template = this.handlebars.compile(templateContent);
-      return template(context);
-    } catch (error) {
-      throw new Error(`Failed to process template ${templatePath}: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    }
-  }
-
   async processTemplateString(templateString: string, context: TemplateContext): Promise<string> {
     try {
       const template = this.handlebars.compile(templateString);
@@ -105,50 +95,4 @@ export class TemplateEngine {
     return processedFiles;
   }
 
-  validateTemplate(templatePath: string): boolean {
-    try {
-      const templateContent = fs.readFileSync(templatePath, 'utf-8');
-      this.handlebars.compile(templateContent);
-      return true;
-    } catch (error) {
-      console.error(`Template validation failed for ${templatePath}:`, error);
-      return false;
-    }
-  }
-
-  getTemplateVariables(templateContent: string): string[] {
-    const variables: string[] = [];
-    const regex = /\{\{\s*([^}]+)\s*\}\}/g;
-    let match;
-
-    while ((match = regex.exec(templateContent)) !== null) {
-      const variable = match[1].trim();
-      // Skip helpers and conditions
-      if (!variable.startsWith('#') && !variable.startsWith('/') && !variable.startsWith('if')) {
-        variables.push(variable);
-      }
-    }
-
-    return [...new Set(variables)];
-  }
-
-  async analyzeTemplate(templatePath: string): Promise<{
-    variables: string[];
-    isValid: boolean;
-    errors: string[];
-  }> {
-    const errors: string[] = [];
-    let variables: string[] = [];
-    let isValid = false;
-
-    try {
-      const templateContent = await fs.readFile(templatePath, 'utf-8');
-      variables = this.getTemplateVariables(templateContent);
-      isValid = this.validateTemplate(templatePath);
-    } catch (error) {
-      errors.push(`Failed to analyze template: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    }
-
-    return { variables, isValid, errors };
-  }
 }
