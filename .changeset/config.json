@@ -5,18 +5,18 @@
   "fixed": [],
   "linked": [
     [
-      "@kibologic/core",
-      "@kibologic/compiler",
-      "@kibologic/router",
-      "@kibologic/components",
-      "@kibologic/security",
-      "@kibologic/utils",
-      "@kibologic/plugin-file-router",
-      "@kibologic/plugin-web-storage"
+      "@swissjs/core",
+      "@swissjs/compiler",
+      "@swissjs/router",
+      "@swissjs/components",
+      "@swissjs/security",
+      "@swissjs/utils",
+      "@swissjs/plugin-file-router",
+      "@swissjs/plugin-web-storage"
     ]
   ],
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["@kibologic/css", "@kibologic/cli", "@kibologic/components", "@kibologic/capability-explorer"]
+  "ignore": ["@swissjs/css", "@swissjs/cli"]
 }

@@ -13,37 +13,77 @@
     "composite": true,
     "baseUrl": ".",
     "paths": {
-      "@kibologic/core": [
-        "./packages/core/src/index.ts",
-        "./packages/core/dist/index.mjs"
+      "@swissjs/core": [
+        "./runtime/src/index.ts",
+        "./runtime/dist/index.mjs"
       ],
-      "@kibologic/core/*": [
-        "./packages/core/src/*",
-        "./packages/core/dist/*"
+      "@swissjs/core/*": [
+        "./runtime/src/*",
+        "./runtime/dist/*"
       ],
-      "@kibologic/security": [
-        "./packages/security/dist/index.js"
+      "@swissjs/security": [
+        "./security/src/index.ts",
+        "./security/dist/index.js"
       ],
-      "@kibologic/security/*": [
-        "./packages/security/dist/*"
+      "@swissjs/security/*": [
+        "./security/src/*",
+        "./security/dist/*"
       ],
-      "@kibologic/compiler": [
-        "./packages/compiler/dist/index"
+      "@swissjs/compiler": [
+        "./compiler/src/index.ts",
+        "./compiler/dist/index"
       ],
-      "@kibologic/compiler/*": [
-        "./packages/compiler/dist/*"
+      "@swissjs/compiler/*": [
+        "./compiler/src/*",
+        "./compiler/dist/*"
       ],
-      "@kibologic/cli": [
-        "./packages/cli/dist/index"
+      "@swissjs/shared": [
+        "./shared/src/index.ts",
+        "./shared/dist/index"
       ],
-      "@kibologic/cli/*": [
-        "./packages/cli/dist/*"
+      "@swissjs/shared/*": [
+        "./shared/src/*",
+        "./shared/dist/*"
       ],
-      "@kibologic/plugin-*": [
-        "./packages/plugins/*/dist/index"
+      "@swissjs/router": [
+        "./router/src/index.ts",
+        "./router/dist/index"
       ],
-      "@plugins/*": [
-        "./packages/plugins/*/dist"
+      "@swissjs/router/*": [
+        "./router/src/*",
+        "./router/dist/*"
+      ],
+      "@swissjs/css": [
+        "./css/src/index.ts",
+        "./css/dist/index"
+      ],
+      "@swissjs/css/*": [
+        "./css/src/*",
+        "./css/dist/*"
+      ],
+      "@swissjs/components": [
+        "./components/src/index.ts",
+        "./components/dist/index"
+      ],
+      "@swissjs/components/*": [
+        "./components/src/*",
+        "./components/dist/*"
+      ],
+      "@swissjs/cli": [
+        "./cli/src/index.ts",
+        "./cli/dist/index"
+      ],
+      "@swissjs/cli/*": [
+        "./cli/src/*",
+        "./cli/dist/*"
+      ],
+      "@swissjs/plugin-*": [
+        "./plugins/*/src/index.ts",
+        "./plugins/*/dist/index"
+      ],
+      "@swissjs/plugins/*": [
+        "./plugins/*/src/index.ts",
+        "./plugins/*/dist/index"
       ]
     }
   }
