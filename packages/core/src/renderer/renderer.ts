@@ -6,8 +6,6 @@
 
 import type { SwissComponent } from "../component/component.js";
 import type { VNode, ComponentVNode } from "../vdom/vdom.js";
-import { SWISS_VERSION } from "../framework/version.js";
-
 // Import all modules
 import {
   vnodeMetadata,
@@ -551,7 +549,7 @@ export function renderToDOM(vnode: VNode, container: HTMLElement) {
 
     // Log with version for debugging
     devTools.error(
-      `[SWISS FATAL] Version ${typeof SWISS_VERSION !== "undefined" ? SWISS_VERSION : "unknown"} crashed:`,
+      `[SWISS FATAL] Version ${process.env?.npm_package_version ?? "unknown"} crashed:`,
       err,
     );
 
@@ -567,7 +565,7 @@ export function renderToDOM(vnode: VNode, container: HTMLElement) {
             <pre style="background: #fff; padding: 1rem; overflow: auto; max-height: 300px; font-size: 0.875rem;">${escapeHtml(err.stack || String(err))}</pre>
           </details>
           <p style="margin-top: 1rem; font-size: 0.875rem; color: #666;">
-            Version: ${typeof SWISS_VERSION !== "undefined" ? SWISS_VERSION : "unknown"}
+            Version: ${process.env?.npm_package_version ?? "unknown"}
           </p>
         </div>
       `;
