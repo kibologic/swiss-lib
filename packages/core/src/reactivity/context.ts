@@ -4,7 +4,6 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-import { SwissComponent } from '../component/component.js';
 import { Signal } from './signals.js';
 
 const contextMap = new Map<symbol, unknown>();
@@ -84,7 +83,7 @@ export function createContext<T>(defaultValue: T) {
   };
 }
 
-export function provide<T>(context: { id: symbol }, value: T, _component: SwissComponent) {
+export function provide<T>(context: { id: symbol }, value: T, _component: unknown) {
   void _component;
   let map = contextMap.get(context.id) as Map<string, unknown> | undefined;
   if (!map) {
@@ -94,7 +93,7 @@ export function provide<T>(context: { id: symbol }, value: T, _component: SwissC
   map.set(context.id.toString(), value as unknown);
 }
 
-export function consume<T>(context: { id: symbol; defaultValue: T | null }, _component: SwissComponent): T | null {
+export function consume<T>(context: { id: symbol; defaultValue: T | null }, _component: unknown): T | null {
   void _component;
   const map = contextMap.get(context.id) as Map<string, unknown> | undefined;
   const contextValue = map?.get(context.id.toString());
