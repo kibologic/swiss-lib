@@ -1,6 +1,6 @@
 {
   "name": "@kibologic/security",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "description": "Security primitives for SwissJS",
   "type": "module",
   "main": "dist/index.js",

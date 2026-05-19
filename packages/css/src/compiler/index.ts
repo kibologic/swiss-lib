@@ -3,6 +3,8 @@
  * Integrates with @kibologic/compiler to process CSS in .ui/.uix files
  */
 
+export * from './optimize.js';
+
 import postcss from 'postcss';
 import { transform } from 'lightningcss';
 import { transformCSSModule } from '../modules/transformer.js';

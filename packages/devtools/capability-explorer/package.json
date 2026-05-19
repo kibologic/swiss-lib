@@ -1,6 +1,6 @@
 {
   "name": "@kibologic/capability-explorer",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "SwissJS Capability Explorer - Visual devtools for component hierarchy and capability bindings",
   "type": "module",
   "main": "dist/index.js",

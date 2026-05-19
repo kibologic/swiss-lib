@@ -18,7 +18,8 @@ export class RouteScanner {
 
   async scanRoutes(directory: string): Promise<RouteDefinition[]> {
     const routes: RouteDefinition[] = [];
-    this.baseDir = directory;
+    // Normalise: strip trailing slash so relativePath always starts with '/'
+    this.baseDir = directory.replace(/[/\\]+$/, '');
     try {
       await this.scanDirectory(directory, routes, '');
     } catch (error) {
