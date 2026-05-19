@@ -1,5 +1,6 @@
-import { Router, type RouteMatch } from "../core/router.js";
+import { Router, type Route, type RouteMatch } from "../core/router.js";
 import { createElement, renderToString } from "@kibologic/core";
+import type { VNode } from "@kibologic/core";
 
 export interface SSRContext {
   url: string;
@@ -28,12 +29,12 @@ export class ServerRenderer {
     }
 
     const data = await this.router.loadRouteData(url);
-    const leafMatch: RouteMatch = matches[matches.length - 1];
-    const Component = leafMatch.route.component;
 
-    // Render the component tree to an HTML string
-    const vnode = createElement(Component, { ...leafMatch.params, ...data[leafMatch.route.path] });
-    const componentHtml = renderToString(vnode);
+    // Build component tree from outermost layout to innermost leaf.
+    // Each match may have a `layout` wrapper. We compose them inside-out:
+    //   matches = [root, parent, leaf]
+    //   tree = <RootLayout><ParentLayout><Leaf /></ParentLayout></RootLayout>
+    const componentHtml = renderToString(buildRouteTree(matches, data));
 
     const safeData = JSON.stringify(data)
       .replace(/</g, '\\u003c')
@@ -54,6 +55,63 @@ export class ServerRenderer {
 
     return { html, data, statusCode: 200 };
   }
+}
+
+/**
+ * Build a nested VNode tree that mirrors the matched route hierarchy.
+ *
+ * For route matches [root, parent, leaf]:
+ *   - If `leaf.route.layout` exists, wrap leaf in its layout
+ *   - Walk outward, each parent wrapping the inner tree
+ *   - Root layout wraps everything
+ *
+ * Each component receives its matched params merged with loader data as props.
+ */
+function buildRouteTree(matches: RouteMatch[], data: Record<string, any>): VNode {
+  // Innermost first: start with the leaf component
+  let tree: VNode = buildComponentVNode(matches[matches.length - 1], data);
+
+  // Walk inward → outward, wrapping each layer's layout if present
+  for (let i = matches.length - 2; i >= 0; i--) {
+    const match = matches[i];
+    if (match.route.layout) {
+      const props = mergeProps(match, data);
+      tree = createElement(match.route.layout, { ...props, children: [tree] }) as VNode;
+    }
+  }
+
+  // Wrap the entire tree in the leaf route's layout if it has one
+  // (leaf layout wraps only the leaf, already handled above for parents)
+  // Note: leaf layout was NOT applied above — apply it now as the immediate wrapper
+  const leafMatch = matches[matches.length - 1];
+  if (leafMatch.route.layout && matches.length >= 1) {
+    // Leaf layout is the tightest wrapper around the leaf content (already in tree)
+    // We rebuild: leaf layout wraps just the leaf component
+    const leafProps = mergeProps(leafMatch, data);
+    const leafComponent = buildComponentVNode(leafMatch, data);
+    tree = createElement(leafMatch.route.layout, { ...leafProps, children: [leafComponent] }) as VNode;
+
+    // Then outer layouts wrap that
+    for (let i = matches.length - 2; i >= 0; i--) {
+      const match = matches[i];
+      if (match.route.layout) {
+        const props = mergeProps(match, data);
+        tree = createElement(match.route.layout, { ...props, children: [tree] }) as VNode;
+      }
+    }
+  }
+
+  return tree;
+}
+
+function buildComponentVNode(match: RouteMatch, data: Record<string, any>): VNode {
+  const props = mergeProps(match, data);
+  return createElement(match.route.component, props) as VNode;
+}
+
+function mergeProps(match: RouteMatch, data: Record<string, any>): Record<string, unknown> {
+  const loaderData = data[match.route.path] ?? {};
+  return { ...match.params, ...loaderData };
 }
 
 export function createServerRenderer(router: Router): ServerRenderer {
