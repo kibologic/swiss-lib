@@ -136,6 +136,7 @@ function transformStateBlocks(source: string): string {
 export function preprocessSwissSyntax(
   source: string,
   filePath?: string,
+  jsxImportSource: string = "@kibologic/core",
 ): string {
   // Validate: Block <style> tags in .ui and .uix files
   const styleTagRegex = /<style[^>]*>[\s\S]*?<\/style>/gi;
@@ -172,18 +173,26 @@ export function preprocessSwissSyntax(
   // the previous `[^;}]+?` regex could not capture correctly.
   result = transformStateBlocks(result);
 
-  // Inject Signal import when Signal-backed state was generated
+  // Inject Signal import when Signal-backed state was generated.
+  // Detection is package-agnostic — look for any import that includes Signal,
+  // then augment or add as needed using the configured jsxImportSource.
   if (result.includes("new Signal<")) {
-    const coreImportRegex =
-      /import\s*\{([^}]+)\}\s*from\s*['"]@swissjs\/core['"]/;
-    const importMatch = result.match(coreImportRegex);
-    if (importMatch && !importMatch[1].includes("Signal")) {
-      result = result.replace(
-        coreImportRegex,
-        `import { ${importMatch[1].trim()}, Signal } from '@kibologic/core'`,
+    const hasSignalImport = /\bimport\s+\{[^}]*\bSignal\b[^}]*\}\s+from\s+['"][^'"]+['"]/m.test(result);
+    if (!hasSignalImport) {
+      // Check if there is already an import from jsxImportSource that we can augment
+      const escapedSrc = jsxImportSource.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const srcImportRegex = new RegExp(
+        `import\\s*\\{([^}]+)\\}\\s*from\\s*['"]${escapedSrc}['"]`
       );
-    } else if (!importMatch) {
-      result = `import { Signal } from '@kibologic/core';\n` + result;
+      const importMatch = result.match(srcImportRegex);
+      if (importMatch) {
+        result = result.replace(
+          srcImportRegex,
+          `import { ${importMatch[1].trim()}, Signal } from '${jsxImportSource}'`,
+        );
+      } else {
+        result = `import { Signal } from '${jsxImportSource}';\n` + result;
+      }
     }
   }
 

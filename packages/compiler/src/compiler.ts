@@ -10,8 +10,11 @@ import {
   compileTypeScriptToJavaScript as transpileTs,
 } from "./utils/typescript-utils.js";
 
+const DEFAULT_JSX_IMPORT_SOURCE = "@kibologic/core";
+
 export class UiCompiler {
   private _options: CompileOptions;
+  private _jsxImportSource: string;
 
   constructor(options: CompileOptions = {}) {
     this._options = {
@@ -20,6 +23,7 @@ export class UiCompiler {
       sourceMap: true,
       ...options,
     };
+    this._jsxImportSource = options.jsxImportSource ?? DEFAULT_JSX_IMPORT_SOURCE;
   }
 
   async compileFile(filePath: string, outputPath?: string): Promise<string> {
@@ -42,7 +46,7 @@ export class UiCompiler {
       const { preprocessSwissSyntax } = await import(
         "./transformers/swiss-syntax.js"
       );
-      processedSource = preprocessSwissSyntax(source, filePath);
+      processedSource = preprocessSwissSyntax(source, filePath, this._jsxImportSource);
       // Strip JSDoc comments (/** ... */) to prevent parsing issues
       processedSource = this.stripJSDocComments(processedSource);
     }
@@ -59,7 +63,7 @@ export class UiCompiler {
         const { transformWithJsx } = await import(
           "./transformers/jsx-transformer.js"
         );
-        result = transformWithJsx(result, filePath);
+        result = transformWithJsx(result, filePath, this._jsxImportSource);
       } catch (error) {
         console.error("Error transforming JSX:", error);
         throw error;
@@ -80,7 +84,7 @@ export class UiCompiler {
       const { preprocessSwissSyntax } = await import(
         "./transformers/swiss-syntax.js"
       );
-      processedSource = preprocessSwissSyntax(source, filePath);
+      processedSource = preprocessSwissSyntax(source, filePath, this._jsxImportSource);
       // Strip JSDoc comments (/** ... */) to prevent parsing issues
       processedSource = this.stripJSDocComments(processedSource);
     }
@@ -126,15 +130,13 @@ export class UiCompiler {
     try {
       // Add createElement import if JSX is present and import doesn't exist
       let modifiedSource = source;
+      // Detect if createElement is already imported from any package
       const hasCreateElementImport =
-        /import\s+\{[^}]*\bcreateElement\b[^}]*\}\s+from\s+['"]@kibologic\/core['"]/i.test(
-          source,
-        );
+        /\bimport\s+\{[^}]*\bcreateElement\b[^}]*\}\s+from\s+['"][^'"]+['"]/i.test(source);
 
       if (!hasCreateElementImport) {
-        // Add the import at the top after other imports
         const importStatement =
-          "import { createElement, Fragment } from '@kibologic/core';\n";
+          `import { createElement, Fragment } from '${this._jsxImportSource}';\n`;
 
         // Find the last import statement
         const importRegex = /^import\s+.*?from\s+['"][^'"]+['"];?\s*$/gm;
