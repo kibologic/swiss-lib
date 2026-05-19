@@ -218,12 +218,6 @@ export class SwissWorkspaceManager {
     return Array.from(this.packages.values()).filter((pkg) => pkg.isSwissApp);
   }
 
-  getSwissPackages(): PackageInfo[] {
-    return Array.from(this.packages.values()).filter(
-      (pkg) => pkg.isSwissPackage,
-    );
-  }
-
   getConfig(): SwissWorkspaceConfig | null {
     return this.config;
   }
