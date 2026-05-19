@@ -22,6 +22,10 @@ export class PathTransformer {
       if (baseIndex !== -1) {
         relativePath = filePath.substring(baseIndex + baseDir.length);
       }
+      // Ensure leading slash so the routePrefix regex never incorrectly matches
+      if (relativePath && !relativePath.startsWith('/') && !relativePath.startsWith('\\')) {
+        relativePath = '/' + relativePath;
+      }
     } else {
       // Fallback: try to find /pages or /routes in path
       const pagesMatch = filePath.match(/[\/\\](?:pages|routes)([\/\\].*)$/);

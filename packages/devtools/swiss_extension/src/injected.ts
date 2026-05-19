@@ -21,12 +21,20 @@ function isBridge(x: unknown): x is Bridge {
   return !!x && typeof x === 'object'
 }
 
+// Use the page's own origin as the postMessage target to avoid broadcast to all origins.
+// Falls back to '*' only when window.location.origin is unavailable (e.g. file:// pages),
+// which is acceptable there since same-source browser restrictions still apply.
+function targetOrigin(): string {
+  const o = window.location.origin;
+  return o && o !== 'null' ? o : '*';
+}
+
 function toPanel(type: string, result: unknown) {
-  window.postMessage({ source: 'swiss-devtools', direction: 'to-panel', type, result }, window.location.origin || '*')
+  window.postMessage({ source: 'swiss-devtools', direction: 'to-panel', type, result }, targetOrigin())
 }
 
 function toPanelError(message: string) {
-  window.postMessage({ source: 'swiss-devtools', direction: 'to-panel', type: 'error', message }, window.location.origin || '*')
+  window.postMessage({ source: 'swiss-devtools', direction: 'to-panel', type: 'error', message }, targetOrigin())
 }
 
 async function handle(type: string) {
