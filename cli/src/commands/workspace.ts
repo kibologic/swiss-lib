@@ -109,7 +109,7 @@ async function initWorkspace(): Promise<void> {
       },
     },
     swissDependencies: {
-      "@kibologic/core": {
+      "@swissjs/core": {
         source: "SWISS/packages/core",
         dist: "dist",
         target: "dist/SWISS/packages/core/dist",

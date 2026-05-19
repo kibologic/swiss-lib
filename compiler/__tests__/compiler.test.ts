@@ -17,7 +17,7 @@ describe("Compiler Package", () => {
 
     // Test simple HTML template literal
     const simpleSource = `
-import { SwissComponent, html } from "@kibologic/core";
+import { SwissComponent, html } from "@swissjs/core";
 
 export class TestComponent extends SwissComponent {
   render() {

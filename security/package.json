@@ -1,5 +1,5 @@
 {
-  "name": "@kibologic/security",
+  "name": "@swissjs/security",
   "version": "0.1.13",
   "description": "Security primitives for SwissJS",
   "type": "module",

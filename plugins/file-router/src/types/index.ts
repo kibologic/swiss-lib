@@ -12,4 +12,4 @@ export type { RouteConfig, LayoutConfig } from './route.js';
 export type { DevServerOptions, WatcherConfig, FileWatcher, DevServer } from './dev.js';
 
 // Re-export core types from framework
-export type { RouteDefinition, ComponentConstructor } from '@kibologic/core';
+export type { RouteDefinition, ComponentConstructor } from '@swissjs/core';

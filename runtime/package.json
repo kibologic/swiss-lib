@@ -1,5 +1,5 @@
 {
-  "name": "@kibologic/core",
+  "name": "@swissjs/core",
   "version": "0.1.5",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -29,8 +29,8 @@
     "src/global.d.ts"
   ],
   "dependencies": {
-    "@kibologic/utils": "workspace:*",
-    "@kibologic/security": "workspace:*"
+    "@swissjs/shared": "workspace:*",
+    "@swissjs/security": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "18.19.121",

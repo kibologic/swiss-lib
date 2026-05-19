@@ -1,5 +1,5 @@
 
-import { SwissComponent, createElement } from '@kibologic/core';
+import { SwissComponent, createElement } from '@swissjs/core';
 import { _getActiveRouter } from './router-registry.js';
 
 export interface LinkProps {

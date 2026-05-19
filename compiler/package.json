@@ -1,5 +1,5 @@
 {
-  "name": "@kibologic/compiler",
+  "name": "@swissjs/compiler",
   "version": "0.1.4",
   "type": "module",
   "main": "dist/index.js",

@@ -1,4 +1,4 @@
-import { SwissComponent, html } from '@kibologic/core/browser';
+import { SwissComponent, html } from '@swissjs/core/browser';
 import { PreviewService } from './services/PreviewService.js';
 
 interface AppState {

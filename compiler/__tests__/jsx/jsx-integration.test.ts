@@ -30,7 +30,7 @@ describe("JSX Integration Tests", () => {
 
   it("transforms JSX in .ui files while keeping the extension", async () => {
     const jsxSource = `
-      import { SwissComponent } from '@kibologic/core';
+      import { SwissComponent } from '@swissjs/core';
 
       export class SimpleComponent extends SwissComponent {
         render() {
@@ -57,13 +57,13 @@ describe("JSX Integration Tests", () => {
       expect(result).toContain('"Hello World"');
 
       // The import should be added by the transformWithJsx method
-      expect(result).toContain('import { createElement } from "@kibologic/core"');
+      expect(result).toContain('import { createElement } from "@swissjs/core"');
     });
   });
 
   it("handles JSX with props and children in .ui files", async () => {
     const jsxSource = `
-      import { SwissComponent } from '@kibologic/core';
+      import { SwissComponent } from '@swissjs/core';
 
       export class UserProfile extends SwissComponent {
         render() {
@@ -109,7 +109,7 @@ describe("JSX Integration Tests", () => {
 
   it("handles JSX fragments in .ui files", async () => {
     const jsxSource = `
-      import { SwissComponent } from '@kibologic/core';
+      import { SwissComponent } from '@swissjs/core';
 
       export class List extends SwissComponent {
         render() {
@@ -138,7 +138,7 @@ describe("JSX Integration Tests", () => {
 
   it("handles component composition in .ui files", async () => {
     const jsxSource = `
-      import { SwissComponent } from '@kibologic/core';
+      import { SwissComponent } from '@swissjs/core';
       import { Button } from './Button';
 
       export class App extends SwissComponent {

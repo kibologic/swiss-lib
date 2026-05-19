@@ -1,5 +1,5 @@
 /*
- * Browser-safe entry for @kibologic/core.
+ * Browser-safe entry for @swissjs/core.
  * Omits DevServerService and runtimeService to avoid pulling in Node-only code.
  */
 

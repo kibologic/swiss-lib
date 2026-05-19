@@ -6,7 +6,7 @@
 
 // Import reflect-metadata for decorator metadata support
 // Note: This must be available in both Node.js and browser environments.
-// Apps using @kibologic/core should include reflect-metadata in their dependencies.
+// Apps using @swissjs/core should include reflect-metadata in their dependencies.
 import "reflect-metadata";
 
 import { SwissApp } from "./framework/index.js";

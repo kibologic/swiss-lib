@@ -1,5 +1,5 @@
 {
-  "name": "@kibologic/css",
+  "name": "@swissjs/css",
   "version": "0.1.4",
   "description": "CSS and asset handling for Swiss framework",
   "type": "module",
@@ -39,7 +39,7 @@
   "author": "Themba Mzumara",
   "license": "MIT",
   "dependencies": {
-    "@kibologic/compiler": "latest",
+    "@swissjs/compiler": "latest",
     "postcss": "^8.4.32",
     "lightningcss": "^1.23.0"
   },
@@ -49,7 +49,7 @@
     "@types/node": "^20.10.0"
   },
   "peerDependencies": {
-    "@kibologic/compiler": "^0.1.0"
+    "@swissjs/compiler": "^0.1.0"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com",

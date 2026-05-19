@@ -1,6 +1,6 @@
 import { Router, type Route, type RouteMatch } from "../core/router.js";
-import { createElement, renderToString } from "@kibologic/core";
-import type { VNode } from "@kibologic/core";
+import { createElement, renderToString } from "@swissjs/core";
+import type { VNode } from "@swissjs/core";
 
 export interface SSRContext {
   url: string;

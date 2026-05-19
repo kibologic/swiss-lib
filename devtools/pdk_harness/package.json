@@ -1,5 +1,5 @@
 {
-  "name": "@kibologic/devtools-pdk-harness",
+  "name": "@swissjs/devtools-pdk-harness",
   "version": "0.1.2",
   "private": true,
   "type": "module",

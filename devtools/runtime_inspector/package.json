@@ -1,5 +1,5 @@
 {
-  "name": "@kibologic/devtools-runtime-inspector",
+  "name": "@swissjs/devtools-runtime-inspector",
   "version": "0.1.2",
   "private": true,
   "type": "module",
@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@kibologic/core": "workspace:*"
+    "@swissjs/core": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.8.2",

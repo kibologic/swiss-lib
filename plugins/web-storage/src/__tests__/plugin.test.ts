@@ -10,9 +10,9 @@ import { STORAGE_LOCAL, STORAGE_SESSION, STORAGE_INDEXED } from '../public/servi
 
 // Tests aligned with file-router style
 
-describe('@kibologic/plugin-web-storage', () => {
+describe('@swissjs/plugin-web-storage', () => {
   it('exposes plugin metadata and services like other plugins', () => {
-    expect(WebStoragePlugin.name).toBe('@kibologic/plugin-web-storage')
+    expect(WebStoragePlugin.name).toBe('@swissjs/plugin-web-storage')
     expect(typeof WebStoragePlugin.version).toBe('string')
     expect(Array.isArray(WebStoragePlugin.requiredCapabilities)).toBe(true)
 

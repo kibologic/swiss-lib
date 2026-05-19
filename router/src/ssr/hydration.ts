@@ -1,5 +1,5 @@
-import { renderToDOM, hydrate as coreHydrate, createElement } from '@kibologic/core';
-import type { VNode } from '@kibologic/core';
+import { renderToDOM, hydrate as coreHydrate, createElement } from '@swissjs/core';
+import type { VNode } from '@swissjs/core';
 
 export interface HydrationData {
     route: string;

@@ -30,7 +30,7 @@ describe("Template integration (.ui)", () => {
     const compiler = new UiCompiler();
     // prettier-ignore
     const tpl = `
-      import { SwissComponent, html } from "@kibologic/core";
+      import { SwissComponent, html } from "@swissjs/core";
 
       export class TestComponent extends SwissComponent {
         render() {
@@ -54,7 +54,7 @@ describe("Template integration (.ui)", () => {
     const compiler = new UiCompiler();
     // prettier-ignore
     const tpl = `
-      import { SwissComponent, html } from "@kibologic/core";
+      import { SwissComponent, html } from "@swissjs/core";
 
       export class AppCard extends SwissComponent {
         render() {

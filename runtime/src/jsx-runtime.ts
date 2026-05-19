@@ -6,7 +6,7 @@
 
 // SwissJS JSX Runtime Entry Point
 //
-// This file is required for SwissJS to support the modern JSX transform (TypeScript 4.1+ and SWITE/ESBuild). When users set "jsxImportSource": "@kibologic/core" in their tsconfig, TypeScript and SWITE will look for this file as '@kibologic/core/jsx-runtime'.
+// This file is required for SwissJS to support the modern JSX transform (TypeScript 4.1+ and SWITE/ESBuild). When users set "jsxImportSource": "@swissjs/core" in their tsconfig, TypeScript and SWITE will look for this file as '@swissjs/core/jsx-runtime'.
 //
 // It must export 'jsx', 'jsxs', and 'Fragment' to be compatible with the JSX runtime expectations. This enables SwissJS to provide a React-like developer experience, but with its own VDOM and component model.
 //

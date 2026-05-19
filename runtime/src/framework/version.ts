@@ -15,7 +15,7 @@
  * 
  * Usage:
  * ```typescript
- * import { SWISS_VERSION } from '@kibologic/core';
+ * import { SWISS_VERSION } from '@swissjs/core';
  * console.log(`Running SwissJS ${SWISS_VERSION}`);
  * ```
  * 

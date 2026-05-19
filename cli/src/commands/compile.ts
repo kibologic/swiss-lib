@@ -26,7 +26,7 @@ export const compileCommand = new Command("compile")
       console.log(chalk.gray("Compiling .ui files...\n"));
 
       // Import the SwissJS compiler
-      const { UiCompiler } = await import("@kibologic/compiler");
+      const { UiCompiler } = await import("@swissjs/compiler");
 
       const watch = options.watch === true;
       if (watch) {

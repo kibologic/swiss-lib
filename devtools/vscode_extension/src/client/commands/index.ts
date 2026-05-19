@@ -53,7 +53,7 @@ async function createNewComponent() {
   }
   
   // Create the component file content
-  const componentContent = `import { SwissComponent, html } from '@kibologic/core';
+  const componentContent = `import { SwissComponent, html } from '@swissjs/core';
 
 export class ${componentName} extends SwissComponent<{ title?: string; description?: string }> {
   render() {

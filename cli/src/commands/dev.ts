@@ -14,7 +14,7 @@ export const devCommand = new Command("dev")
   .option("--no-open", "Do not open browser")
   .action(async (options: DevOptions & { hmrPort?: string }) => {
     // Use tsx to handle TypeScript compilation at runtime
-    const { SwiteServer } = await import("@kibologic/swite");
+    const { SwiteServer } = await import("@swissjs/swite");
     const server = new SwiteServer({
       root: process.cwd(),
       publicDir: "public",

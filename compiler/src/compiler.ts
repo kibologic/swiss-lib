@@ -10,7 +10,7 @@ import {
   compileTypeScriptToJavaScript as transpileTs,
 } from "./utils/typescript-utils.js";
 
-const DEFAULT_JSX_IMPORT_SOURCE = "@kibologic/core";
+const DEFAULT_JSX_IMPORT_SOURCE = "@swissjs/core";
 
 export class UiCompiler {
   private _options: CompileOptions;

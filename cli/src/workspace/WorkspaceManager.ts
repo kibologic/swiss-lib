@@ -152,7 +152,7 @@ export class SwissWorkspaceManager {
     // Filter to only workspace dependencies
     return deps.filter(
       (dep) =>
-        dep.startsWith("@kibologic/") ||
+        dep.startsWith("@swissjs/") ||
         dep.startsWith("@swiss-enterprise/") ||
         this.packages.has(dep),
     );

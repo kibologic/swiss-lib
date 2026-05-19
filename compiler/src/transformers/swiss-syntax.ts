@@ -136,7 +136,7 @@ function transformStateBlocks(source: string): string {
 export function preprocessSwissSyntax(
   source: string,
   filePath?: string,
-  jsxImportSource: string = "@kibologic/core",
+  jsxImportSource: string = "@swissjs/core",
 ): string {
   // Validate: Block <style> tags in .ui and .uix files
   const styleTagRegex = /<style[^>]*>[\s\S]*?<\/style>/gi;
@@ -305,11 +305,11 @@ export function preprocessSwissSyntax(
     }
 
     // Inject SwissComponent into core import or add a new one
-    const hasCoreImport = importLines.some((l) => l.includes("@kibologic/core"));
+    const hasCoreImport = importLines.some((l) => l.includes("@swissjs/core"));
     if (hasCoreImport) {
       // Patch existing core import to include SwissComponent if missing
       for (let i = 0; i < importLines.length; i++) {
-        if (importLines[i].includes("@kibologic/core") && !importLines[i].includes("SwissComponent")) {
+        if (importLines[i].includes("@swissjs/core") && !importLines[i].includes("SwissComponent")) {
           importLines[i] = importLines[i].replace(
             /import\s*\{([^}]+)\}/,
             (_m: string, named: string) => `import { ${named.trim()}, SwissComponent }`,
@@ -317,7 +317,7 @@ export function preprocessSwissSyntax(
         }
       }
     } else {
-      importLines.push(`import { SwissComponent } from '@kibologic/core';`);
+      importLines.push(`import { SwissComponent } from '@swissjs/core';`);
     }
 
     // Indent body and wrap in class
@@ -488,7 +488,7 @@ function transformPropsField(
 /**
  * Phase 2: AST transformation
  * - Moves `props = { ... }` off instance (→ `static propTypes`) on all SwissComponent subclasses
- * - Adds necessary @kibologic/core imports when not already present
+ * - Adds necessary @swissjs/core imports when not already present
  */
 export function swissSyntaxTransformer(): ts.TransformerFactory<ts.SourceFile> {
   return (context: ts.TransformationContext) => {
@@ -515,8 +515,8 @@ export function swissSyntaxTransformer(): ts.TransformerFactory<ts.SourceFile> {
 
       // Check if imports already exist
       const hasSwissImports =
-        sourceText.includes('from "@kibologic/core"') ||
-        sourceText.includes("from '@kibologic/core'");
+        sourceText.includes('from "@swissjs/core"') ||
+        sourceText.includes("from '@swissjs/core'");
 
       if (hasSwissImports) {
         return transformed;
@@ -560,7 +560,7 @@ export function createSwissImports(
         ),
       ]),
     ),
-    factory.createStringLiteral("@kibologic/core"),
+    factory.createStringLiteral("@swissjs/core"),
   );
 }
 

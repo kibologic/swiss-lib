@@ -4,14 +4,14 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-import type { Plugin } from '@kibologic/core'
+import type { Plugin } from '@swissjs/core'
 import { STORAGE_LOCAL, STORAGE_SESSION, STORAGE_INDEXED } from './public/services.js'
 import { createLocalStorage } from './runtime/local.js'
 import { createSessionStorage } from './runtime/session.js'
 import { createIndexedStorage } from './runtime/indexed.js'
 
 export const WebStoragePlugin: Plugin = {
-  name: '@kibologic/plugin-web-storage',
+  name: '@swissjs/plugin-web-storage',
   version: '0.1.0',
   requiredCapabilities: [],
   init() {

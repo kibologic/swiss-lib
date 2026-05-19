@@ -1,5 +1,5 @@
 {
-  "name": "@kibologic/router",
+  "name": "@swissjs/router",
   "version": "0.1.4",
   "description": "Swiss framework routing and SSR",
   "type": "module",
@@ -21,7 +21,7 @@
   "author": "Themba Mzumara",
   "license": "MIT",
   "dependencies": {
-    "@kibologic/core": "workspace:*"
+    "@swissjs/core": "workspace:*"
   },
   "devDependencies": {
     "tsup": "^8.0.0",

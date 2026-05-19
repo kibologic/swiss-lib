@@ -1,6 +1,6 @@
 /**
  * CSS Compiler for Swiss components
- * Integrates with @kibologic/compiler to process CSS in .ui/.uix files
+ * Integrates with @swissjs/compiler to process CSS in .ui/.uix files
  */
 
 export * from './optimize.js';

@@ -1,4 +1,4 @@
-import { SwissComponent, html } from '@kibologic/core/browser';
+import { SwissComponent, html } from '@swissjs/core/browser';
 import { DataService, type ComponentNode, type RuntimeEvent, type SnapshotEntry } from './services/DataService.js';
 
 interface AppState {

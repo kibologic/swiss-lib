@@ -70,13 +70,13 @@ export const buildCommand = new Command("build")
       // Load and validate project config
       const packageJson = await fs.readJson(packageJsonPath);
       if (
-        !packageJson.dependencies?.["@kibologic/core"] &&
-        !packageJson.peerDependencies?.["@kibologic/core"] &&
-        !packageJson.devDependencies?.["@kibologic/core"]
+        !packageJson.dependencies?.["@swissjs/core"] &&
+        !packageJson.peerDependencies?.["@swissjs/core"] &&
+        !packageJson.devDependencies?.["@swissjs/core"]
       ) {
         console.error(
           chalk.red(
-            "❌ Not a SwissJS project. Missing @kibologic/core dependency.",
+            "❌ Not a SwissJS project. Missing @swissjs/core dependency.",
           ),
         );
         process.exit(1);
@@ -148,8 +148,8 @@ export const buildCommand = new Command("build")
           rootDir: ".swiss-temp",
           outDir: path.relative(projectRoot, outDir),
           jsx: "react-jsx",
-          jsxImportSource: "@kibologic/core",
-          types: ["@kibologic/core"],
+          jsxImportSource: "@swissjs/core",
+          types: ["@swissjs/core"],
           module,
           moduleResolution,
         },
@@ -163,7 +163,7 @@ export const buildCommand = new Command("build")
           "📦 Compiling TypeScript (.ts/.tsx) in .swiss-temp to JavaScript in dist/ ...",
         ),
       );
-      const { UiCompiler } = await import("@kibologic/compiler");
+      const { UiCompiler } = await import("@swissjs/compiler");
       const compiler = new UiCompiler();
       const success = await compiler.compileTypeScriptToJavaScript(
         tempDir,
@@ -189,7 +189,7 @@ export const buildCommand = new Command("build")
 
       // Step 6: Build with SWITE
       console.log(chalk.blue("⚡ Building with SWITE..."));
-      const { build: switeBuild } = await import("@kibologic/swite");
+      const { build: switeBuild } = await import("@swissjs/swite");
 
       // Determine entry point
       const entryPoint = getEntryPoint(
@@ -291,7 +291,7 @@ function detectProjectType(
     .scripts?.serve;
   const hasPeerDeps = (
     packageJson as { peerDependencies?: Record<string, unknown> }
-  ).peerDependencies?.["@kibologic/core"];
+  ).peerDependencies?.["@swissjs/core"];
   const keywordsVal = (packageJson as { keywords?: unknown }).keywords;
   const hasPluginKeyword =
     Array.isArray(keywordsVal) &&
@@ -543,7 +543,7 @@ async function copyTypeScriptFilesToTemp(
         // Process imports in TypeScript files
         if (entry.name.endsWith(".ts")) {
           const source = await fs.readFile(srcPath, "utf-8");
-          const { UiCompiler } = await import("@kibologic/compiler");
+          const { UiCompiler } = await import("@swissjs/compiler");
           const compiler = new UiCompiler();
           const processed = await compiler.compile(source, srcPath);
           await fs.writeFile(destPath, processed);
@@ -569,7 +569,7 @@ export async function compileUiFilesToTemp(
   tempDir: string,
   debug = false,
 ): Promise<void> {
-  const { UiCompiler } = await import("@kibologic/compiler");
+  const { UiCompiler } = await import("@swissjs/compiler");
   const compiler = new UiCompiler({ outputFormat: "typescript" });
 
   const findUiFiles = async (dir: string): Promise<string[]> => {

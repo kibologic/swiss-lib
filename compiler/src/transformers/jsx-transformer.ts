@@ -13,7 +13,7 @@ import { jsxTransformer } from './jsx/jsx-transformer.js';
 export function transformWithJsx(
   source: string,
   filePath: string,
-  jsxImportSource: string = "@kibologic/core",
+  jsxImportSource: string = "@swissjs/core",
 ): string {
   try {
     // Detect if createElement is already imported from any package
