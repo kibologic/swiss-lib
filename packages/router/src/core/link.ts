@@ -1,20 +1,41 @@
 
-import { Router } from './router.js';
+import { SwissComponent, createElement } from '@kibologic/core';
+import { _getActiveRouter } from './router-registry.js';
 
-// TODO: This should be a proper Swiss component
-export function Link(props: { to: string; children: any }, { router }: { router: Router }) {
-    const handleClick = (e: MouseEvent) => {
+export interface LinkProps {
+    to: string;
+    replace?: boolean;
+    class?: string;
+    activeClass?: string;
+    children?: unknown;
+    [key: string]: unknown;
+}
+
+export class Link extends SwissComponent {
+    declare props: LinkProps;
+
+    private handleClick = (e: MouseEvent) => {
         e.preventDefault();
-        router.push(props.to);
+        const router = _getActiveRouter();
+        if (!router) return;
+        if (this.props.replace) {
+            router.replace(this.props.to);
+        } else {
+            router.push(this.props.to);
+        }
     };
 
-    // Mock returning a VNode or string structure
-    return {
-        tag: 'a',
-        attrs: {
-            href: props.to,
-            onClick: handleClick
-        },
-        children: props.children
-    };
+    render() {
+        const { to, replace: _replace, activeClass, class: className, children, ...rest } = this.props;
+
+        const isActive = typeof window !== 'undefined' && window.location.pathname === to;
+        const resolvedClass = [className, isActive && activeClass].filter(Boolean).join(' ') || undefined;
+
+        return createElement('a', {
+            href: to,
+            onClick: this.handleClick,
+            ...(resolvedClass ? { class: resolvedClass } : {}),
+            ...rest,
+        }, children as any);
+    }
 }
