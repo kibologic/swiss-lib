@@ -127,7 +127,7 @@ export class UiCompiler {
       // Add createElement import if JSX is present and import doesn't exist
       let modifiedSource = source;
       const hasCreateElementImport =
-        /import\s+\{[^}]*\bcreateElement\b[^}]*\}\s+from\s+['"]@swissjs\/core['"]/i.test(
+        /import\s+\{[^}]*\bcreateElement\b[^}]*\}\s+from\s+['"]@kibologic\/core['"]/i.test(
           source,
         );
 
@@ -177,22 +177,7 @@ export class UiCompiler {
   // Strip JSDoc comments from source code
   // This prevents parsing issues in .ui/.uix files where JSDoc syntax might not be handled correctly
   private stripJSDocComments(source: string): string {
-    // Remove JSDoc comments (multiline block comments starting with /**)
-    // Use a more robust regex that handles all edge cases
-    // Match /** followed by any characters (including newlines) until */
-    const jsdocPattern = /\/\*\*[\s\S]*?\*\//g;
-    let result = source.replace(jsdocPattern, "");
-
-    // Also handle edge case: /** on one line, content on next, */ on another
-    // This regex is more aggressive and handles any /** ... */ pattern
-    result = result.replace(/\/\*\*[\s\S]*?\*\//g, "");
-
-    // Debug: Log if we found and removed JSDoc
-    if (source.includes("/**") && !result.includes("/**")) {
-      console.log("[Compiler] Stripped JSDoc comments from file");
-    }
-
-    return result;
+    return source.replace(/\/\*\*[\s\S]*?\*\//g, "");
   }
 
   async compileDirectory(inputDir: string, outputDir: string): Promise<void> {
