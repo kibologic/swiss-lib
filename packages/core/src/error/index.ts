@@ -4,5 +4,5 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-export { ErrorBoundary, createErrorBoundary, withErrorBoundary } from './error-boundary.js';
+export { createErrorBoundary, withErrorBoundary } from './error-boundary.js';
 export { ErrorReporter, type ErrorContext, type ErrorReport } from './error-reporter.js';
