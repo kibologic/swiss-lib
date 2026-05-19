@@ -5,13 +5,9 @@ export * from './modules/index.js';
 
 // CSS Compiler
 export * from './compiler/index.js';
-export * from './compiler/optimize.js';
 
 // Asset handling
 export * from './assets/index.js';
-export * from './assets/images.js';
-export * from './assets/fonts.js';
-export * from './assets/bundler.js';
 
 // Utilities
 export * from './utils/index.js';
