@@ -10,23 +10,26 @@ import { jsxTransformer } from './jsx/jsx-transformer.js';
 /**
  * Transforms source code with JSX support using pure TypeScript transformers
  */
-export function transformWithJsx(source: string, filePath: string): string {
+export function transformWithJsx(
+  source: string,
+  filePath: string,
+  jsxImportSource: string = "@kibologic/core",
+): string {
   try {
-    // Check if the source already has createElement import
-    const hasCreateElementImport = /import\s+\{[^}]*\bcreateElement\b[^}]*\}\s+from\s+['"]@swissjs\/core['"]/i.test(source);
+    // Detect if createElement is already imported from any package
+    const hasCreateElementImport =
+      /\bimport\s+\{[^}]*\bcreateElement\b[^}]*\}\s+from\s+['"][^'"]+['"]/i.test(source);
 
     let modifiedSource = source;
 
-    // Add createElement and Fragment import if not present
     if (!hasCreateElementImport) {
       // Remove any existing createElement/Fragment imports to avoid duplicates
       modifiedSource = source
         .replace(/import\s+\{[^}]*\b(createElement|Fragment)\b[^}]*\}\s+from\s+['"].*?['"];?\n?/g, '')
-        .replace(/\n\s*\n\s*\n/g, '\n\n') // Normalize multiple empty lines
+        .replace(/\n\s*\n\s*\n/g, '\n\n')
         .trim();
 
-      // Add the import at the top of the file
-      const importStatement = "import { createElement, Fragment } from '@kibologic/core';\n\n";
+      const importStatement = `import { createElement, Fragment } from '${jsxImportSource}';\n\n`;
       modifiedSource = importStatement + modifiedSource;
     }
 
