@@ -75,6 +75,9 @@ __snapshots__/
 # Misc
 *.swp
 *.swo
+*.backup
+*.bak
+*.orig
 
 # SwissJS/Monorepo specifics
 packages/*/dist/
