@@ -1,6 +1,13 @@
 packages:
-  - "packages/*"
-  - "packages/plugins/*"
+  - "runtime"
+  - "compiler"
+  - "shared"
+  - "router"
+  - "css"
+  - "components"
+  - "security"
+  - "cli"
+  - "plugins/*"
   - "apps/*"
 
 onlyBuiltDependencies:

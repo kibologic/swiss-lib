@@ -1,0 +1,8 @@
+{
+  "name": "@swissjs/language",
+  "version": "0.0.1",
+  "private": true,
+  "description": "SwissJS language specification — grammar, AST contracts, LSP contracts",
+  "type": "module",
+  "license": "MIT"
+}

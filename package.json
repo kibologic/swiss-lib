@@ -4,10 +4,16 @@
   "version": "0.2.0",
   "type": "module",
   "workspaces": [
-    "apps/*",
-    "packages/*",
-    "packages/plugins/*",
-    "packages/devtools/*"
+    "runtime",
+    "compiler",
+    "shared",
+    "router",
+    "css",
+    "components",
+    "security",
+    "cli",
+    "plugins/*",
+    "apps/*"
   ],
   "scripts": {
     "build": "turbo run build",
@@ -17,9 +23,9 @@
     "lint": "turbo run lint",
     "type-check": "turbo run type-check",
     "clean": "turbo run clean --parallel && npm run clean:dist && rm -rf node_modules",
-    "clean:dist": "find packages apps -name dist -type d -exec rm -rf {} + 2>/dev/null || true",
-    "link": "turbo run build && find packages -name package.json -not -path '*/node_modules/*' -execdir npm link \\;",
-    "unlink": "find packages -name package.json -not -path '*/node_modules/*' -execdir npm unlink \\;",
+    "clean:dist": "find runtime compiler shared router css components security cli plugins apps -name dist -type d -exec rm -rf {} + 2>/dev/null || true",
+    "link": "turbo run build && find runtime compiler shared router css components security cli plugins -name package.json -not -path '*/node_modules/*' -execdir npm link \\;",
+    "unlink": "find runtime compiler shared router css components security cli plugins -name package.json -not -path '*/node_modules/*' -execdir npm unlink \\;",
     "format": "prettier --write \"**/*.{ts,tsx,md,ui,uix}\"",
     "prepare": "husky",
     "precommit:staged": "lint-staged --no-stash",
@@ -74,7 +80,7 @@
     "eslint-plugin-security": "^3.0.1",
     "eslint-plugin-sonarjs": "^2.0.3",
     "eslint-plugin-vitest": "^0.5.4",
-    "file-router": "link:@kibologic/plugins/file-router",
+    "file-router": "workspace:*",
     "globals": "^16.3.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.2",
@@ -94,8 +100,8 @@
   "pnpm": {
     "overrides": {
       "@types/node": "18.19.121",
-      "@kibologic/utils": "file:./packages/utils",
-      "@kibologic/security": "file:./packages/security"
+      "@swissjs/shared": "workspace:*",
+      "@swissjs/security": "workspace:*"
     }
   },
   "engines": {
@@ -107,9 +113,9 @@
     "framework"
   ],
   "dependencies": {
-    "@kibologic/compiler": "workspace:*",
-    "@kibologic/utils": "workspace:*",
-    "@kibologic/swite": "github:kibologic/swite",
+    "@swissjs/compiler": "workspace:*",
+    "@swissjs/shared": "workspace:*",
+    "@swissjs/swite": "github:kibologic/swite",
     "commander": "^14.0.0",
     "express": "^5.1.0",
     "fs-extra": "^11.3.0",
