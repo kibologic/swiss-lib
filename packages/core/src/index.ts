@@ -52,13 +52,15 @@ export {
   auditPlugin,
 } from "./security/gateway.js";
 
-// Error handling (explicit to avoid duplicate ErrorBoundary/withErrorBoundary from component)
+// Error handling
 export {
   ErrorReporter,
   createErrorBoundary,
+  withErrorBoundary as wrapWithErrorBoundary,
   type ErrorContext,
   type ErrorReport,
 } from "./error/index.js";
+export { ErrorBoundary, withErrorBoundary } from "./component/error-boundary.js";
 
 // Devtools
 export {
