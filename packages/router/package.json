@@ -1,6 +1,6 @@
 {
   "name": "@kibologic/router",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Swiss framework routing and SSR",
   "type": "module",
   "main": "dist/index.js",
