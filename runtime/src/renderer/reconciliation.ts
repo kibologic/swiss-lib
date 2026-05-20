@@ -99,8 +99,35 @@ export function reconcileChildren(
     const key = getKey(newVNode, newIndex);
     let oldEntry = oldKeyMap.get(key);
 
-    // For components we do not bypass keys and do not scan the DOM.
-    // If a component has no stable key, it will be keyed by index via getKey().
+    // Type-based fallback for unkeyed component VNodes.
+    //
+    // When a conditional element is inserted before existing siblings (e.g. a
+    // slide-over panel that toggles on), every subsequent component shifts up by
+    // one index. getKey() encodes the index in the fallback key, so their keys no
+    // longer match the old map — the reconciler would recreate each component from
+    // scratch, tearing down mounted instances.
+    //
+    // When no exact match is found and the component has no explicit key, scan the
+    // old map for the first unprocessed entry with the same constructor. This
+    // preserves the mounted instance across conditional-sibling toggles without
+    // requiring explicit keys in every template.
+    if (
+      !oldEntry &&
+      isComponentVNode(newVNode) &&
+      (newVNode as any).key == null &&
+      (newVNode.props as any)?.key == null
+    ) {
+      for (const candidate of oldKeyMap.values()) {
+        if (
+          !processedNodes.has(candidate.dom as Node) &&
+          isComponentVNode(candidate.vnode) &&
+          candidate.vnode.type === newVNode.type
+        ) {
+          oldEntry = candidate;
+          break;
+        }
+      }
+    }
 
     // ENHANCEMENT: Aggressive ID Matching - try ID matching BEFORE key matching fails
     // This ensures DOM identity is restored early in the process

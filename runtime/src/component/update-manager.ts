@@ -34,6 +34,7 @@ export class UpdateManager {
   private updateCount: number = 0;
   private lastUpdateTime: number = 0;
   private readonly MAX_UPDATES_PER_SECOND = 60; // Prevent infinite loops
+  private _throttledHandle: ReturnType<typeof setTimeout> | null = null;
 
   constructor(private component: SwissComponent) {}
 
@@ -107,11 +108,23 @@ export class UpdateManager {
         this.updateCount = 0;
       }
 
-      // Throttle updates to prevent infinite loops
+      // Throttle updates to prevent infinite loops.
+      // When the limit is reached, schedule ONE deferred retry after the counter
+      // resets rather than silently dropping the render. This prevents components
+      // from freezing after a burst of rapid signals (e.g. window resize events).
       if (this.updateCount >= this.MAX_UPDATES_PER_SECOND) {
         logger.warn(
           `Update throttled for ${this.component.constructor.name} - too many updates (${this.updateCount}/s). Possible infinite loop.`,
         );
+        if (this._throttledHandle === null) {
+          const delay = Math.ceil(Math.max(0, 1000 - (now - this.lastUpdateTime))) + 1;
+          this._throttledHandle = setTimeout(() => {
+            this._throttledHandle = null;
+            this.updateCount = 0;
+            this.lastUpdateTime = 0;
+            this.performUpdate();
+          }, delay);
+        }
         return;
       }
 

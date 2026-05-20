@@ -10,6 +10,7 @@ import { type EffectDisposer } from "../reactivity/types/index.js";
 import type { SwissComponent } from "./component.js";
 import type { BaseComponentState } from "./types/index.js";
 import { logger } from "../utils/logger.js";
+import type { VNode } from "../vdom/vdom.js";
 
 /**
  * Manages reactivity setup for components
@@ -23,10 +24,19 @@ export class ReactivityManager<
   constructor(private component: SwissComponent<any, S>) {}
 
   /**
-   * Setup reactivity for the component
+   * Setup reactivity for the component.
+   *
+   * Signal changes are batched through a queueMicrotask deduplicator: if multiple
+   * signals change synchronously (e.g. multiple state fields updated in one event
+   * handler, or rapid input events), only one DOM commit runs per microtask tick.
+   * This prevents per-keystroke full-page reconciliation that would otherwise
+   * destroy focused elements on every character.
+   *
+   * The very first effect execution is skipped — mount() performs the initial
+   * commit explicitly after beforeMount fires, and child components created via
+   * createDOMNode() already have their DOM by the time the effect first runs.
    */
   public setupReactivity(): void {
-    // Prevent multiple calls to setupReactivity
     if (this._reactivitySetup) {
       logger.lifecycle(
         `${this.component.constructor.name}: setupReactivity already called, skipping`,
@@ -36,13 +46,39 @@ export class ReactivityManager<
     this._reactivitySetup = true;
 
     logger.lifecycle(`${this.component.constructor.name}: setupReactivity`);
+
+    let _firstRun = true;
+    let _commitPending = false;
+    let _pendingVNode: VNode | null = null;
+
     const renderEffect = effect(() => {
       // Run render inside the effect so state reads are tracked by Signal/Effect.
       const newVNode = this.component.safeRender();
 
-      // Commit DOM outside of tracking to avoid DOM reads registering as dependencies.
       untrack(() => {
-        if (newVNode !== null) (this.component as any).commitVNode(newVNode);
+        if (newVNode === null) return;
+
+        if (_firstRun) {
+          // Initial execution runs synchronously during initialize(). The mount()
+          // method (or createDOMNode for child components) handles the first DOM
+          // commit explicitly — skip here to avoid a double-commit.
+          _firstRun = false;
+          return;
+        }
+
+        // Coalesce rapid signal changes: store the latest VNode and schedule exactly
+        // one DOM commit per microtask tick. Subsequent changes before the microtask
+        // fires overwrite _pendingVNode so only the final state is committed.
+        _pendingVNode = newVNode;
+        if (_commitPending) return;
+        _commitPending = true;
+
+        queueMicrotask(() => {
+          _commitPending = false;
+          const vnode = _pendingVNode;
+          _pendingVNode = null;
+          if (vnode !== null) (this.component as any).commitVNode(vnode);
+        });
       });
     });
     this.trackEffect(renderEffect);
@@ -52,7 +88,6 @@ export class ReactivityManager<
    * Ensure state is reactive
    */
   public ensureStateReactive(): void {
-    // Only make state reactive if it's not already reactive
     if (!(this.component.state as any).__reactive) {
       this.component.state = reactive(this.component.state as S) as S;
     }
