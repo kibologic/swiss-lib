@@ -39,7 +39,7 @@
   "author": "Themba Mzumara",
   "license": "MIT",
   "dependencies": {
-    "@swissjs/compiler": "latest",
+    "@swissjs/compiler": "workspace:*",
     "postcss": "^8.4.32",
     "lightningcss": "^1.23.0"
   },
@@ -52,7 +52,7 @@
     "@swissjs/compiler": "^0.1.0"
   },
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com",
-    "access": "restricted"
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
   }
 }
