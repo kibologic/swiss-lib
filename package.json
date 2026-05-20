@@ -11,7 +11,6 @@
     "css",
     "components",
     "security",
-    "cli",
     "plugins/*",
     "apps/*"
   ],
@@ -80,20 +79,20 @@
     "eslint-plugin-security": "^3.0.1",
     "eslint-plugin-sonarjs": "^2.0.3",
     "eslint-plugin-vitest": "^0.5.4",
-    "file-router": "workspace:*",
+    "@swissjs/plugin-file-router": "workspace:*",
     "globals": "^16.3.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.2",
     "markdownlint-cli2": "^0.15.0",
-    "pnpm": "^8.0.0",
+    "pnpm": "^10.28.2",
     "prettier": "^3.6.2",
-    "rollup": "^4.45.1",
+    "rollup": "^4.59.0",
     "ts-node": "^10.9.2",
-    "turbo": "^2.5.4",
+    "turbo": "^2.9.14",
     "typedoc": "^0.28.7",
     "typedoc-plugin-markdown": "^4.2.4",
     "typescript": "5.8.2",
-    "vite": "^5.4.19",
+    "vite": "^5.4.21",
     "vitepress": "^1.6.4",
     "vitest": "^3.2.4"
   },
@@ -101,13 +100,21 @@
     "overrides": {
       "@types/node": "18.19.121",
       "@swissjs/shared": "workspace:*",
-      "@swissjs/security": "workspace:*"
+      "@swissjs/security": "workspace:*",
+      "handlebars": "^4.7.9",
+      "esbuild": "^0.25.0",
+      "path-to-regexp": "^0.1.13",
+      "undici": "^7.24.0",
+      "flatted": "^3.4.2",
+      "brace-expansion": "^2.0.3",
+      "@babel/plugin-transform-modules-systemjs": "^7.29.4",
+      "js-yaml": "^4.1.1"
     }
   },
   "engines": {
     "node": ">=18.19.0 <19"
   },
-  "packageManager": "pnpm@10.12.4+sha512.5ea8b0deed94ed68691c9bad4c955492705c5eeb8a87ef86bc62c74a26b037b08ff9570f108b2e4dbd1dd1a9186fea925e527f141c648e85af45631074680184",
+  "packageManager": "pnpm@10.28.2",
   "keywords": [
     "swissjs",
     "framework"
