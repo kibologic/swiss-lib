@@ -8,9 +8,8 @@
       "@swissjs/core",
       "@swissjs/compiler",
       "@swissjs/router",
-      "@swissjs/components",
       "@swissjs/security",
-      "@swissjs/utils",
+      "@swissjs/shared",
       "@swissjs/plugin-file-router",
       "@swissjs/plugin-web-storage"
     ]
@@ -18,5 +17,5 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["@swissjs/css", "@swissjs/cli"]
+  "ignore": ["@swissjs/css"]
 }
