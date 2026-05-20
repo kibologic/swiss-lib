@@ -1,5 +1,17 @@
 # @kibologic/core
 
+## 0.1.7
+
+### Patch Changes
+
+- fix(publish): replace workspace:* deps with real semver versions
+
+  0.1.6 shipped with `"@swissjs/shared": "workspace:*"` and
+  `"@swissjs/security": "workspace:*"` in its published package.json. pnpm
+  rejects workspace protocol specifiers outside the monorepo, making 0.1.6
+  uninstallable in all consumer repos. Both deps are published packages — replaced
+  with `^0.1.15` and `^0.1.13` respectively.
+
 ## 0.1.6
 
 ### Patch Changes
