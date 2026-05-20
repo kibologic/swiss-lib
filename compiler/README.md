@@ -1,61 +1,179 @@
-<!--
-Copyright (c) 2024 Themba Mzumara
-This file is part of SwissJS Framework. All rights reserved.
-Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 # @swissjs/compiler
 
-SwissJS compiler provides minimal, focused AST transformations for Swiss libraries while treating `.ui` files as pure TypeScript sources. `.ui` files use `html` template literals for markup and are passed through unchanged (aside from import path adjustments performed by tooling where needed).
+Swiss syntax compiler. Transforms `.ui` and `.uix` source files through a two-phase pipeline: lexical preprocessing followed by TypeScript AST transformation.
 
-## Features
+---
 
-- Component decorators: `@component`, `@template`, `@style`
-- Plugin/service decorators: `@plugin`, `@service`
-- Lifecycle/render decorators: `@onMount`, `@onUpdate`, `@onDestroy`, `@onError`, `@render`, `@bind`, `@computed`
-- Capability decorators: `@requires`, `@provides`, and capability definition annotations
-- `.ui` pass-through: `.ui` files are pure TypeScript using `html`` template literals; no JSX or XML parsing
+## Compilation Pipeline
 
-## `.ui` Authoring
+```
+source.ui / source.uix
+        │
+        ▼
+Phase 1: preprocessSwissSyntax()          (lexical / regex-based)
+  - component Name {} → export class Name extends SwissComponent {}
+  - state { let x: T = v } → Signal<T> getter/setter pair
+  - reactive let x: T → private reactive property
+  - computed get x() → private getter
+  - mount {} → mounted() lifecycle method
+  - unmount {} → unmounted() lifecycle method
+  - effect {} → private effect() method
+  - props = {} → static propTypes = {}
+  - @requires('cap') → capability decorator
+        │
+        ▼
+Phase 2: swissSyntaxTransformer()         (TypeScript AST)
+  - Moves props = {} off instance → static propTypes
+  - Sanitizes TS type keyword values in propTypes (CG-05)
+  - Injects @swissjs/core imports when SwissComponent is used
+        │
+        ▼  (for .uix files only)
+JSX Transform: transformWithJsx()
+  - Transforms JSX using @babel/plugin-transform-react-jsx
+  - jsxImportSource: @swissjs/core
+        │
+        ▼
+  dist/index.js (ESM)
+```
 
-Write `.ui` files as standard TypeScript modules and render using `html` template literals from `@swissjs/core`. Do not use JSX, `jsxImportSource` pragmas, or `<template>` blocks in `.ui`.
+---
 
-## Transform Pipeline
+## Public API
 
-Order in `src/index.ts` (applies to non-`.ui` files; `.ui` are passed through):
+```typescript
+import { UiCompiler } from '@swissjs/compiler';
+import { preprocessSwissSyntax, transformSwissSyntax, swissSyntaxTransformer } from '@swissjs/compiler';
+import type { CompileOptions } from '@swissjs/compiler';
+```
 
-1. `componentTemplateStyleTransformer()`
-2. `pluginServiceTransformer()`
-3. `lifecycleRenderTransformer()`
-4. `capabilityTransformer()`
-5. `providesTransformer()`
-6. `capabilityDefTransformer()`
+### `UiCompiler`
 
-Each transformer removes source decorators and emits equivalent registration calls after the class to keep runtime behavior consistent and enable static analysis. `.ui` files are not transformed.
+Main compiler class. Handles file I/O, source dispatch, and full pipeline execution.
 
-### Plugin/Service Decorators (AST)
+```typescript
+const compiler = new UiCompiler({
+  target: ts.ScriptTarget.ES2020,
+  module: ts.ModuleKind.ESNext,
+  sourceMap: true,
+  jsxImportSource: '@swissjs/core', // default
+});
 
-The `pluginServiceTransformer()` handles `@plugin` (class) and `@service` (property) decorators by removing them and emitting runtime-equivalent registration calls.
+// Compile a file and optionally write output
+const js = await compiler.compileFile('src/Counter.ui', 'dist/Counter.js');
 
-- Placement
-  - `@plugin(...)` on class declarations.
-  - `@service(...)` on instance properties/fields.
-- Arguments
-  - Name: string literal or identifier (e.g., `'router'` or `RouterPluginName`).
-  - Options (optional): object literal or identifier (e.g., `{ singleton: true }` or `opts`).
-- Emitted calls
-  - Class: `plugin(name, options?)(ClassName)`
-  - Property: `service(name, options?)(ClassName.prototype, 'prop')`
+// Compile source string
+const js = await compiler.compile(source, 'Counter.ui');
 
-These calls align with runtime decorator helpers in `@swissjs/core` so behavior is unchanged at runtime while enabling static analysis and tree-shaking.
+// Full async pipeline (includes JSX + TS emit)
+const js = await compiler.compileAsync(source, 'Counter.uix');
+```
 
-## Diagnostics
+### `preprocessSwissSyntax(source, filePath, jsxImportSource?)`
 
-- LC1001: `@render` must decorate a method
-- LC1002: `@computed` must decorate a getter or method
-- LC1003: Lifecycle decorators must decorate a method
+Phase 1 only — lexical string transformation. Returns valid TypeScript with Swiss keywords expanded. Called internally by `UiCompiler` but also available standalone.
 
-## Notes
+### `transformSwissSyntax(source, fileName?, options?)`
 
-- Local ESM imports in TS must use explicit `.js` extensions in specifiers after build.
-- Decorators are optional; TSX authoring with `render()` works without `@template/@style`.
+Runs Phase 1 then Phase 2. Returns the printer output of the transformed TypeScript AST. Use when you need the fully normalized TypeScript (e.g., for language tooling or tests).
+
+### `swissSyntaxTransformer()`
+
+TypeScript `TransformerFactory` for Phase 2 AST work. Pass to `ts.transform()` alongside other transformers.
+
+---
+
+## Swiss Keyword Transformations
+
+### `component Name {}`
+
+```typescript
+// Input (.ui)
+component Counter {
+  render() { ... }
+}
+
+// Output (TypeScript)
+export class Counter extends SwissComponent {
+  render() { ... }
+}
+```
+
+### `state { let x: T = v }`
+
+Generates a `Signal<T>`-backed getter/setter pair. Nested object literals in initializers are handled via brace-depth counting (not regex) to avoid CG-04.
+
+```typescript
+// Input
+state {
+  let count: number = 0;
+}
+
+// Output
+private _count$: Signal<number> = new Signal<number>(0);
+private get count(): number { return this._count$.value; }
+private set count(v: number) { this._count$.value = v; }
+```
+
+### `computed get x()`
+
+```typescript
+// Input
+computed get doubled() {
+  return this.count * 2;
+}
+
+// Output
+private get doubled() {
+  return this.count * 2;
+}
+```
+
+### `mount {}` / `unmount {}` / `effect {}`
+
+```typescript
+// Input        →  Output
+mount {}        →  private mounted() {}
+unmount {}      →  private unmounted() {}
+effect {}       →  private effect() {}
+```
+
+Async variants (`async mount {}`) are preserved.
+
+### `props = {}`
+
+Moved off instance to `static propTypes = {}` by Phase 2 AST transformer. TS type keyword values (`string`, `number`, `object`, etc.) in propTypes are sanitized to their JS runtime equivalents (CG-05).
+
+---
+
+## `CompileOptions`
+
+```typescript
+interface CompileOptions {
+  target?: ts.ScriptTarget;           // default: ES2020
+  module?: ts.ModuleKind;             // default: ESNext
+  sourceMap?: boolean;                // default: true
+  jsxImportSource?: string;           // default: '@swissjs/core'
+  outDir?: string;
+}
+```
+
+---
+
+## Transformer Modules
+
+| File | Phase | Responsibility |
+|---|---|---|
+| `transformers/swiss-syntax.ts` | 1 + 2 | All Swiss keyword transformations |
+| `transformers/import-processor.ts` | 1 | Import path rewriting |
+| `transformers/jsx-transformer.ts` | JSX | Babel JSX transform for `.uix` |
+| `transformers/type-syntax-stripper.ts` | 1 | Strip type annotations for runtime |
+| `transformers/capability-annot.ts` | 1 | `@requires` → capability decorator |
+| `transformers/diagnostics.ts` | — | Diagnostic error codes |
+
+---
+
+## Usage in the Build Pipeline
+
+`@swissjs/swite` (the dev server and build tool) calls `UiCompiler` internally for every `.ui` and `.uix` file it serves or bundles. You do not typically call the compiler directly in application code.
+
+For CLI-level compilation use `swiss compile`.
