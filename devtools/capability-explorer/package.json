@@ -18,7 +18,7 @@
   },
   "devDependencies": {
     "@swissjs/cli": "workspace:*",
-    "vite": "^5.0.0",
+    "vite": "^6.4.2",
     "typescript": "^5.0.0",
     "@types/node": "^20.0.0",
     "eslint": "^8.0.0",
