@@ -32,20 +32,22 @@ Cross‑platform specifics are documented in `docs/DEVELOPER_QUICKSTART.md`.
 
 Long‑lived branches:
 
-- `main`: production releases
-- `release`: release preparation
-- `staging`: pre‑production testing
-- `develop`: feature integration
+- `main` — production, tagged releases
+- `staging` — pre-production validation
+- `development` — feature integration
 
 Working branches:
 
-- `feature/<ticket-or-name>` off `develop`
+- `feature/<name>` off `development`
 - `hotfix/<desc>` off `main` for critical fixes
 
 Merge flow:
 
-- `develop → staging → release → main`
-- `main → develop` (propagate hotfixes)
+```
+feature/* → development → staging → main
+```
+
+All merges are no-ff. Push to remote immediately after every commit — no exceptions.
 
 Branch protection: see `docs/development/branch-protection.md`.
 
@@ -70,10 +72,10 @@ Use Changesets for versioning when publishing packages (see below).
 nvm use
 pnpm install
 
-git checkout develop
-git pull origin develop
+git checkout development
+git pull origin development
 
-git checkout -b feature/<ticket-or-name>
+git checkout -b feature/<name>
 ```
 
 1. Run the workspace
@@ -108,7 +110,7 @@ git commit -am "[TICKET_ID] concise summary"
 git push -u origin feature/<ticket-or-name>
 ```
 
-1. Open PR → target `develop`. Ensure all CI gates pass.
+1. Open PR → target `development`. Ensure all CI gates pass.
 
 ---
 
@@ -183,11 +185,10 @@ See `docs/development/conventions.md` and `docs_old/development/esm-import-stand
 
 High‑level release steps (see `docs/development/release-process.md` for full detail):
 
-- Merge `develop` → `staging` and validate
-- Merge `staging` → `release`, bump versions (Changesets), finalize changelogs
-- Tag and push from `release`
-- Merge `release` → `main` and deploy
-- Propagate back: `main` → `develop`/`staging` as needed
+- Merge `development` → `staging` and validate
+- Merge `staging` → `main`, bump versions (Changesets), finalize changelogs, tag
+- Push tags to trigger npm publish via CI
+- Propagate back: `main` → `development` as needed
 
 ---
 

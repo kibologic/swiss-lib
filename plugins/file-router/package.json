@@ -6,7 +6,7 @@
   "types": "dist/index.d.ts",
   "type": "module",
   "dependencies": {
-    "@swissjs/core": "latest"
+    "@swissjs/core": "workspace:*"
   },
   "peerDependencies": {
     "vite": "^5.2.0"
@@ -74,7 +74,7 @@
     "framework"
   ],
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com",
-    "access": "restricted"
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
   }
 }
