@@ -80,9 +80,6 @@ export function updateEventListener(
 
     // Wrap handler to ensure it's called even if element is recreated
     const wrappedListener = (e: Event) => {
-      if (typeof window !== "undefined" && eventName === "click") {
-        console.log(`[Swiss] click handler fired`, element.tagName, element.className || "");
-      }
       try {
         (newHandler as EventListener)(e);
       } catch (error) {
