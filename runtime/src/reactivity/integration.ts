@@ -81,12 +81,12 @@ export function createBoundText(signal: Signal<unknown>): Text {
 export function eventSignal<T = Event>(
   element: HTMLElement,
   eventName: string
-): Signal<T | null> {
+): Signal<T | null> & { cleanup: () => void } {
   const sig = signal<T | null>(null);
-  element.addEventListener(eventName, (e) => {
-    sig.value = e as unknown as T;
-  });
-  return sig;
+  const handler = (e: Event) => { sig.value = e as unknown as T; };
+  const ac = new AbortController();
+  element.addEventListener(eventName, handler, { signal: ac.signal });
+  return Object.assign(sig, { cleanup: () => ac.abort() });
 }
 
 // Placeholder for integration with frameworks or devtools

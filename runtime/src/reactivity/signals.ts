@@ -270,7 +270,7 @@ export function bindToElement(
   element: HTMLElement,
   property: string,
   sig: Signal<unknown>,
-  options: { twoWay?: boolean } = {},
+  options: { twoWay?: boolean; signal?: AbortSignal } = {},
 ) {
   // Type-safe element access
   const el = element as unknown as Record<string, unknown>;
@@ -278,11 +278,11 @@ export function bindToElement(
   // Initial sync
   el[property] = sig.value as unknown;
 
-  // Element -> Signal
+  // Element -> Signal (use AbortSignal for automatic cleanup)
   if (options.twoWay && typeof el[property] !== "undefined") {
     element.addEventListener("input", () => {
       sig.value = el[property] as unknown;
-    });
+    }, { signal: options.signal });
   }
 
   // Signal -> Element
