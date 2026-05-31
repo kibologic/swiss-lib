@@ -129,6 +129,74 @@ function transformStateBlocks(source: string): string {
   return result;
 }
 
+const PROP_TYPES_KW_MAP: Record<string, string> = {
+  string: "String",
+  number: "Number",
+  boolean: "Boolean",
+  object: "Object",
+  any: "null",
+  unknown: "null",
+  never: "null",
+  void: "null",
+};
+
+/**
+ * Iterates through `source` finding every `static propTypes = { ... }` block
+ * using brace-depth counting so nested object values don't prematurely close
+ * the block. Then sanitizes TS type keyword values inside the extracted block.
+ * Fixes CG-05 for nested object initializers inside propTypes.
+ */
+function transformPropTypesBlocks(source: string): string {
+  const marker = /\bstatic\s+propTypes\s*=\s*\{/g;
+  let result = "";
+  let pos = 0;
+
+  let match: RegExpExecArray | null;
+  while ((match = marker.exec(source)) !== null) {
+    // Append everything before this match
+    result += source.slice(pos, match.index);
+
+    // Find the closing brace using depth counting
+    const openBracePos = match.index + match[0].length - 1; // position of '{'
+    let depth = 0;
+    let closePos = -1;
+    for (let i = openBracePos; i < source.length; i++) {
+      if (source[i] === "{") depth++;
+      else if (source[i] === "}") {
+        depth--;
+        if (depth === 0) {
+          closePos = i;
+          break;
+        }
+      }
+    }
+
+    if (closePos === -1) {
+      // Malformed — leave the rest unchanged
+      result += source.slice(match.index);
+      pos = source.length;
+      break;
+    }
+
+    const open = source.slice(match.index, openBracePos + 1);
+    const body = source.slice(openBracePos + 1, closePos);
+    const close = source[closePos];
+
+    // Sanitize TS type keyword values inside the body only
+    const sanitized = body.replace(
+      /:\s*(object|string|number|boolean|any|unknown|never|void)\b/g,
+      (_: string, kw: string): string => `: ${PROP_TYPES_KW_MAP[kw]}`,
+    );
+
+    result += open + sanitized + close;
+    pos = closePos + 1;
+    marker.lastIndex = pos;
+  }
+
+  result += source.slice(pos);
+  return result;
+}
+
 /**
  * Phase 1: Lexical transformation (string-based preprocessing)
  * Converts Swiss syntax to valid TypeScript before AST parsing
@@ -249,30 +317,8 @@ export function preprocessSwissSyntax(
 
   // CG-05: Sanitize TS type keyword values inside static propTypes blocks.
   // `compileAsync` never invokes the AST transformer, so this regex pass handles it.
-  // Matches the whole `static propTypes = { ... }` block and replaces any
-  // property value that is a bare TS type keyword with its JS runtime equivalent.
-  result = result.replace(
-    /(\bstatic propTypes\s*=\s*\{)([\s\S]*?)(\})/g,
-    (_match, open: string, body: string, close: string) => {
-      const sanitized = body.replace(
-        /:\s*(object|string|number|boolean|any|unknown|never|void)\b/g,
-        (_: string, kw: string): string => {
-          const kwMap: Record<string, string> = {
-            string: "String",
-            number: "Number",
-            boolean: "Boolean",
-            object: "Object",
-            any: "null",
-            unknown: "null",
-            never: "null",
-            void: "null",
-          };
-          return `: ${kwMap[kw]}`;
-        },
-      );
-      return open + sanitized + close;
-    },
-  );
+  // Uses brace-depth counting so nested object values don't prematurely close the block.
+  result = transformPropTypesBlocks(result);
 
   // Transform component props (export let inside component)
   // This is a bit tricky - we need to handle export let as component props

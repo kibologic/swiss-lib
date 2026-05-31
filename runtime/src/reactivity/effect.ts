@@ -31,6 +31,9 @@ export class Effect {
   cleanup: (() => void) | null = null;
   dependencies = new Set<Signal<unknown>>();
 
+  private static readonly MAX_RERUNS = 100;
+  private static _runCount = new WeakMap<Effect, number>();
+
   constructor(fn: () => (() => void) | void) {
     this.fn = fn;
     this.execute = this.execute.bind(this);
@@ -45,6 +48,21 @@ export class Effect {
     if ((this as any).__executing) {
       logger.reactivity("Effect execute() re-entrancy guard");
       return;
+    }
+
+    // Guard against infinite reactive feedback loops (effect reads and writes the same signal)
+    const runs = Effect._runCount.get(this) ?? 0;
+    if (runs > Effect.MAX_RERUNS) {
+      logger.error(
+        `[SwissJS] Effect exceeded ${Effect.MAX_RERUNS} re-runs in a single tick. ` +
+        `This usually means a reactive feedback loop (effect writes a signal it reads). ` +
+        `Effect fn: ${this.fn?.name || "anonymous"}`,
+      );
+      return;
+    }
+    Effect._runCount.set(this, runs + 1);
+    if (runs === 0) {
+      queueMicrotask(() => Effect._runCount.delete(this));
     }
 
     logger.reactivity("Effect execute()");

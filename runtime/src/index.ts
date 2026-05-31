@@ -84,13 +84,20 @@ export type {
 // Fenestration
 export * from "./fenestration/registry.js";
 
+// Refs
+export { ref, type Ref } from "./component/refs.js";
+
 // Utils
 export { html, escapeHTML, unsafe, css, classNames } from "./utils/html.js";
 export {
   logger,
   setDebugFlags,
+  setLogTransport,
+  resetLogTransport,
   PerfTimer,
   type DebugFlags,
+  type LogLevel,
+  type LogTransport,
 } from "./utils/logger.js";
 
 // Routing types
