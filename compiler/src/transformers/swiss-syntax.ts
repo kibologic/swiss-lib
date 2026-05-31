@@ -7,6 +7,30 @@
 import * as ts from "typescript";
 
 /**
+ * Swiss-syntax compiler transformer — two-phase pipeline.
+ *
+ * This file applies ALL Swiss-specific language transforms in order:
+ *
+ *   Phase 1 — Lexical / string-based preprocessing (preprocessSwissSyntax)
+ *     Converts Swiss keywords to valid TypeScript before AST parsing. Each
+ *     section below handles one syntactic feature:
+ *       • Style-tag validation  — reject bare CSS <style> blocks
+ *       • Component keyword     — `component Foo {}` → `export class Foo extends SwissComponent {}`
+ *       • State transform       — `state { let x: T = v }` → Signal<T> getter/setter pair
+ *       • PropTypes sanitizing  — TS type keywords in `static propTypes` → safe JS values
+ *       • Reactive / computed   — `reactive let` / `computed get` → private modifiers
+ *       • Lifecycle hooks       — `mount {}`, `unmount {}`, `effect {}` → private methods
+ *       • Bare-uix wrapper      — files without a class keyword get auto-wrapped
+ *
+ *   Phase 2 — AST transformation (swissSyntaxTransformer)
+ *     Runs after Phase 1 output is parsed into a TypeScript AST:
+ *       • Moves `props = {}` instance fields → `static propTypes = {}` on SwissComponent subclasses
+ *       • Sanitizes TS type keyword values inside propTypes object literals
+ *       • Injects `@swissjs/core` imports when the file extends SwissComponent but lacks them
+ *
+ *   Entry point: transformSwissSyntax(source, fileName, options)
+ *     Runs Phase 1 then Phase 2 and returns the final TypeScript string.
+ *
  * Transformer for Swiss keyword syntax:
  * - `component ComponentName { }` → `export class ComponentName extends SwissComponent { }`
  * - `@capability('cap1', 'cap2')` → proper decorator syntax
@@ -25,6 +49,8 @@ export interface SwissSyntaxOptions {
   enableLifecycle?: boolean;
   enableComputed?: boolean;
 }
+
+// ─── SECTION: State Transform Helpers ────────────────────────────────────────
 
 /**
  * Parses the content of a `state { }` block and generates a Signal-backed
@@ -129,6 +155,8 @@ function transformStateBlocks(source: string): string {
   return result;
 }
 
+// ─── SECTION: PropTypes Transform Helpers ────────────────────────────────────
+
 const PROP_TYPES_KW_MAP: Record<string, string> = {
   string: "String",
   number: "Number",
@@ -196,6 +224,8 @@ function transformPropTypesBlocks(source: string): string {
   result += source.slice(pos);
   return result;
 }
+
+// ─── SECTION: Phase 1 — Lexical / String-Based Preprocessing ────────────────
 
 /**
  * Phase 1: Lexical transformation (string-based preprocessing)
@@ -378,6 +408,8 @@ export function preprocessSwissSyntax(
 
   return result;
 }
+
+// ─── SECTION: Phase 2 — AST Transform (Props Field + Imports) ───────────────
 
 /**
  * Returns true when a class directly extends SwissComponent.
@@ -611,6 +643,8 @@ export function createSwissImports(
     factory.createStringLiteral("@swissjs/core"),
   );
 }
+
+// ─── SECTION: Entry Point ────────────────────────────────────────────────────
 
 /**
  * Main transformer function that processes Swiss syntax files
