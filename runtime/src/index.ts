@@ -84,6 +84,9 @@ export type {
 // Fenestration
 export * from "./fenestration/registry.js";
 
+// Refs
+export { ref, type Ref } from "./component/refs.js";
+
 // Utils
 export { html, escapeHTML, unsafe, css, classNames } from "./utils/html.js";
 export {
