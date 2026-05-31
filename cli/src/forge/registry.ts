@@ -326,6 +326,11 @@ export class Registry {
     );
   }
 
+  /**
+   * @todo Not implemented. Tracked for future CLI release.
+   * Publishing templates to a remote registry requires authentication
+   * and registry API integration that is not yet built.
+   */
   async publishTemplate(templatePath: string, registryUrl?: string): Promise<void> {
     void registryUrl;
     // Validate template before publishing
@@ -338,8 +343,12 @@ export class Registry {
     // 1. Package template into tar/zip
     // 2. Upload to registry
     // 3. Update registry index
-    
-    throw new Error('Template publishing not implemented yet');
+
+    throw new Error(
+      'publishTemplate() is not yet implemented. ' +
+      'Template publishing is planned for a future CLI release. ' +
+      'Track progress at: https://github.com/kibologic/swiss-lib/issues'
+    );
   }
 
   async getTemplateStats(): Promise<{ builtin: number; community: number; total: number }> {
