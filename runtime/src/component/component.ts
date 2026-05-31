@@ -62,6 +62,12 @@ import { ReactivityManager } from "./reactivity-setup.js";
 import { CapabilityManagerComponent } from "./capability-manager-component.js";
 import { PluginManagerComponent } from "./plugin-manager-component.js";
 
+// Lifecycle helpers (split from this file to stay within 700-line limit)
+import {
+  mountComponent,
+  unmountComponent,
+} from "./component-lifecycle.js";
+
 export class SwissComponent<
   P extends BaseComponentProps = BaseComponentProps,
   S extends BaseComponentState = BaseComponentState,
@@ -498,192 +504,15 @@ export class SwissComponent<
   }
 
   // ===== Mounting & Unmounting =====
+  // Implementation delegated to component-lifecycle.ts to keep this file
+  // within the 700-line hard limit.
+
   public mount(container: HTMLElement): void {
-    if (this._isMounted) return;
-    if (!container || !(container instanceof HTMLElement)) {
-      logger.error(
-        `mount() called for ${this.constructor.name} with invalid container:`,
-        container,
-      );
-      return;
-    }
-
-    this._container = container;
-
-    // Prevent the initial render effect from committing DOM until beforeMount has fired.
-    (this as any)._mounting = true;
-
-    // Initialize reactivity BEFORE any DOM commit. The render effect will execute immediately.
-    this.initialize();
-    this.executeHookPhase("beforeMount");
-
-    // Allow commits now that beforeMount has run.
-    (this as any)._mounting = false;
-
-    // Perform the first DOM commit explicitly (reactivity is now established for subsequent updates).
-    untrack(() => {
-      const vnode = this.safeRender();
-      if (vnode !== null) this.commitVNode(vnode);
-    });
-
-    this._isMounted = true;
-    this.bindEventHandlers();
-    this.executeHookPhase("mounted");
-
-    if (isDevtoolsEnabled()) {
-      try {
-        const parentId =
-          (this as unknown as { _parent?: SwissComponent | null })._parent?.[
-            "_devtoolsId"
-          ] ?? null;
-        const consumes =
-          (this.constructor as typeof SwissComponent).requires ?? [];
-        const provides = CapabilityManager.getProvidedCapabilities(
-          this.constructor as typeof SwissComponent,
-        );
-        getDevtoolsBridge().onComponentMount({
-          id: this._devtoolsId,
-          name: this.constructor.name,
-          parentId,
-          provides,
-          consumes,
-        });
-        try {
-          getDevtoolsBridge().recordEvent({
-            t: Date.now(),
-            type: "mount",
-            msg: this._devtoolsId,
-          });
-        } catch {
-          /* ignore */
-        }
-      } catch {
-        /* ignore */
-      }
-    }
-  }
-
-  private bindEventHandlers(): void {
-    const eventHandlers = (
-      this as unknown as {
-        _swissEventHandlers?: Array<{
-          eventType: string;
-          method: string;
-          selector?: string;
-          options: {
-            capture?: boolean;
-            once?: boolean;
-            passive?: boolean;
-            preventDefault?: boolean;
-            stopPropagation?: boolean;
-            capability?: string;
-          };
-        }>;
-      }
-    )._swissEventHandlers;
-
-    if (!eventHandlers || !this._container) return;
-
-    for (const handler of eventHandlers) {
-      const method = (this as unknown as Record<string, unknown>)[
-        handler.method
-      ];
-      if (typeof method !== "function") {
-        logger.warn(
-          `Event handler method '${handler.method}' not found on ${this.constructor.name}`,
-        );
-        continue;
-      }
-
-      if (
-        handler.options.capability &&
-        !CapabilityManager.has(handler.options.capability, this)
-      ) {
-        logger.warn(
-          `Missing capability '${handler.options.capability}' for event handler '${handler.method}'`,
-        );
-        continue;
-      }
-
-      const boundHandler = (event: Event) => {
-        if (handler.options.preventDefault) {
-          event.preventDefault();
-        }
-        if (handler.options.stopPropagation) {
-          event.stopPropagation();
-        }
-
-        try {
-          (method as (...args: unknown[]) => unknown).call(this, event);
-        } catch (error) {
-          this.captureError(error, `event:${handler.eventType}`);
-        }
-      };
-
-      if (handler.selector) {
-        const elements = this._container.querySelectorAll(handler.selector);
-        elements.forEach((element) => {
-          element.addEventListener(handler.eventType, boundHandler, {
-            capture: handler.options.capture,
-            once: handler.options.once,
-            passive: handler.options.passive,
-          });
-        });
-      } else {
-        this._container.addEventListener(handler.eventType, boundHandler, {
-          capture: handler.options.capture,
-          once: handler.options.once,
-          passive: handler.options.passive,
-        });
-      }
-    }
+    mountComponent(this, container);
   }
 
   public unmountComponent(): void {
-    if (!this._isMounted) return;
-
-    try {
-      this.executeHookPhase("beforeUnmount");
-      if (isDevtoolsEnabled()) {
-        try {
-          getDevtoolsBridge().onComponentUnmount(this._devtoolsId);
-        } catch {
-          /* ignore */
-        }
-      }
-      cleanupContextSubscriptions(this);
-      this.clearEffects();
-      this.capabilityManager.clearCache();
-      this._children = [];
-      this._parent = null;
-
-      if (this._container?.parentNode) {
-        this._container.parentNode.removeChild(this._container);
-      }
-
-      this._portals.forEach((_, portalContainer) => {
-        if (portalContainer && portalContainer.innerHTML !== undefined)
-          portalContainer.innerHTML = "";
-      });
-
-      this._hooks = [];
-      // Swiss syntax: unmount { } compiles to private unmounted() { } — call it before teardown
-      if (typeof (this as any).unmounted === "function") {
-        try {
-          (this as any).unmounted();
-        } catch (error) {
-          console.error(
-            `[Component] Error in unmounted() for ${this.constructor.name}:`,
-            error,
-          );
-        }
-      }
-      this.executeHookPhase("unmounted");
-      this.state = reactive({} as S) as S;
-      this._isMounted = false;
-    } catch (error) {
-      this.captureError(error, "destroy");
-    }
+    unmountComponent(this);
   }
 
   // ===== SSR & Hydration =====
@@ -701,6 +530,7 @@ export class SwissComponent<
   }
 
   async hydrate(element: HTMLElement) {
+    void element;
     await this.internalHydrate();
   }
 
