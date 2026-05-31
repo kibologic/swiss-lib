@@ -160,7 +160,8 @@ export function filterValidVNodes(children: unknown[]): VNode[] {
   ) as VNode[];
 }
 
-import { eventListeners, vnodeMetadata } from "./storage.js";
+import { eventListeners, vnodeMetadata, componentInstances } from "./storage.js";
+import { logger } from "../utils/logger.js";
 
 export function cleanupNode(node: Node) {
   if (node.nodeType === Node.ELEMENT_NODE) {
@@ -172,6 +173,19 @@ export function cleanupNode(node: Node) {
         element.removeEventListener(event, listener);
       });
       eventListeners.delete(element);
+    }
+
+    // Invoke unmount lifecycle before removing the instance from the registry
+    const instance = componentInstances.get(element);
+    if (instance) {
+      if (typeof (instance as any).unmountComponent === "function") {
+        try {
+          (instance as any).unmountComponent();
+        } catch (e) {
+          logger.warn(`[SwissJS] Error during unmount cleanup:`, e);
+        }
+      }
+      componentInstances.delete(element);
     }
   }
 
