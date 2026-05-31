@@ -1,5 +1,17 @@
 # @swissjs/core
 
+## 0.1.11
+
+### Patch Changes
+
+- fix(renderer): guard `process.env` in reconciliation duplicate-key check with `typeof process !== "undefined"` — fixes ReferenceError crash in browser environments introduced in 0.1.10 (#13 hotfix)
+
+## 0.1.10
+
+### Patch Changes
+
+- 18 audit fixes: unmount lifecycle in DOM cleanup, stale prop deletion, correct repo URL, effect re-run guard, render() error boundaries, duplicate key dev warning, JSX prop types, ref() API, SSR batch isolation, propTypes brace-depth parser, pluggable logger transport
+
 ## 0.1.9
 
 ### Patch Changes

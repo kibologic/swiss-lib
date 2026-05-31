@@ -80,7 +80,7 @@ export function reconcileChildren(
     // Identity must come from keys / direct vnode.dom references.
 
     if (dom) {
-      if (process.env["NODE_ENV"] !== "production" && oldKeyMap.has(key)) {
+      if (typeof process !== "undefined" && process.env["NODE_ENV"] !== "production" && oldKeyMap.has(key)) {
         logger.warn(
           `[SwissJS] Duplicate key "${key}" detected in children list. ` +
           `Keys must be unique among siblings. The component at index ${index} will be recreated.`,
