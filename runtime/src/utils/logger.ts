@@ -8,7 +8,35 @@
  * Swiss debug logger: category-based, runtime flags, __DEV__ guard.
  * Production: all category logs are no-ops. Errors/warnings always on.
  * Development: flags from window.__SWISS_DEBUG__ (or setDebugFlags). Default: all off.
+ *
+ * Call setLogTransport() to redirect all log output to a custom sink (e.g. for
+ * testing, structured logging, or log aggregation in SSR).
  */
+
+export type LogLevel = "log" | "warn" | "error" | "debug";
+export type LogTransport = (level: LogLevel, message: string, ...args: unknown[]) => void;
+
+const defaultTransport: LogTransport = (level, message, ...args) => {
+  (console[level] ?? console.log)(message, ...args);
+};
+
+let _transport: LogTransport = defaultTransport;
+
+/**
+ * Replace the log transport used by all logger methods.
+ * Useful in tests to capture logs without polluting stdout, or in production
+ * to pipe output to a structured logging service.
+ */
+export function setLogTransport(transport: LogTransport): void {
+  _transport = transport;
+}
+
+/**
+ * Restore the default console-based transport.
+ */
+export function resetLogTransport(): void {
+  _transport = defaultTransport;
+}
 
 // Runtime constant (no build-time replace for tsc; Swite/prod build can define __DEV__: false later)
 const __DEV__ =
@@ -75,53 +103,53 @@ function flagsOn(flags: DebugFlags, category: keyof DebugFlags): boolean {
 class LoggerImpl {
   dom(message: string, ...args: unknown[]): void {
     if (__DEV__ && flagsOn(getGlobalFlags(), "DOM")) {
-      console.log(`[DOM] ${message}`, ...args);
+      _transport("log", `[DOM] ${message}`, ...args);
     }
   }
 
   lifecycle(message: string, ...args: unknown[]): void {
     if (__DEV__ && flagsOn(getGlobalFlags(), "LIFECYCLE")) {
-      console.log(`[Lifecycle] ${message}`, ...args);
+      _transport("log", `[Lifecycle] ${message}`, ...args);
     }
   }
 
   updates(message: string, ...args: unknown[]): void {
     if (__DEV__ && flagsOn(getGlobalFlags(), "UPDATES")) {
-      console.log(`[Updates] ${message}`, ...args);
+      _transport("log", `[Updates] ${message}`, ...args);
     }
   }
 
   reactivity(message: string, ...args: unknown[]): void {
     if (__DEV__ && flagsOn(getGlobalFlags(), "REACTIVITY")) {
-      console.log(`[Reactivity] ${message}`, ...args);
+      _transport("log", `[Reactivity] ${message}`, ...args);
     }
   }
 
   events(message: string, ...args: unknown[]): void {
     if (__DEV__ && flagsOn(getGlobalFlags(), "EVENTS")) {
-      console.log(`[Events] ${message}`, ...args);
+      _transport("log", `[Events] ${message}`, ...args);
     }
   }
 
   reconcile(message: string, ...args: unknown[]): void {
     if (__DEV__ && flagsOn(getGlobalFlags(), "RECONCILE")) {
-      console.log(`[Reconcile] ${message}`, ...args);
+      _transport("log", `[Reconcile] ${message}`, ...args);
     }
   }
 
   perf(message: string, durationMs?: number): void {
     if (__DEV__ && flagsOn(getGlobalFlags(), "PERF")) {
       const timing = durationMs !== undefined ? ` (${durationMs.toFixed(2)}ms)` : "";
-      console.log(`[Perf] ${message}${timing}`);
+      _transport("log", `[Perf] ${message}${timing}`);
     }
   }
 
   error(message: string, ...args: unknown[]): void {
-    console.error(`[Swiss] ${message}`, ...args);
+    _transport("error", `[Swiss] ${message}`, ...args);
   }
 
   warn(message: string, ...args: unknown[]): void {
-    console.warn(`[Swiss] ${message}`, ...args);
+    _transport("warn", `[Swiss] ${message}`, ...args);
   }
 
   getFlags(): DebugFlags {

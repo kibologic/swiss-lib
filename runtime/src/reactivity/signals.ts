@@ -15,20 +15,64 @@ export type { SignalOptions } from "./types/index.js";
 
 const defaultEquals = <T>(a: T, b: T) => a === b;
 
-// Simple batch system for signal updates
-const batchedSignals = new Set<Signal<unknown>>();
-let isBatching = false;
+// Simple batch system for signal updates.
+//
+// In browser environments the module-level globals are safe (single user, single thread).
+// In Node.js SSR, concurrent requests share the same module and can corrupt each other's
+// batch state. When `async_hooks` is available we use AsyncLocalStorage to scope batch
+// state per request. This is a progressive enhancement — it degrades gracefully when
+// async_hooks is unavailable (e.g. bundled for the browser).
+let _isBatching = false;
+let _batchedSignals: Set<Signal<unknown>> = new Set();
+
+type BatchContext = { isBatching: boolean; batchedSignals: Set<Signal<unknown>> };
+
+let _als: { getStore(): BatchContext | undefined } | null = null;
+if (typeof process !== "undefined" && typeof window === "undefined") {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { AsyncLocalStorage } = require("async_hooks") as typeof import("async_hooks");
+    _als = new AsyncLocalStorage<BatchContext>();
+  } catch {
+    // async_hooks not available in this environment; fall back to module globals
+  }
+}
+
+function getBatchContext(): BatchContext {
+  if (_als) {
+    const store = _als.getStore();
+    if (store) return store;
+  }
+  return { isBatching: _isBatching, batchedSignals: _batchedSignals };
+}
+
+function setBatchContext(ctx: Partial<BatchContext>): void {
+  if (_als) {
+    const store = _als.getStore();
+    if (store) {
+      if (ctx.isBatching !== undefined) store.isBatching = ctx.isBatching;
+      if (ctx.batchedSignals !== undefined) store.batchedSignals = ctx.batchedSignals;
+      return;
+    }
+  }
+  if (ctx.isBatching !== undefined) _isBatching = ctx.isBatching;
+  if (ctx.batchedSignals !== undefined) _batchedSignals = ctx.batchedSignals;
+}
 
 function addToBatch<T>(signal: Signal<T>) {
-  if (isBatching) {
-    batchedSignals.add(signal as unknown as Signal<unknown>);
+  const ctx = getBatchContext();
+  if (ctx.isBatching) {
+    ctx.batchedSignals.add(signal as unknown as Signal<unknown>);
+    setBatchContext({ batchedSignals: ctx.batchedSignals });
   }
 }
 
 function flushBatch() {
-  if (batchedSignals.size > 0) {
-    const signals = Array.from(batchedSignals);
-    batchedSignals.clear();
+  const ctx = getBatchContext();
+  if (ctx.batchedSignals.size > 0) {
+    const signals = Array.from(ctx.batchedSignals);
+    ctx.batchedSignals.clear();
+    setBatchContext({ batchedSignals: ctx.batchedSignals });
     signals.forEach((signal) => signal.notify());
   }
 }
@@ -92,7 +136,7 @@ export class Signal<T> {
     this._value = newValue;
 
     addToBatch(this);
-    if (!isBatching) {
+    if (!getBatchContext().isBatching) {
       this.notify();
     }
   }
@@ -248,19 +292,21 @@ export function bindToElement(
 }
 
 /**
- * Batch multiple signal updates
+ * Batch multiple signal updates.
+ * All signal notifications are deferred until the end of the batch, then fired once each.
  */
 export function batch(fn: () => void) {
-  if (isBatching) {
+  const ctx = getBatchContext();
+  if (ctx.isBatching) {
     fn();
     return;
   }
 
-  isBatching = true;
+  setBatchContext({ isBatching: true });
   try {
     fn();
   } finally {
-    isBatching = false;
+    setBatchContext({ isBatching: false });
     flushBatch();
   }
 }

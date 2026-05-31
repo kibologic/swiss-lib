@@ -487,6 +487,12 @@ export function createElementNode(
   // CRITICAL: Store DOM reference directly on VNode for reconciliation
   vnode.dom = element;
 
+  // Attach ref if provided
+  const refProp = vnode.props?.ref;
+  if (refProp !== null && typeof refProp === "object" && "current" in refProp) {
+    (refProp as { current: unknown }).current = element;
+  }
+
   reconcileProps(element, {}, vnode.props || {});
 
   // Use normalized children if available (from fragment normalization)
