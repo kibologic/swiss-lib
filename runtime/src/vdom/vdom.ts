@@ -18,6 +18,22 @@ export type {
   VElement,
   ComponentVNode,
 } from "./types/index.js";
+import type { SwissComponent } from "../component/component.js";
+
+/**
+ * Identity helper that preserves the generic prop type through the JSX factory.
+ * Without this, `class MyComp extends SwissComponent<{title: string}>` loses
+ * the prop type when referenced in JSX — the factory only sees `ComponentType`.
+ *
+ * Usage:
+ *   const MyComp = defineComponent(class extends SwissComponent<{title: string}> { ... });
+ *   // <MyComp title="hello" /> now type-checks correctly
+ */
+export function defineComponent<P extends Record<string, unknown>>(
+  ComponentClass: new (props: P) => SwissComponent<P>,
+): new (props: P) => SwissComponent<P> {
+  return ComponentClass;
+}
 import { renderToString } from "../renderer/renderer.js";
 export { renderToString } from "../renderer/renderer.js";
 
