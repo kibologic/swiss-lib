@@ -20,6 +20,7 @@ import {
   isElementVNode,
   cleanupNode,
 } from "./types.js";
+import { logger } from "../utils/logger.js";
 
 // Forward declarations - these will be imported from other modules
 // We use function declarations to allow hoisting and avoid circular dependency issues
@@ -78,7 +79,15 @@ export function reconcileChildren(
     // We intentionally do not scan DOM subtrees to find matches.
     // Identity must come from keys / direct vnode.dom references.
 
-    if (dom) oldKeyMap.set(key, { vnode, index, dom });
+    if (dom) {
+      if (process.env["NODE_ENV"] !== "production" && oldKeyMap.has(key)) {
+        logger.warn(
+          `[SwissJS] Duplicate key "${key}" detected in children list. ` +
+          `Keys must be unique among siblings. The component at index ${index} will be recreated.`,
+        );
+      }
+      oldKeyMap.set(key, { vnode, index, dom });
+    }
   });
 
   newChildren.forEach((vnode, index) => {
