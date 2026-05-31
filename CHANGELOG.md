@@ -1,5 +1,20 @@
 # Changelog
 
+## [@swissjs/core 0.1.10] — 2026-05-31
+
+### Fixed
+- renderer: `cleanupNode` now calls `unmountComponent()` on component instances before removing them from the registry (#8)
+- renderer: Stale prop keys are deleted when a parent stops passing them, preventing ghost props in reactive updates (#9)
+- package: Corrected `repository` URL in published `runtime/package.json` (#10)
+- reactivity: Added MAX_RERUNS (100) guard to `Effect.execute()` to terminate infinite reactive feedback loops with a clear error (#11)
+- renderer: `render()` errors are now routed to the nearest error boundary via `captureChildError`; re-thrown only when no boundary exists (#12)
+- reconciliation: Duplicate keys in children lists emit a `logger.warn` in non-production mode (#13)
+- types: Added `defineComponent<P>()` helper and `JSX` namespace declaration so prop types are preserved through the JSX factory (#14)
+- api: Added `ref<T>()` primitive and wired `ref` prop handling into DOM creation for direct DOM node access (#15)
+- reactivity: Batch state (`isBatching`, `batchedSignals`) is now isolated per `AsyncLocalStorage` context in Node.js to prevent SSR request cross-contamination (#16)
+- compiler: `propTypes` block extraction now uses brace-depth counting instead of lazy regex, fixing incorrect truncation on nested object values (#17)
+- utils: Added `setLogTransport()` / `resetLogTransport()` API to `logger` for custom log sinks; all logger methods route through the transport (#18)
+
 ## [0.2.0] — 2026-03-27
 
 ### Security
