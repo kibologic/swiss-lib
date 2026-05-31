@@ -29,6 +29,19 @@ import { DiffingError } from "./errors.js";
 import { createErrorBoundary } from "./errors.js";
 import { untrack } from "../reactivity/effect.js";
 import { getCachedRender, cacheRender, clearRenderCache } from "./render-cache.js";
+import { logger } from "../utils/logger.js";
+
+/**
+ * Walk the _parent chain looking for an error boundary component.
+ */
+function findErrorBoundary(instance: SwissComponent): SwissComponent | null {
+  let current: any = (instance as any)._parent;
+  while (current) {
+    if ((current.constructor as any).isErrorBoundary) return current;
+    current = current._parent;
+  }
+  return null;
+}
 
 /**
  * Expands slot VNodes into their actual content from the component instance.
@@ -219,8 +232,21 @@ export function renderComponent(
           }
         } else {
           // Cache miss - render component
-          rendered = untrack(() => instance.render());
-
+          try {
+            rendered = untrack(() => instance.render());
+          } catch (renderError) {
+            const boundary = findErrorBoundary(instance);
+            if (boundary) {
+              (boundary as any).captureChildError(instance, { error: renderError });
+              rendered = null;
+            } else {
+              logger.error(
+                `[SwissJS] Uncaught render error in ${instance.constructor.name}:`,
+                renderError,
+              );
+              throw renderError;
+            }
+          }
           // CRITICAL: Expand slots into their actual content before reconciliation
           // This prevents 1:many VNode-to-DOM mapping issues during diffing
           // Always expand slots, even if no slot content was passed (to handle empty slots)
