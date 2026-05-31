@@ -160,9 +160,14 @@ export class Registry {
     const { promisify } = await import('util');
     const execFileAsync = promisify(execFile);
 
-    const name = templateName
+    const rawName = templateName
       ?? (path.basename(url).replace(/\.tar\.gz$|\.tgz$|\.zip$/, '') || 'template');
+    const name = rawName.replace(/[^a-zA-Z0-9_\-]/g, '_').slice(0, 64);
+    if (!name) throw new Error('Invalid template name');
     const targetPath = path.join(this.templatesPath, 'community', name);
+    if (!targetPath.startsWith(path.join(this.templatesPath, 'community'))) {
+      throw new Error('Template path escapes templates directory');
+    }
 
     if (await fs.pathExists(targetPath)) {
       throw new Error(`Template '${name}' already exists`);
@@ -203,8 +208,13 @@ export class Registry {
       throw new Error(`Invalid template structure at: ${localPath}`);
     }
 
-    const name = templateName || metadata.name || path.basename(localPath);
+    const rawName = templateName || metadata.name || path.basename(localPath);
+    const name = rawName.replace(/[^a-zA-Z0-9_\-]/g, '_').slice(0, 64);
+    if (!name) throw new Error('Invalid template name');
     const targetPath = path.join(this.templatesPath, 'community', name);
+    if (!targetPath.startsWith(path.join(this.templatesPath, 'community'))) {
+      throw new Error('Template path escapes templates directory');
+    }
 
     if (await fs.pathExists(targetPath)) {
       throw new Error(`Template already exists: ${name}`);
