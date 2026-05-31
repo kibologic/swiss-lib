@@ -18,6 +18,8 @@ import { logger } from "../utils/logger.js";
 import { saveFocusState, restoreFocusState } from "./focus-guard.js";
 import { isDevtoolsEnabled, getDevtoolsBridge, isTelemetryEnabled } from "../devtools/bridge.js";
 
+// ─── SECTION: Utilities ──────────────────────────────────────────────────────
+
 function scheduleMicrotask(fn: () => void) {
   if (typeof queueMicrotask === "function") {
     queueMicrotask(fn);
@@ -29,6 +31,8 @@ function scheduleMicrotask(fn: () => void) {
 /**
  * Manages component updates and DOM reconciliation
  */
+// ─── SECTION: UpdateManager — scheduleUpdate, performUpdate, DOM patching ────
+
 export class UpdateManager {
   private updateScheduled: boolean = false;
   private updateCount: number = 0;

@@ -160,8 +160,8 @@ export const hydrateDOM = (vnode: VNode, domNode: Node): void => {
   );
 };
 
-// Primary render function
-// Wrapped in global error boundary for production safety
+// ─── SECTION: Client-side DOM rendering ──────────────────────────────────────
+
 export function renderToDOM(vnode: VNode, container: HTMLElement) {
   if (container == null || typeof container !== "object") {
     devTools.error("[Renderer] renderToDOM: container is null/undefined", {
@@ -596,7 +596,8 @@ export { devTools, performanceMonitor, DiffingError };
 // Export updateDOMNode for use in component.ts
 export { updateDOMNodeBound as updateDOMNode };
 
-// SSR: Convert VNode to HTML string
+// ─── SECTION: SSR — renderToString ───────────────────────────────────────────
+
 export function renderToString(vnode: VNode): string {
   if (typeof vnode === "string" || typeof vnode === "number") {
     return escapeHtml(String(vnode));
