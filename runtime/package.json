@@ -60,7 +60,10 @@
     "email": "themba@swissjs.dev",
     "url": "https://github.com/ThembaMzumara"
   },
-  "repository": "https://github.com/kibologic/alpine-erp-core",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kibologic/swiss-lib.git"
+  },
   "homepage": "https://github.com/ThembaMzumara/SWISS#readme",
   "bugs": {
     "url": "https://github.com/ThembaMzumara/SWISS/issues"
