@@ -28,7 +28,7 @@ import {
 import { DiffingError } from "./errors.js";
 import { createErrorBoundary } from "./errors.js";
 import { untrack } from "../reactivity/effect.js";
-import { getCachedRender, cacheRender } from "./render-cache.js";
+import { getCachedRender, cacheRender, clearRenderCache } from "./render-cache.js";
 
 /**
  * Expands slot VNodes into their actual content from the component instance.
@@ -150,7 +150,18 @@ export function renderComponent(
 
         if (existingInstance) {
           instance = existingInstance;
-          instance.props = props;
+          // Merge incoming props into the existing reactive proxy in-place.
+          // Replacing the whole object would lose Signal tracking established
+          // by the render effect. Mutating individual keys fires their setters,
+          // which notifies the render effect and triggers a re-render.
+          const existingProps = instance.props as Record<string, unknown>;
+          const incomingProps = props as Record<string, unknown>;
+          for (const key of Object.keys(incomingProps)) {
+            if (existingProps[key] !== incomingProps[key]) {
+              existingProps[key] = incomingProps[key];
+            }
+          }
+          clearRenderCache(instance);
           // Set _slotContent (either new or preserved)
           (instance as any)._slotContent = slotContent;
           (instance as any)._initialized = true;

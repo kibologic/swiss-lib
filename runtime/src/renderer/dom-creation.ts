@@ -405,6 +405,7 @@ export function createDOMNode(
             // Skip the first performUpdate() from the effect - DOM was just created and is correct
             (instance as any)._skipNextUpdate = true;
             if (typeof (instance as any).executeHookPhase === "function") {
+              (instance as any).executeHookPhase("beforeMount");
               logger.lifecycle(`${instance.constructor.name}: mounted`);
               (instance as any).executeHookPhase("mounted");
             }

@@ -1,4 +1,23 @@
-# @kibologic/core
+# @swissjs/core
+
+## 0.1.9
+
+### Patch Changes
+
+- fix(reactivity): props are now reactive — child components re-render when parent passes new props
+
+  Props are now wrapped in `reactive()` at construction, matching how state is handled.
+  Parent-to-child prop updates mutate the existing reactive proxy in-place so Signal
+  tracking is preserved and the render effect re-runs on prop changes.
+  `clearRenderCache` is called on every prop update.
+  Child components created via `createDOMNode()` now receive the `beforeMount`
+  lifecycle hook before `mounted`, matching root component behaviour.
+
+## 0.1.8
+
+### Patch Changes
+
+- fix: remove debug console.log from click event wrapper
 
 ## 0.1.7
 

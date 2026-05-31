@@ -42,7 +42,7 @@ export class BaseComponent<
   protected _errorHandlingPhase: boolean = false;
 
   constructor(props: P) {
-    this.props = props;
+    this.props = reactive(props) as P;
     this.state = reactive({} as S) as S;
     this.context = new Map();
     this._lifecycle = new LifecycleManager();
