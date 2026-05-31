@@ -156,6 +156,16 @@ export function renderComponent(
           // which notifies the render effect and triggers a re-render.
           const existingProps = instance.props as Record<string, unknown>;
           const incomingProps = props as Record<string, unknown>;
+
+          // Remove keys that are no longer present in the incoming props so
+          // the component can react to the absence of a prop (e.g. conditional attributes).
+          // Skip internal framework keys that begin with '_' to avoid side-effects.
+          for (const key of Object.keys(existingProps)) {
+            if (!(key in incomingProps) && !key.startsWith("_")) {
+              delete existingProps[key];
+            }
+          }
+
           for (const key of Object.keys(incomingProps)) {
             if (existingProps[key] !== incomingProps[key]) {
               existingProps[key] = incomingProps[key];
