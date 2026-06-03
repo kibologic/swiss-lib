@@ -4,10 +4,12 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it } from "vitest";
 
-describe('Core Package', () => {
-  it('runs a basic test', () => {
-    expect(true).toBe(true);
-  });
+describe("Core Package", () => {
+  it.todo("renders a component to DOM");
+  it.todo("signal updates trigger re-render");
+  it.todo("unmount cleans up event listeners");
+  it.todo("portals attach to document.body outside component tree");
+  it.todo("useSlot returns named slot content from parent");
 });

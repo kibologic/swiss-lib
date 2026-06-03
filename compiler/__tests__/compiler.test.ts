@@ -8,10 +8,6 @@ import { describe, it, expect } from "vitest";
 import { UiCompiler } from "../src/index";
 
 describe("Compiler Package", () => {
-  it("runs a basic test", () => {
-    expect(true).toBe(true);
-  });
-
   it("processes html template literals in .ui files", async () => {
     const compiler = new UiCompiler({ outputFormat: "javascript" });
 

@@ -4,10 +4,10 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it } from "vitest";
 
-describe('fenestration_explorer', () => {
-  it('should be defined', () => {
-    expect(true).toBe(true);
-  });
-}); 
+describe("fenestration_explorer", () => {
+  it.todo("builds component tree from live DOM");
+  it.todo("highlights selected component in DevTools panel");
+  it.todo("displays reactive state values for selected component");
+});
