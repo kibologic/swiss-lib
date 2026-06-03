@@ -1,5 +1,20 @@
 # @swissjs/core
 
+## 0.2.0
+
+### Minor Changes
+
+- fix(T-005): eliminate double-render on Signal + scheduleUpdate in same event handler
+
+  When a `.uix` event handler mutates Signal-backed state AND calls `this.scheduleUpdate?.()`,
+  two independent microtasks were queued causing two full DOM reconciliation passes per
+  keystroke. Input focus was lost between passes.
+
+  **What changed:** `ReactivityManager.setupReactivity()` now sets `component._signalCommitPending = true`
+  before its microtask commit and clears it when done. `UpdateManager.scheduleUpdate()`
+  checks this flag first and short-circuits when a signal commit is already pending.
+  Single reconciliation pass per event. Focus guard (focus-guard.ts) remains for replaceChild edge cases.
+
 ## 0.1.11
 
 ### Patch Changes
