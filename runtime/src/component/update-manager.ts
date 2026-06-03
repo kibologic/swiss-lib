@@ -45,12 +45,24 @@ export class UpdateManager {
   /**
    * Schedules an update. Uses immediate run for child components (no container, have _domNode) so toggles feel instant.
    *
-   * With Signal-backed state (Problem B resolved), state mutations automatically trigger
-   * re-renders via the render effect in ReactivityManager.setupReactivity(). Explicit
-   * scheduleUpdate() calls are now redundant but harmless — kept as an escape hatch for
-   * imperative updates that bypass the Signal system (e.g. external prop changes).
+   * With Signal-backed state, state mutations automatically trigger re-renders via the
+   * render effect in ReactivityManager.setupReactivity(). When both a signal change and
+   * an explicit scheduleUpdate() fire in the same synchronous event handler, the signal
+   * effect sets _signalCommitPending = true before its microtask runs. scheduleUpdate()
+   * detects this and exits early — the signal commit will handle the update, preventing
+   * the two independent reconciliation passes that caused input focus loss (T-005).
+   *
+   * Keep scheduleUpdate() as an escape hatch for imperative state changes that bypass
+   * the Signal system (e.g. direct property mutation, external prop injection).
    */
   public scheduleUpdate(): void {
+    // Signal-driven render already queued for this tick — skip to avoid double reconciliation.
+    if (this.component._signalCommitPending) {
+      logger.reactivity(
+        `${this.component.constructor.name}: scheduleUpdate absorbed — signal commit already pending`,
+      );
+      return;
+    }
     if (!this.updateScheduled) {
       clearRenderCache(this.component);
       this.updateScheduled = true;

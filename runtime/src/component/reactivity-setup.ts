@@ -69,12 +69,17 @@ export class ReactivityManager<
         // Coalesce rapid signal changes: store the latest VNode and schedule exactly
         // one DOM commit per microtask tick. Subsequent changes before the microtask
         // fires overwrite _pendingVNode so only the final state is committed.
+        // _signalCommitPending is read by UpdateManager.scheduleUpdate() to avoid
+        // queueing a redundant second reconciliation pass when both a signal effect
+        // and an explicit scheduleUpdate() fire in the same synchronous event handler.
         _pendingVNode = newVNode;
         if (_commitPending) return;
         _commitPending = true;
+        this.component._signalCommitPending = true;
 
         queueMicrotask(() => {
           _commitPending = false;
+          this.component._signalCommitPending = false;
           const vnode = _pendingVNode;
           _pendingVNode = null;
           if (vnode !== null) (this.component as any).commitVNode(vnode);

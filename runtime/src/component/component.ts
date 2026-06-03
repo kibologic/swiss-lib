@@ -101,6 +101,10 @@ export class SwissComponent<
   protected _initialized: boolean = false;
   /** Captured error for fallback UI; never shadowed by subclass state (e.g. state { let error }) */
   protected _capturedError: SwissErrorInfo | null = null;
+  /** Set by ReactivityManager when a signal-driven microtask commit is queued. Read by
+   *  UpdateManager.scheduleUpdate() to absorb redundant explicit update calls that would
+   *  otherwise cause a second full reconciliation pass in the same event handler tick. */
+  public _signalCommitPending: boolean = false;
 
   constructor(props: P, options: SwissComponentOptions = {}) {
     super(props);
