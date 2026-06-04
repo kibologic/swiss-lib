@@ -19,15 +19,17 @@ export async function compileUiFilesToJavaScript(
   if (debug)
     console.log(
       chalk.yellow(
-        `[compileUiFilesToJavaScript] Scanning for .ui files in ${srcDir}`,
+        `[compileUiFilesToJavaScript] Scanning for .ui/.uix files in ${srcDir}`,
       ),
     );
   const oneUiFiles = await findFiles(srcDir, ".ui");
+  const uixFiles = await findFiles(srcDir, ".uix");
+  const allSourceFiles = [...oneUiFiles, ...uixFiles];
 
-  if (oneUiFiles.length === 0) {
+  if (allSourceFiles.length === 0) {
     if (debug)
       console.log(
-        chalk.yellow("⚠️  No .ui files found - pure TypeScript project"),
+        chalk.yellow("⚠️  No .ui/.uix files found - pure TypeScript project"),
       );
     return;
   }
@@ -35,16 +37,16 @@ export async function compileUiFilesToJavaScript(
   if (debug)
     console.log(
       chalk.yellow(
-        `[compileUiFilesToJavaScript] Emitting ${oneUiFiles.length} .ui file(s) as JavaScript (.js)...`,
+        `[compileUiFilesToJavaScript] Emitting ${allSourceFiles.length} source file(s) as JavaScript (.js)...`,
       ),
     );
   console.log(
     chalk.blue(
-      `🔨 Processing ${oneUiFiles.length} .ui file(s) as JavaScript (.js)...`,
+      `🔨 Processing ${allSourceFiles.length} .ui/.uix file(s) as JavaScript (.js)...`,
     ),
   );
   console.log(
-    chalk.gray("  Direct .ui → .js compilation for browser-ready code"),
+    chalk.gray("  Direct .ui/.uix → .js compilation for browser-ready code"),
   );
 
   try {
@@ -55,12 +57,12 @@ export async function compileUiFilesToJavaScript(
       module: ts.ModuleKind.ESNext,
     });
 
-    for (const file of oneUiFiles) {
+    for (const file of allSourceFiles) {
       const relPath = path.relative(srcDir, file);
       const outputExtension = ".js";
       const outputPath = path.join(
         outDir,
-        relPath.replace(/\.ui$/, outputExtension),
+        relPath.replace(/\.uix?$/, outputExtension),
       );
       await fs.ensureDir(path.dirname(outputPath));
       if (debug)
@@ -76,9 +78,11 @@ export async function compileUiFilesToJavaScript(
         "",
       );
       jsCode = jsCode.replace(/import\s*\{[^}]*Fragment[^}]*\}[^;]*;?\n?/g, "");
-      // Update all imports from .ui to .js
+      // Rewrite relative .ui, .uix, and compiler-normalized .tsx imports to .js.
+      // The UiCompiler's processImports converts .ui/.uix → .tsx internally,
+      // so we must also catch .tsx here to produce valid browser JS.
       jsCode = jsCode.replace(
-        /from ['"](\.\/?[\w/-]+)\.ui['"]/g,
+        /from ['"](\.\/?[\w/-]+)\.(uix?|tsx)['"]/g,
         (match, importPath) => {
           return `from '${importPath}${outputExtension}'`;
         },
@@ -108,7 +112,7 @@ export async function compileUiFilesToJavaScript(
     }
     console.log(
       chalk.green(
-        `🎉 All .ui files processed! Your codebase is now browser-ready JavaScript (.js).`,
+        `🎉 All .ui/.uix files processed! Your codebase is now browser-ready JavaScript (.js).`,
       ),
     );
 

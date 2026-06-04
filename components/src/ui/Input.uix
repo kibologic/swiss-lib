@@ -1,0 +1,27 @@
+/*
+ * Copyright (c) 2024 Themba Mzumara
+ * This file is part of SwissJS Framework. All rights reserved.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+interface InputProps {
+  placeholder?: string;
+  value?: string;
+  onInput?: (e: Event, value: string) => void;
+}
+
+export class UiInput {
+  constructor(public props: InputProps) {}
+  mount(host: HTMLElement) {
+    const input = document.createElement('input');
+    input.placeholder = this.props.placeholder || '';
+    input.value = this.props.value || '';
+    if (this.props.onInput) {
+      input.addEventListener('input', (e) => {
+        const target = e.target as HTMLInputElement;
+        this.props.onInput?.(e, target.value);
+      });
+    }
+    host.appendChild(input);
+  }
+}

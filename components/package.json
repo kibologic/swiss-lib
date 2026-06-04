@@ -8,9 +8,8 @@
     "src"
   ],
   "scripts": {
-    "build": "node --input-type=module -e \"import { compileUiFilesToJavaScript } from '@swissjs/cli/dist/utils/compileUiFiles.js'; await compileUiFilesToJavaScript('./src', './dist', true);\" && node -e \"require('fs').writeFileSync('dist/index.js', 'export * from \\\"./index.ts\\\";\\n')\" && echo 'Components built'",
+    "build": "node --input-type=module -e \"import { compileUiFilesToJavaScript } from '@swissjs/cli/dist/utils/compileUiFiles.js'; await compileUiFilesToJavaScript('./src', './dist', true);\" && echo 'Components built'",
     "compile:ui": "node --input-type=module -e \"import { compileUiFilesToJavaScript } from '@swissjs/cli/dist/utils/compileUiFiles.js'; await compileUiFilesToJavaScript('./src', './dist', true);\"",
-    "postcompile:ui": "node -e \"require('fs').writeFileSync('dist/index.js', 'export * from \\\"./index.ts\\\";\\n')\"",
     "pretest": "pnpm compile:ui",
     "test": "pnpm exec vitest run",
     "test:watch": "pnpm exec vitest",

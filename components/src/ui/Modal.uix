@@ -1,0 +1,74 @@
+/*
+ * Copyright (c) 2024 Themba Mzumara
+ * This file is part of SwissJS Framework. All rights reserved.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+interface ModalProps {
+  open?: boolean;
+  title?: string;
+  onClose?: () => void;
+}
+
+export class UiModal {
+  constructor(public props: ModalProps) {}
+  mount(host: HTMLElement) {
+    if (!this.props.open) return;
+
+    const backdrop = document.createElement('div');
+    backdrop.className = 'ui-modal-backdrop';
+    backdrop.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);';
+
+    const modal = document.createElement('div');
+    modal.className = 'ui-modal';
+    modal.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 8px;';
+
+    const title = document.createElement('h2');
+    title.textContent = this.props.title || 'Modal';
+
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'ui-modal-close';
+    closeBtn.textContent = '×';
+    closeBtn.style.cssText = 'position: absolute; top: 10px; right: 10px; border: none; background: none; font-size: 20px; cursor: pointer;';
+
+    modal.appendChild(title);
+    modal.appendChild(closeBtn);
+    backdrop.appendChild(modal);
+
+    modal.setAttribute('tabindex', '-1');
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+
+    if (this.props.onClose) {
+      backdrop.addEventListener('click', (e) => {
+        if (e.target === backdrop) {
+          this.props.onClose?.();
+        }
+      });
+      closeBtn.addEventListener('click', () => this.props.onClose?.());
+    }
+
+    modal.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        this.props.onClose?.();
+        return;
+      }
+      if (e.key === 'Tab') {
+        const focusable = modal.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (!focusable.length) { e.preventDefault(); return; }
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey) {
+          if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+        } else {
+          if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+        }
+      }
+    });
+
+    host.appendChild(backdrop);
+    requestAnimationFrame(() => modal.focus());
+  }
+}
