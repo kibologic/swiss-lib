@@ -113,3 +113,9 @@ docs_old/
 .husky-disabled/
 jira/
 
+# Internal AI session files
+DIRECTIVE*.md
+HANDOFF.md
+CLAUDE.md
+tasks/
+
