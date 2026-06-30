@@ -74,15 +74,15 @@ export class SwissApp {
     return this.plugins.get<T>(name);
   }
 
-  registerComponent(name: string, component: typeof SwissComponent): void {
+  registerComponent(name: string, component: ComponentType): void {
     ComponentRegistry.register(name, component);
   }
 
-  getComponent(name: string): typeof SwissComponent | undefined {
+  getComponent(name: string): ComponentType | undefined {
     return ComponentRegistry.get(name);
   }
 
-  async route(path: string, component: typeof SwissComponent): Promise<void> {
+  async route(path: string, component: ComponentType): Promise<void> {
     await this.hooks.callHook("app:route", { path, component, app: this });
   }
 

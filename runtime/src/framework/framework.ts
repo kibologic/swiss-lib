@@ -9,7 +9,6 @@ import { PluginManager } from "../plugins/index.js";
 import type { Plugin } from "../plugins/pluginInterface.js";
 import type { SwissComponent } from "../component/component.js";
 import type { SwissApp } from "./app.js";
-import { ComponentRegistry } from "../component/ComponentRegistry.js";
 import {
   coreDirectiveHandlers,
   isCoreDirective,

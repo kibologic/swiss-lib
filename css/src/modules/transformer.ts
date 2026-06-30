@@ -51,17 +51,24 @@ export function transformCSSModule(
     const generateScopedName = options.generateScopedName || defaultGenerateScopedName;
     const exports: Record<string, string> = {};
 
-    // Parse CSS and extract class names
+    // Strip string literals before scanning so class names inside quotes are skipped
+    const stringSlots: string[] = [];
+    const cssStripped = css.replace(/"[^"]*"|'[^']*'/g, (m) => {
+        stringSlots.push(m);
+        return `"__S${stringSlots.length - 1}__"`;
+    });
+
+    // Parse CSS and extract class names (outside string literals)
     const classNameRegex = /\.([a-zA-Z_][\w-]*)/g;
     let match;
     const classNames = new Set<string>();
 
-    while ((match = classNameRegex.exec(css)) !== null) {
+    while ((match = classNameRegex.exec(cssStripped)) !== null) {
         classNames.add(match[1]);
     }
 
-    // Generate scoped names
-    let transformedCSS = css;
+    // Generate scoped names and transform on stripped copy, then restore strings
+    let transformedCSS = cssStripped;
     classNames.forEach(className => {
         const scopedName = generateScopedName(className, filename, css);
         exports[className] = scopedName;
@@ -70,6 +77,9 @@ export function transformCSSModule(
         const regex = new RegExp(`\\.${className}(?![\\w-])`, 'g');
         transformedCSS = transformedCSS.replace(regex, `.${scopedName}`);
     });
+
+    // Restore original string literals
+    transformedCSS = transformedCSS.replace(/"__S(\d+)__"/g, (_, i) => stringSlots[Number(i)]);
 
     return {
         css: transformedCSS,

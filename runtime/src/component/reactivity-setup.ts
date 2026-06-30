@@ -8,7 +8,7 @@ import { reactive } from "../reactivity/reactive.js";
 import { effect, untrack } from "../reactivity/effect.js";
 import { type EffectDisposer } from "../reactivity/types/index.js";
 import type { SwissComponent } from "./component.js";
-import type { BaseComponentState } from "./types/index.js";
+import type { BaseComponentProps, BaseComponentState } from "./types/index.js";
 import { logger } from "../utils/logger.js";
 import type { VNode } from "../vdom/vdom.js";
 
