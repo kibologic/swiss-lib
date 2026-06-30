@@ -141,6 +141,11 @@ export class Signal<T> {
     }
   }
 
+  /** Read the current value without tracking any reactive effect. */
+  peek(): T {
+    return this._value;
+  }
+
   /**
    * Update value using a function
    */

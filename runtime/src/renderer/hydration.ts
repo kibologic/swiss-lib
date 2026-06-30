@@ -5,7 +5,9 @@
  */
 
 import type { VNode, VElement, ComponentVNode } from "../vdom/vdom.js";
+import type { VNodeBase } from "../vdom/types/index.js";
 import type { SwissComponent } from "../component/component.js";
+import { asInternal } from "../component/internal.js";
 import { vnodeMetadata, componentInstances } from "./storage.js";
 import { isTextVNode, isElementVNode, isComponentVNode } from "./types.js";
 import { DiffingError } from "./errors.js";
@@ -224,7 +226,7 @@ function hydrateComponentNode(
   updateDOMNodeFn: UpdateDOMNodeFn,
 ) {
   // Reuse an existing instance if it is already registered for this DOM node.
-  let existingInstance = (vnode as any).__componentInstance as any;
+  let existingInstance: SwissComponent | undefined = vnode.__componentInstance;
   if (!(existingInstance && existingInstance.constructor === vnode.type)) {
     existingInstance = componentInstances.get(domNode);
     if (!(existingInstance && existingInstance.constructor === vnode.type)) {
@@ -236,21 +238,16 @@ function hydrateComponentNode(
   const rendered = renderComponentFn(vnode, existingInstance);
 
   // Capture the instance created/used by renderComponent.
-  const instanceFromRender =
-    rendered && typeof rendered === "object" && rendered !== null
-      ? (rendered as any).__componentInstance
-      : undefined;
+  const instanceFromRender = (rendered as unknown as VNodeBase | null)?.__componentInstance;
 
   const finalInstance = instanceFromRender || existingInstance;
   if (finalInstance) {
     componentInstances.set(domNode, finalInstance);
-    if (typeof vnode === "object" && vnode !== null) {
-      (vnode as any).__componentInstance = finalInstance;
-      (vnode as any).dom = domNode;
-    }
+    vnode.__componentInstance = finalInstance;
+    vnode.dom = domNode;
     // Ensure the instance tracks its host DOM node.
-    (finalInstance as any)._domNode =
-      (finalInstance as any)._domNode || domNode;
+    const fci = asInternal(finalInstance);
+    fci._domNode = fci._domNode || domNode;
   }
 
   // Hydrate the rendered VNode tree against existing DOM.
