@@ -4,9 +4,6 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import type { SwissComponent } from "../component/component.js";
 import type {
   VNode,
@@ -14,7 +11,9 @@ import type {
   ComponentVNode,
   ComponentType,
 } from "../vdom/vdom.js";
-import { Fragment } from "../vdom/vdom.js";
+import { Fragment, createVNode } from "../vdom/vdom.js";
+import type { VNodeBase } from "../vdom/types/index.js";
+import { asInternal } from "../component/internal.js";
 import {
   getCurrentComponentInstance,
   setCurrentComponentInstance,
@@ -30,6 +29,11 @@ import { createErrorBoundary } from "./errors.js";
 import { untrack } from "../reactivity/effect.js";
 import { getCachedRender, cacheRender, clearRenderCache } from "./render-cache.js";
 import { logger } from "../utils/logger.js";
+
+function vb(vnode: VNode | null | undefined): VNodeBase | null {
+  if (vnode == null || typeof vnode !== "object") return null;
+  return vnode as unknown as VNodeBase;
+}
 
 /**
  * Walk the _parent chain looking for an error boundary component.
@@ -61,25 +65,15 @@ export function expandSlots(
   }
 
   if (isElementVNode(vnode)) {
-    // Check if this is a slot element
-    if (vnode.type === "slot") {
-      const slotName = (vnode.props?.name as string) || "default";
-      const content = slotContent.get(slotName) || [];
-
-      // If slot has content, return it (as array if multiple children, single if one, or null if empty)
-      if (content.length === 0) {
-        // Empty slot - return null to avoid rendering
-        return null;
-      } else if (content.length === 1) {
-        // Single child - expand it recursively
-        return expandSlots(content[0], slotContent);
-      } else {
-        // Multiple children - return as array (fragments are arrays in SwissJS VNode type)
-        // isFragmentVNode checks for Array.isArray(vnode), so returning array is correct
-        return content
-          .map((child) => expandSlots(child, slotContent))
-          .filter((c) => c != null) as unknown as VNode;
-      }
+    const slotName = vnode.props?.slot as string | undefined;
+    if (slotName && slotContent.has(slotName)) {
+      const slotNodes = slotContent.get(slotName) || [];
+      return slotNodes.length === 1 ? slotNodes[0] : createVNode(Fragment, {}, ...slotNodes);
+    }
+    if ((vnode as VElement).type === "slot") {
+      const name = (vnode.props?.name as string) || "default";
+      const slotNodes = slotContent.get(name) || [];
+      return slotNodes.length === 1 ? slotNodes[0] : createVNode(Fragment, {}, ...slotNodes);
     }
 
     // Regular element - expand its children
@@ -96,16 +90,14 @@ export function expandSlots(
   }
 
   // For component VNodes and other types, expand children if they exist
-  if (typeof vnode === "object" && vnode !== null && "children" in vnode) {
-    const children = (vnode as any).children;
-    if (Array.isArray(children)) {
-      return {
-        ...vnode,
-        children: children
-          .map((child) => expandSlots(child, slotContent))
-          .filter((c) => c != null),
-      };
-    }
+  const base = vb(vnode as VNode);
+  if (base && Array.isArray(base.children)) {
+    return {
+      ...vnode,
+      children: base.children
+        .map((child) => expandSlots(child as VNode, slotContent))
+        .filter((c) => c != null),
+    } as VNode;
   }
 
   return vnode;
@@ -136,17 +128,10 @@ export function renderComponent(
 
     // CRITICAL: For existing instances, preserve _slotContent BEFORE processing defaultChildren
     // This ensures slots can be expanded even when ComponentVNode has no children during updates
-    let preservedSlotContent: Map<string, VNode[]> | undefined;
     if (existingInstance) {
-      preservedSlotContent = (existingInstance as any)._slotContent as
-        | Map<string, VNode[]>
-        | undefined;
+      const preservedSlotContent = asInternal(existingInstance)._slotContent;
       // If new slotContent is empty but existing one has content, use the existing one
-      if (
-        slotContent.size === 0 &&
-        preservedSlotContent &&
-        preservedSlotContent.size > 0
-      ) {
+      if (slotContent.size === 0 && preservedSlotContent && preservedSlotContent.size > 0) {
         slotContent = preservedSlotContent;
       }
     }
@@ -185,16 +170,17 @@ export function renderComponent(
             }
           }
           clearRenderCache(instance);
-          // Set _slotContent (either new or preserved)
-          (instance as any)._slotContent = slotContent;
-          (instance as any)._initialized = true;
-          (instance as any).__initialized = true;
+          const c = asInternal(instance);
+          c._slotContent = slotContent;
+          c._initialized = true;
+          c.__initialized = true;
         } else {
           instance = new Component(props);
           const parent = getCurrentComponentInstance();
-          if (parent) (instance as any)._parent = parent;
+          const c = asInternal(instance);
+          if (parent) c._parent = parent;
           if (slotContent.size > 0) {
-            (instance as any)._slotContent = slotContent;
+            c._slotContent = slotContent;
           }
         }
 
@@ -208,12 +194,10 @@ export function renderComponent(
           slotContent.set("default", defaultChildren);
         } else if (slotContent.has("default")) {
           // No new defaultChildren but existing default slot exists (preserved) - keep it
-          // Preserved slot content will be used
         }
-        // Note: No defaultChildren and no existing default slot is normal for components without children
 
         // Update _slotContent on instance after processing defaultChildren
-        (instance as any)._slotContent = slotContent;
+        asInternal(instance)._slotContent = slotContent;
 
         // Check render cache first
         const cachedRender = getCachedRender(instance, props);
@@ -225,7 +209,6 @@ export function renderComponent(
           rendered = cachedRender;
 
           // CRITICAL: Expand slots even for cached renders
-          // Slot content (children) can change even if props hash matches
           if (rendered != null && typeof rendered !== "boolean") {
             const expanded = expandSlots(rendered, slotContent);
             rendered = expanded !== null ? expanded : rendered;
@@ -237,7 +220,7 @@ export function renderComponent(
           } catch (renderError) {
             const boundary = findErrorBoundary(instance);
             if (boundary) {
-              (boundary as any).captureChildError(instance, { error: renderError });
+              asInternal(boundary).captureChildError(instance, { error: renderError });
               rendered = null;
             } else {
               logger.error(
@@ -248,8 +231,6 @@ export function renderComponent(
             }
           }
           // CRITICAL: Expand slots into their actual content before reconciliation
-          // This prevents 1:many VNode-to-DOM mapping issues during diffing
-          // Always expand slots, even if no slot content was passed (to handle empty slots)
           if (rendered != null && typeof rendered !== "boolean") {
             const expanded = expandSlots(rendered, slotContent);
             rendered = expanded !== null ? expanded : rendered;
@@ -263,45 +244,35 @@ export function renderComponent(
 
         setCurrentComponentInstance(prevInstance);
 
-        const oldVNode = (instance as any)._vnode;
-        let oldDom = (instance as any)._domNode || null;
-        if (!oldDom && oldVNode && (oldVNode as any).dom) {
-          oldDom = (oldVNode as any).dom;
+        const ci = asInternal(instance);
+        const oldVNode = ci._vnode;
+        let oldDom = ci._domNode || null;
+        const oldVNodeBase = vb(oldVNode);
+        if (!oldDom && oldVNodeBase?.dom) {
+          oldDom = oldVNodeBase.dom as Node | null;
         }
-        if (
-          !oldDom &&
-          (instance as any).__componentVNode &&
-          ((instance as any).__componentVNode as any).dom
-        ) {
-          oldDom = ((instance as any).__componentVNode as any).dom;
+        const compVNodeBase = vb(ci.__componentVNode);
+        if (!oldDom && compVNodeBase?.dom) {
+          oldDom = compVNodeBase.dom as Node | null;
         }
 
         if (rendered != null && typeof rendered !== "boolean") {
-          (instance as any)._vnode = rendered;
+          ci._vnode = rendered;
         }
 
-        if (
-          oldDom &&
-          rendered != null &&
-          typeof rendered !== "boolean" &&
-          typeof rendered === "object"
-        ) {
-          (rendered as any).dom = oldDom;
+        const renderedBase = vb(rendered);
+        if (oldDom && renderedBase) {
+          renderedBase.dom = oldDom as HTMLElement;
         }
         if (oldDom) {
-          (instance as any)._domNode = oldDom;
+          ci._domNode = oldDom;
         }
-        if (
-          rendered === null ||
-          rendered === undefined ||
-          typeof rendered === "boolean"
-        ) {
+
+        if (rendered === null || rendered === undefined || typeof rendered === "boolean") {
           if (rendered === null || rendered === undefined) {
             console.debug(
               `[Renderer] Component ${instance.constructor.name} returned null/undefined from render(), returning placeholder to maintain instance tracking`,
             );
-            // CRITICAL: Return a hidden element instead of null/[] to prevent renderer issues
-            // This ensures the component instance is still tracked as an object and has a persistent DOM anchor
             return {
               type: "span",
               props: { style: "display: none;", "data-swiss-null": "true" },
@@ -311,9 +282,9 @@ export function renderComponent(
           return rendered;
         }
 
-        if (typeof rendered === "object") {
+        if (renderedBase) {
           try {
-            (rendered as any).__componentInstance = instance;
+            renderedBase.__componentInstance = instance;
           } catch (error) {
             console.error(
               `[Renderer] Failed to set __componentInstance on rendered vnode:`,
@@ -332,7 +303,7 @@ export function renderComponent(
         }
         return rendered;
       } else {
-        return untrack(() => Component(props));
+        return untrack(() => (Component as (props: Record<string, unknown>) => VNode)(props));
       }
     }
 

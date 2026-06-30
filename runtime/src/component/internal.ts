@@ -28,12 +28,21 @@ export interface ComponentInternals {
   _children: SwissComponent[];
   _mounting: boolean;
   _skipNextUpdate: boolean;
+  _signalCommitPending: boolean;
+  _initialized: boolean;
+  /** Renderer-internal: set to true when the instance has been fully init'd by the DOM renderer */
+  __initialized: boolean;
+  /** Renderer-internal: the last component VNode that rendered this instance */
+  __componentVNode: VNode | null;
+  /** Renderer-internal: key from the VNode used to mount this instance, for reconciliation */
+  __vnodeKey?: string | number;
   _swissEventHandlers?: SwissEventHandlerEntry[];
   state: Record<string, unknown>;
   clearCapabilityCache(): void;
   initialize(): void;
   executeHookPhase(phase: string): Promise<void>;
   captureError(error: unknown, phase: string): void;
+  captureChildError(child: SwissComponent, errorInfo: unknown): boolean;
   commitVNode(vnode: VNode): void;
   safeRender(): VNode | null;
   clearEffects(): void;

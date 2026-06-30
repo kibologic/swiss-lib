@@ -4,8 +4,6 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 /**
  * Internal DOM reference propagation and transfer helpers.
  * These functions are NOT part of the public API — they support the update
@@ -17,6 +15,7 @@
 
 import type { SwissComponent } from "../component/component.js";
 import type { VNode, VElement, ComponentVNode, ComponentType } from "../vdom/vdom.js";
+import type { VNodeBase } from "../vdom/types/index.js";
 import {
   vnodeMetadata,
   componentInstances,
@@ -46,6 +45,11 @@ type CanUpdateInPlaceFn = (
 ) => boolean;
 type CleanupNodeFn = (node: Node) => void;
 
+function vb(vnode: VNode | null | undefined): VNodeBase | null {
+  if (vnode == null || typeof vnode !== "object") return null;
+  return vnode as unknown as VNodeBase;
+}
+
 // ─── applyRenderedOutput ─────────────────────────────────────────────────────
 
 export function applyRenderedOutput(
@@ -69,8 +73,9 @@ export function applyRenderedOutput(
   }
 
   // Link internal tree root to the host DOM.
-  if (typeof newRendered === "object" && newRendered !== null) {
-    (newRendered as any).dom = hostDom;
+  const newRenderedBase = vb(newRendered);
+  if (newRenderedBase) {
+    newRenderedBase.dom = hostDom;
   }
 
   // Preserve identity across renders.
@@ -110,73 +115,57 @@ export function transferDOMReferencesFromOldTree(
 ): void {
   if (!newVNode || typeof newVNode === "boolean" || !oldVNode) return;
 
-  // Prevent infinite recursion
   if (typeof newVNode === "object" && newVNode !== null) {
     if (visited.has(newVNode)) return;
     visited.add(newVNode);
   }
 
-  // Transfer DOM reference from old to new
-  if (
-    typeof oldVNode === "object" &&
-    oldVNode !== null &&
-    (oldVNode as any).dom
-  ) {
-    if (typeof newVNode === "object" && newVNode !== null) {
-      (newVNode as any).dom = (oldVNode as any).dom;
+  const oldBase = vb(oldVNode as VNode);
+  const newBase = vb(newVNode);
 
-      // For component VNodes, also transfer instance reference
-      if (
-        isComponentVNode(newVNode) &&
-        isComponentVNode(oldVNode) &&
-        newVNode.type === oldVNode.type
-      ) {
-        if ((oldVNode as any).__componentInstance) {
-          (newVNode as any).__componentInstance = (
-            oldVNode as any
-          ).__componentInstance;
-        }
+  if (oldBase?.dom && newBase) {
+    newBase.dom = oldBase.dom;
+
+    if (
+      isComponentVNode(newVNode) &&
+      isComponentVNode(oldVNode as VNode) &&
+      newVNode.type === (oldVNode as ComponentVNode).type
+    ) {
+      if (oldBase.__componentInstance) {
+        newBase.__componentInstance = oldBase.__componentInstance;
       }
     }
   }
 
-  // Recursively transfer for element VNodes with children
-  if (isElementVNode(newVNode) && isElementVNode(oldVNode)) {
+  if (isElementVNode(newVNode) && isElementVNode(oldVNode as VNode)) {
+    const oldElement = oldVNode as VElement;
     const newChildren = Array.isArray(newVNode.children)
       ? newVNode.children
       : newVNode.children
         ? [newVNode.children]
         : [];
-    const oldChildren = Array.isArray(oldVNode.children)
-      ? oldVNode.children
-      : oldVNode.children
-        ? [oldVNode.children]
+    const oldChildren = Array.isArray(oldElement.children)
+      ? oldElement.children
+      : oldElement.children
+        ? [oldElement.children]
         : [];
 
-    // Match children by index first (for same structure)
     for (let i = 0; i < newChildren.length && i < oldChildren.length; i++) {
       const newChild = newChildren[i];
       const oldChild = oldChildren[i];
       if (newChild && oldChild) {
-        // Get DOM node for this child from the old tree
         let childDom: Node | undefined;
-        if (
-          typeof oldChild === "object" &&
-          oldChild !== null &&
-          (oldChild as any).dom
-        ) {
-          childDom = (oldChild as any).dom;
-        } else if (
-          domNode instanceof HTMLElement &&
-          i < domNode.childNodes.length
-        ) {
+        const oldChildBase = vb(oldChild as VNode);
+        if (oldChildBase?.dom) {
+          childDom = oldChildBase.dom as Node;
+        } else if (domNode instanceof HTMLElement && i < domNode.childNodes.length) {
           childDom = domNode.childNodes[i];
         }
 
         if (childDom) {
           transferDOMReferencesFromOldTree(
-            newChild,
-            oldChild,
+            newChild as VNode,
+            oldChild as VNode,
             childDom,
             visited,
           );
@@ -184,9 +173,6 @@ export function transferDOMReferencesFromOldTree(
       }
     }
 
-    // CRITICAL FIX: Also match components by type across different structures
-    // This handles cases where parent component types differ but nested components are the same
-    // (e.g., LoginPage → ForgotPasswordPage, both use Stack, Card, Input, Button)
     if (domNode instanceof HTMLElement) {
       const searchForMatchingComponent = (
         element: HTMLElement,
@@ -210,43 +196,42 @@ export function transferDOMReferencesFromOldTree(
         return null;
       };
 
-      // For each new component child, try to find a matching old component by type
       for (const newChild of newChildren) {
         if (
           newChild &&
-          isComponentVNode(newChild) &&
+          isComponentVNode(newChild as VNode) &&
           typeof newChild === "object" &&
           newChild !== null
         ) {
-          // Check if already matched by index
+          const newChildCV = newChild as ComponentVNode;
           const alreadyMatched = oldChildren.some((oldChild, idx) => {
             if (
               oldChild &&
-              isComponentVNode(oldChild) &&
-              oldChild.type === newChild.type
+              isComponentVNode(oldChild as VNode) &&
+              (oldChild as ComponentVNode).type === newChildCV.type
             ) {
-              const oldChildDom = (oldChild as any).dom;
+              const oldChildBase = vb(oldChild as VNode);
               if (
-                oldChildDom &&
+                oldChildBase?.dom &&
                 idx < newChildren.length &&
                 newChildren[idx] === newChild
               ) {
-                return true; // Already matched by index
+                return true;
               }
             }
             return false;
           });
 
           if (!alreadyMatched) {
-            // Search DOM tree for matching component type
-            const found = searchForMatchingComponent(domNode, newChild.type);
+            const found = searchForMatchingComponent(domNode, newChildCV.type);
             if (found && found.vnode) {
-              // Transfer instance and DOM reference
-              (newChild as any).__componentInstance = found.instance;
-              (newChild as any).dom = found.dom;
-              // Recursively transfer for the component's rendered tree
+              const newChildBase = vb(newChild as VNode);
+              if (newChildBase) {
+                newChildBase.__componentInstance = found.instance;
+                newChildBase.dom = found.dom;
+              }
               transferDOMReferencesFromOldTree(
-                newChild,
+                newChild as VNode,
                 found.vnode,
                 found.dom,
                 visited,
@@ -258,11 +243,7 @@ export function transferDOMReferencesFromOldTree(
     }
   }
 
-  // CRITICAL FIX: When parent component types differ (e.g., LoginPage → ForgotPasswordPage),
-  // still try to match nested components by type to preserve component instances
-  // This allows Stack, Card, Input, Button components to be reused across page changes
   if (isComponentVNode(newVNode) && domNode instanceof HTMLElement) {
-    // Search the DOM tree for matching component types
     const searchForMatchingComponent = (
       element: HTMLElement,
       targetType: ComponentType,
@@ -280,38 +261,23 @@ export function transferDOMReferencesFromOldTree(
       return null;
     };
 
-    // If this component type matches, transfer instance
-    if (isComponentVNode(oldVNode) && newVNode.type === oldVNode.type) {
-      if ((oldVNode as any).__componentInstance) {
-        if (typeof newVNode === "object" && newVNode !== null) {
-          (newVNode as any).__componentInstance = (
-            oldVNode as any
-          ).__componentInstance;
-        }
+    if (isComponentVNode(oldVNode as VNode) && newVNode.type === (oldVNode as ComponentVNode).type) {
+      if (oldBase?.__componentInstance && newBase) {
+        newBase.__componentInstance = oldBase.__componentInstance;
       }
     } else {
-      // Parent types differ - search DOM for matching component instance
       const found = searchForMatchingComponent(domNode, newVNode.type);
-      if (found && typeof newVNode === "object" && newVNode !== null) {
-        (newVNode as any).__componentInstance = found.instance;
-        (newVNode as any).dom = found.dom;
+      if (found && newBase) {
+        newBase.__componentInstance = found.instance;
+        newBase.dom = found.dom;
       }
     }
 
-    // Recursively transfer for component's rendered tree
-    // Get the old rendered tree from metadata
     const oldRendered = vnodeMetadata.get(domNode);
     if (oldRendered) {
-      const newRendered = (newVNode as any).__rendered;
+      const newRendered = newBase?.__rendered;
       if (newRendered && oldRendered) {
-        // Transfer references from old rendered tree to new rendered tree
-        // This allows nested components to be reused even when parent changes
-        transferDOMReferencesFromOldTree(
-          newRendered,
-          oldRendered,
-          domNode,
-          visited,
-        );
+        transferDOMReferencesFromOldTree(newRendered, oldRendered, domNode, visited);
       }
     }
   }
@@ -321,10 +287,6 @@ export function transferDOMReferencesFromOldTree(
 
 /**
  * Propagates DOM references from the actual DOM tree to the VNode tree.
- * This ensures that nested VNodes have their .dom property set, which is
- * critical for reconciliation to match existing DOM nodes.
- *
- * Uses a visited set to prevent infinite recursion on circular structures.
  */
 export function propagateDOMReferences(
   vnode: VNode,
@@ -333,19 +295,14 @@ export function propagateDOMReferences(
 ): void {
   if (!vnode || typeof vnode === "boolean") return;
 
-  // Prevent infinite recursion (only track object VNodes, strings are immutable)
   if (typeof vnode === "object" && vnode !== null) {
     if (visited.has(vnode)) return;
     visited.add(vnode);
   }
 
   if (isElementVNode(vnode)) {
-    // Set DOM reference on this element VNode
-    if (typeof vnode === "object" && vnode !== null) {
-      (vnode as any).dom = domNode;
-    }
+    vnode.dom = domNode;
 
-    // Recursively propagate to children (only for element VNodes)
     if (vnode.children && domNode instanceof HTMLElement) {
       const children = Array.isArray(vnode.children)
         ? vnode.children
@@ -356,20 +313,16 @@ export function propagateDOMReferences(
       for (const childVNode of children) {
         if (childVNode == null || typeof childVNode === "boolean") continue;
 
-        // Find matching DOM node
         let matchingDom: Node | null = null;
 
-        // Try to match by ID first (search only within current DOM node)
         if (isElementVNode(childVNode) && childVNode.props?.id) {
           const id = String(childVNode.props.id);
-          // Search only direct children and their descendants
           for (const child of Array.from(domNode.childNodes)) {
             if (child instanceof HTMLElement) {
               if (child.id === id) {
                 matchingDom = child;
                 break;
               }
-              // Also check descendants
               const found = child.querySelector(`#${CSS.escape(id)}`);
               if (found) {
                 matchingDom = found;
@@ -379,7 +332,6 @@ export function propagateDOMReferences(
           }
         }
 
-        // If no ID match, try by index and type
         if (!matchingDom && domChildIndex < domChildren.length) {
           const candidateDom = domChildren[domChildIndex];
           if (isTextVNode(childVNode)) {
@@ -397,39 +349,25 @@ export function propagateDOMReferences(
               domChildIndex++;
             }
           } else if (isComponentVNode(childVNode)) {
-            // For components, the DOM node is the component's host element
             if (candidateDom.nodeType === Node.ELEMENT_NODE) {
               matchingDom = candidateDom;
               domChildIndex++;
-              // Set DOM reference on component VNode, but don't recurse into its rendered tree
-              // (that's already handled by updateComponentNode)
-              if (typeof childVNode === "object" && childVNode !== null) {
-                (childVNode as any).dom = matchingDom;
-              }
+              childVNode.dom = matchingDom;
             }
           }
         }
 
-        // Only recurse for element VNodes (not components - their rendered trees are handled separately)
         if (matchingDom && isElementVNode(childVNode)) {
           propagateDOMReferences(childVNode, matchingDom, visited);
         }
       }
     }
   } else if (isComponentVNode(vnode)) {
-    // For component VNodes, just set the DOM reference
-    // Don't recurse into rendered tree - that's already handled by updateComponentNode
-    if (typeof vnode === "object" && vnode !== null) {
-      (vnode as any).dom = domNode;
-    }
+    vnode.dom = domNode;
   } else if (isTextVNode(vnode)) {
-    // Text nodes
-    if (
-      typeof vnode === "object" &&
-      vnode !== null &&
-      domNode.nodeType === Node.TEXT_NODE
-    ) {
-      (vnode as any).dom = domNode;
+    const vnodeBase = vb(vnode);
+    if (vnodeBase && domNode.nodeType === Node.TEXT_NODE) {
+      vnodeBase.dom = domNode;
     }
   }
 }

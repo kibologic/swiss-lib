@@ -4,8 +4,6 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 /**
  * Public DOM update entry-points consumed by renderer.ts.
  *
@@ -22,6 +20,8 @@
 
 import type { SwissComponent } from "../component/component.js";
 import type { VNode, VElement, ComponentVNode } from "../vdom/vdom.js";
+import type { VNodeBase } from "../vdom/types/index.js";
+import { asInternal } from "../component/internal.js";
 import {
   isSignal,
   isTextVNode,
@@ -159,30 +159,22 @@ export function updateElementNode(
       if (oldChild == null || typeof oldChild === "boolean") return;
 
       // If old child already has DOM reference, keep it
-      if (
-        typeof oldChild === "object" &&
-        oldChild !== null &&
-        (oldChild as any).dom
-      ) {
-        return;
-      }
+      const oldChildBase = typeof oldChild === "object" && oldChild !== null
+        ? (oldChild as unknown as VNodeBase)
+        : null;
+      if (oldChildBase?.dom) return;
 
       // Try to restore from metadata first
       if (index < domChildren.length) {
         const childDom = domChildren[index];
         const metadataVNode = vnodeMetadata.get(childDom);
-        if (
-          metadataVNode &&
-          typeof oldChild === "object" &&
-          oldChild !== null
-        ) {
-          // If metadata has a VNode, check if it matches
+        if (metadataVNode && oldChildBase) {
           if (
             isComponentVNode(oldChild) &&
             isComponentVNode(metadataVNode) &&
             oldChild.type === metadataVNode.type
           ) {
-            (oldChild as any).dom = childDom;
+            oldChild.dom = childDom;
             return;
           }
           if (
@@ -190,7 +182,7 @@ export function updateElementNode(
             isElementVNode(metadataVNode) &&
             oldChild.type === metadataVNode.type
           ) {
-            (oldChild as any).dom = childDom;
+            oldChild.dom = childDom;
             return;
           }
         }
@@ -198,21 +190,17 @@ export function updateElementNode(
         // Fallback: match by type and position
         if (isElementVNode(oldChild) && childDom instanceof HTMLElement) {
           if (childDom.tagName.toLowerCase() === oldChild.type.toLowerCase()) {
-            (oldChild as any).dom = childDom;
+            oldChild.dom = childDom;
           }
-        } else if (
-          isComponentVNode(oldChild) &&
-          childDom instanceof HTMLElement
-        ) {
-          // Prefer host when it matches type (parent that rendered this root, e.g. EventBusProvider)
+        } else if (isComponentVNode(oldChild) && childDom instanceof HTMLElement) {
           const direct = componentInstances.get(childDom);
           const host = domToHostComponent.get(childDom);
           const instance =
             (host && host.constructor === oldChild.type ? host : null) ||
             (direct && direct.constructor === oldChild.type ? direct : null);
           if (instance) {
-            (oldChild as any).dom = childDom;
-            (oldChild as any).__componentInstance = instance;
+            oldChild.dom = childDom;
+            oldChild.__componentInstance = instance;
           }
         }
       }
@@ -232,32 +220,28 @@ export function updateElementNode(
   const domChildren = Array.from(dom.childNodes);
   newChildren.forEach((newChild, i) => {
     if (newChild == null || typeof newChild === "boolean") return;
-    if (
-      typeof newChild === "object" &&
-      newChild !== null &&
-      (newChild as any).dom
-    )
-      return;
+    const newChildBase = typeof newChild === "object" && newChild !== null
+      ? (newChild as unknown as VNodeBase)
+      : null;
+    if (newChildBase?.dom) return;
     if (i >= domChildren.length) return;
     const childDom = domChildren[i];
     if (isComponentVNode(newChild) && childDom instanceof HTMLElement) {
-      // Prefer host (parent that rendered this root) when it matches type - fixes root update when parent renders single child component (e.g. EventBusProvider → Shell)
       const direct = componentInstances.get(childDom);
       const host = domToHostComponent.get(childDom);
       const instance =
         (host && host.constructor === newChild.type ? host : null) ||
         (direct && direct.constructor === newChild.type ? direct : null);
       if (instance) {
-        (newChild as any).dom = childDom;
-        (newChild as any).__componentInstance = instance;
+        newChild.dom = childDom;
+        newChild.__componentInstance = instance;
       }
     } else if (isElementVNode(newChild) && childDom instanceof HTMLElement) {
       if (
         childDom.nodeType === Node.ELEMENT_NODE &&
-        (childDom as HTMLElement).tagName.toLowerCase() ===
-          (newChild as any).type?.toLowerCase()
+        childDom.tagName.toLowerCase() === newChild.type.toLowerCase()
       ) {
-        (newChild as any).dom = childDom;
+        newChild.dom = childDom;
       }
     }
   });
@@ -271,15 +255,10 @@ export function updateElementNode(
     reconcileChildrenFn(dom, oldChildren, newChildren);
   }
 
-  // CRITICAL: Explicitly transfer identity - the newVNode now represents this specific DOM node
-  // If this link is missing, the next render cycle won't know this node exists
-  if (typeof vnode === "object" && vnode !== null) {
-    (vnode as any).dom = dom;
-  }
+  vnode.dom = dom;
 
-  // Also preserve the key if it exists on the old VNode
   if (oldVNode && isElementVNode(oldVNode) && oldVNode.key !== undefined) {
-    (vnode as any).key = oldVNode.key;
+    vnode.key = oldVNode.key;
   }
 }
 
@@ -297,8 +276,7 @@ export function updateComponentNode(
 ) {
   const oldRendered = vnodeMetadata.get(dom);
 
-  let existingInstance: SwissComponent | undefined = (vnode as any)
-    .__componentInstance;
+  let existingInstance: SwissComponent | undefined = vnode.__componentInstance;
   if (!(existingInstance && existingInstance.constructor === vnode.type)) {
     existingInstance = undefined;
   }
@@ -311,47 +289,41 @@ export function updateComponentNode(
   }
 
   if (!existingInstance && oldVNode && isComponentVNode(oldVNode)) {
-    const fromOld = (oldVNode as any).__componentInstance;
+    const fromOld = oldVNode.__componentInstance;
     if (fromOld && fromOld.constructor === vnode.type) {
       existingInstance = fromOld;
     }
   }
 
   if (!existingInstance && oldRendered) {
-    const fromRendered = (oldRendered as any).__componentInstance;
+    const fromRendered = (oldRendered as unknown as VNodeBase).__componentInstance;
     if (fromRendered && fromRendered.constructor === vnode.type) {
       existingInstance = fromRendered;
     }
   }
 
   if (existingInstance && existingInstance.constructor === vnode.type) {
-    (existingInstance as any)._initialized = true;
-    (existingInstance as any).__initialized = true;
+    const eci = asInternal(existingInstance);
+    eci._initialized = true;
+    eci.__initialized = true;
     if (vnode.props) {
       existingInstance.props = vnode.props;
     }
     clearRenderCache(existingInstance);
 
-    if (typeof vnode === "object" && vnode !== null) {
-      (vnode as any).__componentInstance = existingInstance;
-      (vnode as any).dom = dom;
-    }
+    vnode.__componentInstance = existingInstance;
+    vnode.dom = dom;
 
-    const preservedDomNode = (existingInstance as any)._domNode || dom;
+    const preservedDomNode = eci._domNode || dom;
     const newRendered = renderComponentFn(vnode, existingInstance);
-    const newInstance =
-      newRendered && typeof newRendered === "object" && newRendered !== null
-        ? (newRendered as any).__componentInstance
-        : undefined;
+    const newInstance = (newRendered as unknown as VNodeBase | null)?.__componentInstance;
     if (newInstance) {
+      const nci = asInternal(newInstance);
       componentInstances.set(dom, newInstance);
-      if (typeof vnode === "object" && vnode !== null) {
-        (vnode as any).__componentInstance = newInstance;
-      }
-      if (newInstance._vnode) {
-        (newInstance._vnode as any).dom = dom;
-      }
-      (newInstance as any)._domNode = preservedDomNode || dom;
+      vnode.__componentInstance = newInstance;
+      const oldVNodeBase = nci._vnode as unknown as VNodeBase | null;
+      if (oldVNodeBase) oldVNodeBase.dom = dom;
+      nci._domNode = preservedDomNode || dom;
     }
 
     applyRenderedOutput(
@@ -369,18 +341,14 @@ export function updateComponentNode(
   }
 
   if (oldVNode && isComponentVNode(oldVNode) && oldVNode.type === vnode.type) {
-    if (existingInstance && typeof vnode === "object" && vnode !== null) {
-      (vnode as any).__componentInstance = existingInstance;
+    if (existingInstance) {
+      vnode.__componentInstance = existingInstance;
     }
 
-    // CRITICAL FIX: Preserve DOM reference from oldVNode IMMEDIATELY
-    // This ensures the new VNode knows it owns the existing DOM element
-    if (typeof vnode === "object" && vnode !== null) {
-      (vnode as any).dom = (oldVNode as any).dom || dom;
-    }
+    vnode.dom = oldVNode.dom || dom;
 
     const preservedDomNode = existingInstance
-      ? (existingInstance as any)._domNode || dom
+      ? asInternal(existingInstance)._domNode || dom
       : dom;
 
     if (existingInstance) {
@@ -391,19 +359,14 @@ export function updateComponentNode(
     }
     const newRendered = renderComponentFn(vnode, existingInstance);
 
-    const newInstance =
-      newRendered && typeof newRendered === "object" && newRendered !== null
-        ? (newRendered as any).__componentInstance
-        : undefined;
+    const newInstance = (newRendered as unknown as VNodeBase | null)?.__componentInstance;
     if (newInstance) {
+      const nci = asInternal(newInstance);
       componentInstances.set(dom, newInstance);
-      if (typeof vnode === "object" && vnode !== null) {
-        (vnode as any).__componentInstance = newInstance;
-      }
-      if (newInstance._vnode) {
-        (newInstance._vnode as any).dom = dom;
-      }
-      (newInstance as any)._domNode = preservedDomNode || dom;
+      vnode.__componentInstance = newInstance;
+      const oldVNodeBase = nci._vnode as unknown as VNodeBase | null;
+      if (oldVNodeBase) oldVNodeBase.dom = dom;
+      nci._domNode = preservedDomNode || dom;
     }
 
     applyRenderedOutput(
