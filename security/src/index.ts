@@ -5,7 +5,7 @@
  */
 
 // Public barrel: explicit re-exports only (no wildcards)
-export { InMemorySecurityEngine, getDefaultSecurityEngine } from "./engine.js";
+export { InMemorySecurityEngine, getDefaultSecurityEngine, sanitizeString } from "./engine.js";
 export type {
   AuditEntry,
   SecurityContext,

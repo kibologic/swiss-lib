@@ -173,6 +173,37 @@ export class InMemorySecurityEngine implements SecurityGateway {
     return undefined;
   }
 
+  /**
+   * Sanitize a string according to the given level declared in a policy's
+   * `inputValidation.sanitization` field.
+   *
+   * - `"none"`:   no-op, returns the input unchanged.
+   * - `"basic"`:  removes `<script>` blocks, `javascript:` protocol references,
+   *               and inline event-handler attributes (`on*="…"`). Other HTML
+   *               tags are left in place (suitable for rich-text with trusted HTML).
+   * - `"strict"`: strips ALL HTML tags and returns plain text only. Safe for
+   *               contexts where the value will be rendered as text content.
+   */
+  sanitizeInput(input: string, level: "none" | "basic" | "strict"): string {
+    if (level === "none" || typeof input !== "string") return input;
+    if (level === "strict") {
+      // Strip all HTML tags; decode common entities so plain text is readable.
+      return input
+        .replace(/<[^>]*>/g, '')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&amp;/g, '&')
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'");
+    }
+    // "basic": remove script blocks, javascript: href/src, and on* attributes.
+    return input
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+      .replace(/\bhref\s*=\s*["']?\s*javascript:[^"'\s>]*/gi, 'href="#"')
+      .replace(/\bsrc\s*=\s*["']?\s*javascript:[^"'\s>]*/gi, 'src=""')
+      .replace(/\bon\w+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '');
+  }
+
   private deny(
     target: string,
     ctx: SecurityContext,
@@ -196,4 +227,9 @@ let _defaultEngine: InMemorySecurityEngine | null = null;
 export function getDefaultSecurityEngine(): InMemorySecurityEngine {
   if (!_defaultEngine) _defaultEngine = new InMemorySecurityEngine();
   return _defaultEngine;
+}
+
+/** Standalone sanitize helper — use when you only need sanitization without a full engine instance. */
+export function sanitizeString(input: string, level: "none" | "basic" | "strict"): string {
+  return getDefaultSecurityEngine().sanitizeInput(input, level);
 }

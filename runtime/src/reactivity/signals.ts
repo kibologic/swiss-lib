@@ -272,10 +272,15 @@ export function bindToElement(
     }, { signal: options.signal });
   }
 
-  // Signal -> Element
-  sig.subscribe(() => {
+  // Signal -> Element.
+  // Unsubscribe when the caller provides an AbortSignal (e.g. from component teardown).
+  // Without cleanup the subscription outlives the element and leaks memory.
+  const unsub = sig.subscribe(() => {
     el[property] = sig.value as unknown;
   });
+  if (options.signal) {
+    options.signal.addEventListener('abort', unsub, { once: true });
+  }
 }
 
 /**
