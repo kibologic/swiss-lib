@@ -1,4 +1,5 @@
 import { matchRoute, type RouteMatch } from "./matcher.js";
+import type { ComponentType } from "@swissjs/core";
 
 /**
  * Typed context provided to route loader functions.
@@ -24,13 +25,10 @@ export type LoaderFunction = (ctx: LoaderContext) => Promise<unknown>;
 export type ActionFunction = (ctx: ActionContext) => Promise<unknown>;
 
 /**
- * Represents any value that can be used as a route component:
- * a class constructor, a functional component, or a plain object stub.
+ * Represents any value that can be used as a route component.
+ * Aliased to ComponentType for full compatibility with createElement.
  */
-export type ComponentLike =
-  | (new (...args: unknown[]) => unknown)
-  | ((...args: unknown[]) => unknown)
-  | { [key: string]: unknown };
+export type ComponentLike = ComponentType;
 
 export interface Route {
   path: string;

@@ -76,7 +76,7 @@ function buildRouteTree(matches: RouteMatch[], data: Record<string, unknown>): V
     const match = matches[i];
     if (match.route.layout) {
       const props = mergeProps(match, data);
-      tree = createElement(match.route.layout as Parameters<typeof createElement>[0], { ...props, children: [tree] }) as VNode;
+      tree = createElement(match.route.layout, { ...props, children: [tree] }) as VNode;
     }
   }
 
@@ -89,14 +89,14 @@ function buildRouteTree(matches: RouteMatch[], data: Record<string, unknown>): V
     // We rebuild: leaf layout wraps just the leaf component
     const leafProps = mergeProps(leafMatch, data);
     const leafComponent = buildComponentVNode(leafMatch, data);
-    tree = createElement(leafMatch.route.layout as Parameters<typeof createElement>[0], { ...leafProps, children: [leafComponent] }) as VNode;
+    tree = createElement(leafMatch.route.layout, { ...leafProps, children: [leafComponent] }) as VNode;
 
     // Then outer layouts wrap that
     for (let i = matches.length - 2; i >= 0; i--) {
       const match = matches[i];
       if (match.route.layout) {
         const props = mergeProps(match, data);
-        tree = createElement(match.route.layout as Parameters<typeof createElement>[0], { ...props, children: [tree] }) as VNode;
+        tree = createElement(match.route.layout, { ...props, children: [tree] }) as VNode;
       }
     }
   }
@@ -106,11 +106,11 @@ function buildRouteTree(matches: RouteMatch[], data: Record<string, unknown>): V
 
 function buildComponentVNode(match: RouteMatch, data: Record<string, unknown>): VNode {
   const props = mergeProps(match, data);
-  return createElement(match.route.component as Parameters<typeof createElement>[0], props) as VNode;
+  return createElement(match.route.component, props) as VNode;
 }
 
 function mergeProps(match: RouteMatch, data: Record<string, unknown>): Record<string, unknown> {
-  const loaderData = data[match.route.path] ?? {};
+  const loaderData = (data[match.route.path] ?? {}) as Record<string, unknown>;
   return { ...match.params, ...loaderData };
 }
 
