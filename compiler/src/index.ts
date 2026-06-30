@@ -11,3 +11,12 @@ export {
     swissSyntaxTransformer,
 } from "./transformers/swiss-syntax.js";
 export type { CompileOptions } from "./types.js";
+export { parseTemplate } from "./template-parser.js";
+export type {
+    TemplateAST,
+    TemplateNode,
+    TemplateNodeKind,
+    TemplateParseError,
+    TemplatePropValue,
+    Position,
+} from "./template-parser.js";
