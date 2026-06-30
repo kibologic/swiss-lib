@@ -1,3 +1,4 @@
+export type { MiddlewareRequest, MiddlewareResponse, MiddlewareResponseChain, NextFunction, MiddlewareFn } from './types.js';
 export { createRateLimitMiddleware, type RateLimitMiddlewareOptions } from './rate-limit-middleware.js';
 export {
   createValidationMiddleware,
