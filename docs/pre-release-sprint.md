@@ -38,14 +38,14 @@ This sprint strengthens code safety, cleanliness, robustness, and pipeline secur
 ## Phase 2: Security Workflows (SAST, Deps, Secrets, Semgrep) ✅
 
 - [x] ESLint SAST (resolved 2026-06-30 — feature/sast-ci-workflow)
-  - [x] `.eslintrc.sast.cjs` + `lint:sast` script pre-existed
-  - [x] `.github/workflows/sast-eslint.yml` — runs on push/PR
+  - [x] `eslint-plugin-security` / `eslint-plugin-sonarjs` configured in `.eslintrc.sast.cjs`
+  - [x] Root script `lint:sast` in `package.json`; workflow `.github/workflows/sast-eslint.yml` created
 - [x] Dependency audit (resolved 2026-06-30 — feature/security-ci-workflows)
   - [x] `.github/workflows/deps-audit.yml` — weekly + on-push; fails on high/critical CVEs
 - [x] Secrets scanning (resolved 2026-06-30 — feature/security-ci-workflows)
   - [x] `.github/workflows/gitleaks.yml` + `.gitleaks.toml` baseline
 - [x] Semgrep scanning (resolved 2026-06-30 — feature/security-ci-workflows)
-  - [x] `.github/workflows/semgrep.yml` + `.semgrep.yml` — eval, innerHTML, document.write
+  - [x] `.github/workflows/semgrep.yml` + `.semgrep.yml` rules for eval, innerHTML, document.write
 
 ## Phase 3: Policy & File Structure Enforcement ✅
 
@@ -72,10 +72,11 @@ This sprint strengthens code safety, cleanliness, robustness, and pipeline secur
 
 ## Phase 6: Husky Hook Hardening ✅
 
-- [x] Commit-message format enforcement (feature/husky-hooks — `.husky/commit-msg`)
-- [x] Pre-push checks: type-check, lint, tests, policy (`.husky/pre-push`)
-- [x] Pre-commit hook (`.husky/pre-commit`)
-- [x] `.husky/` removed from `.gitignore` so hooks are tracked (root bug fixed)
+- [x] `pre-commit`: runs barrel check, UI format check, lint (feature/husky-hooks — `.husky/pre-commit`)
+- [x] `commit-msg`: enforces conventional commits format `type(scope): description` (`.husky/commit-msg`)
+- [x] `pre-push`: runs lint, type-check, barrel check, policy check (`.husky/pre-push`)
+- [x] `.husky/` removed from `.gitignore` so hooks are tracked in version control
+- [x] Verified no `--no-verify` bypasses in CI workflows
 
 ---
 

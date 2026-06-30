@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+commit_msg=$(cat "$1")
+pattern='^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\([a-z0-9/_-]+\))?: .+'
+if ! echo "$commit_msg" | grep -qE "$pattern"; then
+  echo "ERROR: Commit message must follow conventional commits format."
+  echo "  Expected: type(scope): description"
+  echo "  Example:  fix(renderer): correct focus guard order"
+  exit 1
+fi
