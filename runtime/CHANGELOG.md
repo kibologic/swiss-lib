@@ -1,5 +1,17 @@
 # @swissjs/core
 
+## 1.2.1
+
+### Patch Changes
+
+- fix(security): resolve 24 Dependabot CVEs; bump pnpm to 10.34.4
+
+  Force patched versions for all vulnerable transitive deps via pnpm.overrides: undici, ws, form-data, js-yaml, babel/core, http-proxy-middleware. Update pnpm devDep and packageManager to 10.34.4. Bump @swissjs/cli to 1.0.0.
+
+- Updated dependencies
+  - @swissjs/security@1.2.1
+  - @swissjs/shared@1.2.1
+
 ## 1.2.0
 
 ### Minor Changes
