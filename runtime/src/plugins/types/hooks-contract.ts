@@ -20,7 +20,12 @@ export type HookName =
   | 'beforeComponentMount'
   | 'afterComponentMount'
   | 'onCapabilityAudit'
-  | 'runtimeReady';
+  | 'runtimeReady'
+  // Phase 4: extended hook surface
+  | 'onRegisterServices'
+  | 'onCompile'
+  | 'devServerReady'
+  | 'routesDiscovered';
 
 export interface HookPayloads {
   beforePluginRegister: { plugin: { name: string } };
@@ -38,6 +43,15 @@ export interface HookPayloads {
   afterComponentMount: unknown;
   onCapabilityAudit: import('./index.js').AuditResult;
   runtimeReady: { version?: string };
+  // Phase 4: extended hook payloads
+  /** Fired after all plugins have called their init/load; signals service registration window. */
+  onRegisterServices: { pluginNames: string[] };
+  /** Fired by compiler plugins when a file is being compiled. Result replaces code if returned. */
+  onCompile: { code: string; id: string; result?: string };
+  /** Fired when the dev server is ready to accept connections. */
+  devServerReady: { port: number; host: string };
+  /** Fired when the file router has finished discovering routes. */
+  routesDiscovered: { routes: Array<{ path: string; file?: string }> };
 }
 
 export type HookHandler<K extends HookName = HookName> = (payload: HookPayloads[K]) => unknown;
