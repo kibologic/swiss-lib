@@ -11,6 +11,7 @@ export {
   SwissContext,
   createContext,
   useContext,
+  consumeContext,
   cleanupContextSubscriptions,
 } from './context.js';
 export type { SwissContextObject } from './context.js';

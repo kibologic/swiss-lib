@@ -6,25 +6,37 @@
 
 import type { SwissComponent } from "./component.js";
 import type { VNode } from "../vdom/vdom.js";
+import { getCurrentComponentInstance } from "../renderer/storage.js";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 export interface SwissContextObject<T> {
+  /** Wrap a class-component instance to set it as the provider for this context. */
   readonly Provider: (value: T) => (component: SwissComponent) => SwissComponent;
+  /** Create a selector-optimized consumer function bound to a specific component instance. */
   readonly Consumer: <S = T>(
     select?: (value: T | undefined) => S,
     equals?: (a: S, b: S) => boolean,
   ) => (component: SwissComponent) => S | T | undefined;
+  /** Imperatively provide value and return children — use inside class render(). */
   readonly provide: (
     value: T,
     children: VNode | VNode[] | null | undefined,
     component: SwissComponent,
   ) => VNode | VNode[] | null | undefined;
+  /** Functional-style provider component: sets context on component and returns children. */
   readonly ProviderComponent: (
     props: { value: T; children?: VNode | VNode[] | null },
     component: SwissComponent,
   ) => VNode | VNode[] | null | undefined;
+  /** Read context from an explicit component instance. */
   readonly use: (component: SwissComponent) => T | undefined;
+  /**
+   * Read context from the currently rendering component (set by the renderer).
+   * Use inside render() methods or functional component bodies.
+   * Returns defaultValue when called outside a render context.
+   */
+  readonly consume: () => T | undefined;
 }
 
 // ─── Internal cleanup registry ───────────────────────────────────────────────
@@ -145,6 +157,9 @@ export const SwissContext = {
       }
 
       if (subscribeEnabled) {
+        // Only register one unsubscribe closure per (component, context) pair.
+        // Calling Consumer() on every render would otherwise accumulate N closures.
+        const wasSubscribed = subscribers.has(component);
         subscribers.add(component);
         if (!selectors.get(component)) {
           selectors.set(component, new Map());
@@ -158,21 +173,23 @@ export const SwissContext = {
           selections.set(component, { sel: value as unknown, ver: version });
         }
 
-        let set = __ctxRegistrations.get(component);
-        if (!set) {
-          set = new Set();
-          __ctxRegistrations.set(component, set);
-        }
-        const unsubscribe = () => {
-          subscribers.delete(component);
-          const m = selectors.get(component);
-          if (m) {
-            m.delete(key);
-            if (m.size === 0) selectors.delete(component);
+        if (!wasSubscribed) {
+          let set = __ctxRegistrations.get(component);
+          if (!set) {
+            set = new Set();
+            __ctxRegistrations.set(component, set);
           }
-          selections.delete(component);
-        };
-        set.add(unsubscribe);
+          const unsubscribe = () => {
+            subscribers.delete(component);
+            const m = selectors.get(component);
+            if (m) {
+              m.delete(key);
+              if (m.size === 0) selectors.delete(component);
+            }
+            selections.delete(component);
+          };
+          set.add(unsubscribe);
+        }
       }
 
       return value;
@@ -198,7 +215,13 @@ export const SwissContext = {
     const use = (component: SwissComponent): T | undefined =>
       Consumer()(component) as T | undefined;
 
-    return { Provider, Consumer, provide, ProviderComponent, use };
+    const consume = (): T | undefined => {
+      const comp = getCurrentComponentInstance();
+      if (!comp) return defaultValue;
+      return Consumer()(comp) as T | undefined;
+    };
+
+    return { Provider, Consumer, provide, ProviderComponent, use, consume };
   },
 };
 
@@ -222,4 +245,13 @@ export function useContext<T>(
   component: SwissComponent,
 ): T | undefined {
   return ctx.use(component);
+}
+
+/**
+ * Read the current context value from within a render function.
+ * Uses the currently rendering component (set by the renderer) — no explicit
+ * component reference required.
+ */
+export function consumeContext<T>(ctx: SwissContextObject<T>): T | undefined {
+  return ctx.consume();
 }

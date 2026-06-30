@@ -9,9 +9,11 @@ import {
   SwissContext,
   createContext,
   useContext,
+  consumeContext,
   cleanupContextSubscriptions,
   type SwissContextObject,
 } from '../component/context.js';
+import { setCurrentComponentInstance } from '../renderer/storage.js';
 
 // ─── Minimal component stub ───────────────────────────────────────────────────
 
@@ -241,6 +243,97 @@ describe('useContext()', () => {
     const Ctx = createContext<number>(99);
     const comp = new FakeComponent();
     expect(useContext(Ctx, comp as unknown as Comp)).toBe(99);
+  });
+});
+
+// ─── Subscription deduplication ──────────────────────────────────────────────
+
+describe('Subscription deduplication', () => {
+  it('does not accumulate multiple unsubscribe closures across re-renders', () => {
+    const Ctx = SwissContext.create<number>();
+    const [parent, child] = [new FakeComponent(), new FakeComponent()];
+    tree(parent, child);
+    Ctx.Provider(1)(parent as unknown as Comp);
+
+    // Simulate re-renders: call Consumer multiple times on the same component
+    Ctx.Consumer()(child as unknown as Comp);
+    Ctx.Consumer()(child as unknown as Comp);
+    Ctx.Consumer()(child as unknown as Comp);
+
+    // After cleanup, scheduleUpdate should not fire — only one subscription should exist
+    cleanupContextSubscriptions(child as unknown as Comp);
+    child.scheduleUpdate.mockClear();
+    Ctx.Provider(2)(parent as unknown as Comp);
+    expect(child.scheduleUpdate).not.toHaveBeenCalled();
+  });
+
+  it('re-subscribes correctly after cleanup', () => {
+    const Ctx = SwissContext.create<number>();
+    const [parent, child] = [new FakeComponent(), new FakeComponent()];
+    tree(parent, child);
+    Ctx.Provider(1)(parent as unknown as Comp);
+    Ctx.Consumer()(child as unknown as Comp);
+    cleanupContextSubscriptions(child as unknown as Comp);
+
+    // Re-subscribe after cleanup
+    Ctx.Consumer()(child as unknown as Comp);
+    child.scheduleUpdate.mockClear();
+    Ctx.Provider(2)(parent as unknown as Comp);
+    expect(child.scheduleUpdate).toHaveBeenCalledTimes(1);
+  });
+});
+
+// ─── consume() — render-time context access ───────────────────────────────────
+
+describe('ctx.consume()', () => {
+  afterEach(() => {
+    setCurrentComponentInstance(undefined);
+  });
+
+  it('reads context from currently rendering component', () => {
+    const Ctx = SwissContext.create<string>();
+    const [parent, child] = [new FakeComponent(), new FakeComponent()];
+    tree(parent, child);
+    Ctx.Provider('hello')(parent as unknown as Comp);
+
+    setCurrentComponentInstance(child as unknown as import('../component/component.js').SwissComponent);
+    expect(Ctx.consume()).toBe('hello');
+  });
+
+  it('returns defaultValue when called outside a render context', () => {
+    const Ctx = SwissContext.create<number>(42);
+    setCurrentComponentInstance(undefined);
+    expect(Ctx.consume()).toBe(42);
+  });
+
+  it('returns undefined when no current instance and no defaultValue', () => {
+    const Ctx = SwissContext.create<string>();
+    setCurrentComponentInstance(undefined);
+    expect(Ctx.consume()).toBeUndefined();
+  });
+});
+
+// ─── consumeContext() standalone ─────────────────────────────────────────────
+
+describe('consumeContext()', () => {
+  afterEach(() => {
+    setCurrentComponentInstance(undefined);
+  });
+
+  it('delegates to ctx.consume()', () => {
+    const Ctx = SwissContext.create<number>();
+    const [parent, child] = [new FakeComponent(), new FakeComponent()];
+    tree(parent, child);
+    Ctx.Provider(7)(parent as unknown as Comp);
+
+    setCurrentComponentInstance(child as unknown as import('../component/component.js').SwissComponent);
+    expect(consumeContext(Ctx)).toBe(7);
+  });
+
+  it('returns defaultValue when no current instance', () => {
+    const Ctx = createContext<string>('fallback');
+    setCurrentComponentInstance(undefined);
+    expect(consumeContext(Ctx)).toBe('fallback');
   });
 });
 
