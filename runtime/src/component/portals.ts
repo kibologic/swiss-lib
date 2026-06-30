@@ -7,6 +7,7 @@
 import type { VNode } from '../vdom/vdom.js';
 import { renderToDOM } from '../renderer/renderer.js';
 import { getCurrentComponentInstance } from '../renderer/storage.js';
+import { asInternal } from './internal.js';
 
 /**
  * Render a VNode into an arbitrary DOM node outside the component tree.
@@ -30,13 +31,13 @@ export function createPortal(content: VNode, container: HTMLElement): () => void
   // Register on the owning component so unmountComponent() cleans up automatically.
   // _portals already exists on every SwissComponent (Map<HTMLElement, VNode>).
   if (instance) {
-    (instance as any)._portals.set(container, content);
+    asInternal(instance)._portals.set(container, content);
   }
 
   return () => {
     container.innerHTML = '';
     if (instance) {
-      (instance as any)._portals.delete(container);
+      asInternal(instance)._portals.delete(container);
     }
   };
 }
@@ -55,6 +56,6 @@ export function useSlot(name: string): VNode[] {
     }
     return [];
   }
-  const slotMap = (instance as any)._slotContent as Map<string, VNode[]> | undefined;
+  const slotMap = asInternal(instance)._slotContent;
   return slotMap?.get(name) ?? [];
 }

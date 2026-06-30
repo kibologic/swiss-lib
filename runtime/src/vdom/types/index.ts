@@ -21,6 +21,7 @@ export interface VNodeBase {
   parent?: VNode;
   ssrState?: Record<string, unknown>;
   hydrationId?: string;
+  __componentInstance?: SwissComponent;
 }
 
 export interface VElement extends VNodeBase {

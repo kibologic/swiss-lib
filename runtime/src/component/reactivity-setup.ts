@@ -21,7 +21,7 @@ export class ReactivityManager<
   private _reactivitySetup: boolean = false;
   private _effects: Set<EffectDisposer> = new Set();
 
-  constructor(private component: SwissComponent<any, S>) {}
+  constructor(private component: SwissComponent<BaseComponentProps, S>) {}
 
   /**
    * Setup reactivity for the component.
@@ -82,7 +82,7 @@ export class ReactivityManager<
           this.component._signalCommitPending = false;
           const vnode = _pendingVNode;
           _pendingVNode = null;
-          if (vnode !== null) (this.component as any).commitVNode(vnode);
+          if (vnode !== null) this.component.commitVNode(vnode);
         });
       });
     });
@@ -93,7 +93,7 @@ export class ReactivityManager<
    * Ensure state is reactive
    */
   public ensureStateReactive(): void {
-    if (!(this.component.state as any).__reactive) {
+    if (!(this.component.state as Record<string, unknown>)['__reactive']) {
       this.component.state = reactive(this.component.state as S) as S;
     }
   }

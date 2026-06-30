@@ -4,11 +4,11 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { clearRenderCache } from "../renderer/render-cache.js";
 import { type VNode } from "../vdom/vdom.js";
+import type { VNodeBase } from "../vdom/types/index.js";
 import type { SwissComponent } from "./component.js";
+import { asInternal } from "./internal.js";
 import { expandSlots } from "../renderer/component-rendering.js";
 import { logger } from "../utils/logger.js";
 import { saveFocusState, restoreFocusState } from "./focus-guard.js";
@@ -38,16 +38,6 @@ export class UpdateManager {
 
   constructor(private component: SwissComponent) {}
 
-  /**
-   * Schedules an update. Uses immediate run for child components (no container, have _domNode) so toggles feel instant.
-   *
-   * With Signal-backed state, state mutations automatically trigger re-renders via the
-   * render effect in ReactivityManager.setupReactivity(). When both a signal change and
-   * an explicit scheduleUpdate() fire in the same synchronous event handler, the signal
-   * effect sets _signalCommitPending = true before its microtask runs. scheduleUpdate()
-   * detects this and exits early — the signal commit will handle the update, preventing
-   * the two independent reconciliation passes that caused input focus loss (T-005).
-   */
   public scheduleUpdate(): void {
     if (this.component._signalCommitPending) {
       logger.reactivity(`${this.component.constructor.name}: scheduleUpdate absorbed — signal commit already pending`);
@@ -56,7 +46,7 @@ export class UpdateManager {
     if (!this.updateScheduled) {
       clearRenderCache(this.component);
       this.updateScheduled = true;
-      const c = this.component as any;
+      const c = asInternal(this.component);
       const isChildComponent = !c._container && c._domNode && c._domNode instanceof HTMLElement;
       if (isChildComponent) {
         logger.reactivity(`${this.component.constructor.name}: update (immediate, child component)`);
@@ -84,8 +74,10 @@ export class UpdateManager {
   public performUpdate(): void {
     const focusState = saveFocusState();
     try {
-      if ((this.component as any)._skipNextUpdate) {
-        (this.component as any)._skipNextUpdate = false;
+      const c = asInternal(this.component);
+
+      if (c._skipNextUpdate) {
+        c._skipNextUpdate = false;
         return;
       }
 
@@ -112,44 +104,46 @@ export class UpdateManager {
 
       let newVNode = this.component.safeRender();
 
-      const slotContent = (this.component as any)._slotContent as Map<string, VNode[]> | undefined;
+      const slotContent = c._slotContent;
       if (slotContent && slotContent.size > 0 && newVNode != null && typeof newVNode !== "boolean") {
         const expanded = expandSlots(newVNode, slotContent);
         if (expanded !== null) newVNode = expanded;
       }
 
-      let container = (this.component as any)._container;
+      let container = c._container;
 
-      if (!container && (this.component as any)._domNode && (this.component as any)._domNode instanceof HTMLElement) {
+      if (!container && c._domNode && c._domNode instanceof HTMLElement) {
         refreshChildDomNode(this.component);
         logger.updates(`${this.component.constructor.name}: using updateWithDomNode (child component)`);
         if (newVNode === null) return;
         updateWithDomNode(this.component, newVNode);
         const t1 = typeof performance !== "undefined" && performance.now ? performance.now() : Date.now();
-        this.component.executeHookPhase("updated");
+        void this.component.executeHookPhase("updated");
         this.reportUpdateMetrics(t0, t1);
         return;
       }
 
-      if (!container && (this.component as any)._vnode && ((this.component as any)._vnode as any).dom) {
-        const domNode = ((this.component as any)._vnode as any).dom;
+      const vnode = c._vnode;
+      const vnodeBase = typeof vnode === "object" && vnode !== null ? vnode as VNodeBase : null;
+      if (!container && vnodeBase?.dom?.parentElement) {
+        const domNode = vnodeBase.dom;
         if (domNode instanceof HTMLElement && domNode.parentElement) {
           container = domNode.parentElement as HTMLElement;
-          (this.component as any)._container = container;
+          c._container = container;
           logger.updates(`${this.component.constructor.name}: found container from DOM parent`);
         }
       }
 
-      logger.updates(`${this.component.constructor.name}: performUpdate (container=${!!container}, vnode=${!!(this.component as any)._vnode}, dom=${!!(this.component as any)._domNode})`);
+      logger.updates(`${this.component.constructor.name}: performUpdate (container=${!!container}, vnode=${!!c._vnode}, dom=${!!c._domNode})`);
 
       if (newVNode === null) return;
 
       if (container) {
         updateRootComponent(this.component, container, newVNode);
-      } else if ((this.component as any)._domNode) {
+      } else if (c._domNode) {
         updateWithDomNode(this.component, newVNode);
         return;
-      } else if ((this.component as any)._vnode && ((this.component as any)._vnode as any).dom) {
+      } else if (vnodeBase?.dom) {
         updateChildComponent(this.component, newVNode, container);
       } else {
         handleNoUpdatePath(this.component, newVNode);
@@ -157,7 +151,7 @@ export class UpdateManager {
       }
 
       const t1 = typeof performance !== "undefined" && performance.now ? performance.now() : Date.now();
-      this.component.executeHookPhase("updated");
+      void this.component.executeHookPhase("updated");
       this.reportUpdateMetrics(t0, t1);
     } catch (error) {
       this.component.captureError(error, "render");
@@ -172,12 +166,13 @@ export class UpdateManager {
     try {
       const bridge = getDevtoolsBridge();
       const ms = Math.max(0, t1 - t0);
+      const devtoolsId = asInternal(this.component)._devtoolsId;
       let stateSummary: Record<string, unknown> | undefined;
       try { stateSummary = { ...(this.component.state as unknown as Record<string, unknown>) }; } catch { stateSummary = undefined; }
-      try { bridge.onComponentUpdate({ id: (this.component as any)._devtoolsId, stateSummary }); } catch { /* ignore */ }
-      try { bridge.recordEvent({ t: Date.now(), type: "render", msg: `${(this.component as any)._devtoolsId}:${ms}` }); } catch { /* ignore */ }
+      try { bridge.onComponentUpdate({ id: devtoolsId, stateSummary }); } catch { /* ignore */ }
+      try { bridge.recordEvent({ t: Date.now(), type: "render", msg: `${devtoolsId}:${ms}` }); } catch { /* ignore */ }
       if (isTelemetryEnabled() && bridge.recordEventTyped) {
-        try { bridge.recordEventTyped({ t: Date.now(), category: "perf", name: "render", componentId: (this.component as any)._devtoolsId, data: { durationMs: ms } }); } catch { /* ignore */ }
+        try { bridge.recordEventTyped({ t: Date.now(), category: "perf", name: "render", componentId: devtoolsId, data: { durationMs: ms } }); } catch { /* ignore */ }
       }
     } catch (error) {
       logger.warn("Error reporting to devtools:", error instanceof Error ? error.message : error);

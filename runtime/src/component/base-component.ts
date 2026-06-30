@@ -4,10 +4,6 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable no-prototype-builtins */
-
 import { type VNode } from "../vdom/vdom.js";
 import { reactive } from "../reactivity/reactive.js";
 import {
@@ -16,11 +12,6 @@ import {
   type BaseComponentState,
 } from "./types/index.js";
 import { LifecycleManager } from "./lifecycle.js";
-
-// Forward declaration for scheduleUpdate
-declare abstract class ComponentWithUpdate {
-  scheduleUpdate?(): void;
-}
 
 export class BaseComponent<
   P extends BaseComponentProps = BaseComponentProps,
@@ -76,20 +67,13 @@ export class BaseComponent<
     // Set properties individually to trigger Proxy setters (reactivity)
     // The reactive system will automatically trigger effects (which call performUpdate)
     // No need to manually call scheduleUpdate() - that would cause double renders
+    const stateMap = this.state as Record<string, unknown>;
     for (const key in updates) {
-      if (updates.hasOwnProperty(key)) {
-        const oldValue = (this.state as any)[key];
+      if (Object.prototype.hasOwnProperty.call(updates, key)) {
+        const oldValue = stateMap[key];
         const newValue = updates[key];
-
-        // CRITICAL: Skip update if value hasn't actually changed (prevents infinite loops)
-        // Use strict equality check - Proxy setter will also check, but this prevents unnecessary work
-        if (oldValue === newValue) {
-          continue;
-        }
-
-        // This assignment triggers the Proxy setter in reactive.ts
-        // which notifies listeners and triggers the render effect
-        (this.state as any)[key] = newValue;
+        if (oldValue === newValue) continue;
+        stateMap[key] = newValue;
       }
     }
   }

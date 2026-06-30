@@ -85,3 +85,17 @@ export interface EventHandlerOptions {
   throttle?: number;
   debounce?: number;
 }
+
+export interface SwissEventHandlerEntry {
+  eventType: string;
+  method: string;
+  selector?: string;
+  options: {
+    capture?: boolean;
+    once?: boolean;
+    passive?: boolean;
+    preventDefault?: boolean;
+    stopPropagation?: boolean;
+    capability?: string;
+  };
+}

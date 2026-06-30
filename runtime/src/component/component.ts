@@ -12,6 +12,7 @@ import {
   Fragment,
   renderToString,
 } from "../vdom/vdom.js";
+import type { VNodeBase } from "../vdom/types/index.js";
 
 // Reactivity imports
 import { reactive } from "../reactivity/reactive.js";
@@ -105,6 +106,11 @@ export class SwissComponent<
    *  UpdateManager.scheduleUpdate() to absorb redundant explicit update calls that would
    *  otherwise cause a second full reconciliation pass in the same event handler tick. */
   public _signalCommitPending: boolean = false;
+  /** True between the start of mount() and the first DOM commit — blocks commitVNode(). */
+  protected _mounting: boolean = false;
+  /** When true, the next performUpdate() call is a no-op (used to skip programmatic updates
+   *  that would conflict with an already-committed signal-driven render). */
+  protected _skipNextUpdate: boolean = false;
 
   constructor(props: P, options: SwissComponentOptions = {}) {
     super(props);
@@ -133,27 +139,28 @@ export class SwissComponent<
     // Apply decorator metadata (lifecycle, render, etc.)
     const lifecycleMetadata = getLifecycleMetadata(this);
     if (lifecycleMetadata && typeof lifecycleMetadata === "object") {
+      const self = this as Record<string, unknown>;
       if (lifecycleMetadata.mount && Array.isArray(lifecycleMetadata.mount)) {
         lifecycleMetadata.mount.forEach((hook: { method: string }) => {
-          if (hook.method && (this as any)[hook.method]) {
-            this._lifecycle.on("mounted", () => (this as any)[hook.method]());
+          if (hook.method && typeof self[hook.method] === "function") {
+            const fn = self[hook.method] as () => void;
+            this._lifecycle.on("mounted", () => fn.call(this));
           }
         });
       }
       if (lifecycleMetadata.update && Array.isArray(lifecycleMetadata.update)) {
         lifecycleMetadata.update.forEach((hook: { method: string }) => {
-          if (hook.method && (this as any)[hook.method]) {
-            this._lifecycle.on("updated", () => (this as any)[hook.method]());
+          if (hook.method && typeof self[hook.method] === "function") {
+            const fn = self[hook.method] as () => void;
+            this._lifecycle.on("updated", () => fn.call(this));
           }
         });
       }
-      if (
-        lifecycleMetadata.unmount &&
-        Array.isArray(lifecycleMetadata.unmount)
-      ) {
+      if (lifecycleMetadata.unmount && Array.isArray(lifecycleMetadata.unmount)) {
         lifecycleMetadata.unmount.forEach((hook: { method: string }) => {
-          if (hook.method && (this as any)[hook.method]) {
-            this._lifecycle.on("unmounted", () => (this as any)[hook.method]());
+          if (hook.method && typeof self[hook.method] === "function") {
+            const fn = self[hook.method] as () => void;
+            this._lifecycle.on("unmounted", () => fn.call(this));
           }
         });
       }
@@ -164,17 +171,13 @@ export class SwissComponent<
   }
 
   // ===== Lifecycle Hooks =====
-  public handleMount(): void {
-    // Custom mount logic
-  }
+  public handleMount(): void {}
+  public handleUpdate(): void {}
+  public handleDestroy(): void {}
 
-  public handleUpdate(): void {
-    // Custom update logic
-  }
-
-  public handleDestroy(): void {
-    // Custom destroy logic
-  }
+  onMount?(): void | Promise<void>;
+  mounted?(): void;
+  unmounted?(): void;
 
   // ===== Error Boundary System =====
   captureChildError(child: SwissComponent, errorInfo: SwissErrorInfo): boolean {
@@ -327,30 +330,20 @@ export class SwissComponent<
     this.loadPlugins();
     this.validateCapabilities();
 
-    // Hook onMount() into the mounted lifecycle phase if it exists
-    if (typeof (this as any).onMount === "function") {
+    if (typeof this.onMount === "function") {
       this._lifecycle.on("mounted", async () => {
         try {
-          await (this as any).onMount();
+          await this.onMount!();
         } catch (error) {
-          console.error(
-            `[Component] Error in onMount() for ${this.constructor.name}:`,
-            error,
-          );
           this.captureError(error, "mounted");
         }
       });
     }
-    // Swiss syntax: mount { } compiles to private mounted() { } — call it on mounted (not mount(container))
-    if (typeof (this as any).mounted === "function") {
+    if (typeof this.mounted === "function") {
       this._lifecycle.on("mounted", () => {
         try {
-          (this as any).mounted();
+          this.mounted!();
         } catch (error) {
-          console.error(
-            `[Component] Error in mounted() for ${this.constructor.name}:`,
-            error,
-          );
           this.captureError(error, "mounted");
         }
       });
@@ -359,6 +352,10 @@ export class SwissComponent<
 
   public validateCapabilities(): Promise<void> {
     return this.capabilityManager.validateCapabilities();
+  }
+
+  public clearCapabilityCache(): void {
+    this.capabilityManager.clearCache();
   }
 
   // ===== Capabilities (Fenestration) - Delegated =====
@@ -435,7 +432,7 @@ export class SwissComponent<
   }
 
   public commitVNode(newVNode: VNode): void {
-    if ((this as any)._mounting) return;
+    if (this._mounting) return;
     const container = this._container;
     const oldVNode = this._vnode;
 
@@ -443,37 +440,31 @@ export class SwissComponent<
     // dom-creation.ts calls initialize() (and therefore setupReactivity()) WITHOUT going
     // through mount(container), so _container is never set for child components.
     // We must still be able to commit reactive updates using the existing DOM node.
-    const existingDom: Node | null =
-      (oldVNode && (oldVNode as any).dom) || (this as any)._domNode || null;
+    const oldVNodeBase = typeof oldVNode === "object" && oldVNode !== null ? oldVNode as VNodeBase : null;
+    const existingDom: Node | null = (oldVNodeBase?.dom as Node | null) ?? this._domNode ?? null;
 
     if (!container && !existingDom) return;
 
-    if (
-      typeof newVNode === "object" &&
-      newVNode !== null &&
-      "type" in newVNode &&
-      typeof (newVNode as any).type === "function"
-    ) {
-      (newVNode as any).__componentInstance = this;
+    const newVNodeBase = typeof newVNode === "object" && newVNode !== null ? newVNode as VNodeBase : null;
+    if (newVNodeBase && typeof newVNodeBase.type === "function") {
+      newVNodeBase.__componentInstance = this;
     }
 
     // Preserve input focus across reconciliation (replaceChild destroys focused DOM nodes)
     const focusState = saveFocusState();
 
     if (existingDom) {
-      // Update in-place — works for both root and child components
       updateDOMNode(existingDom, newVNode);
-      (newVNode as any).dom = existingDom;
+      if (newVNodeBase) newVNodeBase.dom = existingDom as HTMLElement | Text;
     } else {
-      // Initial render into container (only reachable when container is set)
       renderToDOM(newVNode, container!);
-      if (container!.firstChild) {
-        (newVNode as any).dom = container!.firstChild;
+      if (newVNodeBase && container!.firstChild) {
+        newVNodeBase.dom = container!.firstChild as HTMLElement | Text;
       }
     }
 
     this._vnode = newVNode;
-    this._domNode = (newVNode as any).dom ?? (this as any)._domNode;
+    this._domNode = (newVNodeBase?.dom as Node | null) ?? this._domNode;
 
     restoreFocusState(focusState);
   }

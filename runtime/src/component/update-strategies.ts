@@ -4,28 +4,36 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { renderToDOM, updateDOMNode } from "../renderer/renderer.js";
 import { domToHostComponent, componentInstances } from "../renderer/storage.js";
 import { reconcileProps } from "../renderer/props-updates.js";
 import { clearRenderCache } from "../renderer/render-cache.js";
 import { type VNode } from "../vdom/vdom.js";
+import type { VNodeBase } from "../vdom/types/index.js";
 import { untrack } from "../reactivity/effect.js";
 import type { SwissComponent } from "./component.js";
+import { asInternal } from "./internal.js";
 import { logger } from "../utils/logger.js";
 
-/**
- * Ensure _domNode points at this component's live root in the document.
- * Scans parent's direct children first, then entire app subtree.
- */
+function vb(vnode: VNode | null | undefined): VNodeBase | null {
+  return typeof vnode === "object" && vnode !== null ? vnode as VNodeBase : null;
+}
+
+function markInstance(vnode: VNode, component: SwissComponent): void {
+  const base = vb(vnode);
+  if (base && typeof base.type === "function") {
+    base.__componentInstance = component;
+  }
+}
+
 export function refreshChildDomNode(component: SwissComponent): void {
-  const c = component as any;
+  const c = asInternal(component);
   const current = c._domNode;
+  const vnodeBase = vb(c._vnode);
   let parent: HTMLElement | null =
     c._container ??
-    current?.parentElement ??
-    c._vnode?.dom?.parentElement ??
+    (current instanceof HTMLElement ? current.parentElement : null) ??
+    (vnodeBase?.dom instanceof HTMLElement ? vnodeBase.dom.parentElement : null) ??
     null;
 
   const findIn = (root: HTMLElement): boolean => {
@@ -37,7 +45,7 @@ export function refreshChildDomNode(component: SwissComponent): void {
         if (el !== current) {
           c._domNode = el;
           c._container = root;
-          if (c._vnode && typeof c._vnode === "object") (c._vnode as any).dom = el;
+          if (vnodeBase) vnodeBase.dom = el;
           logger.updates(`${component.constructor.name}: refreshed _domNode from live DOM`);
         }
         return true;
@@ -56,52 +64,50 @@ export function refreshChildDomNode(component: SwissComponent): void {
 }
 
 export function updateWithDomNode(component: SwissComponent, newVNode: VNode): void {
-  const c = component as any;
+  const c = asInternal(component);
   const domNode = c._domNode;
   logger.updates(`${component.constructor.name}: update via _domNode`);
 
-  if (typeof newVNode === "object" && newVNode !== null && "type" in newVNode && typeof newVNode.type === "function") {
-    (newVNode as any).__componentInstance = component;
-  }
+  markInstance(newVNode, component);
+  const newBase = vb(newVNode);
 
   untrack(() => {
     updateDOMNode(domNode, newVNode);
     c._vnode = newVNode;
-    (newVNode as any).dom = domNode;
+    if (newBase && domNode) newBase.dom = domNode as HTMLElement | Text;
     c._domNode = domNode;
   });
   logger.updates(`${component.constructor.name}: updated ( _domNode )`);
 }
 
 export function updateChildComponent(component: SwissComponent, newVNode: VNode, container: HTMLElement | null): void {
-  const c = component as any;
-  const domNode = (c._vnode as any).dom;
+  const c = asInternal(component);
+  const oldBase = vb(c._vnode);
+  const domNode = oldBase?.dom;
 
-  if (typeof newVNode === "object" && newVNode !== null && "type" in newVNode && typeof newVNode.type === "function") {
-    (newVNode as any).__componentInstance = component;
-  }
+  markInstance(newVNode, component);
+  const newBase = vb(newVNode);
 
   if (!container && domNode instanceof HTMLElement && domNode.parentElement) {
     const parent = domNode.parentElement;
     if (parent.children.length === 1 || parent.id === "app" || parent.classList.contains("app-root")) {
       container = parent;
       c._container = container;
-      const oldVNode = c._vnode;
       untrack(() => {
-        if (oldVNode && (oldVNode as any).dom) {
+        if (oldBase?.dom) {
           logger.updates(`${component.constructor.name}: updateDOMNode (recovered root)`);
-          updateDOMNode((oldVNode as any).dom, newVNode);
-          (newVNode as any).dom = (oldVNode as any).dom;
+          updateDOMNode(oldBase.dom!, newVNode);
+          if (newBase) newBase.dom = oldBase.dom;
         } else if (container != null && container instanceof HTMLElement) {
           renderToDOM(newVNode, container);
         } else {
           updateDOMNode(domNode, newVNode);
-          (newVNode as any).dom = domNode;
+          if (newBase) newBase.dom = domNode;
         }
       });
       c._vnode = newVNode;
-      if (oldVNode && (oldVNode as any).dom) (newVNode as any).dom = (oldVNode as any).dom;
-      if (c._domNode !== domNode) c._domNode = domNode;
+      if (oldBase?.dom && newBase) newBase.dom = oldBase.dom;
+      if (c._domNode !== domNode) c._domNode = domNode ?? null;
       return;
     }
   }
@@ -110,16 +116,18 @@ export function updateChildComponent(component: SwissComponent, newVNode: VNode,
   untrack(() => {
     updateDOMNode(domNode, newVNode);
     c._vnode = newVNode;
-    (newVNode as any).dom = domNode;
-    if (c._domNode !== domNode) c._domNode = domNode;
+    if (newBase && domNode) newBase.dom = domNode;
+    if (c._domNode !== domNode) c._domNode = domNode ?? null;
   });
 }
 
 export function handleNoUpdatePath(component: SwissComponent, newVNode: VNode): void {
-  const c = component as any;
+  const c = asInternal(component);
   logger.updates(`${component.constructor.name}: no update path (no container/vnode/dom)`);
 
-  let domNode: Node | null = c._domNode ?? (c._vnode && (c._vnode as any).dom) ?? null;
+  const newBase = vb(newVNode);
+  const oldBase = vb(c._vnode);
+  let domNode: Node | null = c._domNode ?? oldBase?.dom ?? null;
 
   if (domNode && domNode instanceof HTMLElement) {
     let container: HTMLElement | null = null;
@@ -131,55 +139,47 @@ export function handleNoUpdatePath(component: SwissComponent, newVNode: VNode): 
       }
     }
 
-    if (typeof newVNode === "object" && newVNode !== null && "type" in newVNode && typeof newVNode.type === "function") {
-      (newVNode as any).__componentInstance = component;
-    }
+    markInstance(newVNode, component);
 
     untrack(() => {
       if (container && container instanceof HTMLElement) {
         renderToDOM(newVNode, container);
       } else if (domNode) {
         updateDOMNode(domNode, newVNode);
-        (newVNode as any).dom = domNode;
+        if (newBase) newBase.dom = domNode as HTMLElement | Text;
       }
     });
 
     c._vnode = newVNode;
-    if (typeof newVNode === "object" && newVNode !== null) (newVNode as { dom?: Node }).dom = domNode;
+    if (newBase && domNode) newBase.dom = domNode as HTMLElement | Text;
     c._domNode = domNode;
     return;
   }
 
-  if (c._vnode && (c._vnode as any).dom) {
-    const vnodeDom = (c._vnode as any).dom;
-    if (vnodeDom instanceof HTMLElement) {
-      if (typeof newVNode === "object" && newVNode !== null && "type" in newVNode && typeof newVNode.type === "function") {
-        (newVNode as any).__componentInstance = component;
-      }
-      untrack(() => {
-        updateDOMNode(vnodeDom, newVNode);
-        c._vnode = newVNode;
-        (newVNode as any).dom = vnodeDom;
-        c._domNode = vnodeDom;
-      });
-      return;
-    }
+  if (oldBase?.dom instanceof HTMLElement) {
+    const vnodeDom = oldBase.dom;
+    markInstance(newVNode, component);
+    untrack(() => {
+      updateDOMNode(vnodeDom, newVNode);
+      c._vnode = newVNode;
+      if (newBase) newBase.dom = vnodeDom;
+      c._domNode = vnodeDom;
+    });
+    return;
   }
 
   if (typeof document !== "undefined") {
     const rootContainer = document.querySelector("#app") || document.querySelector("[data-app-root]");
     if (rootContainer && rootContainer instanceof HTMLElement && (rootContainer.id === "app" || rootContainer.hasAttribute("data-app-root"))) {
       c._container = rootContainer;
-      if (typeof newVNode === "object" && newVNode !== null && "type" in newVNode && typeof newVNode.type === "function") {
-        (newVNode as any).__componentInstance = component;
-      }
+      markInstance(newVNode, component);
       logger.updates(`${component.constructor.name}: recovered root container, initial render`);
       untrack(() => {
         if (rootContainer && rootContainer instanceof HTMLElement) renderToDOM(newVNode, rootContainer);
       });
       const firstChild = rootContainer.firstChild;
-      if (firstChild && typeof newVNode === "object" && newVNode !== null) {
-        (newVNode as { dom?: Node }).dom = firstChild;
+      if (firstChild && newBase) {
+        newBase.dom = firstChild as HTMLElement | Text;
         c._vnode = newVNode;
         c._domNode = firstChild;
       }
@@ -191,17 +191,17 @@ export function handleNoUpdatePath(component: SwissComponent, newVNode: VNode): 
 }
 
 export function updateRootComponent(component: SwissComponent, container: HTMLElement, newVNode: VNode): void {
-  const c = component as any;
+  const c = asInternal(component);
   const oldVNode = c._vnode;
+  const oldBase = vb(oldVNode);
   logger.updates(`${component.constructor.name}: root update (container, oldVNode=${!!oldVNode})`);
 
   if (c._container !== container) c._container = container;
 
-  if (typeof newVNode === "object" && newVNode !== null && "type" in newVNode && typeof newVNode.type === "function") {
-    (newVNode as any).__componentInstance = component;
-  }
+  markInstance(newVNode, component);
+  const newBase = vb(newVNode);
 
-  const oldDom = oldVNode && (oldVNode as any).dom;
+  const oldDom = oldBase?.dom;
   const isOldDomDirectChild = oldDom && oldDom.parentElement === container;
 
   const shouldReplaceContainer =
@@ -214,30 +214,30 @@ export function updateRootComponent(component: SwissComponent, container: HTMLEl
       if (container && container instanceof HTMLElement) renderToDOM(newVNode, container);
       if (container && container.firstChild) {
         c._domNode = container.firstChild;
-        (newVNode as any).dom = container.firstChild;
+        if (newBase) newBase.dom = container.firstChild as HTMLElement | Text;
       }
     });
-  } else if (oldVNode && (oldVNode as any).dom) {
-    const rootDom = (oldVNode as any).dom as HTMLElement;
+  } else if (oldBase?.dom) {
+    const rootDom = oldBase.dom as HTMLElement;
     let rootHasBoundChildren = false;
 
-    if (rootDom?.childNodes && typeof newVNode === "object" && newVNode !== null && "type" in newVNode && typeof (newVNode as any).type === "string") {
-      const raw = (newVNode as any).children;
-      const newChildren: VNode[] = Array.isArray(raw) ? raw : raw != null && typeof raw !== "boolean" ? [raw] : [];
+    if (rootDom.childNodes && newBase && typeof newBase.type === "string") {
+      const newChildren: VNode[] = Array.isArray(newBase.children) ? newBase.children : newBase.children != null ? [newBase.children as VNode] : [];
       const domChildren = Array.from(rootDom.childNodes);
       for (let i = 0; i < newChildren.length && i < domChildren.length; i++) {
         const nc = newChildren[i];
         const childDom = domChildren[i];
-        if (nc && typeof nc === "object" && nc !== null && childDom && childDom instanceof HTMLElement) {
+        const ncBase = vb(nc);
+        if (ncBase && childDom && childDom instanceof HTMLElement) {
           const direct = componentInstances.get(childDom);
           const host = domToHostComponent.get(childDom);
-          const type = (nc as any).type;
+          const type = ncBase.type;
           const instance =
             (host && typeof type === "function" && host.constructor === type ? host : null) ||
             (direct && typeof type === "function" && direct.constructor === type ? direct : null);
-          (nc as any).dom = childDom;
+          ncBase.dom = childDom;
           if (instance) {
-            (nc as any).__componentInstance = instance;
+            ncBase.__componentInstance = instance;
             rootHasBoundChildren = true;
             clearRenderCache(instance);
           }
@@ -245,15 +245,15 @@ export function updateRootComponent(component: SwissComponent, container: HTMLEl
       }
     }
 
-    const rootAlreadyHasContent = rootDom && rootDom.childNodes && rootDom.childNodes.length > 0;
-    if (rootAlreadyHasContent && rootHasBoundChildren) {
-      reconcileProps(rootDom, (oldVNode as any).props ?? {}, (newVNode as any).props ?? {});
+    const rootAlreadyHasContent = rootDom?.childNodes && rootDom.childNodes.length > 0;
+    if (rootAlreadyHasContent && rootHasBoundChildren && newBase && oldBase) {
+      reconcileProps(rootDom, (oldBase.props ?? {}) as Record<string, unknown>, (newBase.props ?? {}) as Record<string, unknown>);
     }
 
     untrack(() => {
-      updateDOMNode((oldVNode as any).dom, newVNode);
-      (newVNode as any).dom = (oldVNode as any).dom;
-      c._domNode = (oldVNode as any).dom;
+      updateDOMNode(oldBase.dom!, newVNode);
+      if (newBase) newBase.dom = oldBase.dom;
+      c._domNode = oldBase.dom ?? null;
     });
     logger.updates(`${component.constructor.name}: updateDOMNode completed`);
   } else {
@@ -270,9 +270,9 @@ export function updateRootComponent(component: SwissComponent, container: HTMLEl
   }
 
   c._vnode = newVNode;
-  if (oldVNode && (oldVNode as any).dom && !shouldReplaceContainer) {
-    (newVNode as any).dom = (oldVNode as any).dom;
-  } else if (c._domNode) {
-    (newVNode as any).dom = c._domNode;
+  if (oldBase?.dom && !shouldReplaceContainer) {
+    if (newBase) newBase.dom = oldBase.dom;
+  } else if (c._domNode && newBase) {
+    newBase.dom = c._domNode as HTMLElement | Text;
   }
 }
