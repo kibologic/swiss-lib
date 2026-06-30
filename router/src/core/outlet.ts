@@ -15,6 +15,6 @@ export class Outlet extends SwissComponent {
     }
 
     const leaf = matches[matches.length - 1];
-    return createElement(leaf.route.component, leaf.params as Record<string, unknown>);
+    return createElement(leaf.route.component as Parameters<typeof createElement>[0], leaf.params as Record<string, unknown>);
   }
 }

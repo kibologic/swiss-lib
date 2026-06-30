@@ -1,5 +1,6 @@
 
 import { SwissComponent, createElement } from '@swissjs/core';
+import type { VNode } from '@swissjs/core';
 import { _getActiveRouter } from './router-registry.js';
 
 export interface LinkProps {
@@ -7,7 +8,7 @@ export interface LinkProps {
     replace?: boolean;
     class?: string;
     activeClass?: string;
-    children?: unknown;
+    children?: VNode | VNode[] | string | number | null;
     [key: string]: unknown;
 }
 
@@ -36,6 +37,6 @@ export class Link extends SwissComponent {
             onClick: this.handleClick,
             ...(resolvedClass ? { class: resolvedClass } : {}),
             ...rest,
-        }, children as any);
+        }, children as VNode);
     }
 }
