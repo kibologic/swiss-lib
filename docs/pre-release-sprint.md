@@ -49,7 +49,7 @@ This sprint strengthens code safety, cleanliness, robustness, and pipeline secur
 
 ## Phase 3: Policy & File Structure Enforcement ✅
 
-- [x] Policy scripts in `scripts/` (pre-existed or added)
+- [x] Policy scripts in `scripts/` (pre-existed or added) — all exit non-zero on violations
   - [x] `check-barrels.mjs`: verify barrels exist, reject deep imports
   - [x] `check-deep-imports.mjs`: denylists for `internal`, `__tests__`, etc.
   - [x] `check-ui-format.mjs`: enforce UI file formatting
