@@ -16,7 +16,7 @@
  */
 
 import type { SwissComponent } from "../component/component.js";
-import type { VNode, VElement, ComponentVNode } from "../vdom/vdom.js";
+import type { VNode, VElement, ComponentVNode, ComponentType } from "../vdom/vdom.js";
 import {
   vnodeMetadata,
   componentInstances,
@@ -190,9 +190,9 @@ export function transferDOMReferencesFromOldTree(
     if (domNode instanceof HTMLElement) {
       const searchForMatchingComponent = (
         element: HTMLElement,
-        targetType: any,
+        targetType: ComponentType,
       ): {
-        instance: any;
+        instance: SwissComponent;
         dom: HTMLElement;
         vnode: VNode | undefined;
       } | null => {
@@ -265,8 +265,8 @@ export function transferDOMReferencesFromOldTree(
     // Search the DOM tree for matching component types
     const searchForMatchingComponent = (
       element: HTMLElement,
-      targetType: any,
-    ): { instance: any; dom: HTMLElement } | null => {
+      targetType: ComponentType,
+    ): { instance: SwissComponent; dom: HTMLElement } | null => {
       const instance = componentInstances.get(element);
       if (instance && instance.constructor === targetType) {
         return { instance, dom: element };
