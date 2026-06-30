@@ -1,6 +1,6 @@
 {
   "name": "@swissjs/cli",
-  "version": "0.1.6",
+  "version": "1.0.0",
   "scripts": {
     "build": "tsc -b",
     "dev": "tsc -b --watch",
@@ -27,7 +27,7 @@
     "glob": "^10.4.5",
     "handlebars": "^4.7.9",
     "helmet": "^7.1.0",
-    "http-proxy-middleware": "^2.0.6",
+    "http-proxy-middleware": "^2.0.10",
     "inquirer": "^8.2.6",
     "open": "^10.1.0"
   },
@@ -42,7 +42,7 @@
     "@types/http-proxy-middleware": "1.0.0",
     "@types/inquirer": "^8.2.10",
     "@types/node": "18.19.121",
-    "pnpm": "^10.28.2",
+    "pnpm": "^10.34.4",
     "typescript": "5.8.2"
   },
   "license": "MIT",
