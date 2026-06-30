@@ -10,5 +10,15 @@
   "plugin": ["typedoc-plugin-markdown"],
   "readme": "none",
   "tsconfig": "./tsconfig.base.json",
-  "categorizeByGroup": true
+  "categorizeByGroup": true,
+  "excludeInternal": true,
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "visibilityFilters": {
+    "protected": false,
+    "private": false,
+    "@internal": false,
+    "@alpha": false,
+    "@beta": false
+  }
 }
