@@ -4,12 +4,12 @@ import type { VNode } from "@swissjs/core";
 
 export interface SSRContext {
   url: string;
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
 }
 
 export interface SSRResult {
   html: string;
-  data: Record<string, any>;
+  data: Record<string, unknown>;
   statusCode: number;
   redirect?: string;
 }
@@ -67,7 +67,7 @@ export class ServerRenderer {
  *
  * Each component receives its matched params merged with loader data as props.
  */
-function buildRouteTree(matches: RouteMatch[], data: Record<string, any>): VNode {
+function buildRouteTree(matches: RouteMatch[], data: Record<string, unknown>): VNode {
   // Innermost first: start with the leaf component
   let tree: VNode = buildComponentVNode(matches[matches.length - 1], data);
 
@@ -76,7 +76,7 @@ function buildRouteTree(matches: RouteMatch[], data: Record<string, any>): VNode
     const match = matches[i];
     if (match.route.layout) {
       const props = mergeProps(match, data);
-      tree = createElement(match.route.layout, { ...props, children: [tree] }) as VNode;
+      tree = createElement(match.route.layout as Parameters<typeof createElement>[0], { ...props, children: [tree] }) as VNode;
     }
   }
 
@@ -89,14 +89,14 @@ function buildRouteTree(matches: RouteMatch[], data: Record<string, any>): VNode
     // We rebuild: leaf layout wraps just the leaf component
     const leafProps = mergeProps(leafMatch, data);
     const leafComponent = buildComponentVNode(leafMatch, data);
-    tree = createElement(leafMatch.route.layout, { ...leafProps, children: [leafComponent] }) as VNode;
+    tree = createElement(leafMatch.route.layout as Parameters<typeof createElement>[0], { ...leafProps, children: [leafComponent] }) as VNode;
 
     // Then outer layouts wrap that
     for (let i = matches.length - 2; i >= 0; i--) {
       const match = matches[i];
       if (match.route.layout) {
         const props = mergeProps(match, data);
-        tree = createElement(match.route.layout, { ...props, children: [tree] }) as VNode;
+        tree = createElement(match.route.layout as Parameters<typeof createElement>[0], { ...props, children: [tree] }) as VNode;
       }
     }
   }
@@ -104,12 +104,12 @@ function buildRouteTree(matches: RouteMatch[], data: Record<string, any>): VNode
   return tree;
 }
 
-function buildComponentVNode(match: RouteMatch, data: Record<string, any>): VNode {
+function buildComponentVNode(match: RouteMatch, data: Record<string, unknown>): VNode {
   const props = mergeProps(match, data);
-  return createElement(match.route.component, props) as VNode;
+  return createElement(match.route.component as Parameters<typeof createElement>[0], props) as VNode;
 }
 
-function mergeProps(match: RouteMatch, data: Record<string, any>): Record<string, unknown> {
+function mergeProps(match: RouteMatch, data: Record<string, unknown>): Record<string, unknown> {
   const loaderData = data[match.route.path] ?? {};
   return { ...match.params, ...loaderData };
 }

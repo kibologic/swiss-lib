@@ -6,13 +6,13 @@ export interface APIRequest {
     url: string;
     params: Record<string, string>;
     query: Record<string, string>;
-    body?: any;
+    body?: unknown;
     headers: Record<string, string>;
 }
 
 export interface APIResponse {
     status(code: number): APIResponse;
-    json(data: any): void;
+    json(data: unknown): void;
     send(data: string): void;
     setHeader(key: string, value: string): APIResponse;
 }
@@ -79,7 +79,7 @@ export class APIRouteHandler {
 
     private createResponseObject(): APIResponse {
         let statusCode = 200;
-        let body: any = null;
+        let body: unknown = null;
         const headers: Record<string, string> = {};
 
         return {
@@ -87,7 +87,7 @@ export class APIRouteHandler {
                 statusCode = code;
                 return this;
             },
-            json(data: any) {
+            json(data: unknown) {
                 body = JSON.stringify(data);
                 headers['Content-Type'] = 'application/json';
             },
@@ -101,7 +101,7 @@ export class APIRouteHandler {
         };
     }
 
-    private createResponse(status: number, data: any): APIResponse {
+    private createResponse(status: number, data: unknown): APIResponse {
         const res = this.createResponseObject();
         res.status(status);
         res.json(data);

@@ -1,12 +1,41 @@
 import { matchRoute, type RouteMatch } from "./matcher.js";
 
-export type LoaderFunction = (params: any) => Promise<any>;
-export type ActionFunction = (params: any) => Promise<any>;
+/**
+ * Typed context provided to route loader functions.
+ * Replaces the previous untyped `params: any` signature.
+ */
+export interface LoaderContext {
+  params: Record<string, string>;
+  query: Record<string, string>;
+  request?: Request;
+}
+
+/**
+ * Typed context provided to route action functions.
+ */
+export interface ActionContext {
+  params: Record<string, string>;
+  query: Record<string, string>;
+  body: unknown;
+  request?: Request;
+}
+
+export type LoaderFunction = (ctx: LoaderContext) => Promise<unknown>;
+export type ActionFunction = (ctx: ActionContext) => Promise<unknown>;
+
+/**
+ * Represents any value that can be used as a route component:
+ * a class constructor, a functional component, or a plain object stub.
+ */
+export type ComponentLike =
+  | (new (...args: unknown[]) => unknown)
+  | ((...args: unknown[]) => unknown)
+  | { [key: string]: unknown };
 
 export interface Route {
   path: string;
-  component: any;
-  layout?: any;
+  component: ComponentLike;
+  layout?: ComponentLike;
   children?: Route[];
   loader?: LoaderFunction;
   action?: ActionFunction;
@@ -27,28 +56,42 @@ export class Router {
   private routes: Route[];
   private mode: "history" | "hash";
   private base: string;
-  private currentPath: string;
+  private _currentPath: string;
   private beforeHooks: NavigationGuard[] = [];
+  private _navigationListeners: Set<(path: string) => void> = new Set();
 
   constructor(options: RouterOptions) {
     this.routes = options.routes;
     this.mode = options.mode || "history";
     this.base = options.base || "/";
-    this.currentPath = this.getCurrentPath();
+    this._currentPath = this.getPath();
 
     if (typeof window !== "undefined") {
       window.addEventListener("popstate", this.handlePopState.bind(this));
     }
   }
 
-  private getCurrentPath(): string {
+  get currentPath(): string {
+    return this._currentPath;
+  }
+
+  private getPath(): string {
     if (typeof window === "undefined") return "/";
     return window.location.pathname;
   }
 
   private handlePopState() {
-    this.currentPath = this.getCurrentPath();
-    // TODO: Trigger re-render or signal update
+    this._currentPath = this.getPath();
+    this._navigationListeners.forEach((fn) => fn(this._currentPath));
+  }
+
+  /**
+   * Subscribe to navigation events. Returns an unsubscribe function.
+   * Use this to re-render when the user navigates with browser back/forward.
+   */
+  public onNavigate(listener: (path: string) => void): () => void {
+    this._navigationListeners.add(listener);
+    return () => this._navigationListeners.delete(listener);
   }
 
   public beforeEach(guard: NavigationGuard) {
@@ -57,7 +100,7 @@ export class Router {
 
   private async runGuards(to: string): Promise<boolean> {
     for (const guard of this.beforeHooks) {
-      const result = await guard(to, this.currentPath);
+      const result = await guard(to, this._currentPath);
       if (result === false) return false;
       if (typeof result === "string") {
         this.push(result);
@@ -85,35 +128,30 @@ export class Router {
     }
   }
 
-  public addRoute(path: string, component: any) {
-    this.routes.push({
-      path,
-      component,
-    });
+  public addRoute(path: string, component: ComponentLike) {
+    this.routes.push({ path, component });
   }
 
   public match(path: string): RouteMatch[] | undefined {
     return matchRoute(this.routes, path);
   }
 
-  public async loadRouteData(path: string): Promise<Record<string, any>> {
+  public async loadRouteData(path: string): Promise<Record<string, unknown>> {
     const matches = this.match(path);
     if (!matches) return {};
 
-    const data: Record<string, any> = {};
+    const data: Record<string, unknown> = {};
 
-    // Run loaders in parallel
     await Promise.all(
       matches.map(async (match) => {
         if (match.route.loader) {
           try {
-            const result = await match.route.loader({
+            const ctx: LoaderContext = {
               params: match.params,
-              request: new Request("http://localhost" + path), // Mock request for now
-            });
-            // Key data by route path or some ID?
-            // For now, let's just merge it, but ideally we need per-component data
-            // Let's key it by the route path pattern to be unique enough for this simple implementation
+              query: {},
+              request: new Request("http://localhost" + path),
+            };
+            const result = await match.route.loader(ctx);
             data[match.route.path] = result;
           } catch (err) {
             console.error(`Loader failed for ${match.route.path}`, err);

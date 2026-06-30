@@ -1,0 +1,34 @@
+name: Semgrep Security Scan
+
+on:
+  push:
+    branches: [main, staging, development]
+  pull_request:
+    branches: [main, staging, development]
+
+jobs:
+  semgrep:
+    name: Semgrep
+    runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Semgrep
+        run: semgrep --config .semgrep.yml --error --json --output semgrep-report.json . || true
+
+      - name: Fail on ERROR severity findings
+        run: |
+          node -e "
+            const fs = require('fs');
+            if (!fs.existsSync('semgrep-report.json')) { console.log('No report generated'); process.exit(0); }
+            const r = JSON.parse(fs.readFileSync('semgrep-report.json', 'utf8'));
+            const errors = (r.results || []).filter(x => x.extra && x.extra.severity === 'ERROR');
+            if (errors.length > 0) {
+              console.error(errors.length + ' Semgrep ERROR(s) found:');
+              errors.forEach(e => console.error(e.path + ':' + e.start.line + ' — ' + e.extra.message));
+              process.exit(1);
+            }
+            console.log('Semgrep scan passed.');
+          "

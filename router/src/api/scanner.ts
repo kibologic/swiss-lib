@@ -2,7 +2,7 @@
 import { promises as fs } from 'node:fs';
 import { join, relative, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { type APIRoute, type APIHandler, type HTTPMethod } from './handler.js';
+import { type APIRoute, type APIHandler, type Middleware, type HTTPMethod } from './handler.js';
 
 export interface APIRouteFile {
     GET?: APIHandler;
@@ -10,7 +10,7 @@ export interface APIRouteFile {
     PUT?: APIHandler;
     DELETE?: APIHandler;
     PATCH?: APIHandler;
-    middleware?: Function[];
+    middleware?: Middleware[];
 }
 
 const HTTP_METHODS: HTTPMethod[] = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'];
@@ -38,7 +38,7 @@ export class APIRouteScanner {
                 continue;
             }
 
-            const middleware = Array.isArray(mod.middleware) ? mod.middleware as any[] : undefined;
+            const middleware = Array.isArray(mod.middleware) ? mod.middleware as Middleware[] : undefined;
 
             for (const method of HTTP_METHODS) {
                 const handler = mod[method as keyof APIRouteFile] as APIHandler | undefined;

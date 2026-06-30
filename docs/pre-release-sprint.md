@@ -37,16 +37,13 @@ This sprint strengthens code safety, cleanliness, robustness, and pipeline secur
 
 ## Phase 2: Security Workflows (SAST, Deps, Secrets, Semgrep)
 
-- [ ] ESLint SAST
-  - [ ] Add `eslint-plugin-security` / `eslint-plugin-sonarjs`
-  - [ ] Root script: `lint:sast` and dedicated workflow `.github/workflows/sast-eslint.yml`
-- [ ] Dependency audit
-  - [ ] `.github/workflows/deps-audit.yml` runs `pnpm audit --json` and fails on high/critical
-  - [ ] Optional: Snyk integration (token required)
-- [ ] Secrets scanning
-  - [ ] `.github/workflows/gitleaks.yml` + baseline `.gitleaks.toml`
-- [ ] Semgrep scanning
-  - [ ] `.github/workflows/semgrep.yml` + `.semgrep.yml` baseline rules for TS/Node
+- [x] ESLint SAST (resolved 2026-06-30 — `.eslintrc.sast.cjs` + `lint:sast` script pre-existed; `sast-eslint.yml` created on feature/sast-ci-workflow)
+- [x] Dependency audit (resolved 2026-06-30)
+  - [x] `.github/workflows/deps-audit.yml` — weekly + on-push; fails on high/critical CVEs
+- [x] Secrets scanning (resolved 2026-06-30)
+  - [x] `.github/workflows/gitleaks.yml` + `.gitleaks.toml` baseline
+- [x] Semgrep scanning (resolved 2026-06-30)
+  - [x] `.github/workflows/semgrep.yml` + `.semgrep.yml` — eval, innerHTML, document.write
 
 ## Phase 3: Policy & File Structure Enforcement
 

@@ -1,0 +1,14 @@
+title = "SwissJS Gitleaks Config"
+
+[allowlist]
+  description = "Global allowlist"
+  paths = [
+    "pnpm-lock.yaml",
+    "docs/api",
+    ".changeset",
+  ]
+  regexes = [
+    '''EXAMPLE_[A-Z_]+''',
+    '''placeholder''',
+    '''your[-_]token[-_]here''',
+  ]

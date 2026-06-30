@@ -87,3 +87,18 @@ This document tracks intentional short-term compromises to unblock delivery. Eac
   3. Replace polling with bridge events to refresh on deltas.
 - Owner: Devtools
 - Priority: Low/Medium (optimize after functional completion)
+
+---
+
+## ✅ RESOLVED — Router Package `any` Types
+
+- Packages: `router/src/core/router.ts`, `router/src/core/matcher.ts`, `router/src/core/link.ts`, `router/src/core/outlet.ts`, `router/src/api/handler.ts`, `router/src/api/scanner.ts`, `router/src/ssr/hydration.ts`, `router/src/ssr/server-renderer.ts`
+- Original issue: ~25+ usages of `any` throughout the router package — `LoaderContext`, `ActionContext`, route params, middleware, component types, SSR context/result, `window.__SWISS_DATA__`, `RouteMatch.route`.
+- Resolution (feature/router-type-safety):
+  - Introduced `LoaderContext`, `ActionContext`, `ComponentLike`, `LoaderFunction`, `ActionFunction` types in `router.ts`
+  - `RouteMatch.route` now typed as `Route`; `matchRoute` signature uses `Route[]`
+  - `Window.__SWISS_DATA__` global declaration added; all `(window as any)` casts removed
+  - `SSRContext`, `SSRResult`, `buildRouteTree`, `buildComponentVNode`, `mergeProps` use `Record<string,unknown>`
+  - `APIRequest`, `APIResponse`, `Middleware` fully typed; `Link` children typed; `Outlet` createElement cast
+  - `handlePopState` TODO resolved — fires `_navigationListeners` Set; `onNavigate()` public API added
+- Resolved: 2026-06-30

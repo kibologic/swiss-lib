@@ -1,0 +1,42 @@
+name: Dependency Audit
+
+on:
+  push:
+    branches: [main, staging, development]
+  pull_request:
+    branches: [main, staging, development]
+  schedule:
+    - cron: '0 6 * * 1'
+
+jobs:
+  audit:
+    name: Dependency Vulnerability Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Run pnpm audit
+        run: pnpm audit --json > audit-report.json || true
+
+      - name: Fail on high or critical vulnerabilities
+        run: |
+          node -e "
+            const fs = require('fs');
+            const r = JSON.parse(fs.readFileSync('audit-report.json', 'utf8'));
+            const v = (r.metadata && r.metadata.vulnerabilities) ? r.metadata.vulnerabilities : {};
+            const fail = (v.high || 0) + (v.critical || 0);
+            if (fail > 0) {
+              console.error('High/critical vulnerabilities found:', JSON.stringify(v, null, 2));
+              process.exit(1);
+            }
+            console.log('No high/critical vulnerabilities found.');
+          "
