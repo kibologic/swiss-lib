@@ -294,21 +294,38 @@ export function bindToElement(
 /**
  * Batch multiple signal updates.
  * All signal notifications are deferred until the end of the batch, then fired once each.
+ * Nested calls execute immediately inside the outer batch.
  */
-export function batch(fn: () => void) {
+export function batch<T>(fn: () => T): T {
   const ctx = getBatchContext();
   if (ctx.isBatching) {
-    fn();
-    return;
+    return fn();
   }
 
   setBatchContext({ isBatching: true });
   try {
-    fn();
+    return fn();
   } finally {
     setBatchContext({ isBatching: false });
     flushBatch();
   }
+}
+
+/**
+ * Enter batch mode for manual start/end batching.
+ * Prefer `batch()` over this for most cases.
+ */
+export function startBatch(): void {
+  setBatchContext({ isBatching: true });
+}
+
+/**
+ * Flush all pending signal notifications and exit batch mode.
+ * Must be paired with `startBatch()`.
+ */
+export function endBatch(): void {
+  setBatchContext({ isBatching: false });
+  flushBatch();
 }
 
 /**
