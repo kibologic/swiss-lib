@@ -1,6 +1,6 @@
 {
   "name": "@swissjs/router",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Swiss framework routing and SSR",
   "type": "module",
   "main": "dist/index.js",
