@@ -1,12 +1,14 @@
+import type { Route } from './router.js';
+
 export interface RouteMatch {
   path: string;
   params: Record<string, string>;
-  route: any; // TODO: Type as Route
-  branches?: RouteMatch[]; // Helper for nested matches if needed
+  route: Route;
+  branches?: RouteMatch[];
 }
 
 export function matchRoute(
-  routes: any[],
+  routes: Route[],
   path: string,
   basePath = "",
 ): RouteMatch[] | undefined {
