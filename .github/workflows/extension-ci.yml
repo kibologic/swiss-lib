@@ -1,0 +1,60 @@
+name: VSCode Extension CI
+
+on:
+  push:
+    branches: [main, staging, development]
+    paths:
+      - 'devtools/vscode_extension/**'
+  pull_request:
+    branches: [main, staging, development]
+    paths:
+      - 'devtools/vscode_extension/**'
+
+concurrency:
+  group: extension-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-test-package:
+    name: Build, Test & Package
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: devtools/vscode_extension
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.19.0
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: .
+
+      - name: Build
+        run: pnpm build
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Unit tests
+        run: pnpm test:ci
+
+      - name: Package VSIX
+        run: pnpm package
+
+      - name: Upload VSIX artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vscode-swiss-vsix
+          path: devtools/vscode_extension/*.vsix

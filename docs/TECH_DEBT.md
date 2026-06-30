@@ -8,27 +8,12 @@ Licensed under the MIT License. See LICENSE in the project root for license info
 
 This document tracks intentional short-term compromises to unblock delivery. Each entry includes context, impact, and a plan to resolve.
 
-## 2025-09-02 — VSCode Extension Unit Tests Skipped Temporarily
+## ~~2025-09-02 — VSCode Extension Unit Tests Skipped Temporarily~~ [RESOLVED 2026-06-30]
 
-- Package: `packages/devtools/vscode_extension`
-- Context: Unit tests run via Mocha + ts-node and are slow (cold on-the-fly TS transpilation and type-checking across a sizable graph). This was slowing down EPIC B (Language Server Core) delivery.
-- Current State:
-  - CI workflow step "Unit tests" is temporarily disabled with an explicit FIXME.
-    - File: `packages/devtools/vscode_extension/.github/workflows/extension-ci.yml`
-    - Change: step renamed to "Unit tests (temporarily skipped)" and guarded with `if: ${{ false }}`.
-  - Local script `test` now points to a faster path (`test:fast`) but can still be changed back to `test:unit` when addressing this item.
-- Impact: Reduced safety net for regressions in completions/hover/definitions/diagnostics providers.
-- Mitigations:
-  - Keep TypeScript type-checking in `pnpm type-check`.
-  - Keep linting in CI.
-  - Manual smoke testing on critical flows until tests are re-enabled.
-- Proposed Fix Plan:
-  1. Precompile tests (build to JS) and run Mocha on JS outputs OR switch to `tsx`/`esbuild-register` for faster runtime transpilation.
-  2. Use `TS_NODE_TRANSPILE_ONLY=1` in CI but keep a separate `pnpm type-check` step to retain type safety.
-  3. Narrow test scope or split providers to reduce module graph size.
-  4. Re-enable CI unit tests after the above optimizations.
-- Owner: VSCode extension team
-- Priority: High before publishing the extension
+- **Resolution:** Created root-level `.github/workflows/extension-ci.yml` that correctly targets `devtools/vscode_extension/` and runs `pnpm test:ci` (which uses `TS_NODE_TRANSPILE_ONLY=1` via `ts-node/register/transpile-only`). The misplaced `devtools/vscode_extension/.github/workflows/extension-ci.yml` was not picked up by GitHub Actions (nested `.github/` directories are not scanned). The unit test step is re-enabled.
+- **Fixed in:** `feature/vscode-extension-ci` branch
+- ~~Package: `packages/devtools/vscode_extension`~~
+- ~~Context: Unit tests run via Mocha + ts-node and are slow (cold on-the-fly TS transpilation and type-checking across a sizable graph). This was slowing down EPIC B (Language Server Core) delivery.~~
 
 ---
 
