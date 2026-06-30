@@ -132,19 +132,79 @@ export function setDevtoolsBridge(impl: DevtoolsBridge): void {
 
 const noopBridge = new NoopBridge();
 
-// In-memory bridge implementation (simple, dev-only) – optional convenience
+/**
+ * Fixed-capacity FIFO ring buffer. Overwrites the oldest entry when full.
+ * O(1) push — no allocation-heavy splice() on every write.
+ */
+class RingBuffer<T> {
+  private buf: Array<T | undefined>;
+  private head = 0;
+  private size = 0;
+  readonly capacity: number;
+
+  constructor(capacity: number) {
+    this.capacity = capacity;
+    this.buf = new Array(capacity);
+  }
+
+  push(item: T): void {
+    this.buf[this.head] = item;
+    this.head = (this.head + 1) % this.capacity;
+    if (this.size < this.capacity) this.size++;
+  }
+
+  drain(): T[] {
+    if (this.size === 0) return [];
+    const out: T[] = new Array(this.size);
+    const start = this.size < this.capacity ? 0 : this.head;
+    for (let i = 0; i < this.size; i++) {
+      out[i] = this.buf[(start + i) % this.capacity] as T;
+    }
+    this.head = 0;
+    this.size = 0;
+    return out;
+  }
+
+  peekAll(): T[] {
+    if (this.size === 0) return [];
+    const out: T[] = new Array(this.size);
+    const start = this.size < this.capacity ? 0 : this.head;
+    for (let i = 0; i < this.size; i++) {
+      out[i] = this.buf[(start + i) % this.capacity] as T;
+    }
+    return out;
+  }
+
+  get length(): number { return this.size; }
+
+  reset(): void {
+    this.head = 0;
+    this.size = 0;
+  }
+}
+
+const RING_CAPS: Record<DevtoolsEventCategory | 'legacy', number> = {
+  perf: 500,
+  error: 200,
+  capability: 200,
+  runtime: 300,
+  legacy: 1000,
+};
+
 export class InMemoryBridge implements DevtoolsBridge {
   private nodes = new Map<ComponentId, ComponentNodePayload>();
   private edges: Array<{ from: ComponentId; to: ComponentId; type: 'provides' | 'consumes' | 'parent' }> = [];
   private state = new Map<ComponentId, Record<string, unknown>>();
-  private events: Array<{ t: number; type: string; msg: string }> = [];
-  private typedEvents: DevtoolsEvent[] = [];
-  // Name index: component display name → set of ids with that name
+  private legacyBuf = new RingBuffer<{ t: number; type: string; msg: string }>(RING_CAPS.legacy);
+  private typedBufs: Record<DevtoolsEventCategory, RingBuffer<DevtoolsEvent>> = {
+    perf: new RingBuffer(RING_CAPS.perf),
+    error: new RingBuffer(RING_CAPS.error),
+    capability: new RingBuffer(RING_CAPS.capability),
+    runtime: new RingBuffer(RING_CAPS.runtime),
+  };
   private nameIndex = new Map<string, Set<ComponentId>>();
-  // Optional callback registered by the runtime to read live component state
   private restoreCallback: ((id: ComponentId) => Record<string, unknown> | undefined) | null = null;
 
-  /** Register a runtime callback that can read live component state. */
   setRestoreCallback(fn: (id: ComponentId) => Record<string, unknown> | undefined): void {
     this.restoreCallback = fn;
   }
@@ -169,8 +229,7 @@ export class InMemoryBridge implements DevtoolsBridge {
     if (payload.stateSummary) {
       this.state.set(payload.id, payload.stateSummary);
     }
-    this.events.push({ t: Date.now(), type: 'update', msg: payload.id });
-    if (this.events.length > 1000) this.events.splice(0, this.events.length - 1000);
+    this.legacyBuf.push({ t: Date.now(), type: 'update', msg: payload.id });
   }
 
   onComponentUnmount(id: ComponentId): void {
@@ -185,7 +244,7 @@ export class InMemoryBridge implements DevtoolsBridge {
     this.nodes.delete(id);
     this.edges = this.edges.filter(e => e.from !== id && e.to !== id);
     this.state.delete(id);
-    this.events.push({ t: Date.now(), type: 'unmount', msg: id });
+    this.legacyBuf.push({ t: Date.now(), type: 'unmount', msg: id });
   }
 
   getGraphSnapshot(): GraphSnapshot {
@@ -201,7 +260,6 @@ export class InMemoryBridge implements DevtoolsBridge {
   }
 
   requestStateSnapshot(id: ComponentId): Record<string, unknown> {
-    // Prefer live state from runtime callback; fall back to last stored snapshot.
     if (this.restoreCallback) {
       const live = this.restoreCallback(id);
       if (live !== undefined) return live;
@@ -214,38 +272,34 @@ export class InMemoryBridge implements DevtoolsBridge {
   }
 
   recordEvent(event: { t: number; type: string; msg: string }): void {
-    this.events.push(event);
-    if (this.events.length > 1000) this.events.splice(0, this.events.length - 1000);
+    this.legacyBuf.push(event);
   }
 
   drainEvents(): Array<{ t: number; type: string; msg: string }> {
-    const out = this.events;
-    this.events = [];
-    return out;
+    return this.legacyBuf.drain();
   }
 
   drainEventsPaged(offset: number, limit: number): { events: Array<{ t: number; type: string; msg: string }>; total: number } {
-    // Non-destructive: returns a window into the current buffer, newest-first.
-    const reversed = this.events.slice().reverse();
-    const page = reversed.slice(offset, offset + limit);
-    return { events: page, total: this.events.length };
+    const all = this.legacyBuf.peekAll().reverse();
+    return { events: all.slice(offset, offset + limit), total: all.length };
   }
 
   recordEventTyped(event: DevtoolsEvent): void {
-    this.typedEvents.push(event);
-    if (this.typedEvents.length > 1000) this.typedEvents.splice(0, this.typedEvents.length - 1000);
+    this.typedBufs[event.category].push(event);
   }
 
   drainEventsTyped(): DevtoolsEvent[] {
-    const out = this.typedEvents;
-    this.typedEvents = [];
+    const out: DevtoolsEvent[] = [];
+    for (const buf of Object.values(this.typedBufs)) {
+      out.push(...buf.drain());
+    }
+    out.sort((a, b) => a.t - b.t);
     return out;
   }
 
   restoreState(id: ComponentId, state: Record<string, unknown>): boolean {
     this.state.set(id, state);
-    this.events.push({ t: Date.now(), type: 'restore', msg: id });
-    if (this.events.length > 1000) this.events.splice(0, this.events.length - 1000);
+    this.legacyBuf.push({ t: Date.now(), type: 'restore', msg: id });
     return true;
   }
 
@@ -253,9 +307,10 @@ export class InMemoryBridge implements DevtoolsBridge {
     this.nodes.clear();
     this.edges = [];
     this.state.clear();
-    this.events = [];
-    this.typedEvents = [];
+    this.legacyBuf.reset();
+    for (const buf of Object.values(this.typedBufs)) buf.reset();
     this.nameIndex.clear();
+    this.restoreCallback = null;
   }
 }
 
