@@ -12,6 +12,7 @@ import {
   componentInstances,
   containerToInstance,
 } from "./storage.js";
+import { saveFocusState, restoreFocusState } from "../component/focus-guard.js";
 import {
   isComponentVNode,
   isElementVNode,
@@ -185,6 +186,10 @@ export function renderToDOM(vnode: VNode, container: HTMLElement) {
     });
     return;
   }
+  // Preserve focus across the entire reconciliation pass.
+  // replaceChild/insertBefore operations inside reconcileChildren can blur a
+  // focused input even when the DOM node survives. Restore it unconditionally.
+  const _focusState = typeof document !== "undefined" ? saveFocusState() : null;
   try {
     performanceMonitor.onRenderStart();
 
@@ -587,6 +592,7 @@ export function renderToDOM(vnode: VNode, container: HTMLElement) {
     }
   } finally {
     performanceMonitor.onRenderEnd();
+    if (_focusState) restoreFocusState(_focusState);
   }
 }
 
