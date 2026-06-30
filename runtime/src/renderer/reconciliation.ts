@@ -138,6 +138,34 @@ export function reconcileChildren(
       }
     }
 
+    // Type-based fallback for unkeyed element VNodes.
+    //
+    // The same index-shift problem affects element VNodes. When a conditional
+    // sibling is inserted before an <input>, the input's key changes from
+    // `input_0` to `input_1`. Without this fallback, the reconciler creates a
+    // fresh <input> DOM node and removes the focused one — destroying focus.
+    //
+    // Scan old entries for the first unprocessed element with the same tag.
+    // This preserves the existing DOM node (including focus state) even when
+    // surrounding siblings shift its position.
+    if (
+      !oldEntry &&
+      isElementVNode(newVNode) &&
+      (newVNode as any).key == null &&
+      (newVNode.props as any)?.key == null
+    ) {
+      for (const candidate of oldKeyMap.values()) {
+        if (
+          !processedNodes.has(candidate.dom as Node) &&
+          isElementVNode(candidate.vnode) &&
+          candidate.vnode.type === newVNode.type
+        ) {
+          oldEntry = candidate;
+          break;
+        }
+      }
+    }
+
     // ENHANCEMENT: Aggressive ID Matching - try ID matching BEFORE key matching fails
     // This ensures DOM identity is restored early in the process
     if (!oldEntry && isElementVNode(newVNode) && newVNode.props?.id) {
