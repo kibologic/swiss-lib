@@ -6,6 +6,8 @@
 
 import type { SwissComponent } from "../component/component.js";
 import type { VNode, VElement, ComponentVNode } from "../vdom/vdom.js";
+import type { VNodeBase } from "../vdom/types/index.js";
+import { asInternal } from "../component/internal.js";
 // Import all modules
 import {
   vnodeMetadata,
@@ -168,7 +170,7 @@ export function renderToDOM(vnode: VNode, container: HTMLElement) {
     devTools.error("[Renderer] renderToDOM: container is null/undefined", {
       vnodeType:
         typeof vnode === "object" && vnode !== null && "type" in vnode
-          ? (vnode.type as any)?.name
+          ? (vnode.type as { name?: string }).name
           : "unknown",
     });
     return;
@@ -181,7 +183,7 @@ export function renderToDOM(vnode: VNode, container: HTMLElement) {
       container,
       vnodeType:
         typeof vnode === "object" && vnode !== null && "type" in vnode
-          ? (vnode.type as any)?.name
+          ? (vnode.type as { name?: string }).name
           : "unknown",
     });
     return;
@@ -228,7 +230,7 @@ export function renderToDOM(vnode: VNode, container: HTMLElement) {
 
       if (isStaticContent && isNewComponent) {
         devTools.log(
-          `[Renderer] renderToDOM: Container has static content but new VNode is component ${(vnode.type as any).name}, replacing container content`,
+          `[Renderer] renderToDOM: Container has static content but new VNode is component ${(vnode.type as { name?: string }).name}, replacing container content`,
         );
         if (container != null && typeof container.innerHTML !== "undefined")
           container.innerHTML = "";
@@ -242,8 +244,9 @@ export function renderToDOM(vnode: VNode, container: HTMLElement) {
         if (isComponentVNode(vnode)) {
           const instance = componentInstances.get(domNode as HTMLElement);
           if (instance) {
-            if (!(instance as any)._container) {
-              (instance as any)._container = container;
+            const ici = asInternal(instance);
+            if (!ici._container) {
+              ici._container = container;
               devTools.log(
                 `[Renderer] renderToDOM: Set container on root component instance ${instance.constructor.name} after replacing static content`,
               );
@@ -260,14 +263,14 @@ export function renderToDOM(vnode: VNode, container: HTMLElement) {
       }
 
       devTools.log(
-        `[Renderer] renderToDOM: Container has child, checking for existing instance. vnode type: ${isComponentVNode(vnode) ? (vnode.type as any).name : "element"}, oldVNode type: ${oldVNode ? (isComponentVNode(oldVNode) ? (oldVNode.type as any).name : "element") : "none"}`,
+        `[Renderer] renderToDOM: Container has child, checking for existing instance. vnode type: ${isComponentVNode(vnode) ? (vnode.type as { name?: string }).name : "element"}, oldVNode type: ${oldVNode ? (isComponentVNode(oldVNode) ? (oldVNode.type as { name?: string }).name : "element") : "none"}`,
       );
 
       // For component VNodes, try to find and preserve the existing instance
       if (isComponentVNode(vnode)) {
         // PRIORITY 0: Check if the new VNode already has the instance stored (from performUpdate)
         // This is the most reliable source since performUpdate() sets it explicitly
-        let existingInstance = (vnode as any).__componentInstance;
+        let existingInstance = vnode.__componentInstance;
         if (existingInstance && existingInstance.constructor === vnode.type) {
           devTools.log(
             `[Renderer] renderToDOM: Found instance from vnode.__componentInstance: ${existingInstance.constructor.name}`,
@@ -303,7 +306,7 @@ export function renderToDOM(vnode: VNode, container: HTMLElement) {
         // If not found, try to get it from oldVNode (which might be the rendered VNode)
         if (!existingInstance && oldVNode) {
           // oldVNode might be the rendered VNode, check if it has an instance
-          const instanceFromOldVNode = (oldVNode as any).__componentInstance;
+          const instanceFromOldVNode = (oldVNode as unknown as VNodeBase).__componentInstance;
           if (instanceFromOldVNode) {
             existingInstance = instanceFromOldVNode;
             devTools.log(
@@ -312,8 +315,7 @@ export function renderToDOM(vnode: VNode, container: HTMLElement) {
           }
           // Also check if oldVNode itself is a component VNode
           else if (isComponentVNode(oldVNode)) {
-            const instanceFromComponentVNode = (oldVNode as any)
-              .__componentInstance;
+            const instanceFromComponentVNode = oldVNode.__componentInstance;
             if (instanceFromComponentVNode) {
               existingInstance = instanceFromComponentVNode;
               devTools.log(
@@ -336,19 +338,16 @@ export function renderToDOM(vnode: VNode, container: HTMLElement) {
 
           // CRITICAL: Mark instance as initialized BEFORE storing it on vnode
           // This prevents renderComponent from calling initialize() again
-          (existingInstance as any)._initialized = true;
-          (existingInstance as any).__initialized = true;
+          const existingCi = asInternal(existingInstance);
+          existingCi._initialized = true;
+          existingCi.__initialized = true;
 
-          // Store the existing instance on the new VNode before updating
-          if (typeof vnode === "object" && vnode !== null) {
-            (vnode as any).__componentInstance = existingInstance;
-            (vnode as { dom?: Node }).dom = existingDom;
-          }
+          vnode.__componentInstance = existingInstance;
+          vnode.dom = existingDom;
 
           // CRITICAL: For root components, ensure the container is set on the instance
-          // This allows performUpdate() to find the container
-          if ((existingInstance as any)._container !== container) {
-            (existingInstance as any)._container = container;
+          if (existingCi._container !== container) {
+            existingCi._container = container;
             devTools.log(
               `[Renderer] renderToDOM: Set container on root component instance ${existingInstance.constructor.name}`,
             );
@@ -363,22 +362,17 @@ export function renderToDOM(vnode: VNode, container: HTMLElement) {
           }
 
           // CRITICAL: Ensure _domNode is set on the instance
-          // This is a fallback for performUpdate() when _vnode.dom is not available
-          if (
-            !(existingInstance as any)._domNode ||
-            (existingInstance as any)._domNode !== existingDom
-          ) {
-            (existingInstance as any)._domNode = existingDom;
+          if (!existingCi._domNode || existingCi._domNode !== existingDom) {
+            existingCi._domNode = existingDom;
             devTools.log(
               `[Renderer] renderToDOM: Set _domNode on root component instance ${existingInstance.constructor.name}`,
             );
           }
 
           // CRITICAL: Also set dom property on the component instance's _vnode
-          // This is the rendered VNode (output of render()), and performUpdate() checks this._vnode.dom
-          const instanceVNode = (existingInstance as any)._vnode;
+          const instanceVNode = existingCi._vnode;
           if (instanceVNode) {
-            (instanceVNode as any).dom = existingDom;
+            (instanceVNode as unknown as VNodeBase).dom = existingDom;
             devTools.log(
               `[Renderer] renderToDOM: Set dom property on component instance _vnode for ${existingInstance.constructor.name}`,
             );
@@ -390,14 +384,14 @@ export function renderToDOM(vnode: VNode, container: HTMLElement) {
           return;
         } else if (existingInstance) {
           devTools.log(
-            `[Renderer] renderToDOM: Found instance but different type: ${existingInstance.constructor.name} !== ${(vnode.type as any).name}`,
+            `[Renderer] renderToDOM: Found instance but different type: ${existingInstance.constructor.name} !== ${(vnode.type as { name?: string }).name}`,
           );
         } else {
           // CRITICAL: If we can't find the instance but the container has a child, this is a serious error
           // We should NOT create a new instance as it will reset all state
           // Instead, log an error and try to recover by using updateDOMNode directly
           devTools.error(
-            `[Renderer] renderToDOM: ⚠️ CRITICAL - No existing instance found for component ${(vnode.type as any).name} but container has child! This will cause state loss.`,
+            `[Renderer] renderToDOM: ⚠️ CRITICAL - No existing instance found for component ${(vnode.type as { name?: string }).name} but container has child! This will cause state loss.`,
             { container, existingDom, oldVNode, newVNode: vnode },
           );
 
@@ -407,16 +401,13 @@ export function renderToDOM(vnode: VNode, container: HTMLElement) {
             isComponentVNode(oldVNode) &&
             oldVNode.type === vnode.type
           ) {
-            const instanceFromOld = (oldVNode as any).__componentInstance;
+            const instanceFromOld = oldVNode.__componentInstance;
             if (instanceFromOld) {
               existingInstance = instanceFromOld;
               devTools.log(
                 `[Renderer] renderToDOM: Found instance from oldVNode.__componentInstance (last resort): ${existingInstance.constructor.name}`,
               );
-              // Store it on the new VNode
-              if (typeof vnode === "object" && vnode !== null) {
-                (vnode as any).__componentInstance = existingInstance;
-              }
+              vnode.__componentInstance = existingInstance;
               // CRITICAL: Store instance in containerToInstance map
               if (container instanceof HTMLElement) {
                 containerToInstance.set(container, existingInstance);
@@ -437,7 +428,7 @@ export function renderToDOM(vnode: VNode, container: HTMLElement) {
           // Don't create a new instance - instead, try to update the existing DOM
           // updateDOMNode -> updateComponentNode will try to find the instance again
           devTools.error(
-            `[Renderer] renderToDOM: Cannot find existing instance for ${(vnode.type as any).name}. Attempting to update existing DOM - updateComponentNode will try to find instance.`,
+            `[Renderer] renderToDOM: Cannot find existing instance for ${(vnode.type as { name?: string }).name}. Attempting to update existing DOM - updateComponentNode will try to find instance.`,
           );
           // CRITICAL: Store the vnode type on the existing DOM so updateComponentNode can match it
           if (typeof vnode === "object" && vnode !== null) {
@@ -485,7 +476,7 @@ export function renderToDOM(vnode: VNode, container: HTMLElement) {
       // This prevents creating new instances and losing state
       if (isComponentVNode(vnode) && container.firstChild) {
         devTools.warn(
-          `[Renderer] renderToDOM: Component VNode ${(vnode.type as any).name} but can't find instance. Attempting to update existing DOM instead of replacing (to prevent state loss).`,
+          `[Renderer] renderToDOM: Component VNode ${(vnode.type as { name?: string }).name} but can't find instance. Attempting to update existing DOM instead of replacing (to prevent state loss).`,
         );
         // Try to update the existing DOM - this will give updateComponentNode another chance to find the instance
         const existingDom = container.firstChild;
@@ -519,16 +510,16 @@ export function renderToDOM(vnode: VNode, container: HTMLElement) {
       if (isComponentVNode(vnode)) {
         const instance = componentInstances.get(domNode as HTMLElement);
         if (instance) {
-          if (!(instance as any)._container) {
-            (instance as any)._container = container;
+          const ici = asInternal(instance);
+          if (!ici._container) {
+            ici._container = container;
             devTools.log(
               `[Renderer] renderToDOM: Set container on root component instance ${instance.constructor.name} during initial render`,
             );
           }
-          if (!(instance as any)._domNode) {
-            (instance as any)._domNode = domNode;
+          if (!ici._domNode) {
+            ici._domNode = domNode;
           }
-          // CRITICAL: Store instance in containerToInstance map for future lookups
           if (container instanceof HTMLElement) {
             containerToInstance.set(container, instance);
             devTools.log(
@@ -544,8 +535,11 @@ export function renderToDOM(vnode: VNode, container: HTMLElement) {
     const errorMessage = err.message || "Unknown error";
 
     // Report to error reporter
-    if (typeof window !== "undefined" && (window as any).__swissErrorReporter) {
-      (window as any).__swissErrorReporter.report(err, {
+    const win = typeof window !== "undefined"
+      ? (window as { __swissErrorReporter?: { report: (e: Error, ctx: unknown) => void } })
+      : null;
+    if (win?.__swissErrorReporter) {
+      win.__swissErrorReporter.report(err, {
         context: "renderToDOM",
         vnode: String(vnode),
         container: container?.id || "unknown",
@@ -619,7 +613,7 @@ export function renderToString(vnode: VNode): string {
     try {
       const rendered = renderComponentImpl(
         vnode,
-        (vnode as any).__componentInstance as SwissComponent | undefined,
+        vnode.__componentInstance,
       );
       return renderToString(rendered);
     } catch (e) {

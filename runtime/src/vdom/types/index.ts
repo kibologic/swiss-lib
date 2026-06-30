@@ -26,6 +26,8 @@ export interface VNodeBase {
   __rendered?: VNode;
   /** Renderer-internal: pre-normalized children cached by the reconciler. */
   __normalizedChildren?: VNode[];
+  /** Renderer-internal: cached normalized fragment output. */
+  __normalized?: VNode | VNode[];
 }
 
 export interface VElement extends VNodeBase {
