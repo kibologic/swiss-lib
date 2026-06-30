@@ -43,6 +43,7 @@ export interface ComponentInternals {
   executeHookPhase(phase: string): Promise<void>;
   captureError(error: unknown, phase: string): void;
   captureChildError(child: SwissComponent, errorInfo: unknown): boolean;
+  unmountComponent?(): void;
   commitVNode(vnode: VNode): void;
   safeRender(): VNode | null;
   clearEffects(): void;

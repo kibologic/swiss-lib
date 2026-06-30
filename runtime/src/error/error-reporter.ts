@@ -51,7 +51,7 @@ class ErrorReporterImpl {
         ? (process.env.NODE_ENV === 'development' || !process.env.NODE_ENV)
         : true; // Default to dev mode in browser
       if (isDev) {
-        (window as any).__swissErrorReporter = this;
+        (window as unknown as { __swissErrorReporter?: ErrorReporterImpl }).__swissErrorReporter = this;
       }
       
       window.addEventListener('error', (event) => {

@@ -161,6 +161,7 @@ export function filterValidVNodes(children: unknown[]): VNode[] {
 }
 
 import { eventListeners, vnodeMetadata, componentInstances } from "./storage.js";
+import { asInternal } from "../component/internal.js";
 import { logger } from "../utils/logger.js";
 
 export function cleanupNode(node: Node) {
@@ -178,9 +179,10 @@ export function cleanupNode(node: Node) {
     // Invoke unmount lifecycle before removing the instance from the registry
     const instance = componentInstances.get(element);
     if (instance) {
-      if (typeof (instance as any).unmountComponent === "function") {
+      const ci = asInternal(instance);
+      if (typeof ci.unmountComponent === "function") {
         try {
-          (instance as any).unmountComponent();
+          ci.unmountComponent();
         } catch (e) {
           logger.warn(`[SwissJS] Error during unmount cleanup:`, e);
         }

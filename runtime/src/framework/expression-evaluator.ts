@@ -116,7 +116,7 @@ export class ExpressionEvaluator {
       case '<': return (left as number) < (right as number);
       case '&&': return !!(left && right);
       case '||': return !!(left || right);
-      case '+': return (left as string | number) + (right as string | number);
+      case '+': return (left as number) + (right as number);
       case '-': return (left as number) - (right as number);
       case '*': return (left as number) * (right as number);
       case '/': return (left as number) / (right as number);

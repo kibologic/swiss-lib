@@ -26,8 +26,7 @@ export interface ComponentNodePayload {
 /** Opt-in telemetry flag separate from devtools enablement */
 export function isTelemetryEnabled(): boolean {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const g: any = (typeof globalThis !== 'undefined') ? (globalThis as any) : {};
+    const g = (typeof globalThis !== 'undefined') ? (globalThis as Record<string, unknown>) : {} as Record<string, unknown>;
     if (typeof process !== 'undefined' && process?.env?.SWISS_TELEMETRY) {
       return process.env.SWISS_TELEMETRY === '1' || process.env.SWISS_TELEMETRY === 'true';
     }
@@ -104,8 +103,7 @@ let bridgeSingleton: DevtoolsBridge | null = null;
 export function isDevtoolsEnabled(): boolean {
   try {
     // Prefer explicit env var in Node; also allow a global flag for non-Node runtimes.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const g: any = (typeof globalThis !== 'undefined') ? (globalThis as any) : {};
+    const g = (typeof globalThis !== 'undefined') ? (globalThis as Record<string, unknown>) : {} as Record<string, unknown>;
     if (typeof process !== 'undefined' && process?.env?.SWISS_DEVTOOLS) {
       return process.env.SWISS_DEVTOOLS === '1' || process.env.SWISS_DEVTOOLS === 'true';
     }
