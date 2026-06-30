@@ -1,5 +1,6 @@
 import { ValidatorService, type JSONSchema, type ValidationResult } from '../index.js';
 import type { SecurityPolicy } from '../index.js';
+import type { MiddlewareRequest, MiddlewareResponse, NextFunction } from './types.js';
 
 export interface ValidationMiddlewareOptions {
   schema: JSONSchema;
@@ -12,10 +13,10 @@ export function createValidationMiddleware(options: ValidationMiddlewareOptions)
   const validator = new ValidatorService();
   const compiledSchema = validator.compileSchema(options.schema);
 
-  return async (req: any, res: any, next: any) => {
+  return async (req: MiddlewareRequest, res: MiddlewareResponse, next: NextFunction) => {
     try {
-      const target = options.target || 'body';
-      const data = req[target];
+      const target = options.target ?? 'body';
+      const data = req[target as keyof MiddlewareRequest];
 
       const result = compiledSchema.validate(data);
 
@@ -118,30 +119,28 @@ export function createPolicyValidationMiddleware(options: PolicyValidationMiddle
     );
   }
 
-  return async (req: any, res: any, next: any) => {
+  return async (req: MiddlewareRequest, res: MiddlewareResponse, next: NextFunction) => {
     try {
-      const reqPath: string = req.path || req.url || '/';
-      const reqMethod: string = req.method || 'GET';
+      const reqPath: string = req.path ?? req.url ?? '/';
+      const reqMethod: string = req.method ?? 'GET';
 
       const matched = findPolicyForRequest(policies, reqPath, reqMethod);
 
       if (!matched) {
-        // No policy covers this route — pass through.
         return next();
       }
 
       const { policy } = matched;
 
       if (!policy.inputValidation) {
-        // Policy matched but has no inputValidation config — pass through.
         return next();
       }
 
       const { schema, maxSize, allowedContentTypes } = policy.inputValidation;
 
-      // Content-type check
       if (allowedContentTypes && allowedContentTypes.length > 0) {
-        const contentType: string = req.get?.('Content-Type') ?? req.headers?.['content-type'] ?? '';
+        const rawContentType = req.get?.('Content-Type') ?? req.headers?.['content-type'] ?? '';
+        const contentType = Array.isArray(rawContentType) ? rawContentType[0] ?? '' : rawContentType;
         if (!allowedContentTypes.some((t) => contentType.includes(t))) {
           return res.status(415).json({
             error: 'Unsupported Media Type',
@@ -150,7 +149,6 @@ export function createPolicyValidationMiddleware(options: PolicyValidationMiddle
         }
       }
 
-      // Size check
       if (maxSize !== undefined && req.body !== undefined) {
         const bodySize = Buffer.byteLength(JSON.stringify(req.body), 'utf8');
         if (bodySize > maxSize) {
@@ -161,7 +159,6 @@ export function createPolicyValidationMiddleware(options: PolicyValidationMiddle
         }
       }
 
-      // Schema validation
       if (schema && req.body !== undefined) {
         const compiled = validator.compileSchema(schema);
         const result = compiled.validate(req.body);
