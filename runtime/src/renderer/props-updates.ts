@@ -153,27 +153,8 @@ export function updateProperty(
   newValue: unknown,
 ) {
   if (oldValue !== newValue) {
-    // CRITICAL: For input/textarea elements, preserve focus when updating value
-    // Check if element has focus before updating
-    const isFocused = document.activeElement === element;
-    const selectionStart = (element as HTMLInputElement).selectionStart;
-    const selectionEnd = (element as HTMLInputElement).selectionEnd;
-
     (element as unknown as Record<string, unknown>)[name] =
       newValue === null ? "" : newValue;
-
-    // Restore focus and cursor position if element had focus
-    if (isFocused && (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA')) {
-      (element as HTMLInputElement).focus();
-      // Restore cursor position if it's a valid input
-      if (typeof selectionStart === 'number' && typeof selectionEnd === 'number') {
-        try {
-          (element as HTMLInputElement).setSelectionRange(selectionStart, selectionEnd);
-        } catch (e) {
-          // Some input types don't support setSelectionRange, ignore
-        }
-      }
-    }
   }
 }
 
