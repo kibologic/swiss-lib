@@ -1,6 +1,6 @@
 {
   "name": "@swissjs/security",
-  "version": "0.2.0",
+  "version": "1.2.0",
   "description": "Security primitives for SwissJS",
   "type": "module",
   "main": "dist/index.js",

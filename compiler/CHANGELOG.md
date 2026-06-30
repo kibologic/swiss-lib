@@ -1,4 +1,4 @@
-# @kibologic/plugin-web-storage
+# @swissjs/compiler
 
 ## 1.2.0
 
@@ -91,15 +91,3 @@
   - **npm token rotation** — stale token removed from history; `.gitignore` hardened
   - **CI workflows added**: `deps-audit.yml`, `gitleaks.yml`, `semgrep.yml`, `sast-eslint.yml`, `policy.yml`, `docs.yml`, `extension-ci.yml`
   - **Husky hooks**: `pre-commit` (lint), `commit-msg` (conventional commits), `pre-push` (type-check + test)
-
-### Patch Changes
-
-- Updated dependencies
-  - @swissjs/core@1.2.0
-
-## 1.0.2
-
-### Patch Changes
-
-- Updated dependencies [c106549]
-  - @kibologic/core@1.0.2

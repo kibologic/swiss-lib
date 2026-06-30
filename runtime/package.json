@@ -1,6 +1,6 @@
 {
   "name": "@swissjs/core",
-  "version": "0.2.0",
+  "version": "1.2.0",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "dist/index.d.ts",
@@ -29,8 +29,8 @@
     "src/global.d.ts"
   ],
   "dependencies": {
-    "@swissjs/shared": "^0.1.15",
-    "@swissjs/security": "^0.1.13"
+    "@swissjs/shared": "^1.2.0",
+    "@swissjs/security": "^1.2.0"
   },
   "devDependencies": {
     "@types/node": "18.19.121",
