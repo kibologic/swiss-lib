@@ -90,6 +90,31 @@ This document tracks intentional short-term compromises to unblock delivery. Eac
 
 ---
 
+## ✅ RESOLVED — Security Middleware `any` Types
+
+- Package: `security/src/middleware/`
+- Original issue: All three middleware factories (`createRateLimitMiddleware`, `createSecurityHeadersMiddleware`, `createValidationMiddleware`, `createPolicyValidationMiddleware`) used `req: any, res: any, next: any` for Express-style parameters. `onLimitExceeded` callback also typed `result: any`.
+- Resolution (feature/security-middleware-types, 2026-06-30):
+  - `security/src/middleware/types.ts` (new): `MiddlewareRequest`, `MiddlewareResponse`, `MiddlewareResponseChain`, `NextFunction`, `MiddlewareFn` — framework-agnostic structural interfaces compatible with Express/Connect/Fastify.
+  - `rate-limit-middleware.ts`: `result: any` → `RateLimitResult`; `req.get('User-Agent')` → `req.get?.()` optional chain.
+  - `security-headers-middleware.ts`: `_req: any` → `_req: unknown`.
+  - `validation-middleware.ts`: `req[target]` keyed via `keyof MiddlewareRequest`; `string | string[]` union for Content-Type header narrowed with `Array.isArray`.
+  - All five types exported from middleware barrel and package barrel.
+- Resolved: 2026-06-30
+
+---
+
+## ✅ RESOLVED — `update-manager.ts` 700-Line Violation
+
+- Package: `runtime/src/component/`
+- Original issue: `update-manager.ts` at 703 lines exceeded the 700-line file limit.
+- Resolution (feature/refactor-file-limits, 2026-06-30):
+  - DOM update strategies extracted to `update-strategies.ts` (278 lines): `refreshChildDomNode`, `updateWithDomNode`, `updateChildComponent`, `handleNoUpdatePath`, `updateRootComponent`.
+  - `update-manager.ts` reduced to 186 lines.
+- Resolved: 2026-06-30
+
+---
+
 ## ✅ RESOLVED — Router Package `any` Types
 
 - Packages: `router/src/core/router.ts`, `router/src/core/matcher.ts`, `router/src/core/link.ts`, `router/src/core/outlet.ts`, `router/src/api/handler.ts`, `router/src/api/scanner.ts`, `router/src/ssr/hydration.ts`, `router/src/ssr/server-renderer.ts`
