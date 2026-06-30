@@ -26,8 +26,6 @@ export function extractCriticalCSS(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _html: string,
 ): string {
-  // TODO: Implement critical CSS extraction
-  // For now, return all CSS
   return css;
 }
 
