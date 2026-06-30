@@ -4,7 +4,8 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-import baseConfig from "../../config/eslint.base.mjs";
+// eslint.base.mjs lives at dev/config/ outside this repo; inline the empty default here.
+const baseConfig = [];
 import tseslint from "typescript-eslint";
 import vitest from "eslint-plugin-vitest";
 import { defineConfig } from "eslint/config";
