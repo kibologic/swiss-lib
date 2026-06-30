@@ -5,6 +5,7 @@
  */
 
 import type { SwissComponent } from "./component.js";
+import type { VNode } from "../vdom/vdom.js";
 // Registry of subscription cleanup functions per component
 const __ctxRegistrations: WeakMap<
   SwissComponent,
@@ -190,7 +191,7 @@ export const SwissContext = {
       };
 
     // Helper method for JSX-friendly provide pattern
-    const provide = (value: T, children: any, component: SwissComponent) => {
+    const provide = (value: T, children: VNode | VNode[] | null | undefined, component: SwissComponent) => {
       component.provideContext(key, value);
       return children;
     };
@@ -198,7 +199,7 @@ export const SwissContext = {
     // JSX-friendly Provider component wrapper.
     // Usage: <Ctx.ProviderComponent value={...}>{children}</Ctx.ProviderComponent>
     const ProviderComponent = (
-      props: { value: T; children?: any },
+      props: { value: T; children?: VNode | VNode[] | null },
       component: SwissComponent,
     ) => {
       component.provideContext(key, props.value);

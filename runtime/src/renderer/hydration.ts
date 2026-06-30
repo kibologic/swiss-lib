@@ -5,6 +5,7 @@
  */
 
 import type { VNode, VElement, ComponentVNode } from "../vdom/vdom.js";
+import type { SwissComponent } from "../component/component.js";
 import { vnodeMetadata, componentInstances } from "./storage.js";
 import { isTextVNode, isElementVNode, isComponentVNode } from "./types.js";
 import { DiffingError } from "./errors.js";
@@ -14,7 +15,7 @@ import { reconcileProps } from "./props-updates.js";
 type RenderToDOMFn = (vnode: VNode, container: HTMLElement) => void;
 type RenderComponentFn = (
   vnode: ComponentVNode,
-  existingInstance?: any,
+  existingInstance?: SwissComponent,
 ) => VNode;
 type CreateDOMNodeFn = (vnode: VNode | null | undefined | boolean) => Node;
 type UpdateDOMNodeFn = (dom: Node, vnode: VNode) => void;

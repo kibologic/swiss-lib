@@ -5,7 +5,7 @@
  */
 
 import type { SwissComponent } from "../component/component.js";
-import type { VNode, ComponentVNode } from "../vdom/vdom.js";
+import type { VNode, VElement, ComponentVNode } from "../vdom/vdom.js";
 // Import all modules
 import {
   vnodeMetadata,
@@ -51,7 +51,7 @@ let updateDOMNodeBound: (dom: Node, vnode: VNode) => void;
 let createDOMNodeBound: (vnode: VNode | null | undefined | boolean) => Node;
 let updateElementNodeBound: (
   dom: HTMLElement,
-  vnode: any,
+  vnode: VElement,
   oldVNode?: VNode,
 ) => void;
 let updateComponentNodeBound: (
@@ -91,7 +91,7 @@ reconcileChildrenBound = (
 // Create bound updateElementNode that includes reconcileProps and reconcileChildren
 updateElementNodeBound = (
   dom: HTMLElement,
-  vnode: any,
+  vnode: VElement,
   oldVNode?: VNode,
 ): void => {
   return updateElementNode(
