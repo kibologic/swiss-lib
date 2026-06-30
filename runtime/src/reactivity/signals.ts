@@ -188,14 +188,15 @@ export class Signal<T> {
 export class ComputedSignal<T> extends Signal<T> {
   private computeFn: () => T;
   private dirty = true;
-  private dependencies = new Set<Signal<unknown>>();
   private effect: Effect;
 
   constructor(computeFn: () => T, options?: SignalOptions<T>) {
     super(undefined as unknown as T, options);
     this.computeFn = computeFn;
 
-    // Create a proper Effect using the actual Effect class
+    // Effect fires when any dependency changes: mark dirty, then notify downstream.
+    // clearDependencies() runs before fn(), so deps are always re-tracked on next
+    // .value read via updateValue(). No manual dep.subscribe() needed here.
     this.effect = new Effect(() => {
       this.dirty = true;
       this.notify();
@@ -212,39 +213,25 @@ export class ComputedSignal<T> extends Signal<T> {
   }
 
   private updateValue() {
-    // Clear previous dependencies
-    this.dependencies.forEach((dep) => {
-      dep.unsubscribe(() => this.effect.execute());
-    });
-    this.dependencies.clear();
-
-    // Compute new value with dependency tracking
     const prevCurrentEffect = getCurrentEffect();
-
     try {
-      // Set current effect to track dependencies
+      // trackEffect() inside each signal's .value getter registers this.effect.execute
+      // as a subscriber and adds the signal to this.effect.dependencies — no manual
+      // subscribe/unsubscribe needed. effect.execute() calls clearDependencies() before
+      // re-running, so stale subscriptions are cleaned up automatically.
       setCurrentEffect(this.effect);
-
       this._value = this.computeFn();
       this.dirty = false;
-
-      // Store new dependencies
-      this.effect.dependencies.forEach((dep) => {
-        this.dependencies.add(dep);
-        dep.subscribe(() => this.effect.execute());
-      });
     } catch (error) {
       console.error("Error computing signal value:", error);
       this.dirty = false;
     } finally {
-      // Restore previous effect context
       setCurrentEffect(prevCurrentEffect);
     }
   }
 
   dispose() {
     this.effect.dispose();
-    this.dependencies.clear();
   }
 }
 
