@@ -7,7 +7,13 @@
 export * from './component.js';
 export * from './lifecycle.js';
 export * from './error-boundary.js';
-export * from './context.js';
+export {
+  SwissContext,
+  createContext,
+  useContext,
+  cleanupContextSubscriptions,
+} from './context.js';
+export type { SwissContextObject } from './context.js';
 export * from './portals.js';
 export * from './ssr.js';
 export * from './types.js';

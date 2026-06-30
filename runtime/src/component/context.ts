@@ -6,31 +6,52 @@
 
 import type { SwissComponent } from "./component.js";
 import type { VNode } from "../vdom/vdom.js";
-// Registry of subscription cleanup functions per component
-const __ctxRegistrations: WeakMap<
-  SwissComponent,
-  Set<() => void>
-> = new WeakMap();
 
+// ─── Types ───────────────────────────────────────────────────────────────────
+
+export interface SwissContextObject<T> {
+  readonly Provider: (value: T) => (component: SwissComponent) => SwissComponent;
+  readonly Consumer: <S = T>(
+    select?: (value: T | undefined) => S,
+    equals?: (a: S, b: S) => boolean,
+  ) => (component: SwissComponent) => S | T | undefined;
+  readonly provide: (
+    value: T,
+    children: VNode | VNode[] | null | undefined,
+    component: SwissComponent,
+  ) => VNode | VNode[] | null | undefined;
+  readonly ProviderComponent: (
+    props: { value: T; children?: VNode | VNode[] | null },
+    component: SwissComponent,
+  ) => VNode | VNode[] | null | undefined;
+  readonly use: (component: SwissComponent) => T | undefined;
+}
+
+// ─── Internal cleanup registry ───────────────────────────────────────────────
+
+const __ctxRegistrations: WeakMap<SwissComponent, Set<() => void>> = new WeakMap();
+
+/**
+ * Unsubscribes a component from all context subscriptions it holds.
+ * Called automatically during component unmount.
+ * @internal
+ */
 export function cleanupContextSubscriptions(component: SwissComponent): void {
   const fns = __ctxRegistrations.get(component);
   if (!fns) return;
   fns.forEach((fn) => {
-    try {
-      fn();
-    } catch {
-      /* noop */
-    }
+    try { fn(); } catch { /* noop */ }
   });
   fns.clear();
   __ctxRegistrations.delete(component);
 }
+
+// ─── SwissContext factory ─────────────────────────────────────────────────────
+
 export const SwissContext = {
-  create: <T>(defaultValue?: T) => {
+  create: <T>(defaultValue?: T): SwissContextObject<T> => {
     const key = Symbol();
 
-    // Subscription channel: DEFAULT ON.
-    // Can be explicitly disabled with SWISS_CONTEXT_SUBSCRIBE=0 or global flags set to false.
     const subscribeEnabled = (() => {
       const env =
         typeof process !== "undefined" && process.env
@@ -54,163 +75,151 @@ export const SwissContext = {
       if (winFlag === true) return true;
       return true;
     })();
+
     let version = 0;
     const subscribers = new Set<SwissComponent>();
     const selections = new Map<SwissComponent, { sel: unknown; ver: number }>();
     const selectors = new WeakMap<
       SwissComponent,
-      Map<
-        symbol,
-        {
-          selector?: (v: T | undefined) => unknown;
-          equals?: (a: unknown, b: unknown) => boolean;
-        }
-      >
+      Map<symbol, {
+        selector?: (v: T | undefined) => unknown;
+        equals?: (a: unknown, b: unknown) => boolean;
+      }>
     >();
     let warnedMissingProvider = false;
 
-    const Provider = (value: T) => (component: SwissComponent) => {
+    const Provider = (value: T) => (component: SwissComponent): SwissComponent => {
       component.provideContext(key, value);
       if (subscribeEnabled) {
         version++;
-        // Skip notification on first render (version 0->1) to avoid redundant updates; notify when value actually changes
         if (version > 1) {
           subscribers.forEach((sub: SwissComponent) => {
             try {
               const selInfo = selections.get(sub);
               if (!selInfo) {
-                // No cached selection; schedule a conservative update
-                if (typeof sub.scheduleUpdate === "function")
-                  sub.scheduleUpdate();
+                if (typeof sub.scheduleUpdate === "function") sub.scheduleUpdate();
                 return;
               }
-              // Recompute selected value by invoking Consumer with stored selector if present
-              const entry = selectors.get(sub)?.get(key) || {};
-              const selector = entry.selector as
-                | ((v: T | undefined) => unknown)
-                | undefined;
-              const equals = entry.equals as
-                | ((a: unknown, b: unknown) => boolean)
-                | undefined;
-              const consumer = Consumer(selector, equals);
-              const next = consumer(sub) as unknown;
+              const entry = selectors.get(sub)?.get(key) ?? {};
+              const selector = entry.selector as ((v: T | undefined) => unknown) | undefined;
+              const equals = entry.equals as ((a: unknown, b: unknown) => boolean) | undefined;
+              const next = Consumer(selector, equals)(sub) as unknown;
               const prev = selInfo.sel;
-              const isEqual =
-                typeof equals === "function"
-                  ? !!equals(prev, next)
-                  : prev === next;
+              const isEqual = typeof equals === "function" ? !!equals(prev, next) : prev === next;
               if (!isEqual) {
                 selections.set(sub, { sel: next, ver: version });
-                if (typeof sub.scheduleUpdate === "function")
-                  sub.scheduleUpdate();
+                if (typeof sub.scheduleUpdate === "function") sub.scheduleUpdate();
               } else {
                 selections.set(sub, { sel: prev, ver: version });
               }
-            } catch {
-              // Best-effort; ignore subscriber errors
-            }
+            } catch { /* best-effort */ }
           });
         }
       }
       return component;
     };
 
-    const Consumer =
-      <S = T>(
-        select?: (v: T | undefined) => S,
-        equals?: (a: S, b: S) => boolean,
-      ) =>
-      (component: SwissComponent): S | T | undefined => {
-        // Resolve current value
-        const provided = component.useContext(key) as T | undefined;
-        let value: S | T | undefined = provided as unknown as S | T | undefined;
-        if (typeof select === "function") {
-          value = select(provided) as unknown as S | T | undefined;
+    const Consumer = <S = T>(
+      select?: (v: T | undefined) => S,
+      equals?: (a: S, b: S) => boolean,
+    ) => (component: SwissComponent): S | T | undefined => {
+      const provided = component.useContext(key) as T | undefined;
+      let value: S | T | undefined = provided as unknown as S | T | undefined;
+      if (typeof select === "function") {
+        value = select(provided) as unknown as S | T | undefined;
+      }
+
+      const isMissing = typeof provided === "undefined";
+      if (isMissing && typeof defaultValue !== "undefined") {
+        const inDev =
+          typeof process !== "undefined" &&
+          process.env &&
+          process.env.NODE_ENV !== "production";
+        if (inDev && !warnedMissingProvider) {
+          console.warn("[SwissContext] Consumer resolved to default — no Provider found for this key.");
+          warnedMissingProvider = true;
+        }
+        value = typeof select === "function"
+          ? (select(defaultValue) as unknown as S | T | undefined)
+          : (defaultValue as unknown as S | T | undefined);
+      }
+
+      if (subscribeEnabled) {
+        subscribers.add(component);
+        if (!selectors.get(component)) {
+          selectors.set(component, new Map());
+        }
+        selectors.get(component)!.set(key, {
+          selector: select as ((v: T | undefined) => unknown) | undefined,
+          equals: equals as ((a: unknown, b: unknown) => boolean) | undefined,
+        });
+        const prev = selections.get(component);
+        if (!prev || prev.ver !== version) {
+          selections.set(component, { sel: value as unknown, ver: version });
         }
 
-        // Default value behavior
-        const isMissing = typeof provided === "undefined";
-        if (isMissing && typeof defaultValue !== "undefined") {
-          // Dev warning once per context factory when missing provider
-          const inDev =
-            typeof process !== "undefined" &&
-            process.env &&
-            process.env.NODE_ENV !== "production";
-          if (inDev && !warnedMissingProvider) {
-            console.warn(
-              "[SwissContext] Consumer resolved to default because no Provider was found for this key.",
-            );
-            warnedMissingProvider = true;
-          }
-          value =
-            typeof select === "function"
-              ? (select(defaultValue) as unknown as S | T | undefined)
-              : (defaultValue as unknown as S | T | undefined);
+        let set = __ctxRegistrations.get(component);
+        if (!set) {
+          set = new Set();
+          __ctxRegistrations.set(component, set);
         }
-
-        // Subscription bookkeeping
-        if (subscribeEnabled) {
-          subscribers.add(component);
-          // Persist selector/equality per component+key for recomputation on Provider updates
-          if (!selectors.get(component)) {
-            selectors.set(component, new Map());
+        const unsubscribe = () => {
+          subscribers.delete(component);
+          const m = selectors.get(component);
+          if (m) {
+            m.delete(key);
+            if (m.size === 0) selectors.delete(component);
           }
-          selectors
-            .get(component)!
-            .set(key, {
-              selector: select as ((v: T | undefined) => unknown) | undefined,
-              equals: equals as
-                | ((a: unknown, b: unknown) => boolean)
-                | undefined,
-            });
-          const prev = selections.get(component);
-          if (!prev || prev.ver !== version) {
-            selections.set(component, { sel: value as unknown, ver: version });
-          }
+          selections.delete(component);
+        };
+        set.add(unsubscribe);
+      }
 
-          // Register cleanup for this component/key
-          let set = __ctxRegistrations.get(component);
-          if (!set) {
-            set = new Set();
-            __ctxRegistrations.set(component, set);
-          }
-          // idempotent unsubscribe for this key
-          const unsubscribe = () => {
-            subscribers.delete(component);
-            const m = selectors.get(component);
-            if (m) {
-              m.delete(key);
-              if (m.size === 0) selectors.delete(component);
-            }
-            selections.delete(component);
-          };
-          set.add(unsubscribe);
-        }
+      return value;
+    };
 
-        return value;
-      };
-
-    // Helper method for JSX-friendly provide pattern
-    const provide = (value: T, children: VNode | VNode[] | null | undefined, component: SwissComponent) => {
+    const provide = (
+      value: T,
+      children: VNode | VNode[] | null | undefined,
+      component: SwissComponent,
+    ): VNode | VNode[] | null | undefined => {
       component.provideContext(key, value);
       return children;
     };
 
-    // JSX-friendly Provider component wrapper.
-    // Usage: <Ctx.ProviderComponent value={...}>{children}</Ctx.ProviderComponent>
     const ProviderComponent = (
       props: { value: T; children?: VNode | VNode[] | null },
       component: SwissComponent,
-    ) => {
+    ): VNode | VNode[] | null | undefined => {
       component.provideContext(key, props.value);
-      return props.children;
+      return props.children ?? null;
     };
 
-    // Hook-friendly use method (for use in hooks)
-    const use = (component: SwissComponent): T | undefined => {
-      return Consumer()(component) as T | undefined;
-    };
+    const use = (component: SwissComponent): T | undefined =>
+      Consumer()(component) as T | undefined;
 
     return { Provider, Consumer, provide, ProviderComponent, use };
   },
 };
+
+// ─── Standalone API ───────────────────────────────────────────────────────────
+
+/**
+ * Create a typed context that can be provided and consumed anywhere in the
+ * component tree via the nearest ancestor Provider.
+ */
+export function createContext<T>(defaultValue?: T): SwissContextObject<T> {
+  return SwissContext.create<T>(defaultValue);
+}
+
+/**
+ * Read the current context value from the nearest ancestor Provider.
+ * Returns `defaultValue` (or `undefined`) when no Provider is found above
+ * `component` in the tree.
+ */
+export function useContext<T>(
+  ctx: SwissContextObject<T>,
+  component: SwissComponent,
+): T | undefined {
+  return ctx.use(component);
+}
