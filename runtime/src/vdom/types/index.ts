@@ -16,11 +16,18 @@ export interface VNodeBase {
   props: Record<string, unknown>;
   children: VNode[];
   key?: string | number;
-  dom?: HTMLElement | Text;
+  dom?: HTMLElement | Text | Node;
   ssrId?: string;
   parent?: VNode;
   ssrState?: Record<string, unknown>;
   hydrationId?: string;
+  __componentInstance?: SwissComponent;
+  /** Renderer-internal: last rendered output of a ComponentVNode. */
+  __rendered?: VNode;
+  /** Renderer-internal: pre-normalized children cached by the reconciler. */
+  __normalizedChildren?: VNode[];
+  /** Renderer-internal: cached normalized fragment output. */
+  __normalized?: VNode | VNode[];
 }
 
 export interface VElement extends VNodeBase {

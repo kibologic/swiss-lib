@@ -57,31 +57,43 @@ export class DataService {
   }
 
   /**
-   * Shallow state fetch for a component id.
-   * Note: current bridge may not expose state; return empty object if unavailable.
+   * Request a fresh state snapshot via the bridge's live-state channel.
+   * Falls back to the last stored snapshot when no live callback is registered.
    */
-  getShallowState(_id: string): Record<string, unknown> {
-    // TECH-DEBT: Inspector relies on a shallow snapshot provided by the bridge.
-    // Replace with an explicit request/response channel for fresh, validated
-    // snapshots and use a canonical serializer with redaction and depth limits.
+  getShallowState(id: string): Record<string, unknown> {
     try {
-      return getDevtoolsBridge().getStateSnapshot(_id) ?? {};
+      return getDevtoolsBridge().requestStateSnapshot(id);
     } catch {
       return {};
     }
   }
 
   /**
-   * Drain recent runtime events (mount/update/unmount/usage).
-   * Note: current bridge does not buffer events; returns empty for now.
+   * Non-destructive paged access to the event buffer. Returns newest events first.
    */
-  drainEvents(): RuntimeEvent[] {
-    // TECH-DEBT: Events are ad-hoc and untyped. Switch to a typed DevtoolsEvent
-    // union with category-specific buffers (component/capability/perf/error) and
-    // backpressure. Expose cursors or pagination instead of full drains.
+  drainEventsPaged(offset: number, limit: number): { events: RuntimeEvent[]; total: number } {
     try {
-      // Bridge returns generic events; cast to RuntimeEvent for inspector
+      const result = getDevtoolsBridge().drainEventsPaged(offset, limit);
+      return { events: result.events as RuntimeEvent[], total: result.total };
+    } catch {
+      return { events: [], total: 0 };
+    }
+  }
+
+  drainEvents(): RuntimeEvent[] {
+    try {
       return getDevtoolsBridge().drainEvents() as RuntimeEvent[];
+    } catch {
+      return [];
+    }
+  }
+
+  /**
+   * Find component IDs by display name. O(1) via bridge name index.
+   */
+  getComponentsByName(name: string): string[] {
+    try {
+      return getDevtoolsBridge().getComponentsByName(name);
     } catch {
       return [];
     }

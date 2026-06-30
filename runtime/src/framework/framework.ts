@@ -8,7 +8,7 @@ import { HookRegistry } from "../hooks/hookRegistry.js";
 import { PluginManager } from "../plugins/index.js";
 import type { Plugin } from "../plugins/pluginInterface.js";
 import type { SwissComponent } from "../component/component.js";
-import { ComponentRegistry } from "../component/ComponentRegistry.js";
+import type { SwissApp } from "./app.js";
 import {
   coreDirectiveHandlers,
   isCoreDirective,
@@ -25,7 +25,7 @@ export class SwissFramework {
   
   public readonly hooks: HookRegistry;
   public readonly plugins: PluginManager;
-  public readonly apps = new Set<any>(); // SwissApp instances
+  public readonly apps = new Set<SwissApp>();
   
   private constructor() {
     this.hooks = new HookRegistry();
@@ -86,11 +86,11 @@ export class SwissFramework {
     this.apps.clear();
   }
 
-  registerApp(app: any): void {
+  registerApp(app: SwissApp): void {
     this.apps.add(app);
   }
 
-  unregisterApp(app: any): void {
+  unregisterApp(app: SwissApp): void {
     this.apps.delete(app);
   }
 
@@ -101,11 +101,11 @@ export class SwissFramework {
     this.hooks.callHook("directive:register", { name, handler });
   }
 
-  async applyDirective(element: Element, directive: string, value: any): Promise<void> {
+  async applyDirective(element: Element, directive: string, value: unknown): Promise<void> {
     await this.hooks.callHook("directive:apply", { element, directive, value });
   }
 
-  async handleError(error: Error, context?: any): Promise<void> {
+  async handleError(error: Error, context?: unknown): Promise<void> {
     await this.hooks.callHook("framework:error", { error, context });
   }
 

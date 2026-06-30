@@ -4,21 +4,6 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-/**
- * Mount / unmount / SSR lifecycle methods for SwissComponent.
- *
- * This module is extracted from component.ts to keep both files within the
- * 700-line hard limit. It is not part of the public API — its functions are
- * called exclusively by SwissComponent.
- *
- * Functions exported here:
- *   mountComponent     — first-render into a container element
- *   unmountComponent   — teardown, effect cleanup, DOM removal
- *   bindEventHandlers  — wire @Event decorator handlers after mount
- */
-
 import { untrack } from "../reactivity/effect.js";
 import { reactive } from "../reactivity/reactive.js";
 import { cleanupContextSubscriptions } from "./context.js";
@@ -29,18 +14,16 @@ import {
 import { CapabilityManager } from "../security/capability-manager.js";
 import { logger } from "../utils/logger.js";
 import type { SwissComponent } from "./component.js";
+import { asInternal } from "./internal.js";
 
 // ─── mountComponent ───────────────────────────────────────────────────────────
 
-/**
- * Performs the initial render into `container` and fires lifecycle hooks.
- * Called by SwissComponent.mount().
- */
 export function mountComponent(
   self: SwissComponent,
   container: HTMLElement,
 ): void {
-  if ((self as any)._isMounted) return;
+  const c = asInternal(self);
+  if (c._isMounted) return;
   if (!container || !(container instanceof HTMLElement)) {
     logger.error(
       `mount() called for ${self.constructor.name} with invalid container:`,
@@ -49,39 +32,33 @@ export function mountComponent(
     return;
   }
 
-  (self as any)._container = container;
+  c._container = container;
+  c._mounting = true;
 
-  // Prevent the initial render effect from committing DOM until beforeMount has fired.
-  (self as any)._mounting = true;
+  c.initialize();
+  void c.executeHookPhase("beforeMount");
 
-  // Initialize reactivity BEFORE any DOM commit. The render effect will execute immediately.
-  (self as any).initialize();
-  (self as any).executeHookPhase("beforeMount");
+  c._mounting = false;
 
-  // Allow commits now that beforeMount has run.
-  (self as any)._mounting = false;
-
-  // Perform the first DOM commit explicitly (reactivity is now established for subsequent updates).
   untrack(() => {
-    const vnode = (self as any).safeRender();
-    if (vnode !== null) (self as any).commitVNode(vnode);
+    const vnode = c.safeRender();
+    if (vnode !== null) c.commitVNode(vnode);
   });
 
-  (self as any)._isMounted = true;
+  c._isMounted = true;
   bindEventHandlers(self);
-  (self as any).executeHookPhase("mounted");
+  void c.executeHookPhase("mounted");
 
   if (isDevtoolsEnabled()) {
     try {
-      const parentId =
-        (self as any)._parent?.["_devtoolsId"] ?? null;
+      const parentId = c._parent ? asInternal(c._parent)._devtoolsId : null;
       const consumes =
         (self.constructor as typeof SwissComponent).requires ?? [];
       const provides = CapabilityManager.getProvidedCapabilities(
         self.constructor as typeof SwissComponent,
       );
       getDevtoolsBridge().onComponentMount({
-        id: (self as any)._devtoolsId,
+        id: c._devtoolsId,
         name: self.constructor.name,
         parentId,
         provides,
@@ -91,102 +68,70 @@ export function mountComponent(
         getDevtoolsBridge().recordEvent({
           t: Date.now(),
           type: "mount",
-          msg: (self as any)._devtoolsId,
+          msg: c._devtoolsId,
         });
-      } catch {
-        /* ignore */
-      }
-    } catch {
-      /* ignore */
-    }
+      } catch { /* ignore */ }
+    } catch { /* ignore */ }
   }
 }
 
 // ─── unmountComponent ─────────────────────────────────────────────────────────
 
-/**
- * Tears down the component: cleans up effects, context subscriptions,
- * removes the DOM node, and fires lifecycle hooks.
- * Called by SwissComponent.unmountComponent().
- */
 export function unmountComponent(self: SwissComponent): void {
-  if (!(self as any)._isMounted) return;
+  const c = asInternal(self);
+  if (!c._isMounted) return;
 
   try {
-    (self as any).executeHookPhase("beforeUnmount");
+    void c.executeHookPhase("beforeUnmount");
     if (isDevtoolsEnabled()) {
       try {
-        getDevtoolsBridge().onComponentUnmount((self as any)._devtoolsId);
-      } catch {
-        /* ignore */
-      }
+        getDevtoolsBridge().onComponentUnmount(c._devtoolsId);
+      } catch { /* ignore */ }
     }
     cleanupContextSubscriptions(self);
-    (self as any).clearEffects();
-    (self as any).capabilityManager.clearCache();
-    (self as any)._children = [];
-    (self as any)._parent = null;
+    c.clearEffects();
+    c.clearCapabilityCache();
+    c._children = [];
+    c._parent = null;
 
-    if ((self as any)._container?.parentNode) {
-      (self as any)._container.parentNode.removeChild(
-        (self as any)._container,
-      );
+    if (c._container?.parentNode) {
+      c._container.parentNode.removeChild(c._container);
     }
 
-    (self as any)._portals.forEach(
-      (_: unknown, portalContainer: HTMLElement) => {
-        if (portalContainer && portalContainer.innerHTML !== undefined)
-          portalContainer.innerHTML = "";
-      },
-    );
+    c._portals.forEach((_: unknown, portalContainer: HTMLElement) => {
+      if (portalContainer && portalContainer.innerHTML !== undefined) {
+        portalContainer.innerHTML = "";
+      }
+    });
 
-    (self as any)._hooks = [];
-    // Swiss syntax: unmount { } compiles to private unmounted() { } — call it before teardown
-    if (typeof (self as any).unmounted === "function") {
+    c._hooks = [];
+
+    if (typeof self.unmounted === "function") {
       try {
-        (self as any).unmounted();
+        self.unmounted();
       } catch (error) {
-        console.error(
-          `[Component] Error in unmounted() for ${self.constructor.name}:`,
-          error,
-        );
+        logger.error(`Error in unmounted() for ${self.constructor.name}:`, error);
       }
     }
-    (self as any).executeHookPhase("unmounted");
-    (self as any).state = reactive({}) as any;
-    (self as any)._isMounted = false;
+
+    void c.executeHookPhase("unmounted");
+    c.state = reactive({}) as Record<string, unknown>;
+    c._isMounted = false;
   } catch (error) {
-    (self as any).captureError(error, "destroy");
+    c.captureError(error, "destroy");
   }
 }
 
 // ─── bindEventHandlers ────────────────────────────────────────────────────────
 
-/**
- * Wires up @Event decorator handlers after the component has mounted.
- * Called once by mountComponent() after the first DOM commit.
- */
 export function bindEventHandlers(self: SwissComponent): void {
-  const eventHandlers = (self as any)._swissEventHandlers as
-    | Array<{
-        eventType: string;
-        method: string;
-        selector?: string;
-        options: {
-          capture?: boolean;
-          once?: boolean;
-          passive?: boolean;
-          preventDefault?: boolean;
-          stopPropagation?: boolean;
-          capability?: string;
-        };
-      }>
-    | undefined;
+  const c = asInternal(self);
+  const eventHandlers = c._swissEventHandlers;
 
-  if (!eventHandlers || !(self as any)._container) return;
+  if (!eventHandlers || !c._container) return;
 
   for (const handler of eventHandlers) {
-    const method = (self as any)[handler.method];
+    const method = c[handler.method];
     if (typeof method !== "function") {
       logger.warn(
         `Event handler method '${handler.method}' not found on ${self.constructor.name}`,
@@ -204,25 +149,19 @@ export function bindEventHandlers(self: SwissComponent): void {
       continue;
     }
 
+    const fn = method as (...args: unknown[]) => unknown;
     const boundHandler = (event: Event) => {
-      if (handler.options.preventDefault) {
-        event.preventDefault();
-      }
-      if (handler.options.stopPropagation) {
-        event.stopPropagation();
-      }
-
+      if (handler.options.preventDefault) event.preventDefault();
+      if (handler.options.stopPropagation) event.stopPropagation();
       try {
-        (method as (...args: unknown[]) => unknown).call(self, event);
+        fn.call(self, event);
       } catch (error) {
-        (self as any).captureError(error, `event:${handler.eventType}`);
+        c.captureError(error, `event:${handler.eventType}`);
       }
     };
 
     if (handler.selector) {
-      const elements = (self as any)._container.querySelectorAll(
-        handler.selector,
-      );
+      const elements = c._container!.querySelectorAll(handler.selector);
       elements.forEach((element: Element) => {
         element.addEventListener(handler.eventType, boundHandler, {
           capture: handler.options.capture,
@@ -231,15 +170,11 @@ export function bindEventHandlers(self: SwissComponent): void {
         });
       });
     } else {
-      (self as any)._container.addEventListener(
-        handler.eventType,
-        boundHandler,
-        {
-          capture: handler.options.capture,
-          once: handler.options.once,
-          passive: handler.options.passive,
-        },
-      );
+      c._container!.addEventListener(handler.eventType, boundHandler, {
+        capture: handler.options.capture,
+        once: handler.options.once,
+        passive: handler.options.passive,
+      });
     }
   }
 }

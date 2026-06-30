@@ -14,28 +14,28 @@ export type { EffectDisposer } from "./types/index.js";
 export function reactive<T extends object>(target: T): T {
   const signals = new Map<PropertyKey, Signal<unknown>>();
 
-  for (const key of Object.keys(target as Record<string, unknown>)) {
-    signals.set(key, new Signal((target as any)[key]));
+  const record = target as Record<string, unknown>;
+  for (const key of Object.keys(record)) {
+    signals.set(key, new Signal(record[key]));
   }
 
   const proxy = new Proxy(target, {
     get(obj: T, prop: PropertyKey) {
       if (typeof prop === "symbol" || String(prop).startsWith("__")) {
-        return (obj as any)[prop];
+        return Reflect.get(obj, prop);
       }
 
       if (!signals.has(prop)) {
-        signals.set(prop, new Signal((obj as any)[prop]));
+        signals.set(prop, new Signal(Reflect.get(obj, prop)));
       }
 
       const sig = signals.get(prop)!;
       trackEffect(sig);
-      return (sig as any)._value;
+      return sig.peek();
     },
     set(obj: T, prop: PropertyKey, value: unknown) {
       if (typeof prop === "symbol" || String(prop).startsWith("__")) {
-        (obj as any)[prop] = value;
-        return true;
+        return Reflect.set(obj, prop, value);
       }
 
       if (!signals.has(prop)) {
@@ -44,15 +44,14 @@ export function reactive<T extends object>(target: T): T {
         signals.get(prop)!.value = value;
       }
 
-      (obj as any)[prop] = value;
-      return true;
+      return Reflect.set(obj, prop, value);
     },
     has(obj: T, prop: PropertyKey) {
       return prop in obj || signals.has(prop);
     },
   });
 
-  if (!(proxy as any).__reactive) {
+  if (!Reflect.has(proxy, "__reactive")) {
     Object.defineProperty(proxy, "__reactive", {
       value: true,
       enumerable: false,
@@ -72,9 +71,9 @@ export function watch<T extends object>(
   property: keyof T,
   callback: (newValue: unknown, oldValue: unknown) => void,
 ): () => void {
-  let currentValue = (obj as any)[property];
+  let currentValue = obj[property];
   return effectImpl(() => {
-    const nextValue = (obj as any)[property];
+    const nextValue = obj[property];
     if (nextValue !== currentValue) {
       const prev = currentValue;
       currentValue = nextValue;

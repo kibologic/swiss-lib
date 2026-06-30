@@ -4,24 +4,24 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-import { HookRegistry } from '../hooks/hookRegistry.js';
-import { SwissComponent } from './component.js';
+import type { ComponentType } from '../vdom/types/index.js';
 
 export class ComponentRegistry {
-  private readonly hooks: HookRegistry;
-  private readonly registry = new Map<string, typeof SwissComponent>();
+  private static readonly _registry = new Map<string, ComponentType>();
 
-  constructor(hooks: HookRegistry) {
-    this.hooks = hooks;
+  static register(name: string, component: ComponentType): void {
+    ComponentRegistry._registry.set(name, component);
   }
 
-  register(name: string, component: typeof SwissComponent) {
-    this.registry.set(name, component);
-    // Optionally, we could expose a hook in the future, referencing hooks ensures no-unused-vars
-    void this.hooks;
+  static get(name: string): ComponentType | undefined {
+    return ComponentRegistry._registry.get(name);
   }
 
-  get(name: string): typeof SwissComponent | undefined {
-    return this.registry.get(name);
+  static has(name: string): boolean {
+    return ComponentRegistry._registry.has(name);
+  }
+
+  static clear(): void {
+    ComponentRegistry._registry.clear();
   }
 }

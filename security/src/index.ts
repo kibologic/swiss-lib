@@ -5,7 +5,7 @@
  */
 
 // Public barrel: explicit re-exports only (no wildcards)
-export { InMemorySecurityEngine, getDefaultSecurityEngine } from "./engine.js";
+export { InMemorySecurityEngine, getDefaultSecurityEngine, sanitizeString } from "./engine.js";
 export type {
   AuditEntry,
   SecurityContext,
@@ -27,6 +27,11 @@ export {
   createValidationMiddleware,
   createPolicyValidationMiddleware,
   createSecurityHeadersMiddleware,
+  type MiddlewareRequest,
+  type MiddlewareResponse,
+  type MiddlewareResponseChain,
+  type NextFunction,
+  type MiddlewareFn,
   type RateLimitMiddlewareOptions,
   type ValidationMiddlewareOptions,
   type PolicyValidationMiddlewareOptions,

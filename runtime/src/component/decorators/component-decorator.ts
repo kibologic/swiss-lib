@@ -23,20 +23,22 @@ export function Component(options: ComponentOptions = {}) {
     // Store component metadata
     Reflect.defineMetadata(SWISS_COMPONENT, options, constructor);
     
+    const ctor = constructor as unknown as Record<string, unknown>;
+
     // Add selector property if provided
     if (options.selector) {
-      (constructor as any).selector = options.selector;
+      ctor.selector = options.selector;
     }
-    
+
     // Add template property if provided
     if (options.template) {
-      (constructor as any).template = options.template;
+      ctor.template = options.template;
     }
-    
+
     // Add styles property if provided
     if (options.styles) {
-      (constructor as any).styles = Array.isArray(options.styles) 
-        ? options.styles 
+      ctor.styles = Array.isArray(options.styles)
+        ? options.styles
         : [options.styles];
     }
     

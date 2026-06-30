@@ -343,17 +343,9 @@ export class Registry {
    */
   async publishTemplate(templatePath: string, registryUrl?: string): Promise<void> {
     void registryUrl;
-    // Validate template before publishing
     if (!(await this.validateTemplate(templatePath))) {
       throw new Error('Template validation failed');
     }
-
-    // TODO: Implement actual publishing logic
-    // This would typically:
-    // 1. Package template into tar/zip
-    // 2. Upload to registry
-    // 3. Update registry index
-
     throw new Error(
       'publishTemplate() is not yet implemented. ' +
       'Template publishing is planned for a future CLI release. ' +

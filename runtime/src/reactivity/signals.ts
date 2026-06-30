@@ -141,6 +141,11 @@ export class Signal<T> {
     }
   }
 
+  /** Read the current value without tracking any reactive effect. */
+  peek(): T {
+    return this._value;
+  }
+
   /**
    * Update value using a function
    */
@@ -188,14 +193,15 @@ export class Signal<T> {
 export class ComputedSignal<T> extends Signal<T> {
   private computeFn: () => T;
   private dirty = true;
-  private dependencies = new Set<Signal<unknown>>();
   private effect: Effect;
 
   constructor(computeFn: () => T, options?: SignalOptions<T>) {
     super(undefined as unknown as T, options);
     this.computeFn = computeFn;
 
-    // Create a proper Effect using the actual Effect class
+    // Effect fires when any dependency changes: mark dirty, then notify downstream.
+    // clearDependencies() runs before fn(), so deps are always re-tracked on next
+    // .value read via updateValue(). No manual dep.subscribe() needed here.
     this.effect = new Effect(() => {
       this.dirty = true;
       this.notify();
@@ -212,39 +218,25 @@ export class ComputedSignal<T> extends Signal<T> {
   }
 
   private updateValue() {
-    // Clear previous dependencies
-    this.dependencies.forEach((dep) => {
-      dep.unsubscribe(() => this.effect.execute());
-    });
-    this.dependencies.clear();
-
-    // Compute new value with dependency tracking
     const prevCurrentEffect = getCurrentEffect();
-
     try {
-      // Set current effect to track dependencies
+      // trackEffect() inside each signal's .value getter registers this.effect.execute
+      // as a subscriber and adds the signal to this.effect.dependencies — no manual
+      // subscribe/unsubscribe needed. effect.execute() calls clearDependencies() before
+      // re-running, so stale subscriptions are cleaned up automatically.
       setCurrentEffect(this.effect);
-
       this._value = this.computeFn();
       this.dirty = false;
-
-      // Store new dependencies
-      this.effect.dependencies.forEach((dep) => {
-        this.dependencies.add(dep);
-        dep.subscribe(() => this.effect.execute());
-      });
     } catch (error) {
       console.error("Error computing signal value:", error);
       this.dirty = false;
     } finally {
-      // Restore previous effect context
       setCurrentEffect(prevCurrentEffect);
     }
   }
 
   dispose() {
     this.effect.dispose();
-    this.dependencies.clear();
   }
 }
 
@@ -285,30 +277,52 @@ export function bindToElement(
     }, { signal: options.signal });
   }
 
-  // Signal -> Element
-  sig.subscribe(() => {
+  // Signal -> Element.
+  // Unsubscribe when the caller provides an AbortSignal (e.g. from component teardown).
+  // Without cleanup the subscription outlives the element and leaks memory.
+  const unsub = sig.subscribe(() => {
     el[property] = sig.value as unknown;
   });
+  if (options.signal) {
+    options.signal.addEventListener('abort', unsub, { once: true });
+  }
 }
 
 /**
  * Batch multiple signal updates.
  * All signal notifications are deferred until the end of the batch, then fired once each.
+ * Nested calls execute immediately inside the outer batch.
  */
-export function batch(fn: () => void) {
+export function batch<T>(fn: () => T): T {
   const ctx = getBatchContext();
   if (ctx.isBatching) {
-    fn();
-    return;
+    return fn();
   }
 
   setBatchContext({ isBatching: true });
   try {
-    fn();
+    return fn();
   } finally {
     setBatchContext({ isBatching: false });
     flushBatch();
   }
+}
+
+/**
+ * Enter batch mode for manual start/end batching.
+ * Prefer `batch()` over this for most cases.
+ */
+export function startBatch(): void {
+  setBatchContext({ isBatching: true });
+}
+
+/**
+ * Flush all pending signal notifications and exit batch mode.
+ * Must be paired with `startBatch()`.
+ */
+export function endBatch(): void {
+  setBatchContext({ isBatching: false });
+  flushBatch();
 }
 
 /**

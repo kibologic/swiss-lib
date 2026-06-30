@@ -72,6 +72,18 @@ Process:
 - Docs build must succeed.
 - Markdown lint must pass.
 
+## Bundle Size
+
+Each package's dist entrypoints are measured for raw and gzipped sizes and compared against stored baselines.
+
+- **Baselines:** `docs/reports/bundle-baselines.json` — committed, updated deliberately.
+- **Report:** `pnpm bundle:report` — prints raw/gzip sizes and delta vs. baselines.
+- **Update baselines:** `pnpm bundle:update` — run after an intentional size change, commit the updated baselines.
+- **CI check:** `pnpm bundle:check` — fails if any package exceeds its baseline by more than 5%.
+
+When baselines don't exist yet (first run), `pnpm bundle:update` will create them.
+Baselines are created/updated per package. If a package gains size for a valid reason (new feature, SSR support), run `pnpm bundle:update` and explain the increase in the PR.
+
 ## Testing
 
 - Co-locate tests under `__tests__/` per package.

@@ -56,6 +56,98 @@ export class PluginManager {
     }
   }
 
+  private buildLogger(pluginName: string): PluginLogger {
+    return {
+      info: (msg: string) => console.log(`[plugin:${pluginName}] ${msg}`),
+      warn: (msg: string) => console.warn(`[plugin:${pluginName}] ${msg}`),
+      error: (msg: string) => console.error(`[plugin:${pluginName}] ${msg}`),
+    };
+  }
+
+  private buildHooksSurface(pluginName: string) {
+    return {
+      addHook: (
+        name: string,
+        handler: (payload: unknown) => unknown,
+        owner?: string,
+        priority?: "low" | "normal" | "high" | "critical",
+      ) => {
+        this.hookRegistry.addHook(
+          name,
+          ((payload: unknown) => handler(payload)) as unknown as (
+            ...args: unknown[]
+          ) => unknown,
+          owner ?? pluginName,
+          priority,
+        );
+      },
+      removeHooks: (owner: string) => this.hookRegistry.removeHooks(owner),
+      callHook: (name: string, payload: unknown) =>
+        this.hookRegistry.callHook(
+          name,
+          payload as unknown as { [key: string]: unknown },
+        ),
+    } as unknown as import("./types/hooks-contract.js").HookRegistrySurface;
+  }
+
+  private buildPluginContext(plugin: Plugin, logger: PluginLogger): PluginContext {
+    const hooks = this.buildHooksSurface(plugin.name);
+    return {
+      hooks,
+      registerHook: (registration: HookRegistration) => {
+        this.hookRegistry.addHook(
+          registration.name,
+          ((payload: unknown) =>
+            registration.handler(payload as never)) as unknown as (
+            ...args: unknown[]
+          ) => unknown,
+          plugin.name,
+          registration.priority,
+        );
+      },
+      capabilities: this.capabilities,
+      logger,
+      app: this.appContext
+        ? {
+            name: this.appContext.name,
+            registerRoute: this.appContext.registerRoute || (() => {}),
+            registerMiddleware:
+              this.appContext.registerMiddleware || (() => {}),
+            registerService: (name: string, service: unknown) => {
+              this.registerService(name, service);
+              const reg = this.appContext?.registerService;
+              if (typeof reg === "function") reg(name, service);
+            },
+          }
+        : undefined,
+      dev: this.devContext
+        ? {
+            isDevMode: this.devContext.isDevMode || false,
+            hotReload: this.devContext.hotReload || false,
+            watchFiles: (
+              paths: string[],
+              cb: (event: string, file: string) => void,
+            ) => {
+              const anyWatch = this.devContext
+                ?.watchFiles as unknown as () => void;
+              // Back-compat no-op if underlying dev context doesn't support args
+              if (typeof anyWatch === "function") anyWatch();
+              void paths;
+              void cb;
+            },
+            compileOnChange: this.devContext.compileOnChange || false,
+          }
+        : undefined,
+      runtime: this.runtimeContext
+        ? {
+            type: this.runtimeContext.type || "unknown",
+            adapter: this.runtimeContext.adapter || null,
+            capabilities: this.runtimeContext.capabilities || {},
+          }
+        : undefined,
+    };
+  }
+
   /**
    * Set application context for plugins
    */
@@ -95,79 +187,8 @@ export class PluginManager {
     if (this.isExperimentalLifecycleEnabled()) {
       this.hookRegistry.callHook("runtimeReady", { version: undefined });
       for (const plugin of this.plugins.values()) {
-        const hooksSurface = {
-          addHook: (
-            name: string,
-            handler: (payload: unknown) => unknown,
-            owner?: string,
-            priority?: "low" | "normal" | "high" | "critical",
-          ) => {
-            this.hookRegistry.addHook(
-              name,
-              ((payload: unknown) => handler(payload)) as unknown as (
-                ...args: unknown[]
-              ) => unknown,
-              owner ?? plugin.name,
-              priority,
-            );
-          },
-          removeHooks: (owner: string) => this.hookRegistry.removeHooks(owner),
-          callHook: (name: string, payload: unknown) =>
-            this.hookRegistry.callHook(
-              name,
-              payload as unknown as { [key: string]: unknown },
-            ),
-        } as unknown as import("./types/hooks-contract.js").HookRegistrySurface;
-        const logger: PluginLogger = {
-          info: (msg: string) => console.log(`[plugin:${plugin.name}] ${msg}`),
-          warn: (msg: string) => console.warn(`[plugin:${plugin.name}] ${msg}`),
-          error: (msg: string) =>
-            console.error(`[plugin:${plugin.name}] ${msg}`),
-        };
-        const ctx: PluginContext = {
-          hooks: hooksSurface,
-          registerHook: (registration: HookRegistration) => {
-            this.hookRegistry.addHook(
-              registration.name,
-              ((payload: unknown) =>
-                registration.handler(payload as never)) as unknown as (
-                ...args: unknown[]
-              ) => unknown,
-              plugin.name,
-              registration.priority,
-            );
-          },
-          capabilities: this.capabilities,
-          logger,
-          app: this.appContext
-            ? {
-                name: this.appContext.name,
-                registerRoute: this.appContext.registerRoute || (() => {}),
-                registerMiddleware:
-                  this.appContext.registerMiddleware || (() => {}),
-                registerService: (name: string, service: unknown) => {
-                  this.registerService(name, service);
-                  const reg = this.appContext?.registerService;
-                  if (typeof reg === "function") reg(name, service);
-                },
-              }
-            : undefined,
-          dev: this.devContext
-            ? {
-                isDevMode: this.devContext.isDevMode || false,
-                hotReload: this.devContext.hotReload || false,
-                watchFiles: this.devContext.watchFiles || (() => {}),
-                compileOnChange: this.devContext.compileOnChange || false,
-              }
-            : undefined,
-          runtime: this.runtimeContext
-            ? {
-                type: this.runtimeContext.type || "unknown",
-                adapter: this.runtimeContext.adapter || null,
-                capabilities: this.runtimeContext.capabilities || {},
-              }
-            : undefined,
-        };
+        const logger = this.buildLogger(plugin.name);
+        const ctx = this.buildPluginContext(plugin, logger);
         try {
           plugin.onRuntimeReady?.(ctx);
         } catch {
@@ -196,93 +217,10 @@ export class PluginManager {
         }
       }
     }
-    // Create enhanced plugin context
-    const hooksSurface = {
-      addHook: (
-        name: string,
-        handler: (payload: unknown) => unknown,
-        owner?: string,
-        priority?: "low" | "normal" | "high" | "critical",
-      ) => {
-        this.hookRegistry.addHook(
-          name,
-          ((payload: unknown) => handler(payload)) as unknown as (
-            ...args: unknown[]
-          ) => unknown,
-          owner ?? plugin.name,
-          priority,
-        );
-      },
-      removeHooks: (owner: string) => this.hookRegistry.removeHooks(owner),
-      callHook: (name: string, payload: unknown) =>
-        this.hookRegistry.callHook(
-          name,
-          payload as unknown as { [key: string]: unknown },
-        ),
-    } as unknown as import("./types/hooks-contract.js").HookRegistrySurface;
 
-    const logger: PluginLogger = {
-      info: (msg: string) => console.log(`[plugin:${plugin.name}] ${msg}`),
-      warn: (msg: string) => console.warn(`[plugin:${plugin.name}] ${msg}`),
-      error: (msg: string) => console.error(`[plugin:${plugin.name}] ${msg}`),
-    };
+    const logger = this.buildLogger(plugin.name);
+    const context = this.buildPluginContext(plugin, logger);
 
-    const context: PluginContext = {
-      hooks: hooksSurface,
-      registerHook: (registration: HookRegistration) => {
-        this.hookRegistry.addHook(
-          registration.name,
-          // Adapt typed payload handler to generic unknown[] signature
-          ((payload: unknown) =>
-            registration.handler(payload as never)) as unknown as (
-            ...args: unknown[]
-          ) => unknown,
-          plugin.name,
-          registration.priority,
-        );
-      },
-      capabilities: this.capabilities,
-      logger,
-      app: this.appContext
-        ? {
-            name: this.appContext.name,
-            registerRoute: this.appContext.registerRoute || (() => {}),
-            registerMiddleware:
-              this.appContext.registerMiddleware || (() => {}),
-            registerService: (name: string, service: unknown) => {
-              this.registerService(name, service);
-              const reg = this.appContext?.registerService;
-              if (typeof reg === "function") reg(name, service);
-            },
-          }
-        : undefined,
-      dev: this.devContext
-        ? {
-            isDevMode: this.devContext.isDevMode || false,
-            hotReload: this.devContext.hotReload || false,
-            // Align with types barrel signature (paths[], cb)
-            watchFiles: (
-              paths: string[],
-              cb: (event: string, file: string) => void,
-            ) => {
-              const anyWatch = this.devContext
-                ?.watchFiles as unknown as () => void;
-              // Back-compat no-op if underlying dev context doesn't support args
-              if (typeof anyWatch === "function") anyWatch();
-              void paths;
-              void cb;
-            },
-            compileOnChange: this.devContext.compileOnChange || false,
-          }
-        : undefined,
-      runtime: this.runtimeContext
-        ? {
-            type: this.runtimeContext.type || "unknown",
-            adapter: this.runtimeContext.adapter || null,
-            capabilities: this.runtimeContext.capabilities || {},
-          }
-        : undefined,
-    };
     // Security: audit plugin before init
     const audit = securityAuditPlugin({
       name: plugin.name,
@@ -371,71 +309,10 @@ export class PluginManager {
     if (!plugin) return;
     // Before plugin unregister hook
     this.hookRegistry.callHook("beforePluginUnregister", { plugin });
-    // Create context for unload
-    const unloadHooksSurface = {
-      addHook: (
-        name: string,
-        handler: (payload: unknown) => unknown,
-        owner?: string,
-        priority?: "low" | "normal" | "high" | "critical",
-      ) => {
-        this.hookRegistry.addHook(
-          name,
-          ((payload: unknown) => handler(payload)) as unknown as (
-            ...args: unknown[]
-          ) => unknown,
-          owner ?? plugin.name,
-          priority,
-        );
-      },
-      removeHooks: (owner: string) => this.hookRegistry.removeHooks(owner),
-      callHook: (name: string, payload: unknown) =>
-        this.hookRegistry.callHook(
-          name,
-          payload as unknown as { [key: string]: unknown },
-        ),
-    } as unknown as import("./types/hooks-contract.js").HookRegistrySurface;
 
-    const logger: PluginLogger = {
-      info: (msg: string) => console.log(`[plugin:${plugin.name}] ${msg}`),
-      warn: (msg: string) => console.warn(`[plugin:${plugin.name}] ${msg}`),
-      error: (msg: string) => console.error(`[plugin:${plugin.name}] ${msg}`),
-    };
+    const logger = this.buildLogger(plugin.name);
+    const context = this.buildPluginContext(plugin, logger);
 
-    const context: PluginContext = {
-      hooks: unloadHooksSurface,
-      registerHook: () => {},
-      capabilities: this.capabilities,
-      logger,
-      app: this.appContext
-        ? {
-            name: this.appContext.name,
-            registerRoute: this.appContext.registerRoute || (() => {}),
-            registerMiddleware:
-              this.appContext.registerMiddleware || (() => {}),
-            registerService: (name: string, service: unknown) => {
-              this.registerService(name, service);
-              const reg = this.appContext?.registerService;
-              if (typeof reg === "function") reg(name, service);
-            },
-          }
-        : undefined,
-      dev: this.devContext
-        ? {
-            isDevMode: this.devContext.isDevMode || false,
-            hotReload: this.devContext.hotReload || false,
-            watchFiles: this.devContext.watchFiles || (() => {}),
-            compileOnChange: this.devContext.compileOnChange || false,
-          }
-        : undefined,
-      runtime: this.runtimeContext
-        ? {
-            type: this.runtimeContext.type || "unknown",
-            adapter: this.runtimeContext.adapter || null,
-            capabilities: this.runtimeContext.capabilities || {},
-          }
-        : undefined,
-    };
     // Deactivate hook for observability
     this.hookRegistry.callHook("pluginDeactivate", { plugin });
     // Call unload hook
@@ -500,7 +377,7 @@ export class PluginManager {
     if (this.services.has(name)) {
       return this.services.get(name) as T;
     }
-    // Search through plugins - Fix: Add proper null checks
+    // Search through plugins
     for (const plugin of this.plugins.values()) {
       if (
         plugin.providesService &&
@@ -551,7 +428,6 @@ export class PluginManager {
   runCapabilityAudit(): AuditResult {
     const warnings: AuditResult["warnings"] = [];
     const errors: AuditResult["errors"] = [];
-    // naive aggregation based on requiredCapabilities; announcedCapabilities is optional
     const provided = new Set<string>();
     for (const p of this.plugins.values()) {
       for (const cap of p.announcedCapabilities ?? []) provided.add(cap);

@@ -1,0 +1,21 @@
+rules:
+  - id: no-eval
+    patterns:
+      - pattern: eval(...)
+    message: "eval() is a security risk — use safer alternatives"
+    languages: [javascript, typescript]
+    severity: ERROR
+
+  - id: no-inner-html-unsanitized
+    patterns:
+      - pattern: $X.innerHTML = $Y
+    message: "Direct innerHTML assignment — ensure $Y is sanitized with sanitizeString()"
+    languages: [javascript, typescript]
+    severity: WARNING
+
+  - id: no-document-write
+    patterns:
+      - pattern: document.write(...)
+    message: "document.write() is a security risk"
+    languages: [javascript, typescript]
+    severity: ERROR

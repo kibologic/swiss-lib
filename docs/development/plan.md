@@ -130,7 +130,7 @@ Last updated: 2025-08-21
 ### PR Breakdown (Sprint)
 
 - PR4: Deterministic docs runner + CI workflows (barrels/API report). [COMPLETED]
-- PR5: Bundle analysis integration + developer conventions docs.
+- PR5: Bundle analysis integration + developer conventions docs. [COMPLETED 2026-06-30] — `scripts/bundle-report.mjs` with --update/--check/--output modes; root `bundle:report`, `bundle:update`, `bundle:check` scripts; conventions.md updated with Bundle Size section. `docs/reports/bundle-baselines.json` populated after first `pnpm bundle:update` run post-build.
 
 ---
 

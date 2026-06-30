@@ -109,7 +109,6 @@ temp/
 # Additional ignored directories
 docs_old/
 .cursor/
-.husky/
 .husky-disabled/
 jira/
 

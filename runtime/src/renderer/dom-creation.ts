@@ -4,16 +4,14 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import type { SwissComponent } from "../component/component.js";
 import type {
   VNode,
   VElement,
   ComponentVNode,
-  ComponentType,
 } from "../vdom/vdom.js";
+import type { VNodeBase } from "../vdom/types/index.js";
+import { asInternal } from "../component/internal.js";
 import {
   vnodeMetadata,
   componentInstances,
@@ -41,6 +39,11 @@ type RenderComponentFn = (
   existingInstance?: SwissComponent,
 ) => VNode;
 type UpdateDOMNodeFn = (dom: Node, vnode: VNode) => void;
+
+function vb(vnode: VNode | null | undefined): VNodeBase | null {
+  if (vnode == null || typeof vnode !== "object") return null;
+  return vnode as unknown as VNodeBase;
+}
 
 export function createDOMNode(
   vnode: VNode | null | undefined | boolean,
@@ -81,7 +84,9 @@ export function createDOMNode(
 
     if (isComponentVNode(vnode)) {
       const componentName =
-        typeof vnode.type === "function" ? (vnode.type as any).name : "Unknown";
+        typeof vnode.type === "function"
+          ? (vnode.type as { name?: string }).name ?? "Unknown"
+          : "Unknown";
       logger.dom(`Processing ComponentVNode: ${componentName}`);
     }
 
@@ -114,20 +119,16 @@ export function createDOMNode(
 
       let existingInstance: SwissComponent | undefined = undefined;
 
-      if (
-        typeof vnode === "object" &&
-        vnode !== null &&
-        (vnode as any).__componentInstance
-      ) {
-        const foundInstance = (vnode as any).__componentInstance;
+      if (vnode.__componentInstance) {
+        const foundInstance = vnode.__componentInstance;
         if (foundInstance && foundInstance.constructor === vnode.type) {
           existingInstance = foundInstance;
           logger.reconcile(`${foundInstance.constructor.name}: reusing instance (from __componentInstance)`);
         }
       }
 
-      if (!existingInstance && (vnode as any).dom) {
-        const domNode = (vnode as any).dom;
+      if (!existingInstance && vnode.dom) {
+        const domNode = vnode.dom;
         if (domNode instanceof HTMLElement) {
           const foundInstance = componentInstances.get(domNode);
           if (foundInstance) {
@@ -138,44 +139,34 @@ export function createDOMNode(
       }
 
       // CRITICAL FIX: If no instance found yet, try to find it by component type in the DOM
-      // This handles the case where reconciliation failed but the component instance still exists
-      // We search by matching component type, which is more reliable than position-based matching
       if (!existingInstance && isComponentVNode(vnode)) {
-        const vnodeKey = (vnode as any).key;
-        const componentName = (vnode.type as any).name || 'Unknown';
+        const vnodeKey = vnode.key;
+        const componentName = (vnode.type as { name?: string }).name ?? "Unknown";
         logger.reconcile(`${componentName}: searching for existing instance`);
-        
-        // Try multiple search strategies (in priority order):
-        // 1. Get current component instance (if available) - most specific context
-        // 2. Find root App instance from containerToInstance map - app-level context
-        // 3. Search from #app or #root container - container-level context
-        // 4. Search from document.body (fallback for root-level components)
-        
+
         let searchRoot: HTMLElement | null = null;
-        let searchContext = 'unknown';
-        
+        let searchContext = "unknown";
+
         const currentInstance = getCurrentComponentInstance();
-        if (currentInstance && (currentInstance as any)._domNode) {
-          const contextDom = (currentInstance as any)._domNode;
+        if (currentInstance) {
+          const contextDom = asInternal(currentInstance)._domNode;
           if (contextDom instanceof HTMLElement) {
             searchRoot = contextDom;
             searchContext = currentInstance.constructor.name;
           }
         }
-        
-        // Priority 2: Find root App instance from containerToInstance map
-        // This is critical for finding nested components like TelemetryProvider inside App
-        if (!searchRoot && typeof document !== 'undefined') {
-          // First, try to find the actual app container (#app, #root, etc.)
-          const appContainer = document.getElementById('app') || 
-                               document.getElementById('root') ||
-                               document.querySelector('[id*="app"]') ||
-                               document.querySelector('[id*="root"]');
-          
+
+        if (!searchRoot && typeof document !== "undefined") {
+          const appContainer =
+            document.getElementById("app") ||
+            document.getElementById("root") ||
+            document.querySelector("[id*='app']") ||
+            document.querySelector("[id*='root']");
+
           if (appContainer instanceof HTMLElement) {
             const rootInstance = containerToInstance.get(appContainer);
-            if (rootInstance && (rootInstance as any)._domNode) {
-              const rootDom = (rootInstance as any)._domNode;
+            if (rootInstance) {
+              const rootDom = asInternal(rootInstance)._domNode;
               if (rootDom instanceof HTMLElement) {
                 searchRoot = rootDom;
                 searchContext = `${rootInstance.constructor.name} (from container #${appContainer.id})`;
@@ -188,15 +179,14 @@ export function createDOMNode(
               logger.reconcile(`Using app container #${appContainer.id} as search root`);
             }
           }
-          
-          // Fallback: Search all containers in containerToInstance map
+
           if (!searchRoot) {
-            const containers = document.querySelectorAll('[id]');
+            const containers = document.querySelectorAll("[id]");
             for (const container of Array.from(containers)) {
               if (container instanceof HTMLElement) {
                 const rootInstance = containerToInstance.get(container);
-                if (rootInstance && (rootInstance as any)._domNode) {
-                  const rootDom = (rootInstance as any)._domNode;
+                if (rootInstance) {
+                  const rootDom = asInternal(rootInstance)._domNode;
                   if (rootDom instanceof HTMLElement) {
                     searchRoot = rootDom;
                     searchContext = `${rootInstance.constructor.name} (from container #${container.id})`;
@@ -208,17 +198,14 @@ export function createDOMNode(
             }
           }
         }
-        
-        // Final fallback: Search from document.body
-        if (!searchRoot && typeof document !== 'undefined' && document.body) {
+
+        if (!searchRoot && typeof document !== "undefined" && document.body) {
           searchRoot = document.body;
-          searchContext = 'document.body';
+          searchContext = "document.body";
         }
-        
+
         if (searchRoot) {
-          // Search the DOM tree for a component instance of the matching type
-          let searchDepth = 0;
-          const MAX_SEARCH_DEPTH = 20; // Increased depth for deeply nested components
+          const MAX_SEARCH_DEPTH = 20;
           const searchForInstance = (
             element: HTMLElement,
             depth: number = 0,
@@ -227,12 +214,9 @@ export function createDOMNode(
               logger.reconcile(`${componentName}: max search depth (${MAX_SEARCH_DEPTH}) reached`);
               return null;
             }
-            searchDepth = depth + 1;
-            // Check if this element has a component instance of the right type
             const instance = componentInstances.get(element);
             if (instance && instance.constructor === vnode.type) {
-              // If both have keys, they must match
-              const instanceKey = (instance as any).__vnodeKey;
+              const instanceKey = asInternal(instance).__vnodeKey;
               if (vnodeKey && instanceKey) {
                 if (vnodeKey === instanceKey) {
                   logger.reconcile(`${instance.constructor.name}: reusing instance (key match)`);
@@ -245,7 +229,6 @@ export function createDOMNode(
                 return { instance, dom: element };
               }
             }
-            // Recursively search children
             for (const child of Array.from(element.children)) {
               if (child instanceof HTMLElement) {
                 const found = searchForInstance(child, depth + 1);
@@ -259,12 +242,10 @@ export function createDOMNode(
           const found = searchForInstance(searchRoot, 0);
           if (found) {
             existingInstance = found.instance;
-            if (typeof vnode === "object" && vnode !== null) {
-              (vnode as any).dom = found.dom;
-              (vnode as any).__componentInstance = found.instance;
-              if (vnodeKey) {
-                (found.instance as any).__vnodeKey = vnodeKey;
-              }
+            vnode.dom = found.dom;
+            vnode.__componentInstance = found.instance;
+            if (vnodeKey) {
+              asInternal(found.instance).__vnodeKey = vnodeKey;
             }
             logger.reconcile(`${found.instance.constructor.name}: reusing existing instance`);
           } else {
@@ -276,23 +257,17 @@ export function createDOMNode(
       }
 
       if (existingInstance) {
-        const isInitialized =
-          (existingInstance as any)._initialized ||
-          (existingInstance as any).__initialized;
+        const ci = asInternal(existingInstance);
+        const isInitialized = ci._initialized || ci.__initialized;
         logger.reconcile(
           `${existingInstance.constructor.name}: reusing (${isInitialized ? "initialized" : "uninitialized"})`,
         );
 
-        if (
-          (existingInstance as any)._domNode &&
-          (existingInstance as any)._domNode instanceof Node
-        ) {
-          const existingDom = (existingInstance as any)._domNode;
+        if (ci._domNode && ci._domNode instanceof Node) {
+          const existingDom = ci._domNode;
           logger.reconcile(`${existingInstance.constructor.name}: reusing existing DOM node`);
-          if (typeof vnode === "object" && vnode !== null) {
-            (vnode as any).__componentInstance = existingInstance;
-            (vnode as { dom?: Node }).dom = existingDom;
-          }
+          vnode.__componentInstance = existingInstance;
+          (vnode as VNodeBase).dom = existingDom;
           const rendered = renderComponentFn(vnode, existingInstance);
           updateDOMNodeFn(existingDom, rendered);
           return existingDom;
@@ -301,38 +276,26 @@ export function createDOMNode(
           const rendered = renderComponentFn(vnode, existingInstance);
           const prevInstance = getCurrentComponentInstance();
           setCurrentComponentInstance(existingInstance);
-          const dom = createDOMNode(
-            rendered,
-            renderComponentFn,
-            updateDOMNodeFn,
-          );
+          const dom = createDOMNode(rendered, renderComponentFn, updateDOMNodeFn);
           setCurrentComponentInstance(prevInstance);
-          if (typeof vnode === "object" && vnode !== null) {
-            (vnode as { dom?: Node }).dom = dom;
-          }
-          (existingInstance as any)._domNode = dom;
+          (vnode as VNodeBase).dom = dom;
+          ci._domNode = dom;
           componentInstances.set(dom, existingInstance);
-          if (typeof vnode === "object" && vnode !== null) {
-            (vnode as any).__componentInstance = existingInstance;
-          }
-          if ((existingInstance as any)._vnode) {
-            ((existingInstance as any)._vnode as any).dom = dom;
-          }
-          if (typeof (existingInstance as any).initialize === "function") {
-            const isAlreadyInitialized =
-              (existingInstance as any)._initialized ||
-              (existingInstance as any).__initialized;
-            if (!isAlreadyInitialized) {
+          vnode.__componentInstance = existingInstance;
+          const oldVnodeBase = vb(ci._vnode);
+          if (oldVnodeBase) oldVnodeBase.dom = dom;
+          if (!ci._initialized && !ci.__initialized) {
+            if (typeof ci.initialize === "function") {
               logger.lifecycle(`${existingInstance.constructor.name}: initialize (existing instance)`);
-              (existingInstance as any).initialize();
-              (existingInstance as any)._skipNextUpdate = true;
-              if (typeof (existingInstance as any).executeHookPhase === "function") {
+              ci.initialize();
+              ci._skipNextUpdate = true;
+              if (typeof ci.executeHookPhase === "function") {
                 logger.lifecycle(`${existingInstance.constructor.name}: mounted (existing instance)`);
-                (existingInstance as any).executeHookPhase("mounted");
+                void ci.executeHookPhase("mounted");
               }
-            } else {
-              logger.lifecycle(`${existingInstance.constructor.name}: already initialized, skipping`);
             }
+          } else {
+            logger.lifecycle(`${existingInstance.constructor.name}: already initialized, skipping`);
           }
           return dom;
         }
@@ -343,75 +306,60 @@ export function createDOMNode(
       const Component = vnode.type;
       let instance: SwissComponent | undefined = undefined;
       if (isClassComponent(Component)) {
-        instance =
-          rendered && typeof rendered === "object" && rendered !== null
-            ? (rendered as any).__componentInstance
-            : undefined;
+        instance = vb(rendered)?.__componentInstance;
       }
 
-      // So context works: children of this component's output must have this component as _parent.
       const prevInstance = getCurrentComponentInstance();
       if (instance) setCurrentComponentInstance(instance);
       const dom = createDOMNode(rendered, renderComponentFn, updateDOMNodeFn);
       setCurrentComponentInstance(prevInstance);
 
       if (instance) {
-        (instance as any)._domNode = dom;
-        // Store key for future matching
-        const vnodeKey = (vnode as any).key;
+        const ci = asInternal(instance);
+        ci._domNode = dom;
+        const vnodeKey = vnode.key;
         if (vnodeKey) {
-          (instance as any).__vnodeKey = vnodeKey;
+          ci.__vnodeKey = vnodeKey;
         }
         logger.lifecycle(`${instance.constructor.name}: created`);
       }
 
-      if (typeof vnode === "object" && vnode !== null) {
-        (vnode as { dom?: Node }).dom = dom;
-      }
+      (vnode as VNodeBase).dom = dom;
 
       if (instance) {
-        // When rendered output is a child component, instance is the parent (from rendered.__componentInstance).
-        // Store parent as "host" so root reconciliation can match; leave componentInstances as the child's root.
+        const ci = asInternal(instance);
         const isRenderedComponent =
-          rendered &&
+          rendered != null &&
           typeof rendered === "object" &&
-          rendered !== null &&
           isComponentVNode(rendered);
-        if (
-          isRenderedComponent &&
-          (rendered as any).__componentInstance === instance
-        ) {
+        if (isRenderedComponent && vb(rendered)?.__componentInstance === instance) {
           domToHostComponent.set(dom, instance);
         } else {
           componentInstances.set(dom, instance);
         }
-        if (typeof vnode === "object" && vnode !== null) {
-          (vnode as any).__componentInstance = instance;
-        }
-        if ((instance as any)._vnode) {
-          ((instance as any)._vnode as any).dom = dom;
+        vnode.__componentInstance = instance;
+        const oldVnodeBase = vb(ci._vnode);
+        if (oldVnodeBase) {
+          oldVnodeBase.dom = dom;
         } else {
           logger.warn(`Component ${instance.constructor.name} has no _vnode to set dom on`);
         }
-        if (!(instance as any).__componentVNode) {
-          (instance as any).__componentVNode = vnode;
+        if (!ci.__componentVNode) {
+          ci.__componentVNode = vnode;
         }
 
-        if (typeof (instance as any).initialize === "function") {
-          const isAlreadyInitialized =
-            (instance as any)._initialized || (instance as any).__initialized;
-          if (!isAlreadyInitialized) {
-            (instance as any).initialize();
-            // Skip the first performUpdate() from the effect - DOM was just created and is correct
-            (instance as any)._skipNextUpdate = true;
-            if (typeof (instance as any).executeHookPhase === "function") {
-              (instance as any).executeHookPhase("beforeMount");
+        if (!ci._initialized && !ci.__initialized) {
+          if (typeof ci.initialize === "function") {
+            ci.initialize();
+            ci._skipNextUpdate = true;
+            if (typeof ci.executeHookPhase === "function") {
+              void ci.executeHookPhase("beforeMount");
               logger.lifecycle(`${instance.constructor.name}: mounted`);
-              (instance as any).executeHookPhase("mounted");
+              void ci.executeHookPhase("mounted");
             }
-          } else {
-            logger.lifecycle(`${instance.constructor.name}: already initialized`);
           }
+        } else {
+          logger.lifecycle(`${instance.constructor.name}: already initialized`);
         }
       }
       return dom;
@@ -452,12 +400,6 @@ export function createDOMNode(
 export function createTextNode(vnode: string | number): Text {
   const node = document.createTextNode(String(vnode));
   vnodeMetadata.set(node, vnode as unknown as VNode);
-
-  // Store DOM reference on VNode if it's an object
-  if (typeof vnode === "object" && vnode !== null) {
-    (vnode as any).dom = node;
-  }
-
   return node;
 }
 
@@ -473,21 +415,16 @@ export function createElementNode(
   updateDOMNodeFn: UpdateDOMNodeFn,
 ): HTMLElement {
   // CRITICAL: Slots should be expanded before reaching this point via expandSlots()
-  // If we encounter a slot here, it's a bug - log and create placeholder
   if (vnode.type === "slot") {
     logger.error("Unexpected slot VNode in createElementNode - slots should be expanded earlier");
-    return document.createComment(
-      " unexpected-slot ",
-    ) as unknown as HTMLElement;
+    return document.createComment(" unexpected-slot ") as unknown as HTMLElement;
   }
 
   const element = document.createElement(vnode.type);
   vnodeMetadata.set(element, vnode);
 
-  // CRITICAL: Store DOM reference directly on VNode for reconciliation
   vnode.dom = element;
 
-  // Attach ref if provided
   const refProp = vnode.props?.ref;
   if (refProp !== null && typeof refProp === "object" && "current" in refProp) {
     (refProp as { current: unknown }).current = element;
@@ -495,10 +432,9 @@ export function createElementNode(
 
   reconcileProps(element, {}, vnode.props || {});
 
-  // Use normalized children if available (from fragment normalization)
   let childrenToProcess: VNode[];
-  if ((vnode as any).__normalizedChildren) {
-    childrenToProcess = (vnode as any).__normalizedChildren;
+  if (vnode.__normalizedChildren) {
+    childrenToProcess = vnode.__normalizedChildren;
   } else {
     const validChildren = filterValidVNodes(vnode.children || []);
     const expandedChildren: VNode[] = [];
@@ -513,11 +449,7 @@ export function createElementNode(
   }
 
   childrenToProcess.forEach((child: VNode) => {
-    const childNode = createDOMNodeFn(
-      child,
-      renderComponentFn,
-      updateDOMNodeFn,
-    );
+    const childNode = createDOMNodeFn(child, renderComponentFn, updateDOMNodeFn);
     if (childNode instanceof DocumentFragment) {
       Array.from(childNode.childNodes).forEach((node) => {
         element.appendChild(node);

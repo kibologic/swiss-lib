@@ -5,6 +5,7 @@
  */
 
 import type { VNode } from "../vdom/vdom.js";
+import type { VNodeBase } from "../vdom/types/index.js";
 import { hydrateDOM, renderToDOM } from "../renderer/renderer.js";
 import { SwissComponent } from "./component.js";
 import type { BaseComponentProps } from "./types/index.js";
@@ -28,17 +29,17 @@ export async function serverInit(
   return renderToString(vnode);
 }
 
-// Recursively add SSR IDs to VNode tree
 function addSsrIds(vnode: VNode, baseId: string, index: number = 0) {
   if (vnode == null || typeof vnode === "boolean") return;
   if (typeof vnode === "string" || typeof vnode === "number") return;
   if (typeof vnode !== "object") return;
-  (vnode as any).ssrId = `${baseId}-${index}`;
-  const children = (vnode as any).children;
+  const base = vnode as VNodeBase;
+  base.ssrId = `${baseId}-${index}`;
+  const children = base.children;
   const arr: VNode[] = Array.isArray(children)
     ? children
     : children != null && typeof children !== "boolean"
-      ? [children]
+      ? [children as VNode]
       : [];
   arr.forEach((child, i) => {
     addSsrIds(child, `${baseId}-${index}`, i);

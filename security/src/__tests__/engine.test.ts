@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { InMemorySecurityEngine } from '../engine.js';
+import { InMemorySecurityEngine, sanitizeString } from '../engine.js';
 import type { SecurityPolicy } from '../types.js';
 
 describe('@swissjs/security engine', () => {
@@ -28,5 +28,42 @@ describe('@swissjs/security engine', () => {
 
     const log = eng.getAuditLog();
     expect(log.length).toBeGreaterThan(0);
+  });
+});
+
+describe('sanitizeInput / sanitizeString', () => {
+  const eng = new InMemorySecurityEngine();
+
+  it('"none" returns input unchanged', () => {
+    const raw = '<script>alert(1)</script>';
+    expect(eng.sanitizeInput(raw, 'none')).toBe(raw);
+    expect(sanitizeString(raw, 'none')).toBe(raw);
+  });
+
+  it('"basic" removes script blocks', () => {
+    const out = eng.sanitizeInput('<b>hello</b><script>alert(1)</script>', 'basic');
+    expect(out).not.toContain('<script>');
+    expect(out).toContain('<b>hello</b>');
+  });
+
+  it('"basic" removes javascript: hrefs', () => {
+    const out = eng.sanitizeInput('<a href="javascript:alert(1)">click</a>', 'basic');
+    expect(out).not.toContain('javascript:');
+  });
+
+  it('"basic" removes on* event attributes', () => {
+    const out = eng.sanitizeInput('<img src="x" onerror="alert(1)">', 'basic');
+    expect(out).not.toContain('onerror');
+  });
+
+  it('"strict" strips all HTML tags', () => {
+    const out = eng.sanitizeInput('<b>bold</b> and <i>italic</i>', 'strict');
+    expect(out).toBe('bold and italic');
+    expect(out).not.toContain('<');
+  });
+
+  it('"strict" decodes basic HTML entities', () => {
+    const out = eng.sanitizeInput('&lt;div&gt;&amp;', 'strict');
+    expect(out).toBe('<div>&');
   });
 });

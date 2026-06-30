@@ -5,7 +5,12 @@
  */
 
 import type { VNode } from "../vdom/vdom.js";
+import type { VNodeBase } from "../vdom/types/index.js";
 import { isFragmentVNode, filterValidVNodes } from "./types.js";
+
+function vb(vnode: VNode): VNodeBase {
+  return vnode as unknown as VNodeBase;
+}
 
 /**
  * Normalize fragments in VNode tree
@@ -18,29 +23,27 @@ export function normalizeFragment(vnode: VNode | null | undefined | boolean): VN
 
   // If already a fragment (array), normalize it
   if (isFragmentVNode(vnode)) {
-    const children = Array.isArray(vnode) ? vnode : (vnode as any).children || [];
+    const children = Array.isArray(vnode) ? vnode : vb(vnode).children || [];
     const normalized = filterValidVNodes(children)
       .map((child) => normalizeFragment(child))
       .filter((c) => c != null) as VNode[];
-    
-    // Store normalized result on VNode for reuse
+
     if (typeof vnode === "object" && vnode !== null) {
-      (vnode as any).__normalized = normalized;
+      vb(vnode).__normalized = normalized;
     }
-    
+
     return normalized.length === 1 ? normalized[0] : normalized;
   }
 
   // For element and component VNodes, normalize children
   if (typeof vnode === "object" && vnode !== null && "children" in vnode) {
-    const children = (vnode as any).children;
+    const children = vb(vnode).children;
     if (Array.isArray(children)) {
       const normalizedChildren = filterValidVNodes(children)
         .map((child) => normalizeFragment(child))
         .filter((c) => c != null) as VNode[];
-      
-      // Store normalized children
-      (vnode as any).__normalizedChildren = normalizedChildren;
+
+      vb(vnode).__normalizedChildren = normalizedChildren;
     }
   }
 
@@ -57,15 +60,13 @@ export function getNormalizedFragment(vnode: VNode | null | undefined | boolean)
 
   // Check if normalization result is cached
   if (typeof vnode === "object" && vnode !== null) {
-    if (isFragmentVNode(vnode) && (vnode as any).__normalized) {
-      return (vnode as any).__normalized;
+    const base = vb(vnode);
+    if (isFragmentVNode(vnode) && base.__normalized) {
+      return base.__normalized;
     }
-    
-    if ("children" in vnode && (vnode as any).__normalizedChildren) {
-      return {
-        ...vnode,
-        children: (vnode as any).__normalizedChildren,
-      } as VNode;
+
+    if ("children" in vnode && base.__normalizedChildren) {
+      return { ...vnode, children: base.__normalizedChildren } as VNode;
     }
   }
 

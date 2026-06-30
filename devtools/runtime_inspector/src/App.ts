@@ -18,6 +18,9 @@ export default class App extends SwissComponent<{}, AppState> {
   private data = new DataService();
   private fpsSamples: number[] = [];
   private lastFrame = performance.now();
+  private refreshTimer: ReturnType<typeof setInterval> | null = null;
+  // Memoized filter cache: invalidated when events array ref or filter state changes
+  private _filteredCache: { events: AppState['events']; filter: AppState['filter']; onlySelected: boolean; selected: AppState['selectedNode']; result: RuntimeEvent[] } | null = null;
 
   constructor(props: {}) {
     super(props);
@@ -37,8 +40,16 @@ export default class App extends SwissComponent<{}, AppState> {
 
   async handleMount() {
     this.refresh();
-    setInterval(() => this.refresh(), 1500);
+    // Poll at 500ms — bridge does not support push subscriptions yet.
+    this.refreshTimer = setInterval(() => this.refresh(), 500);
     requestAnimationFrame(this.tick);
+  }
+
+  handleBeforeUnmount() {
+    if (this.refreshTimer !== null) {
+      clearInterval(this.refreshTimer);
+      this.refreshTimer = null;
+    }
   }
 
   tick = (t: number) => {
@@ -101,20 +112,31 @@ export default class App extends SwissComponent<{}, AppState> {
   };
 
   get filteredEvents(): RuntimeEvent[] {
-    const { text, types } = this.state.filter;
+    const { events, filter, onlySelected, selectedNode } = this.state;
+    const cache = this._filteredCache;
+    if (
+      cache &&
+      cache.events === events &&
+      cache.filter === filter &&
+      cache.onlySelected === onlySelected &&
+      cache.selected === selectedNode
+    ) {
+      return cache.result;
+    }
+    const { text, types } = filter;
     const q = text.trim().toLowerCase();
-    return this.state.events.filter(ev => {
+    const result = events.filter(ev => {
       if (!types[ev.type]) return false;
       if (!q) return true;
       const inText = ev.msg?.toLowerCase().includes(q) || ev.type?.toLowerCase().includes(q);
       if (!inText) return false;
-      if (this.state.onlySelected && this.state.selectedNode) {
-        // For messages like "<id>:<ms>", ensure id matches
-        const id = this.state.selectedNode.id;
-        return ev.msg?.startsWith(id);
+      if (onlySelected && selectedNode) {
+        return ev.msg?.startsWith(selectedNode.id);
       }
       return true;
     });
+    this._filteredCache = { events, filter, onlySelected, selected: selectedNode, result };
+    return result;
   }
 
   get renderStats(): { avg: number; min: number; max: number } {
@@ -184,16 +206,10 @@ export default class App extends SwissComponent<{}, AppState> {
               <label><input type="checkbox" checked="${this.state.filter.types.mount}" onchange="${() => this.toggleType('mount')}" /> mount</label>
               <label><input type="checkbox" checked="${this.state.filter.types.update}" onchange="${() => this.toggleType('update')}" /> update</label>
               <label><input type="checkbox" checked="${this.state.filter.types.unmount}" onchange="${() => this.toggleType('unmount')}" /> unmount</label>
+              <label><input type="checkbox" checked="${this.state.filter.types.render}" onchange="${() => this.toggleType('render')}" /> render</label>
+              <label><input type="checkbox" checked="${this.state.onlySelected}" onchange="${this.toggleOnlySelected}" /> only selected</label>
             </div>
             <div class="events">
-              <div class="filters">
-                <input type="search" placeholder="Filter events" value="${this.state.filter.text}" oninput="${this.setFilterText}" />
-                <label><input type="checkbox" checked="${this.state.filter.types.mount}" onchange="${() => this.toggleType('mount')}" /> mount</label>
-                <label><input type="checkbox" checked="${this.state.filter.types.update}" onchange="${() => this.toggleType('update')}" /> update</label>
-                <label><input type="checkbox" checked="${this.state.filter.types.unmount}" onchange="${() => this.toggleType('unmount')}" /> unmount</label>
-                <label><input type="checkbox" checked="${this.state.filter.types.render}" onchange="${() => this.toggleType('render')}" /> render</label>
-                <label><input type="checkbox" checked="${this.state.onlySelected}" onchange="${this.toggleOnlySelected}" /> only selected</label>
-              </div>
               ${this.filteredEvents.map(ev => html`
                 <div class="event">
                   <span class="time">${new Date(ev.t).toLocaleTimeString()}</span>

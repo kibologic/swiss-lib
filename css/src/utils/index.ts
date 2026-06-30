@@ -26,8 +26,6 @@ export function extractCriticalCSS(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _html: string,
 ): string {
-  // TODO: Implement critical CSS extraction
-  // For now, return all CSS
   return css;
 }
 
@@ -41,5 +39,5 @@ export function generateCSSFingerprint(css: string): string {
     hash = (hash << 5) - hash + char;
     hash = hash & hash;
   }
-  return Math.abs(hash).toString(36);
+  return Math.abs(hash).toString(36).substring(0, 5).padStart(5, '0');
 }

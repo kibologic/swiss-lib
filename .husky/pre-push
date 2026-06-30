@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+pnpm -w lint
+pnpm -w type-check
+pnpm check:barrels
+pnpm check:policy

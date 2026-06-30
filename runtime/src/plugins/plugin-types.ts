@@ -13,4 +13,11 @@ export type {
   ComponentLike,
   DirectiveContext,
   Plugin,
+  AuditResult,
+  AuditIssue,
+  PluginLogger,
+  PluginName,
+  PluginId,
+  PluginKind,
+  PluginLifecycle,
 } from './types/index.js';

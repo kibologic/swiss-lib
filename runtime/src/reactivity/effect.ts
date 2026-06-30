@@ -25,9 +25,15 @@ export function setCurrentEffect(eff: Effect | null) {
 /**
  * Effect class for reactive side effects
  */
+type ReactiveObject = { __listeners?: Map<PropertyKey, Set<() => void>> };
+type ReactiveListenerEntry = { reactiveObj: ReactiveObject; prop: PropertyKey; listener: () => void };
+
 export class Effect {
   private fn: () => (() => void) | void;
   private stage = EffectStage.INITIAL;
+  private __executing = false;
+  private __trackedProps: Set<unknown> | null = null;
+  private __reactiveListeners: Array<ReactiveListenerEntry> | null = null;
   cleanup: (() => void) | null = null;
   dependencies = new Set<Signal<unknown>>();
 
@@ -45,7 +51,7 @@ export class Effect {
       logger.reactivity("Effect execute() but effect is DISPOSED");
       return;
     }
-    if ((this as any).__executing) {
+    if (this.__executing) {
       logger.reactivity("Effect execute() re-entrancy guard");
       return;
     }
@@ -66,21 +72,18 @@ export class Effect {
     }
 
     logger.reactivity("Effect execute()");
-    (this as any).__executing = true;
+    this.__executing = true;
 
     try {
-      // Run cleanup from previous execution
       if (this.cleanup) {
         this.cleanup();
         this.cleanup = null;
       }
 
-      // Clear previous dependencies
       this.clearDependencies();
 
-      // Clear tracked properties from previous execution
-      if ((this as any).__trackedProps) {
-        (this as any).__trackedProps.clear();
+      if (this.__trackedProps) {
+        this.__trackedProps.clear();
       }
 
       // Set as current effect
@@ -104,7 +107,7 @@ export class Effect {
         setCurrentEffect(prevEffect);
       }
     } finally {
-      (this as any).__executing = false;
+      this.__executing = false;
     }
   }
 
@@ -117,23 +120,18 @@ export class Effect {
     }
     this.dependencies.clear();
 
-    // Also clear listeners from reactive objects
-    // This prevents duplicate listeners when effect re-executes
-    if ((this as any).__reactiveListeners) {
-      for (const { reactiveObj, prop, listener } of (this as any)
-        .__reactiveListeners) {
-        const listenersMap = (reactiveObj as any).__listeners;
-        if (listenersMap && listenersMap.has(prop)) {
+    if (this.__reactiveListeners) {
+      for (const { reactiveObj, prop, listener } of this.__reactiveListeners) {
+        const listenersMap = reactiveObj.__listeners;
+        if (listenersMap?.has(prop)) {
           const listeners = listenersMap.get(prop);
           if (listeners) {
             listeners.delete(listener);
-            if (listeners.size === 0) {
-              listenersMap.delete(prop);
-            }
+            if (listeners.size === 0) listenersMap.delete(prop);
           }
         }
       }
-      (this as any).__reactiveListeners.clear();
+      this.__reactiveListeners.length = 0;
     }
   }
 

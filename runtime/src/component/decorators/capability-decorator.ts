@@ -34,7 +34,7 @@ export function RequireCapability(capability: string, options: CapabilityOptions
         }
         
         if (options.fallback) {
-          const fallbackMethod = (this as any)[options.fallback];
+          const fallbackMethod = (this as Record<string, unknown>)[options.fallback];
           if (typeof fallbackMethod === 'function') {
             return fallbackMethod.apply(this, args);
           }

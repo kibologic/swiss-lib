@@ -16,4 +16,11 @@ export type {
   PluginContext as BasePluginContext,
   DirectiveContext as BaseDirectiveContext,
   DirectiveBinding,
+  AuditResult,
+  AuditIssue,
+  PluginLogger,
+  PluginName,
+  PluginId,
+  PluginKind,
+  PluginLifecycle,
 } from './plugin-types.js';

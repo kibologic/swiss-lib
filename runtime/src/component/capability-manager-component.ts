@@ -37,7 +37,7 @@ export class CapabilityManagerComponent {
         session: this._sessionContext,
         tenant: this._tenantContext,
         layer: "component",
-        requiredCapabilities: (this.component.constructor as any).requires,
+        requiredCapabilities: (this.component.constructor as { requires?: string[] }).requires,
       };
 
       const result = FenestrationRegistry.pierce<T>(
@@ -75,7 +75,7 @@ export class CapabilityManagerComponent {
         session: this._sessionContext,
         tenant: this._tenantContext,
         layer: "component",
-        requiredCapabilities: (this.component.constructor as any).requires,
+        requiredCapabilities: (this.component.constructor as { requires?: string[] }).requires,
       };
 
       const result = await FenestrationRegistry.pierceAsync<T>(

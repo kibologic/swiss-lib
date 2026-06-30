@@ -8,27 +8,12 @@ Licensed under the MIT License. See LICENSE in the project root for license info
 
 This document tracks intentional short-term compromises to unblock delivery. Each entry includes context, impact, and a plan to resolve.
 
-## 2025-09-02 — VSCode Extension Unit Tests Skipped Temporarily
+## ~~2025-09-02 — VSCode Extension Unit Tests Skipped Temporarily~~ [RESOLVED 2026-06-30]
 
-- Package: `packages/devtools/vscode_extension`
-- Context: Unit tests run via Mocha + ts-node and are slow (cold on-the-fly TS transpilation and type-checking across a sizable graph). This was slowing down EPIC B (Language Server Core) delivery.
-- Current State:
-  - CI workflow step "Unit tests" is temporarily disabled with an explicit FIXME.
-    - File: `packages/devtools/vscode_extension/.github/workflows/extension-ci.yml`
-    - Change: step renamed to "Unit tests (temporarily skipped)" and guarded with `if: ${{ false }}`.
-  - Local script `test` now points to a faster path (`test:fast`) but can still be changed back to `test:unit` when addressing this item.
-- Impact: Reduced safety net for regressions in completions/hover/definitions/diagnostics providers.
-- Mitigations:
-  - Keep TypeScript type-checking in `pnpm type-check`.
-  - Keep linting in CI.
-  - Manual smoke testing on critical flows until tests are re-enabled.
-- Proposed Fix Plan:
-  1. Precompile tests (build to JS) and run Mocha on JS outputs OR switch to `tsx`/`esbuild-register` for faster runtime transpilation.
-  2. Use `TS_NODE_TRANSPILE_ONLY=1` in CI but keep a separate `pnpm type-check` step to retain type safety.
-  3. Narrow test scope or split providers to reduce module graph size.
-  4. Re-enable CI unit tests after the above optimizations.
-- Owner: VSCode extension team
-- Priority: High before publishing the extension
+- **Resolution:** Created root-level `.github/workflows/extension-ci.yml` that correctly targets `devtools/vscode_extension/` and runs `pnpm test:ci` (which uses `TS_NODE_TRANSPILE_ONLY=1` via `ts-node/register/transpile-only`). The misplaced `devtools/vscode_extension/.github/workflows/extension-ci.yml` was not picked up by GitHub Actions (nested `.github/` directories are not scanned). The unit test step is re-enabled.
+- **Fixed in:** `feature/vscode-extension-ci` branch
+- ~~Package: `packages/devtools/vscode_extension`~~
+- ~~Context: Unit tests run via Mocha + ts-node and are slow (cold on-the-fly TS transpilation and type-checking across a sizable graph). This was slowing down EPIC B (Language Server Core) delivery.~~
 
 ---
 
@@ -87,3 +72,43 @@ This document tracks intentional short-term compromises to unblock delivery. Eac
   3. Replace polling with bridge events to refresh on deltas.
 - Owner: Devtools
 - Priority: Low/Medium (optimize after functional completion)
+
+---
+
+## ✅ RESOLVED — Security Middleware `any` Types
+
+- Package: `security/src/middleware/`
+- Original issue: All three middleware factories (`createRateLimitMiddleware`, `createSecurityHeadersMiddleware`, `createValidationMiddleware`, `createPolicyValidationMiddleware`) used `req: any, res: any, next: any` for Express-style parameters. `onLimitExceeded` callback also typed `result: any`.
+- Resolution (feature/security-middleware-types, 2026-06-30):
+  - `security/src/middleware/types.ts` (new): `MiddlewareRequest`, `MiddlewareResponse`, `MiddlewareResponseChain`, `NextFunction`, `MiddlewareFn` — framework-agnostic structural interfaces compatible with Express/Connect/Fastify.
+  - `rate-limit-middleware.ts`: `result: any` → `RateLimitResult`; `req.get('User-Agent')` → `req.get?.()` optional chain.
+  - `security-headers-middleware.ts`: `_req: any` → `_req: unknown`.
+  - `validation-middleware.ts`: `req[target]` keyed via `keyof MiddlewareRequest`; `string | string[]` union for Content-Type header narrowed with `Array.isArray`.
+  - All five types exported from middleware barrel and package barrel.
+- Resolved: 2026-06-30
+
+---
+
+## ✅ RESOLVED — `update-manager.ts` 700-Line Violation
+
+- Package: `runtime/src/component/`
+- Original issue: `update-manager.ts` at 703 lines exceeded the 700-line file limit.
+- Resolution (feature/refactor-file-limits, 2026-06-30):
+  - DOM update strategies extracted to `update-strategies.ts` (278 lines): `refreshChildDomNode`, `updateWithDomNode`, `updateChildComponent`, `handleNoUpdatePath`, `updateRootComponent`.
+  - `update-manager.ts` reduced to 186 lines.
+- Resolved: 2026-06-30
+
+---
+
+## ✅ RESOLVED — Router Package `any` Types
+
+- Packages: `router/src/core/router.ts`, `router/src/core/matcher.ts`, `router/src/core/link.ts`, `router/src/core/outlet.ts`, `router/src/api/handler.ts`, `router/src/api/scanner.ts`, `router/src/ssr/hydration.ts`, `router/src/ssr/server-renderer.ts`
+- Original issue: ~25+ usages of `any` throughout the router package — `LoaderContext`, `ActionContext`, route params, middleware, component types, SSR context/result, `window.__SWISS_DATA__`, `RouteMatch.route`.
+- Resolution (feature/router-type-safety):
+  - Introduced `LoaderContext`, `ActionContext`, `ComponentLike`, `LoaderFunction`, `ActionFunction` types in `router.ts`
+  - `RouteMatch.route` now typed as `Route`; `matchRoute` signature uses `Route[]`
+  - `Window.__SWISS_DATA__` global declaration added; all `(window as any)` casts removed
+  - `SSRContext`, `SSRResult`, `buildRouteTree`, `buildComponentVNode`, `mergeProps` use `Record<string,unknown>`
+  - `APIRequest`, `APIResponse`, `Middleware` fully typed; `Link` children typed; `Outlet` createElement cast
+  - `handlePopState` TODO resolved — fires `_navigationListeners` Set; `onNavigate()` public API added
+- Resolved: 2026-06-30

@@ -1,11 +1,18 @@
 import { renderToDOM, hydrate as coreHydrate, createElement } from '@swissjs/core';
 import type { VNode } from '@swissjs/core';
+import type { ComponentLike } from '../core/router.js';
+
+declare global {
+    interface Window {
+        __SWISS_DATA__: Record<string, unknown>;
+    }
+}
 
 export interface HydrationData {
     route: string;
-    data: Record<string, any>;
+    data: Record<string, unknown>;
     /** Component class to mount or hydrate into the root element. */
-    component?: new (...args: any[]) => any;
+    component?: ComponentLike;
 }
 
 /**
@@ -25,9 +32,9 @@ export interface HydrationData {
  *  4. Dispatch `swiss:hydrate` event for app-level listeners
  */
 export function hydrate(rootElement: HTMLElement, data: HydrationData): void {
-    const serverData: Record<string, any> =
+    const serverData: Record<string, unknown> =
         typeof window !== 'undefined'
-            ? ((window as any).__SWISS_DATA__ as Record<string, any> ?? {})
+            ? (window.__SWISS_DATA__ ?? {})
             : {};
 
     const mergedData = { ...serverData, ...data.data };
@@ -57,7 +64,7 @@ export function hydrate(rootElement: HTMLElement, data: HydrationData): void {
 }
 
 /** Read the server-serialised data injected into the page as window.__SWISS_DATA__. */
-export function getServerData(): Record<string, any> {
+export function getServerData(): Record<string, unknown> {
     if (typeof window === 'undefined') return {};
-    return (window as any).__SWISS_DATA__ ?? {};
+    return window.__SWISS_DATA__ ?? {};
 }
