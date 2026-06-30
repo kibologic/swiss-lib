@@ -1,0 +1,87 @@
+name: Docs
+
+on:
+  push:
+    branches: [develop, staging, main]
+    paths:
+      - 'packages/**/src/**'
+      - 'docs/**'
+      - 'scripts/docs-redactor.mjs'
+      - '.github/workflows/docs.yml'
+  pull_request:
+    branches: [develop, staging, main]
+    paths:
+      - 'packages/**/src/**'
+      - 'docs/**'
+      - 'scripts/docs-redactor.mjs'
+
+permissions:
+  contents: read
+
+jobs:
+  docs:
+    name: Build docs (${{ matrix.env }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - env: develop
+            config: docs/config/typedoc.develop.json
+            redact: false
+          - env: staging
+            config: docs/config/typedoc.staging.json
+            redact: true
+          - env: release
+            config: docs/config/typedoc.release.json
+            redact: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages
+        run: pnpm build
+
+      - name: Generate docs (${{ matrix.env }})
+        run: pnpm typedoc --options ${{ matrix.config }} --out docs/api/${{ matrix.env }}
+
+      - name: Redact internal tokens (${{ matrix.env }})
+        if: ${{ matrix.redact }}
+        run: node scripts/docs-redactor.mjs --dir docs/api/${{ matrix.env }}
+
+      - name: Verify no internal tokens remain (${{ matrix.env }})
+        if: ${{ matrix.redact }}
+        run: node scripts/docs-redactor.mjs --dir docs/api/${{ matrix.env }} --verify
+
+      - name: Upload docs artifact (${{ matrix.env }})
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs-${{ matrix.env }}
+          path: docs/api/${{ matrix.env }}/
+          retention-days: 14
