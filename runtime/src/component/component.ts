@@ -134,14 +134,14 @@ export class SwissComponent<
     const lifecycleMetadata = getLifecycleMetadata(this);
     if (lifecycleMetadata && typeof lifecycleMetadata === "object") {
       if (lifecycleMetadata.mount && Array.isArray(lifecycleMetadata.mount)) {
-        lifecycleMetadata.mount.forEach((hook: any) => {
+        lifecycleMetadata.mount.forEach((hook: { method: string }) => {
           if (hook.method && (this as any)[hook.method]) {
             this._lifecycle.on("mounted", () => (this as any)[hook.method]());
           }
         });
       }
       if (lifecycleMetadata.update && Array.isArray(lifecycleMetadata.update)) {
-        lifecycleMetadata.update.forEach((hook: any) => {
+        lifecycleMetadata.update.forEach((hook: { method: string }) => {
           if (hook.method && (this as any)[hook.method]) {
             this._lifecycle.on("updated", () => (this as any)[hook.method]());
           }
@@ -151,7 +151,7 @@ export class SwissComponent<
         lifecycleMetadata.unmount &&
         Array.isArray(lifecycleMetadata.unmount)
       ) {
-        lifecycleMetadata.unmount.forEach((hook: any) => {
+        lifecycleMetadata.unmount.forEach((hook: { method: string }) => {
           if (hook.method && (this as any)[hook.method]) {
             this._lifecycle.on("unmounted", () => (this as any)[hook.method]());
           }
