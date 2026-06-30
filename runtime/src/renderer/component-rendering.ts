@@ -35,9 +35,9 @@ import { logger } from "../utils/logger.js";
  * Walk the _parent chain looking for an error boundary component.
  */
 function findErrorBoundary(instance: SwissComponent): SwissComponent | null {
-  let current: any = (instance as any)._parent;
+  let current: SwissComponent | null = instance._parent;
   while (current) {
-    if ((current.constructor as any).isErrorBoundary) return current;
+    if ((current.constructor as typeof SwissComponent).isErrorBoundary) return current;
     current = current._parent;
   }
   return null;

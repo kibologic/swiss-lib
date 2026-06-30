@@ -28,10 +28,7 @@ export function processAsset(
   options: AssetOptions = {},
 ): ProcessedAsset {
   const { publicPath = "/", limit = 8192 } = options;
-  void limit; // reserved for future inline threshold
-
-  // TODO: Implement actual asset processing
-  // For now, return basic URL
+  void limit;
   return {
     url: `${publicPath}${assetPath}`,
     inline: false,
