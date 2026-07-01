@@ -397,9 +397,6 @@ importers:
       '@swissjs/core':
         specifier: workspace:*
         version: link:../../runtime
-      vite:
-        specifier: ^6.4.2
-        version: 6.4.3(@types/node@18.19.121)(lightningcss@1.32.0)(yaml@2.9.0)
     devDependencies:
       '@types/express':
         specifier: ^4.17.21
