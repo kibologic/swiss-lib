@@ -1,5 +1,14 @@
 <!--
 
+## 1.2.3
+### Patch Changes
+
+- fix(plugin-file-router): use pnpm publish to correctly resolve workspace deps
+
+  1.2.2 was inadvertently published with workspace:* in @swissjs/core dependency
+  (via direct npm publish which skips pnpm workspace substitution). This patch
+  publishes via pnpm to ensure @swissjs/core is resolved to the actual version.
+
 ## 1.2.2
 ### Patch Changes
 
