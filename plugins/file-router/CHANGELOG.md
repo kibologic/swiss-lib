@@ -1,5 +1,16 @@
 <!--
 
+## 1.2.2
+### Patch Changes
+
+- fix(plugin-file-router): remove unused vite peerDependency
+
+  The vite peerDependency (^5.2.0) was a historical leftover from when the
+  plugin was intended as a Vite plugin. The plugin does not import or use
+  any vite APIs — it is a file scanner only. Removing the stale peer dep
+  eliminates the vite@5 constraint that was blocking consumers from
+  upgrading to vite@6+.
+
 ## 1.2.1
 ### Patch Changes
 
