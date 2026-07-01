@@ -1,15 +1,12 @@
 {
   "name": "@swissjs/plugin-file-router",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "File-based routing plugin for SwissJS",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
   "dependencies": {
     "@swissjs/core": "workspace:*"
-  },
-  "peerDependencies": {
-    "vite": "^5.2.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
