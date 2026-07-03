@@ -1,3 +1,14 @@
+/**
+ * EXPERIMENTAL / UNSUPPORTED (FABLE-SL-001): no shipped product exercises this
+ * path (all current products render client-side). Hydration matches
+ * server-rendered HTML to client vnodes by node identity, which today is
+ * runtime-index-derived (see FABLE-FRAME-001) rather than stable across
+ * conditional/list-length differences between server and client renders --
+ * a real hydration mismatch risk that hasn't been validated because nothing
+ * uses this path yet. Do not rely on SSR/hydration for a real product until
+ * FRAME-001's stable-key/node-range work lands and this has a hydration-
+ * mismatch test suite exercising it.
+ */
 import { Router, type Route, type RouteMatch } from "../core/router.js";
 import { createElement, renderToString } from "@swissjs/core";
 import type { VNode } from "@swissjs/core";
