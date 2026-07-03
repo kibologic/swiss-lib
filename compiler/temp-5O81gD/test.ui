@@ -1,9 +1,0 @@
-
-      import { SwissComponent } from '@kibologic/core';
-
-      export class SimpleComponent extends SwissComponent {
-        render() {
-          return <div className="greeting">Hello World</div>;
-        }
-      }
-    
