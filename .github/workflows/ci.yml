@@ -30,8 +30,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # --concurrency=1: see the identical comment in release.yml.
       - name: Build
-        run: pnpm turbo run build --filter="!@swissjs/css" --filter="!@swissjs/cli" --filter="!@swissjs/security"
+        run: pnpm turbo run build --filter="!@swissjs/css" --filter="!@swissjs/cli" --filter="!@swissjs/security" --concurrency=1
 
       # @swissjs/security's build task reproducibly fails only when invoked
       # through turbo -- see the identical step in release.yml for the full

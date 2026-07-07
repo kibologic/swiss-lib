@@ -35,8 +35,15 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # --concurrency=1: turbo's parallel task spawning is intermittently
+      # unreliable in this repo (observed failing a DIFFERENT random package
+      # each time -- "unable to spawn child process: No such file or
+      # directory (os error 2)" -- under default parallelism, both locally
+      # and in this exact CI environment). Serializing trades build speed
+      # for determinism until the underlying turbo/environment issue is
+      # root-caused.
       - name: Build
-        run: pnpm turbo run build --filter="!@swissjs/css" --filter="!@swissjs/cli" --filter="!@swissjs/security"
+        run: pnpm turbo run build --filter="!@swissjs/css" --filter="!@swissjs/cli" --filter="!@swissjs/security" --concurrency=1
 
       # @swissjs/security's build task reproducibly fails only when invoked
       # through turbo ("unable to spawn child process: No such file or
