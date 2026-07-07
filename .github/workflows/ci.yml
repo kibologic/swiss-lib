@@ -31,7 +31,13 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: pnpm turbo run build --filter="!@swissjs/css" --filter="!@swissjs/cli"
+        run: pnpm turbo run build --filter="!@swissjs/css" --filter="!@swissjs/cli" --filter="!@swissjs/security"
+
+      # @swissjs/security's build task reproducibly fails only when invoked
+      # through turbo -- see the identical step in release.yml for the full
+      # investigation. Plain pnpm builds it correctly every time.
+      - name: Build @swissjs/security (bypass turbo -- see comment)
+        run: pnpm --filter "@swissjs/security" run build
 
       - name: Test
         run: pnpm test
