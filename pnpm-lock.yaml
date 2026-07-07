@@ -63,8 +63,8 @@ importers:
         specifier: workspace:*
         version: link:shared
       '@swissjs/swite':
-        specifier: github:kibologic/swite
-        version: https://codeload.github.com/kibologic/swite/tar.gz/d064c25eed80a4617b1d1e5099b4db4377a343a2
+        specifier: ^0.4.2
+        version: 0.4.2
       commander:
         specifier: ^14.0.0
         version: 14.0.0
@@ -217,8 +217,8 @@ importers:
         specifier: workspace:*
         version: link:../shared
       '@swissjs/swite':
-        specifier: file:../../swite
-        version: file:../swite(vite@6.4.3(@types/node@18.19.121)(lightningcss@1.32.0)(yaml@2.9.0))
+        specifier: ^0.4.2
+        version: 0.4.2
       chalk:
         specifier: ^5.4.1
         version: 5.4.1
@@ -2116,27 +2116,8 @@ packages:
   '@sinonjs/fake-timers@13.0.5':
     resolution: {integrity: sha512-36/hTbH2uaWuGVERyC6da9YwGWnzUZXuPro/F2LfsdOsLnCojz/iSH8MxUt/FD2S5XBSVPhmArFUXcpCQ2Hkiw==}
 
-  '@swissjs/compiler@0.1.5':
-    resolution: {integrity: sha512-SfLv6M9y/C7NOMDs/DKZGO+dlvrwFpi5ueFdMO2fcDtXMOUd8imPNiSmchqm7WjqK2OqFpOakceQjLPOrcygXw==}
-
-  '@swissjs/core@0.1.5':
-    resolution: {integrity: sha512-2UhEkYsQjgrF237LEVNCHHAkHu5Fv/XElspC/c3f9DFOAY07CXY0yiVt4rswXAF72sbBKKmRR19SzT3A9/Hv0w==}
-
-  '@swissjs/core@0.1.8':
-    resolution: {integrity: sha512-lidnauqJtnvqqs3oVj8TctPyVgme3XhPKFOEP9G8jHIsZ8LDOcu5CBSpOjwH4US/5GjMMk4C2C9oOavhMAQTww==}
-
-  '@swissjs/plugin-file-router@1.0.2':
-    resolution: {integrity: sha512-7qr+06pnbypU39KKVNTvw/rrlqnOnbH0UKf4WXGWmFeeE3s4XacmozcE94UK32KKmt/I4hfkFl+HYmmsCBpxPw==}
-    peerDependencies:
-      vite: ^6.4.2
-
-  '@swissjs/swite@file:../swite':
-    resolution: {directory: ../swite, type: directory}
-    hasBin: true
-
-  '@swissjs/swite@https://codeload.github.com/kibologic/swite/tar.gz/d064c25eed80a4617b1d1e5099b4db4377a343a2':
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/kibologic/swite/tar.gz/d064c25eed80a4617b1d1e5099b4db4377a343a2}
-    version: 0.1.0
+  '@swissjs/swite@0.4.2':
+    resolution: {integrity: sha512-00YCtasYnzIIwJeGLVslmufdUBqtl3pCL0XOo12xA3LQRN0XMb+Ndo/glbLSsklEBCxCxFCOobDV6wTKyzGBDA==}
     hasBin: true
 
   '@testing-library/dom@10.4.1':
@@ -8665,51 +8646,7 @@ snapshots:
     dependencies:
       '@sinonjs/commons': 3.0.1
 
-  '@swissjs/compiler@0.1.5':
-    dependencies:
-      '@babel/core': 8.0.1
-      '@babel/plugin-transform-react-jsx': 7.27.1(@babel/core@8.0.1)
-      '@babel/preset-react': 7.24.7(@babel/core@8.0.1)
-      chokidar: 3.6.0
-      esbuild: 0.25.12
-      fs-extra: 10.1.0
-      typescript: 5.8.2
-    transitivePeerDependencies:
-      - supports-color
-
-  '@swissjs/core@0.1.5':
-    dependencies:
-      '@swissjs/security': link:security
-      '@swissjs/shared': link:shared
-
-  '@swissjs/core@0.1.8':
-    dependencies:
-      '@swissjs/security': link:security
-      '@swissjs/shared': link:shared
-
-  '@swissjs/plugin-file-router@1.0.2(vite@6.4.3(@types/node@18.19.121)(lightningcss@1.32.0)(yaml@2.9.0))':
-    dependencies:
-      '@swissjs/core': 0.1.5
-      vite: 6.4.3(@types/node@18.19.121)(lightningcss@1.32.0)(yaml@2.9.0)
-
-  '@swissjs/swite@file:../swite(vite@6.4.3(@types/node@18.19.121)(lightningcss@1.32.0)(yaml@2.9.0))':
-    dependencies:
-      '@swissjs/compiler': 0.1.5
-      '@swissjs/core': 0.1.8
-      '@swissjs/plugin-file-router': 1.0.2(vite@6.4.3(@types/node@18.19.121)(lightningcss@1.32.0)(yaml@2.9.0))
-      chalk: 5.4.1
-      chokidar: 3.6.0
-      es-module-lexer: 1.7.0
-      esbuild: 0.25.12
-      express: 4.21.2
-      ws: 8.21.0
-    transitivePeerDependencies:
-      - bufferutil
-      - supports-color
-      - utf-8-validate
-      - vite
-
-  '@swissjs/swite@https://codeload.github.com/kibologic/swite/tar.gz/d064c25eed80a4617b1d1e5099b4db4377a343a2':
+  '@swissjs/swite@0.4.2':
     dependencies:
       '@swissjs/compiler': link:compiler
       '@swissjs/core': link:runtime

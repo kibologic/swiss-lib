@@ -16,7 +16,7 @@
   "dependencies": {
     "@swissjs/compiler": "workspace:*",
     "@swissjs/shared": "workspace:*",
-    "@swissjs/swite": "file:../../swite",
+    "@swissjs/swite": "^0.4.2",
     "chalk": "^5.4.1",
     "chokidar": "^3.5.3",
     "commander": "^9.4.0",
