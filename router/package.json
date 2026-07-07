@@ -20,6 +20,10 @@
   ],
   "author": "Themba Mzumara",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kibologic/swiss-lib.git"
+  },
   "dependencies": {
     "@swissjs/core": "workspace:*"
   },
