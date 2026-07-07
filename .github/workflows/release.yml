@@ -35,8 +35,26 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # @swissjs/cli is excluded from the main build below but components'
+      # own build script imports its compiled output
+      # (@swissjs/cli/dist/utils/compileUiFiles.js) directly, so it must be
+      # built first.
+      - name: Build @swissjs/cli
+        run: pnpm --filter "@swissjs/cli" run build
+
+      # Uses pnpm's own recursive build (-r), not turbo: turbo's task-spawn
+      # mechanism is intermittently unreliable in this repo -- confirmed both
+      # locally and in this exact CI environment, failing a DIFFERENT random
+      # package each time ("unable to spawn child process: No such file or
+      # directory (os error 2)"), with @swissjs/security failing
+      # deterministically every time regardless of concurrency settings.
+      # Root cause not isolated despite investigation (not the build scripts,
+      # not package-level .npmrc/packageManager/engines fields, not
+      # concurrency=1). Plain `pnpm -r run build` has been 100% reliable in
+      # every test against this repo -- a different code path from turbo's
+      # task graph entirely.
       - name: Build
-        run: pnpm turbo run build --filter="!@swissjs/css" --filter="!@swissjs/cli"
+        run: pnpm -r --filter="!@swissjs/css" --filter="!@swissjs/cli" run build
 
       - name: Create Release PR or Publish
         uses: changesets/action@v1

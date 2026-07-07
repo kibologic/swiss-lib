@@ -1,3 +1,7 @@
+/**
+ * EXPERIMENTAL / UNSUPPORTED (FABLE-SL-001) -- see server-renderer.ts's
+ * top-of-file note. Gated on FABLE-FRAME-001's stable node-identity fix.
+ */
 import { renderToDOM, hydrate as coreHydrate, createElement } from '@swissjs/core';
 import type { VNode } from '@swissjs/core';
 import type { ComponentLike } from '../core/router.js';
