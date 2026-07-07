@@ -36,7 +36,16 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: pnpm turbo run build --filter="!@swissjs/css" --filter="!@swissjs/cli"
+        run: pnpm turbo run build --filter="!@swissjs/css" --filter="!@swissjs/cli" --filter="!@swissjs/security"
+
+      # @swissjs/security's build task reproducibly fails only when invoked
+      # through turbo ("unable to spawn child process: No such file or
+      # directory (os error 2)") -- confirmed on a pristine main checkout,
+      # pre-existing, root cause not isolated. Plain pnpm builds it correctly
+      # every time, so it's excluded from the turbo filter above and built
+      # directly here instead.
+      - name: Build @swissjs/security (bypass turbo -- see comment)
+        run: pnpm --filter "@swissjs/security" run build
 
       - name: Create Release PR or Publish
         uses: changesets/action@v1
