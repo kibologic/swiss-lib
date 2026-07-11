@@ -11,9 +11,10 @@
   - Generates Markdown via typedoc-plugin-markdown; falls back to JSON if needed.
   - Output: repoRoot/docs/api/<package-id>
 */
-import { fileURLToPath, pathToFileURL } from 'node:url';
-import { dirname, resolve, sep, posix } from 'node:path';
-import { readdirSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, resolve, sep } from 'node:path';
+import { execFileSync } from 'node:child_process';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { Application, TSConfigReader, TypeDocReader } from 'typedoc';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -134,21 +135,18 @@ async function generateForPackage(pkgDir) {
 }
 
 function findPackages(root) {
+  // Ask pnpm for the real workspace package list (driven by pnpm-workspace.yaml)
+  // rather than assuming a directory layout -- this repo's packages are flat
+  // top-level dirs (runtime/, compiler/, plugins/*), not nested under packages/.
+  const raw = execFileSync('pnpm', ['list', '-r', '--depth', '-1', '--json'], {
+    cwd: root,
+    encoding: 'utf8',
+  });
+  const entries = JSON.parse(raw);
   const dirs = [];
-  const scopeDir = resolve(root, 'packages');
-  if (!existsSync(scopeDir)) return dirs;
-  const entries = readdirSync(scopeDir, { withFileTypes: true });
   for (const entry of entries) {
-    if (!entry.isDirectory()) continue;
-    const full = resolve(scopeDir, entry.name);
-    if (existsSync(resolve(full, 'src'))) dirs.push(full);
-    const subentries = readdirSync(full, { withFileTypes: true });
-    for (const se of subentries) {
-      if (se.isDirectory()) {
-        const sub = resolve(full, se.name);
-        if (existsSync(resolve(sub, 'src'))) dirs.push(sub);
-      }
-    }
+    if (entry.path === root) continue; // skip the workspace root itself
+    if (existsSync(resolve(entry.path, 'src'))) dirs.push(entry.path);
   }
   return dirs;
 }

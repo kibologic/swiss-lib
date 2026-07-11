@@ -1,0 +1,4490 @@
+{
+	"schemaVersion": "2.0",
+	"id": 272,
+	"name": "@swissjs/plugin-file-router",
+	"variant": "project",
+	"kind": 1,
+	"flags": {},
+	"children": [
+		{
+			"id": 354,
+			"name": "PathTransformer",
+			"variant": "declaration",
+			"kind": 128,
+			"flags": {},
+			"children": [
+				{
+					"id": 355,
+					"name": "constructor",
+					"variant": "declaration",
+					"kind": 512,
+					"flags": {},
+					"signatures": [
+						{
+							"id": 356,
+							"name": "PathTransformer",
+							"variant": "signature",
+							"kind": 16384,
+							"flags": {},
+							"type": {
+								"type": "reference",
+								"target": 354,
+								"name": "PathTransformer",
+								"package": "@swissjs/plugin-file-router"
+							}
+						}
+					]
+				},
+				{
+					"id": 367,
+					"name": "extractParamNames",
+					"variant": "declaration",
+					"kind": 2048,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/core/transformer.ts",
+							"line": 93,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/transformer.ts#L93"
+						}
+					],
+					"signatures": [
+						{
+							"id": 368,
+							"name": "extractParamNames",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Extract parameter names from route pattern"
+									}
+								]
+							},
+							"sources": [
+								{
+									"fileName": "plugins/file-router/src/core/transformer.ts",
+									"line": 93,
+									"character": 2,
+									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/transformer.ts#L93"
+								}
+							],
+							"parameters": [
+								{
+									"id": 369,
+									"name": "route",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"type": {
+								"type": "array",
+								"elementType": {
+									"type": "intrinsic",
+									"name": "string"
+								}
+							}
+						}
+					]
+				},
+				{
+					"id": 357,
+					"name": "filePathToRoute",
+					"variant": "declaration",
+					"kind": 2048,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/core/transformer.ts",
+							"line": 17,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/transformer.ts#L17"
+						}
+					],
+					"signatures": [
+						{
+							"id": 358,
+							"name": "filePathToRoute",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Transform file path to route pattern\r\n\r\nExamples:\r\n- /routes/index.ui -> /\r\n- /routes/about.ui -> /about\r\n- /routes/user/[id].ui -> /user/:id\r\n- /routes/blog/[slug]/edit.ui -> /blog/:slug/edit"
+									}
+								]
+							},
+							"sources": [
+								{
+									"fileName": "plugins/file-router/src/core/transformer.ts",
+									"line": 17,
+									"character": 2,
+									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/transformer.ts#L17"
+								}
+							],
+							"parameters": [
+								{
+									"id": 359,
+									"name": "filePath",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								},
+								{
+									"id": 360,
+									"name": "routePrefix",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									},
+									"defaultValue": "''"
+								},
+								{
+									"id": 361,
+									"name": "baseDir",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									},
+									"defaultValue": "''"
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						}
+					]
+				},
+				{
+					"id": 370,
+					"name": "matchRoute",
+					"variant": "declaration",
+					"kind": 2048,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/core/transformer.ts",
+							"line": 101,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/transformer.ts#L101"
+						}
+					],
+					"signatures": [
+						{
+							"id": 371,
+							"name": "matchRoute",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Check if route pattern matches path"
+									}
+								]
+							},
+							"sources": [
+								{
+									"fileName": "plugins/file-router/src/core/transformer.ts",
+									"line": 101,
+									"character": 2,
+									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/transformer.ts#L101"
+								}
+							],
+							"parameters": [
+								{
+									"id": 372,
+									"name": "pattern",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								},
+								{
+									"id": 373,
+									"name": "path",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"type": {
+								"type": "reflection",
+								"declaration": {
+									"id": 374,
+									"name": "__type",
+									"variant": "declaration",
+									"kind": 65536,
+									"flags": {},
+									"children": [
+										{
+											"id": 375,
+											"name": "match",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"sources": [
+												{
+													"fileName": "plugins/file-router/src/core/transformer.ts",
+													"line": 101,
+													"character": 47,
+													"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/transformer.ts#L101"
+												}
+											],
+											"type": {
+												"type": "intrinsic",
+												"name": "boolean"
+											}
+										},
+										{
+											"id": 376,
+											"name": "params",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"sources": [
+												{
+													"fileName": "plugins/file-router/src/core/transformer.ts",
+													"line": 101,
+													"character": 63,
+													"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/transformer.ts#L101"
+												}
+											],
+											"type": {
+												"type": "reference",
+												"target": {
+													"packageName": "typescript",
+													"packagePath": "lib/lib.es5.d.ts",
+													"qualifiedName": "Record"
+												},
+												"typeArguments": [
+													{
+														"type": "intrinsic",
+														"name": "string"
+													},
+													{
+														"type": "intrinsic",
+														"name": "string"
+													}
+												],
+												"name": "Record",
+												"package": "typescript"
+											}
+										}
+									],
+									"groups": [
+										{
+											"title": "Properties",
+											"children": [
+												375,
+												376
+											]
+										}
+									],
+									"sources": [
+										{
+											"fileName": "plugins/file-router/src/core/transformer.ts",
+											"line": 101,
+											"character": 45,
+											"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/transformer.ts#L101"
+										}
+									]
+								}
+							}
+						}
+					]
+				},
+				{
+					"id": 362,
+					"name": "routeToFilePaths",
+					"variant": "declaration",
+					"kind": 2048,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/core/transformer.ts",
+							"line": 73,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/transformer.ts#L73"
+						}
+					],
+					"signatures": [
+						{
+							"id": 363,
+							"name": "routeToFilePaths",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Transform route pattern back to potential file paths\r\nUseful for reverse lookups and debugging"
+									}
+								]
+							},
+							"sources": [
+								{
+									"fileName": "plugins/file-router/src/core/transformer.ts",
+									"line": 73,
+									"character": 2,
+									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/transformer.ts#L73"
+								}
+							],
+							"parameters": [
+								{
+									"id": 364,
+									"name": "route",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								},
+								{
+									"id": 365,
+									"name": "routesDir",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								},
+								{
+									"id": 366,
+									"name": "extensions",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "array",
+										"elementType": {
+											"type": "intrinsic",
+											"name": "string"
+										}
+									}
+								}
+							],
+							"type": {
+								"type": "array",
+								"elementType": {
+									"type": "intrinsic",
+									"name": "string"
+								}
+							}
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Constructors",
+					"children": [
+						355
+					]
+				},
+				{
+					"title": "Methods",
+					"children": [
+						367,
+						357,
+						370,
+						362
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "plugins/file-router/src/core/transformer.ts",
+					"line": 7,
+					"character": 13,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/transformer.ts#L7"
+				}
+			]
+		},
+		{
+			"id": 317,
+			"name": "RouteMatcher",
+			"variant": "declaration",
+			"kind": 128,
+			"flags": {},
+			"children": [
+				{
+					"id": 318,
+					"name": "constructor",
+					"variant": "declaration",
+					"kind": 512,
+					"flags": {},
+					"signatures": [
+						{
+							"id": 319,
+							"name": "RouteMatcher",
+							"variant": "signature",
+							"kind": 16384,
+							"flags": {},
+							"type": {
+								"type": "reference",
+								"target": 317,
+								"name": "RouteMatcher",
+								"package": "@swissjs/plugin-file-router"
+							}
+						}
+					]
+				},
+				{
+					"id": 328,
+					"name": "findBestMatch",
+					"variant": "declaration",
+					"kind": 2048,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/core/matcher.ts",
+							"line": 22,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L22"
+						}
+					],
+					"signatures": [
+						{
+							"id": 329,
+							"name": "findBestMatch",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Find the best matching route from a list of routes"
+									}
+								]
+							},
+							"sources": [
+								{
+									"fileName": "plugins/file-router/src/core/matcher.ts",
+									"line": 22,
+									"character": 2,
+									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L22"
+								}
+							],
+							"parameters": [
+								{
+									"id": 330,
+									"name": "routes",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "array",
+										"elementType": {
+											"type": "reflection",
+											"declaration": {
+												"id": 331,
+												"name": "__type",
+												"variant": "declaration",
+												"kind": 65536,
+												"flags": {},
+												"children": [
+													{
+														"id": 332,
+														"name": "path",
+														"variant": "declaration",
+														"kind": 1024,
+														"flags": {},
+														"sources": [
+															{
+																"fileName": "plugins/file-router/src/core/matcher.ts",
+																"line": 23,
+																"character": 20,
+																"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L23"
+															}
+														],
+														"type": {
+															"type": "intrinsic",
+															"name": "string"
+														}
+													}
+												],
+												"groups": [
+													{
+														"title": "Properties",
+														"children": [
+															332
+														]
+													}
+												],
+												"sources": [
+													{
+														"fileName": "plugins/file-router/src/core/matcher.ts",
+														"line": 23,
+														"character": 18,
+														"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L23"
+													}
+												],
+												"indexSignatures": [
+													{
+														"id": 333,
+														"name": "__index",
+														"variant": "signature",
+														"kind": 8192,
+														"flags": {},
+														"sources": [
+															{
+																"fileName": "plugins/file-router/src/core/matcher.ts",
+																"line": 23,
+																"character": 34,
+																"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L23"
+															}
+														],
+														"parameters": [
+															{
+																"id": 334,
+																"name": "key",
+																"variant": "param",
+																"kind": 32768,
+																"flags": {},
+																"type": {
+																	"type": "intrinsic",
+																	"name": "string"
+																}
+															}
+														],
+														"type": {
+															"type": "intrinsic",
+															"name": "unknown"
+														}
+													}
+												]
+											}
+										}
+									}
+								},
+								{
+									"id": 335,
+									"name": "path",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"type": {
+								"type": "reflection",
+								"declaration": {
+									"id": 336,
+									"name": "__type",
+									"variant": "declaration",
+									"kind": 65536,
+									"flags": {},
+									"children": [
+										{
+											"id": 342,
+											"name": "params",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"sources": [
+												{
+													"fileName": "plugins/file-router/src/core/matcher.ts",
+													"line": 25,
+													"character": 56,
+													"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L25"
+												}
+											],
+											"type": {
+												"type": "reference",
+												"target": {
+													"packageName": "typescript",
+													"packagePath": "lib/lib.es5.d.ts",
+													"qualifiedName": "Record"
+												},
+												"typeArguments": [
+													{
+														"type": "intrinsic",
+														"name": "string"
+													},
+													{
+														"type": "intrinsic",
+														"name": "string"
+													}
+												],
+												"name": "Record",
+												"package": "typescript"
+											}
+										},
+										{
+											"id": 337,
+											"name": "route",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"sources": [
+												{
+													"fileName": "plugins/file-router/src/core/matcher.ts",
+													"line": 25,
+													"character": 7,
+													"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L25"
+												}
+											],
+											"type": {
+												"type": "reflection",
+												"declaration": {
+													"id": 338,
+													"name": "__type",
+													"variant": "declaration",
+													"kind": 65536,
+													"flags": {},
+													"children": [
+														{
+															"id": 339,
+															"name": "path",
+															"variant": "declaration",
+															"kind": 1024,
+															"flags": {},
+															"sources": [
+																{
+																	"fileName": "plugins/file-router/src/core/matcher.ts",
+																	"line": 25,
+																	"character": 16,
+																	"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L25"
+																}
+															],
+															"type": {
+																"type": "intrinsic",
+																"name": "string"
+															}
+														}
+													],
+													"groups": [
+														{
+															"title": "Properties",
+															"children": [
+																339
+															]
+														}
+													],
+													"sources": [
+														{
+															"fileName": "plugins/file-router/src/core/matcher.ts",
+															"line": 25,
+															"character": 14,
+															"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L25"
+														}
+													],
+													"indexSignatures": [
+														{
+															"id": 340,
+															"name": "__index",
+															"variant": "signature",
+															"kind": 8192,
+															"flags": {},
+															"sources": [
+																{
+																	"fileName": "plugins/file-router/src/core/matcher.ts",
+																	"line": 25,
+																	"character": 30,
+																	"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L25"
+																}
+															],
+															"parameters": [
+																{
+																	"id": 341,
+																	"name": "key",
+																	"variant": "param",
+																	"kind": 32768,
+																	"flags": {},
+																	"type": {
+																		"type": "intrinsic",
+																		"name": "string"
+																	}
+																}
+															],
+															"type": {
+																"type": "intrinsic",
+																"name": "unknown"
+															}
+														}
+													]
+												}
+											}
+										}
+									],
+									"groups": [
+										{
+											"title": "Properties",
+											"children": [
+												342,
+												337
+											]
+										}
+									],
+									"sources": [
+										{
+											"fileName": "plugins/file-router/src/core/matcher.ts",
+											"line": 25,
+											"character": 5,
+											"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L25"
+										}
+									]
+								}
+							}
+						}
+					]
+				},
+				{
+					"id": 321,
+					"name": "matchRoute",
+					"variant": "declaration",
+					"kind": 2048,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/core/matcher.ts",
+							"line": 15,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L15"
+						}
+					],
+					"signatures": [
+						{
+							"id": 322,
+							"name": "matchRoute",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Match a path against a route pattern"
+									}
+								]
+							},
+							"sources": [
+								{
+									"fileName": "plugins/file-router/src/core/matcher.ts",
+									"line": 15,
+									"character": 2,
+									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L15"
+								}
+							],
+							"parameters": [
+								{
+									"id": 323,
+									"name": "pattern",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								},
+								{
+									"id": 324,
+									"name": "path",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"type": {
+								"type": "reflection",
+								"declaration": {
+									"id": 325,
+									"name": "__type",
+									"variant": "declaration",
+									"kind": 65536,
+									"flags": {},
+									"children": [
+										{
+											"id": 326,
+											"name": "match",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"sources": [
+												{
+													"fileName": "plugins/file-router/src/core/matcher.ts",
+													"line": 15,
+													"character": 47,
+													"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L15"
+												}
+											],
+											"type": {
+												"type": "intrinsic",
+												"name": "boolean"
+											}
+										},
+										{
+											"id": 327,
+											"name": "params",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"sources": [
+												{
+													"fileName": "plugins/file-router/src/core/matcher.ts",
+													"line": 15,
+													"character": 63,
+													"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L15"
+												}
+											],
+											"type": {
+												"type": "reference",
+												"target": {
+													"packageName": "typescript",
+													"packagePath": "lib/lib.es5.d.ts",
+													"qualifiedName": "Record"
+												},
+												"typeArguments": [
+													{
+														"type": "intrinsic",
+														"name": "string"
+													},
+													{
+														"type": "intrinsic",
+														"name": "string"
+													}
+												],
+												"name": "Record",
+												"package": "typescript"
+											}
+										}
+									],
+									"groups": [
+										{
+											"title": "Properties",
+											"children": [
+												326,
+												327
+											]
+										}
+									],
+									"sources": [
+										{
+											"fileName": "plugins/file-router/src/core/matcher.ts",
+											"line": 15,
+											"character": 45,
+											"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L15"
+										}
+									]
+								}
+							}
+						}
+					]
+				},
+				{
+					"id": 343,
+					"name": "sortRoutesBySpecificity",
+					"variant": "declaration",
+					"kind": 2048,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/core/matcher.ts",
+							"line": 39,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L39"
+						}
+					],
+					"signatures": [
+						{
+							"id": 344,
+							"name": "sortRoutesBySpecificity",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Sort routes by specificity (most specific first)"
+									}
+								]
+							},
+							"sources": [
+								{
+									"fileName": "plugins/file-router/src/core/matcher.ts",
+									"line": 39,
+									"character": 2,
+									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L39"
+								}
+							],
+							"parameters": [
+								{
+									"id": 345,
+									"name": "routes",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "array",
+										"elementType": {
+											"type": "reflection",
+											"declaration": {
+												"id": 346,
+												"name": "__type",
+												"variant": "declaration",
+												"kind": 65536,
+												"flags": {},
+												"children": [
+													{
+														"id": 347,
+														"name": "path",
+														"variant": "declaration",
+														"kind": 1024,
+														"flags": {},
+														"sources": [
+															{
+																"fileName": "plugins/file-router/src/core/matcher.ts",
+																"line": 40,
+																"character": 20,
+																"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L40"
+															}
+														],
+														"type": {
+															"type": "intrinsic",
+															"name": "string"
+														}
+													}
+												],
+												"groups": [
+													{
+														"title": "Properties",
+														"children": [
+															347
+														]
+													}
+												],
+												"sources": [
+													{
+														"fileName": "plugins/file-router/src/core/matcher.ts",
+														"line": 40,
+														"character": 18,
+														"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L40"
+													}
+												],
+												"indexSignatures": [
+													{
+														"id": 348,
+														"name": "__index",
+														"variant": "signature",
+														"kind": 8192,
+														"flags": {},
+														"sources": [
+															{
+																"fileName": "plugins/file-router/src/core/matcher.ts",
+																"line": 40,
+																"character": 34,
+																"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L40"
+															}
+														],
+														"parameters": [
+															{
+																"id": 349,
+																"name": "key",
+																"variant": "param",
+																"kind": 32768,
+																"flags": {},
+																"type": {
+																	"type": "intrinsic",
+																	"name": "string"
+																}
+															}
+														],
+														"type": {
+															"type": "intrinsic",
+															"name": "unknown"
+														}
+													}
+												]
+											}
+										}
+									}
+								}
+							],
+							"type": {
+								"type": "array",
+								"elementType": {
+									"type": "reflection",
+									"declaration": {
+										"id": 350,
+										"name": "__type",
+										"variant": "declaration",
+										"kind": 65536,
+										"flags": {},
+										"children": [
+											{
+												"id": 351,
+												"name": "path",
+												"variant": "declaration",
+												"kind": 1024,
+												"flags": {},
+												"sources": [
+													{
+														"fileName": "plugins/file-router/src/core/matcher.ts",
+														"line": 41,
+														"character": 13,
+														"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L41"
+													}
+												],
+												"type": {
+													"type": "intrinsic",
+													"name": "string"
+												}
+											}
+										],
+										"groups": [
+											{
+												"title": "Properties",
+												"children": [
+													351
+												]
+											}
+										],
+										"sources": [
+											{
+												"fileName": "plugins/file-router/src/core/matcher.ts",
+												"line": 41,
+												"character": 11,
+												"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L41"
+											}
+										],
+										"indexSignatures": [
+											{
+												"id": 352,
+												"name": "__index",
+												"variant": "signature",
+												"kind": 8192,
+												"flags": {},
+												"sources": [
+													{
+														"fileName": "plugins/file-router/src/core/matcher.ts",
+														"line": 41,
+														"character": 27,
+														"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L41"
+													}
+												],
+												"parameters": [
+													{
+														"id": 353,
+														"name": "key",
+														"variant": "param",
+														"kind": 32768,
+														"flags": {},
+														"type": {
+															"type": "intrinsic",
+															"name": "string"
+														}
+													}
+												],
+												"type": {
+													"type": "intrinsic",
+													"name": "unknown"
+												}
+											}
+										]
+									}
+								}
+							}
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Constructors",
+					"children": [
+						318
+					]
+				},
+				{
+					"title": "Methods",
+					"children": [
+						328,
+						321,
+						343
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "plugins/file-router/src/core/matcher.ts",
+					"line": 9,
+					"character": 13,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L9"
+				}
+			]
+		},
+		{
+			"id": 292,
+			"name": "RouteScanner",
+			"variant": "declaration",
+			"kind": 128,
+			"flags": {},
+			"children": [
+				{
+					"id": 293,
+					"name": "constructor",
+					"variant": "declaration",
+					"kind": 512,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/core/scanner.ts",
+							"line": 17,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/scanner.ts#L17"
+						}
+					],
+					"signatures": [
+						{
+							"id": 294,
+							"name": "RouteScanner",
+							"variant": "signature",
+							"kind": 16384,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "plugins/file-router/src/core/scanner.ts",
+									"line": 17,
+									"character": 2,
+									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/scanner.ts#L17"
+								}
+							],
+							"parameters": [
+								{
+									"id": 295,
+									"name": "config",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "reference",
+										"target": 408,
+										"name": "FileRouterOptions",
+										"package": "@swissjs/plugin-file-router"
+									}
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": 292,
+								"name": "RouteScanner",
+								"package": "@swissjs/plugin-file-router"
+							}
+						}
+					]
+				},
+				{
+					"id": 299,
+					"name": "scanRoutes",
+					"variant": "declaration",
+					"kind": 2048,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/core/scanner.ts",
+							"line": 19,
+							"character": 8,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/scanner.ts#L19"
+						}
+					],
+					"signatures": [
+						{
+							"id": 300,
+							"name": "scanRoutes",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "plugins/file-router/src/core/scanner.ts",
+									"line": 19,
+									"character": 8,
+									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/scanner.ts#L19"
+								}
+							],
+							"parameters": [
+								{
+									"id": 301,
+									"name": "directory",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"packageName": "typescript",
+									"packagePath": "lib/lib.es5.d.ts",
+									"qualifiedName": "Promise"
+								},
+								"typeArguments": [
+									{
+										"type": "array",
+										"elementType": {
+											"type": "reference",
+											"target": 442,
+											"name": "RouteDefinition",
+											"package": "@swissjs/core"
+										}
+									}
+								],
+								"name": "Promise",
+								"package": "typescript"
+							}
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Constructors",
+					"children": [
+						293
+					]
+				},
+				{
+					"title": "Methods",
+					"children": [
+						299
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "plugins/file-router/src/core/scanner.ts",
+					"line": 13,
+					"character": 13,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/scanner.ts#L13"
+				}
+			]
+		},
+		{
+			"id": 448,
+			"name": "ComponentConstructor",
+			"variant": "declaration",
+			"kind": 256,
+			"flags": {},
+			"children": [
+				{
+					"id": 449,
+					"name": "constructor",
+					"variant": "declaration",
+					"kind": 512,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "runtime/dist/types/index.d.ts",
+							"line": 1,
+							"character": 17
+						}
+					],
+					"signatures": [
+						{
+							"id": 450,
+							"name": "ComponentConstructor",
+							"variant": "signature",
+							"kind": 16384,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "runtime/dist/types/index.d.ts",
+									"line": 2,
+									"character": 4
+								}
+							],
+							"parameters": [
+								{
+									"id": 451,
+									"name": "args",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {
+										"isRest": true
+									},
+									"type": {
+										"type": "array",
+										"elementType": {
+											"type": "intrinsic",
+											"name": "unknown"
+										}
+									}
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "unknown"
+							}
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Constructors",
+					"children": [
+						449
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "runtime/dist/types/index.d.ts",
+					"line": 1,
+					"character": 17
+				}
+			]
+		},
+		{
+			"id": 283,
+			"name": "DevServer",
+			"variant": "declaration",
+			"kind": 256,
+			"flags": {},
+			"children": [
+				{
+					"id": 288,
+					"name": "port",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/types/dev.ts",
+							"line": 41,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L41"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "number"
+					}
+				},
+				{
+					"id": 284,
+					"name": "start",
+					"variant": "declaration",
+					"kind": 2048,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/types/dev.ts",
+							"line": 39,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L39"
+						}
+					],
+					"signatures": [
+						{
+							"id": 285,
+							"name": "start",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "plugins/file-router/src/types/dev.ts",
+									"line": 39,
+									"character": 2,
+									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L39"
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"packageName": "typescript",
+									"packagePath": "lib/lib.es5.d.ts",
+									"qualifiedName": "Promise"
+								},
+								"typeArguments": [
+									{
+										"type": "intrinsic",
+										"name": "void"
+									}
+								],
+								"name": "Promise",
+								"package": "typescript"
+							}
+						}
+					]
+				},
+				{
+					"id": 286,
+					"name": "stop",
+					"variant": "declaration",
+					"kind": 2048,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/types/dev.ts",
+							"line": 40,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L40"
+						}
+					],
+					"signatures": [
+						{
+							"id": 287,
+							"name": "stop",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "plugins/file-router/src/types/dev.ts",
+									"line": 40,
+									"character": 2,
+									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L40"
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"packageName": "typescript",
+									"packagePath": "lib/lib.es5.d.ts",
+									"qualifiedName": "Promise"
+								},
+								"typeArguments": [
+									{
+										"type": "intrinsic",
+										"name": "void"
+									}
+								],
+								"name": "Promise",
+								"package": "typescript"
+							}
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Properties",
+					"children": [
+						288
+					]
+				},
+				{
+					"title": "Methods",
+					"children": [
+						284,
+						286
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "plugins/file-router/src/types/dev.ts",
+					"line": 38,
+					"character": 17,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L38"
+				}
+			]
+		},
+		{
+			"id": 403,
+			"name": "DevServerOptions",
+			"variant": "declaration",
+			"kind": 256,
+			"flags": {},
+			"children": [
+				{
+					"id": 405,
+					"name": "hotReload",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Enable hot reload"
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/types/dev.ts",
+							"line": 23,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L23"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "boolean"
+					}
+				},
+				{
+					"id": 406,
+					"name": "middleware",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Custom middleware"
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/types/dev.ts",
+							"line": 26,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L26"
+						}
+					],
+					"type": {
+						"type": "array",
+						"elementType": {
+							"type": "intrinsic",
+							"name": "unknown"
+						}
+					}
+				},
+				{
+					"id": 404,
+					"name": "port",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Development server port"
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/types/dev.ts",
+							"line": 20,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L20"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "number"
+					}
+				},
+				{
+					"id": 407,
+					"name": "routes",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Custom routes"
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/types/dev.ts",
+							"line": 29,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L29"
+						}
+					],
+					"type": {
+						"type": "reference",
+						"target": {
+							"packageName": "typescript",
+							"packagePath": "lib/lib.es5.d.ts",
+							"qualifiedName": "Record"
+						},
+						"typeArguments": [
+							{
+								"type": "intrinsic",
+								"name": "string"
+							},
+							{
+								"type": "intrinsic",
+								"name": "unknown"
+							}
+						],
+						"name": "Record",
+						"package": "typescript"
+					}
+				}
+			],
+			"groups": [
+				{
+					"title": "Properties",
+					"children": [
+						405,
+						406,
+						404,
+						407
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "plugins/file-router/src/types/dev.ts",
+					"line": 18,
+					"character": 17,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L18"
+				}
+			]
+		},
+		{
+			"id": 408,
+			"name": "FileRouterOptions",
+			"variant": "declaration",
+			"kind": 256,
+			"flags": {},
+			"children": [
+				{
+					"id": 418,
+					"name": "dev",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Development server options"
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/types/config.ts",
+							"line": 27,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/config.ts#L27"
+						}
+					],
+					"type": {
+						"type": "reflection",
+						"declaration": {
+							"id": 419,
+							"name": "__type",
+							"variant": "declaration",
+							"kind": 65536,
+							"flags": {},
+							"children": [
+								{
+									"id": 420,
+									"name": "hotReload",
+									"variant": "declaration",
+									"kind": 1024,
+									"flags": {
+										"isOptional": true
+									},
+									"sources": [
+										{
+											"fileName": "plugins/file-router/src/types/config.ts",
+											"line": 28,
+											"character": 4,
+											"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/config.ts#L28"
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "boolean"
+									}
+								},
+								{
+									"id": 421,
+									"name": "port",
+									"variant": "declaration",
+									"kind": 1024,
+									"flags": {
+										"isOptional": true
+									},
+									"sources": [
+										{
+											"fileName": "plugins/file-router/src/types/config.ts",
+											"line": 29,
+											"character": 4,
+											"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/config.ts#L29"
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "number"
+									}
+								}
+							],
+							"groups": [
+								{
+									"title": "Properties",
+									"children": [
+										420,
+										421
+									]
+								}
+							],
+							"sources": [
+								{
+									"fileName": "plugins/file-router/src/types/config.ts",
+									"line": 27,
+									"character": 8,
+									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/config.ts#L27"
+								}
+							]
+						}
+					}
+				},
+				{
+					"id": 410,
+					"name": "extensions",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "File extensions to scan for routes"
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/types/config.ts",
+							"line": 12,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/config.ts#L12"
+						}
+					],
+					"type": {
+						"type": "array",
+						"elementType": {
+							"type": "intrinsic",
+							"name": "string"
+						}
+					}
+				},
+				{
+					"id": 411,
+					"name": "layouts",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Enable nested layouts"
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/types/config.ts",
+							"line": 15,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/config.ts#L15"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "boolean"
+					}
+				},
+				{
+					"id": 412,
+					"name": "lazyLoading",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Enable lazy loading"
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/types/config.ts",
+							"line": 18,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/config.ts#L18"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "boolean"
+					}
+				},
+				{
+					"id": 413,
+					"name": "preloading",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Enable route preloading"
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/types/config.ts",
+							"line": 21,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/config.ts#L21"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "boolean"
+					}
+				},
+				{
+					"id": 409,
+					"name": "routesDir",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Routes directory relative to project root"
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/types/config.ts",
+							"line": 9,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/config.ts#L9"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				},
+				{
+					"id": 414,
+					"name": "transform",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Custom route transformation"
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/types/config.ts",
+							"line": 24,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/config.ts#L24"
+						}
+					],
+					"type": {
+						"type": "reflection",
+						"declaration": {
+							"id": 415,
+							"name": "__type",
+							"variant": "declaration",
+							"kind": 65536,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "plugins/file-router/src/types/config.ts",
+									"line": 24,
+									"character": 14,
+									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/config.ts#L24"
+								}
+							],
+							"signatures": [
+								{
+									"id": 416,
+									"name": "__type",
+									"variant": "signature",
+									"kind": 4096,
+									"flags": {},
+									"sources": [
+										{
+											"fileName": "plugins/file-router/src/types/config.ts",
+											"line": 24,
+											"character": 14,
+											"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/config.ts#L24"
+										}
+									],
+									"parameters": [
+										{
+											"id": 417,
+											"name": "path",
+											"variant": "param",
+											"kind": 32768,
+											"flags": {},
+											"type": {
+												"type": "intrinsic",
+												"name": "string"
+											}
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							]
+						}
+					}
+				}
+			],
+			"groups": [
+				{
+					"title": "Properties",
+					"children": [
+						418,
+						410,
+						411,
+						412,
+						413,
+						409,
+						414
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "plugins/file-router/src/types/config.ts",
+					"line": 7,
+					"character": 17,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/config.ts#L7"
+				}
+			]
+		},
+		{
+			"id": 273,
+			"name": "FileWatcher",
+			"variant": "declaration",
+			"kind": 256,
+			"flags": {},
+			"children": [
+				{
+					"id": 281,
+					"name": "close",
+					"variant": "declaration",
+					"kind": 2048,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/types/dev.ts",
+							"line": 35,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L35"
+						}
+					],
+					"signatures": [
+						{
+							"id": 282,
+							"name": "close",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "plugins/file-router/src/types/dev.ts",
+									"line": 35,
+									"character": 2,
+									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L35"
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"packageName": "typescript",
+									"packagePath": "lib/lib.es5.d.ts",
+									"qualifiedName": "Promise"
+								},
+								"typeArguments": [
+									{
+										"type": "intrinsic",
+										"name": "void"
+									}
+								],
+								"name": "Promise",
+								"package": "typescript"
+							}
+						}
+					]
+				},
+				{
+					"id": 274,
+					"name": "on",
+					"variant": "declaration",
+					"kind": 2048,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/types/dev.ts",
+							"line": 34,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L34"
+						}
+					],
+					"signatures": [
+						{
+							"id": 275,
+							"name": "on",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "plugins/file-router/src/types/dev.ts",
+									"line": 34,
+									"character": 2,
+									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L34"
+								}
+							],
+							"parameters": [
+								{
+									"id": 276,
+									"name": "event",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "union",
+										"types": [
+											{
+												"type": "literal",
+												"value": "change"
+											},
+											{
+												"type": "literal",
+												"value": "add"
+											},
+											{
+												"type": "literal",
+												"value": "remove"
+											}
+										]
+									}
+								},
+								{
+									"id": 277,
+									"name": "handler",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "reflection",
+										"declaration": {
+											"id": 278,
+											"name": "__type",
+											"variant": "declaration",
+											"kind": 65536,
+											"flags": {},
+											"sources": [
+												{
+													"fileName": "plugins/file-router/src/types/dev.ts",
+													"line": 34,
+													"character": 50,
+													"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L34"
+												}
+											],
+											"signatures": [
+												{
+													"id": 279,
+													"name": "__type",
+													"variant": "signature",
+													"kind": 4096,
+													"flags": {},
+													"sources": [
+														{
+															"fileName": "plugins/file-router/src/types/dev.ts",
+															"line": 34,
+															"character": 50,
+															"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L34"
+														}
+													],
+													"parameters": [
+														{
+															"id": 280,
+															"name": "path",
+															"variant": "param",
+															"kind": 32768,
+															"flags": {},
+															"type": {
+																"type": "intrinsic",
+																"name": "string"
+															}
+														}
+													],
+													"type": {
+														"type": "intrinsic",
+														"name": "void"
+													}
+												}
+											]
+										}
+									}
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "void"
+							}
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Methods",
+					"children": [
+						281,
+						274
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "plugins/file-router/src/types/dev.ts",
+					"line": 33,
+					"character": 17,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L33"
+				}
+			]
+		},
+		{
+			"id": 434,
+			"name": "LayoutConfig",
+			"variant": "declaration",
+			"kind": 256,
+			"flags": {},
+			"children": [
+				{
+					"id": 435,
+					"name": "component",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Layout component name"
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/types/route.ts",
+							"line": 29,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/route.ts#L29"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				},
+				{
+					"id": 436,
+					"name": "meta",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Layout metadata"
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/types/route.ts",
+							"line": 32,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/route.ts#L32"
+						}
+					],
+					"type": {
+						"type": "reflection",
+						"declaration": {
+							"id": 437,
+							"name": "__type",
+							"variant": "declaration",
+							"kind": 65536,
+							"flags": {},
+							"children": [
+								{
+									"id": 439,
+									"name": "description",
+									"variant": "declaration",
+									"kind": 1024,
+									"flags": {
+										"isOptional": true
+									},
+									"sources": [
+										{
+											"fileName": "plugins/file-router/src/types/route.ts",
+											"line": 34,
+											"character": 4,
+											"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/route.ts#L34"
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								},
+								{
+									"id": 438,
+									"name": "title",
+									"variant": "declaration",
+									"kind": 1024,
+									"flags": {
+										"isOptional": true
+									},
+									"sources": [
+										{
+											"fileName": "plugins/file-router/src/types/route.ts",
+											"line": 33,
+											"character": 4,
+											"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/route.ts#L33"
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"groups": [
+								{
+									"title": "Properties",
+									"children": [
+										439,
+										438
+									]
+								}
+							],
+							"sources": [
+								{
+									"fileName": "plugins/file-router/src/types/route.ts",
+									"line": 32,
+									"character": 9,
+									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/route.ts#L32"
+								}
+							],
+							"indexSignatures": [
+								{
+									"id": 440,
+									"name": "__index",
+									"variant": "signature",
+									"kind": 8192,
+									"flags": {},
+									"sources": [
+										{
+											"fileName": "plugins/file-router/src/types/route.ts",
+											"line": 35,
+											"character": 4,
+											"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/route.ts#L35"
+										}
+									],
+									"parameters": [
+										{
+											"id": 441,
+											"name": "key",
+											"variant": "param",
+											"kind": 32768,
+											"flags": {},
+											"type": {
+												"type": "intrinsic",
+												"name": "string"
+											}
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "unknown"
+									}
+								}
+							]
+						}
+					}
+				}
+			],
+			"groups": [
+				{
+					"title": "Properties",
+					"children": [
+						435,
+						436
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "plugins/file-router/src/types/route.ts",
+					"line": 27,
+					"character": 17,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/route.ts#L27"
+				}
+			]
+		},
+		{
+			"id": 422,
+			"name": "RouteConfig",
+			"variant": "declaration",
+			"kind": 256,
+			"flags": {},
+			"children": [
+				{
+					"id": 424,
+					"name": "component",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Component file path"
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/types/route.ts",
+							"line": 12,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/route.ts#L12"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				},
+				{
+					"id": 425,
+					"name": "layout",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Layout component"
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/types/route.ts",
+							"line": 15,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/route.ts#L15"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				},
+				{
+					"id": 426,
+					"name": "meta",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Route metadata"
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/types/route.ts",
+							"line": 18,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/route.ts#L18"
+						}
+					],
+					"type": {
+						"type": "reflection",
+						"declaration": {
+							"id": 427,
+							"name": "__type",
+							"variant": "declaration",
+							"kind": 65536,
+							"flags": {},
+							"children": [
+								{
+									"id": 429,
+									"name": "description",
+									"variant": "declaration",
+									"kind": 1024,
+									"flags": {
+										"isOptional": true
+									},
+									"sources": [
+										{
+											"fileName": "plugins/file-router/src/types/route.ts",
+											"line": 20,
+											"character": 4,
+											"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/route.ts#L20"
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								},
+								{
+									"id": 430,
+									"name": "guards",
+									"variant": "declaration",
+									"kind": 1024,
+									"flags": {
+										"isOptional": true
+									},
+									"sources": [
+										{
+											"fileName": "plugins/file-router/src/types/route.ts",
+											"line": 21,
+											"character": 4,
+											"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/route.ts#L21"
+										}
+									],
+									"type": {
+										"type": "array",
+										"elementType": {
+											"type": "intrinsic",
+											"name": "string"
+										}
+									}
+								},
+								{
+									"id": 431,
+									"name": "middleware",
+									"variant": "declaration",
+									"kind": 1024,
+									"flags": {
+										"isOptional": true
+									},
+									"sources": [
+										{
+											"fileName": "plugins/file-router/src/types/route.ts",
+											"line": 22,
+											"character": 4,
+											"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/route.ts#L22"
+										}
+									],
+									"type": {
+										"type": "array",
+										"elementType": {
+											"type": "intrinsic",
+											"name": "string"
+										}
+									}
+								},
+								{
+									"id": 428,
+									"name": "title",
+									"variant": "declaration",
+									"kind": 1024,
+									"flags": {
+										"isOptional": true
+									},
+									"sources": [
+										{
+											"fileName": "plugins/file-router/src/types/route.ts",
+											"line": 19,
+											"character": 4,
+											"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/route.ts#L19"
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"groups": [
+								{
+									"title": "Properties",
+									"children": [
+										429,
+										430,
+										431,
+										428
+									]
+								}
+							],
+							"sources": [
+								{
+									"fileName": "plugins/file-router/src/types/route.ts",
+									"line": 18,
+									"character": 9,
+									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/route.ts#L18"
+								}
+							],
+							"indexSignatures": [
+								{
+									"id": 432,
+									"name": "__index",
+									"variant": "signature",
+									"kind": 8192,
+									"flags": {},
+									"sources": [
+										{
+											"fileName": "plugins/file-router/src/types/route.ts",
+											"line": 23,
+											"character": 4,
+											"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/route.ts#L23"
+										}
+									],
+									"parameters": [
+										{
+											"id": 433,
+											"name": "key",
+											"variant": "param",
+											"kind": 32768,
+											"flags": {},
+											"type": {
+												"type": "intrinsic",
+												"name": "string"
+											}
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "unknown"
+									}
+								}
+							]
+						}
+					}
+				},
+				{
+					"id": 423,
+					"name": "path",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Route path pattern"
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/types/route.ts",
+							"line": 9,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/route.ts#L9"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				}
+			],
+			"groups": [
+				{
+					"title": "Properties",
+					"children": [
+						424,
+						425,
+						426,
+						423
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "plugins/file-router/src/types/route.ts",
+					"line": 7,
+					"character": 17,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/route.ts#L7"
+				}
+			]
+		},
+		{
+			"id": 442,
+			"name": "RouteDefinition",
+			"variant": "declaration",
+			"kind": 256,
+			"flags": {},
+			"children": [
+				{
+					"id": 446,
+					"name": "children",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"sources": [
+						{
+							"fileName": "runtime/dist/types/index.d.ts",
+							"line": 11,
+							"character": 4
+						}
+					],
+					"type": {
+						"type": "array",
+						"elementType": {
+							"type": "reference",
+							"target": 442,
+							"name": "RouteDefinition",
+							"package": "@swissjs/core"
+						}
+					}
+				},
+				{
+					"id": 444,
+					"name": "component",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "runtime/dist/types/index.d.ts",
+							"line": 9,
+							"character": 4
+						}
+					],
+					"type": {
+						"type": "union",
+						"types": [
+							{
+								"type": "reference",
+								"target": 448,
+								"name": "ComponentConstructor",
+								"package": "@swissjs/core"
+							},
+							{
+								"type": "reference",
+								"target": {
+									"packageName": "@swissjs/core",
+									"packagePath": "dist/types/index.d.ts",
+									"qualifiedName": "ComponentImport"
+								},
+								"name": "ComponentImport",
+								"package": "@swissjs/core"
+							}
+						]
+					}
+				},
+				{
+					"id": 445,
+					"name": "layout",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"sources": [
+						{
+							"fileName": "runtime/dist/types/index.d.ts",
+							"line": 10,
+							"character": 4
+						}
+					],
+					"type": {
+						"type": "union",
+						"types": [
+							{
+								"type": "reference",
+								"target": 448,
+								"name": "ComponentConstructor",
+								"package": "@swissjs/core"
+							},
+							{
+								"type": "reference",
+								"target": {
+									"packageName": "@swissjs/core",
+									"packagePath": "dist/types/index.d.ts",
+									"qualifiedName": "ComponentImport"
+								},
+								"name": "ComponentImport",
+								"package": "@swissjs/core"
+							}
+						]
+					}
+				},
+				{
+					"id": 447,
+					"name": "meta",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"sources": [
+						{
+							"fileName": "runtime/dist/types/index.d.ts",
+							"line": 12,
+							"character": 4
+						}
+					],
+					"type": {
+						"type": "reference",
+						"target": {
+							"packageName": "@swissjs/core",
+							"packagePath": "dist/types/index.d.ts",
+							"qualifiedName": "RouteMeta"
+						},
+						"name": "RouteMeta",
+						"package": "@swissjs/core"
+					}
+				},
+				{
+					"id": 443,
+					"name": "path",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "runtime/dist/types/index.d.ts",
+							"line": 8,
+							"character": 4
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				}
+			],
+			"groups": [
+				{
+					"title": "Properties",
+					"children": [
+						446,
+						444,
+						445,
+						447,
+						443
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "runtime/dist/types/index.d.ts",
+					"line": 7,
+					"character": 17
+				}
+			]
+		},
+		{
+			"id": 399,
+			"name": "WatcherConfig",
+			"variant": "declaration",
+			"kind": 256,
+			"flags": {},
+			"children": [
+				{
+					"id": 400,
+					"name": "directory",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Directory to watch"
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/types/dev.ts",
+							"line": 9,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L9"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				},
+				{
+					"id": 401,
+					"name": "extensions",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "File extensions to watch"
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/types/dev.ts",
+							"line": 12,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L12"
+						}
+					],
+					"type": {
+						"type": "array",
+						"elementType": {
+							"type": "intrinsic",
+							"name": "string"
+						}
+					}
+				},
+				{
+					"id": 402,
+					"name": "ignore",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Ignore patterns"
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/types/dev.ts",
+							"line": 15,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L15"
+						}
+					],
+					"type": {
+						"type": "array",
+						"elementType": {
+							"type": "intrinsic",
+							"name": "string"
+						}
+					}
+				}
+			],
+			"groups": [
+				{
+					"title": "Properties",
+					"children": [
+						400,
+						401,
+						402
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "plugins/file-router/src/types/dev.ts",
+					"line": 7,
+					"character": 17,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L7"
+				}
+			]
+		},
+		{
+			"id": 396,
+			"name": "createDevServer",
+			"variant": "declaration",
+			"kind": 64,
+			"flags": {},
+			"sources": [
+				{
+					"fileName": "plugins/file-router/src/dev/server.ts",
+					"line": 11,
+					"character": 22,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/dev/server.ts#L11"
+				}
+			],
+			"signatures": [
+				{
+					"id": 397,
+					"name": "createDevServer",
+					"variant": "signature",
+					"kind": 4096,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/dev/server.ts",
+							"line": 11,
+							"character": 22,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/dev/server.ts#L11"
+						}
+					],
+					"parameters": [
+						{
+							"id": 398,
+							"name": "options",
+							"variant": "param",
+							"kind": 32768,
+							"flags": {},
+							"type": {
+								"type": "reference",
+								"target": 403,
+								"name": "DevServerOptions",
+								"package": "@swissjs/plugin-file-router"
+							},
+							"defaultValue": "{}"
+						}
+					],
+					"type": {
+						"type": "reference",
+						"target": {
+							"packageName": "typescript",
+							"packagePath": "lib/lib.es5.d.ts",
+							"qualifiedName": "Promise"
+						},
+						"typeArguments": [
+							{
+								"type": "reference",
+								"target": 283,
+								"name": "DevServer",
+								"package": "@swissjs/plugin-file-router"
+							}
+						],
+						"name": "Promise",
+						"package": "typescript"
+					}
+				}
+			]
+		},
+		{
+			"id": 393,
+			"name": "createFileWatcher",
+			"variant": "declaration",
+			"kind": 64,
+			"flags": {},
+			"sources": [
+				{
+					"fileName": "plugins/file-router/src/dev/watcher.ts",
+					"line": 9,
+					"character": 22,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/dev/watcher.ts#L9"
+				}
+			],
+			"signatures": [
+				{
+					"id": 394,
+					"name": "createFileWatcher",
+					"variant": "signature",
+					"kind": 4096,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/dev/watcher.ts",
+							"line": 9,
+							"character": 22,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/dev/watcher.ts#L9"
+						}
+					],
+					"parameters": [
+						{
+							"id": 395,
+							"name": "config",
+							"variant": "param",
+							"kind": 32768,
+							"flags": {},
+							"type": {
+								"type": "reference",
+								"target": 399,
+								"name": "WatcherConfig",
+								"package": "@swissjs/plugin-file-router"
+							}
+						}
+					],
+					"type": {
+						"type": "reference",
+						"target": {
+							"packageName": "typescript",
+							"packagePath": "lib/lib.es5.d.ts",
+							"qualifiedName": "Promise"
+						},
+						"typeArguments": [
+							{
+								"type": "reference",
+								"target": 273,
+								"name": "FileWatcher",
+								"package": "@swissjs/plugin-file-router"
+							}
+						],
+						"name": "Promise",
+						"package": "typescript"
+					}
+				}
+			]
+		},
+		{
+			"id": 377,
+			"name": "createRouteDefinition",
+			"variant": "declaration",
+			"kind": 64,
+			"flags": {},
+			"sources": [
+				{
+					"fileName": "plugins/file-router/src/core/utils.ts",
+					"line": 12,
+					"character": 16,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/utils.ts#L12"
+				}
+			],
+			"signatures": [
+				{
+					"id": 378,
+					"name": "createRouteDefinition",
+					"variant": "signature",
+					"kind": 4096,
+					"flags": {},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Create a route definition from file path and component"
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/core/utils.ts",
+							"line": 12,
+							"character": 16,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/utils.ts#L12"
+						}
+					],
+					"parameters": [
+						{
+							"id": 379,
+							"name": "path",
+							"variant": "param",
+							"kind": 32768,
+							"flags": {},
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 380,
+							"name": "component",
+							"variant": "param",
+							"kind": 32768,
+							"flags": {},
+							"type": {
+								"type": "reflection",
+								"declaration": {
+									"id": 381,
+									"name": "__type",
+									"variant": "declaration",
+									"kind": 65536,
+									"flags": {},
+									"sources": [
+										{
+											"fileName": "plugins/file-router/src/core/utils.ts",
+											"line": 14,
+											"character": 13,
+											"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/utils.ts#L14"
+										}
+									],
+									"signatures": [
+										{
+											"id": 382,
+											"name": "__type",
+											"variant": "signature",
+											"kind": 4096,
+											"flags": {},
+											"sources": [
+												{
+													"fileName": "plugins/file-router/src/core/utils.ts",
+													"line": 14,
+													"character": 13,
+													"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/utils.ts#L14"
+												}
+											],
+											"type": {
+												"type": "reference",
+												"target": {
+													"packageName": "typescript",
+													"packagePath": "lib/lib.es5.d.ts",
+													"qualifiedName": "Promise"
+												},
+												"typeArguments": [
+													{
+														"type": "reflection",
+														"declaration": {
+															"id": 383,
+															"name": "__type",
+															"variant": "declaration",
+															"kind": 65536,
+															"flags": {},
+															"children": [
+																{
+																	"id": 384,
+																	"name": "default",
+																	"variant": "declaration",
+																	"kind": 1024,
+																	"flags": {},
+																	"sources": [
+																		{
+																			"fileName": "plugins/file-router/src/core/utils.ts",
+																			"line": 14,
+																			"character": 29,
+																			"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/utils.ts#L14"
+																		}
+																	],
+																	"type": {
+																		"type": "reference",
+																		"target": 448,
+																		"name": "ComponentConstructor",
+																		"package": "@swissjs/core"
+																	}
+																}
+															],
+															"groups": [
+																{
+																	"title": "Properties",
+																	"children": [
+																		384
+																	]
+																}
+															],
+															"sources": [
+																{
+																	"fileName": "plugins/file-router/src/core/utils.ts",
+																	"line": 14,
+																	"character": 27,
+																	"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/utils.ts#L14"
+																}
+															]
+														}
+													}
+												],
+												"name": "Promise",
+												"package": "typescript"
+											}
+										}
+									]
+								}
+							}
+						},
+						{
+							"id": 385,
+							"name": "options",
+							"variant": "param",
+							"kind": 32768,
+							"flags": {},
+							"type": {
+								"type": "reflection",
+								"declaration": {
+									"id": 386,
+									"name": "__type",
+									"variant": "declaration",
+									"kind": 65536,
+									"flags": {},
+									"children": [
+										{
+											"id": 387,
+											"name": "layout",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"sources": [
+												{
+													"fileName": "plugins/file-router/src/core/utils.ts",
+													"line": 16,
+													"character": 4,
+													"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/utils.ts#L16"
+												}
+											],
+											"type": {
+												"type": "reflection",
+												"declaration": {
+													"id": 388,
+													"name": "__type",
+													"variant": "declaration",
+													"kind": 65536,
+													"flags": {},
+													"sources": [
+														{
+															"fileName": "plugins/file-router/src/core/utils.ts",
+															"line": 16,
+															"character": 13,
+															"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/utils.ts#L16"
+														}
+													],
+													"signatures": [
+														{
+															"id": 389,
+															"name": "__type",
+															"variant": "signature",
+															"kind": 4096,
+															"flags": {},
+															"sources": [
+																{
+																	"fileName": "plugins/file-router/src/core/utils.ts",
+																	"line": 16,
+																	"character": 13,
+																	"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/utils.ts#L16"
+																}
+															],
+															"type": {
+																"type": "reference",
+																"target": {
+																	"packageName": "typescript",
+																	"packagePath": "lib/lib.es5.d.ts",
+																	"qualifiedName": "Promise"
+																},
+																"typeArguments": [
+																	{
+																		"type": "reflection",
+																		"declaration": {
+																			"id": 390,
+																			"name": "__type",
+																			"variant": "declaration",
+																			"kind": 65536,
+																			"flags": {},
+																			"children": [
+																				{
+																					"id": 391,
+																					"name": "default",
+																					"variant": "declaration",
+																					"kind": 1024,
+																					"flags": {},
+																					"sources": [
+																						{
+																							"fileName": "plugins/file-router/src/core/utils.ts",
+																							"line": 16,
+																							"character": 29,
+																							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/utils.ts#L16"
+																						}
+																					],
+																					"type": {
+																						"type": "reference",
+																						"target": 448,
+																						"name": "ComponentConstructor",
+																						"package": "@swissjs/core"
+																					}
+																				}
+																			],
+																			"groups": [
+																				{
+																					"title": "Properties",
+																					"children": [
+																						391
+																					]
+																				}
+																			],
+																			"sources": [
+																				{
+																					"fileName": "plugins/file-router/src/core/utils.ts",
+																					"line": 16,
+																					"character": 27,
+																					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/utils.ts#L16"
+																				}
+																			]
+																		}
+																	}
+																],
+																"name": "Promise",
+																"package": "typescript"
+															}
+														}
+													]
+												}
+											}
+										},
+										{
+											"id": 392,
+											"name": "meta",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"sources": [
+												{
+													"fileName": "plugins/file-router/src/core/utils.ts",
+													"line": 17,
+													"character": 4,
+													"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/utils.ts#L17"
+												}
+											],
+											"type": {
+												"type": "reference",
+												"target": {
+													"packageName": "typescript",
+													"packagePath": "lib/lib.es5.d.ts",
+													"qualifiedName": "Record"
+												},
+												"typeArguments": [
+													{
+														"type": "intrinsic",
+														"name": "string"
+													},
+													{
+														"type": "intrinsic",
+														"name": "unknown"
+													}
+												],
+												"name": "Record",
+												"package": "typescript"
+											}
+										}
+									],
+									"groups": [
+										{
+											"title": "Properties",
+											"children": [
+												387,
+												392
+											]
+										}
+									],
+									"sources": [
+										{
+											"fileName": "plugins/file-router/src/core/utils.ts",
+											"line": 15,
+											"character": 11,
+											"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/utils.ts#L15"
+										}
+									]
+								}
+							},
+							"defaultValue": "{}"
+						}
+					],
+					"type": {
+						"type": "reference",
+						"target": 442,
+						"name": "RouteDefinition",
+						"package": "@swissjs/core"
+					}
+				}
+			]
+		},
+		{
+			"id": 289,
+			"name": "fileRouterPlugin",
+			"variant": "declaration",
+			"kind": 64,
+			"flags": {},
+			"sources": [
+				{
+					"fileName": "plugins/file-router/src/core/plugin.ts",
+					"line": 11,
+					"character": 13,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/plugin.ts#L11"
+				}
+			],
+			"signatures": [
+				{
+					"id": 290,
+					"name": "fileRouterPlugin",
+					"variant": "signature",
+					"kind": 4096,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/core/plugin.ts",
+							"line": 11,
+							"character": 32,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/plugin.ts#L11"
+						}
+					],
+					"parameters": [
+						{
+							"id": 291,
+							"name": "options",
+							"variant": "param",
+							"kind": 32768,
+							"flags": {},
+							"type": {
+								"type": "reference",
+								"target": 408,
+								"name": "FileRouterOptions",
+								"package": "@swissjs/plugin-file-router"
+							},
+							"defaultValue": "{}"
+						}
+					],
+					"type": {
+						"type": "reference",
+						"target": {
+							"packageName": "@swissjs/core",
+							"packagePath": "dist/plugins/pluginInterface.d.ts",
+							"qualifiedName": "Plugin"
+						},
+						"name": "Plugin",
+						"package": "@swissjs/core"
+					}
+				}
+			]
+		},
+		{
+			"id": 452,
+			"name": "normalizeRoutePath",
+			"variant": "declaration",
+			"kind": 64,
+			"flags": {},
+			"sources": [
+				{
+					"fileName": "plugins/file-router/src/utils/route.ts",
+					"line": 10,
+					"character": 16,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/utils/route.ts#L10"
+				}
+			],
+			"signatures": [
+				{
+					"id": 453,
+					"name": "normalizeRoutePath",
+					"variant": "signature",
+					"kind": 4096,
+					"flags": {},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Normalize route path"
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/utils/route.ts",
+							"line": 10,
+							"character": 16,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/utils/route.ts#L10"
+						}
+					],
+					"parameters": [
+						{
+							"id": 454,
+							"name": "path",
+							"variant": "param",
+							"kind": 32768,
+							"flags": {},
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				}
+			]
+		},
+		{
+			"id": 455,
+			"name": "validateRoutePath",
+			"variant": "declaration",
+			"kind": 64,
+			"flags": {},
+			"sources": [
+				{
+					"fileName": "plugins/file-router/src/utils/route.ts",
+					"line": 27,
+					"character": 16,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/utils/route.ts#L27"
+				}
+			],
+			"signatures": [
+				{
+					"id": 456,
+					"name": "validateRoutePath",
+					"variant": "signature",
+					"kind": 4096,
+					"flags": {},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Validate route path"
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "plugins/file-router/src/utils/route.ts",
+							"line": 27,
+							"character": 16,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/utils/route.ts#L27"
+						}
+					],
+					"parameters": [
+						{
+							"id": 457,
+							"name": "path",
+							"variant": "param",
+							"kind": 32768,
+							"flags": {},
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "boolean"
+					}
+				}
+			]
+		}
+	],
+	"groups": [
+		{
+			"title": "Classes",
+			"children": [
+				354,
+				317,
+				292
+			]
+		},
+		{
+			"title": "Interfaces",
+			"children": [
+				448,
+				283,
+				403,
+				408,
+				273,
+				434,
+				422,
+				442,
+				399
+			]
+		},
+		{
+			"title": "Functions",
+			"children": [
+				396,
+				393,
+				377,
+				289,
+				452,
+				455
+			]
+		}
+	],
+	"packageName": "@swissjs/plugin-file-router",
+	"packageVersion": "1.2.8",
+	"symbolIdMap": {
+		"272": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/index.ts",
+			"qualifiedName": ""
+		},
+		"273": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/dev.ts",
+			"qualifiedName": "FileWatcher"
+		},
+		"274": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/dev.ts",
+			"qualifiedName": "FileWatcher.on"
+		},
+		"275": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/dev.ts",
+			"qualifiedName": "FileWatcher.on"
+		},
+		"276": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/dev.ts",
+			"qualifiedName": "event"
+		},
+		"277": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/dev.ts",
+			"qualifiedName": "handler"
+		},
+		"278": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/dev.ts",
+			"qualifiedName": "__type"
+		},
+		"279": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/dev.ts",
+			"qualifiedName": "__type"
+		},
+		"280": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/dev.ts",
+			"qualifiedName": "path"
+		},
+		"281": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/dev.ts",
+			"qualifiedName": "FileWatcher.close"
+		},
+		"282": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/dev.ts",
+			"qualifiedName": "FileWatcher.close"
+		},
+		"283": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/dev.ts",
+			"qualifiedName": "DevServer"
+		},
+		"284": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/dev.ts",
+			"qualifiedName": "DevServer.start"
+		},
+		"285": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/dev.ts",
+			"qualifiedName": "DevServer.start"
+		},
+		"286": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/dev.ts",
+			"qualifiedName": "DevServer.stop"
+		},
+		"287": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/dev.ts",
+			"qualifiedName": "DevServer.stop"
+		},
+		"288": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/dev.ts",
+			"qualifiedName": "DevServer.port"
+		},
+		"289": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/plugin.ts",
+			"qualifiedName": "fileRouterPlugin"
+		},
+		"290": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/plugin.ts",
+			"qualifiedName": "fileRouterPlugin"
+		},
+		"291": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/plugin.ts",
+			"qualifiedName": "options"
+		},
+		"292": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/scanner.ts",
+			"qualifiedName": "RouteScanner"
+		},
+		"293": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/scanner.ts",
+			"qualifiedName": "RouteScanner.__constructor"
+		},
+		"294": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/scanner.ts",
+			"qualifiedName": "RouteScanner"
+		},
+		"295": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/scanner.ts",
+			"qualifiedName": "config"
+		},
+		"299": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/scanner.ts",
+			"qualifiedName": "RouteScanner.scanRoutes"
+		},
+		"300": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/scanner.ts",
+			"qualifiedName": "RouteScanner.scanRoutes"
+		},
+		"301": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/scanner.ts",
+			"qualifiedName": "directory"
+		},
+		"317": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/matcher.ts",
+			"qualifiedName": "RouteMatcher"
+		},
+		"321": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/matcher.ts",
+			"qualifiedName": "RouteMatcher.matchRoute"
+		},
+		"322": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/matcher.ts",
+			"qualifiedName": "RouteMatcher.matchRoute"
+		},
+		"323": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/matcher.ts",
+			"qualifiedName": "pattern"
+		},
+		"324": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/matcher.ts",
+			"qualifiedName": "path"
+		},
+		"325": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/matcher.ts",
+			"qualifiedName": "__type"
+		},
+		"326": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/matcher.ts",
+			"qualifiedName": "__type.match"
+		},
+		"327": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/matcher.ts",
+			"qualifiedName": "__type.params"
+		},
+		"328": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/matcher.ts",
+			"qualifiedName": "RouteMatcher.findBestMatch"
+		},
+		"329": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/matcher.ts",
+			"qualifiedName": "RouteMatcher.findBestMatch"
+		},
+		"330": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/matcher.ts",
+			"qualifiedName": "routes"
+		},
+		"331": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/matcher.ts",
+			"qualifiedName": "__type"
+		},
+		"332": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/matcher.ts",
+			"qualifiedName": "__type.path"
+		},
+		"333": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/matcher.ts",
+			"qualifiedName": "__type.__index"
+		},
+		"335": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/matcher.ts",
+			"qualifiedName": "path"
+		},
+		"336": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/matcher.ts",
+			"qualifiedName": "__type"
+		},
+		"337": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/matcher.ts",
+			"qualifiedName": "__type.route"
+		},
+		"338": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/matcher.ts",
+			"qualifiedName": "__type"
+		},
+		"339": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/matcher.ts",
+			"qualifiedName": "__type.path"
+		},
+		"340": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/matcher.ts",
+			"qualifiedName": "__type.__index"
+		},
+		"342": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/matcher.ts",
+			"qualifiedName": "__type.params"
+		},
+		"343": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/matcher.ts",
+			"qualifiedName": "RouteMatcher.sortRoutesBySpecificity"
+		},
+		"344": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/matcher.ts",
+			"qualifiedName": "RouteMatcher.sortRoutesBySpecificity"
+		},
+		"345": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/matcher.ts",
+			"qualifiedName": "routes"
+		},
+		"346": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/matcher.ts",
+			"qualifiedName": "__type"
+		},
+		"347": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/matcher.ts",
+			"qualifiedName": "__type.path"
+		},
+		"348": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/matcher.ts",
+			"qualifiedName": "__type.__index"
+		},
+		"350": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/matcher.ts",
+			"qualifiedName": "__type"
+		},
+		"351": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/matcher.ts",
+			"qualifiedName": "__type.path"
+		},
+		"352": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/matcher.ts",
+			"qualifiedName": "__type.__index"
+		},
+		"354": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/transformer.ts",
+			"qualifiedName": "PathTransformer"
+		},
+		"357": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/transformer.ts",
+			"qualifiedName": "PathTransformer.filePathToRoute"
+		},
+		"358": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/transformer.ts",
+			"qualifiedName": "PathTransformer.filePathToRoute"
+		},
+		"359": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/transformer.ts",
+			"qualifiedName": "filePath"
+		},
+		"360": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/transformer.ts",
+			"qualifiedName": "routePrefix"
+		},
+		"361": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/transformer.ts",
+			"qualifiedName": "baseDir"
+		},
+		"362": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/transformer.ts",
+			"qualifiedName": "PathTransformer.routeToFilePaths"
+		},
+		"363": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/transformer.ts",
+			"qualifiedName": "PathTransformer.routeToFilePaths"
+		},
+		"364": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/transformer.ts",
+			"qualifiedName": "route"
+		},
+		"365": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/transformer.ts",
+			"qualifiedName": "routesDir"
+		},
+		"366": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/transformer.ts",
+			"qualifiedName": "extensions"
+		},
+		"367": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/transformer.ts",
+			"qualifiedName": "PathTransformer.extractParamNames"
+		},
+		"368": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/transformer.ts",
+			"qualifiedName": "PathTransformer.extractParamNames"
+		},
+		"369": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/transformer.ts",
+			"qualifiedName": "route"
+		},
+		"370": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/transformer.ts",
+			"qualifiedName": "PathTransformer.matchRoute"
+		},
+		"371": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/transformer.ts",
+			"qualifiedName": "PathTransformer.matchRoute"
+		},
+		"372": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/transformer.ts",
+			"qualifiedName": "pattern"
+		},
+		"373": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/transformer.ts",
+			"qualifiedName": "path"
+		},
+		"374": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/transformer.ts",
+			"qualifiedName": "__type"
+		},
+		"375": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/transformer.ts",
+			"qualifiedName": "__type.match"
+		},
+		"376": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/transformer.ts",
+			"qualifiedName": "__type.params"
+		},
+		"377": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/utils.ts",
+			"qualifiedName": "createRouteDefinition"
+		},
+		"378": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/utils.ts",
+			"qualifiedName": "createRouteDefinition"
+		},
+		"379": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/utils.ts",
+			"qualifiedName": "path"
+		},
+		"380": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/utils.ts",
+			"qualifiedName": "component"
+		},
+		"381": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/utils.ts",
+			"qualifiedName": "__type"
+		},
+		"382": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/utils.ts",
+			"qualifiedName": "__type"
+		},
+		"383": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/utils.ts",
+			"qualifiedName": "__type"
+		},
+		"384": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/utils.ts",
+			"qualifiedName": "__type.default"
+		},
+		"385": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/utils.ts",
+			"qualifiedName": "options"
+		},
+		"386": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/utils.ts",
+			"qualifiedName": "__type"
+		},
+		"387": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/utils.ts",
+			"qualifiedName": "__type.layout"
+		},
+		"388": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/utils.ts",
+			"qualifiedName": "__type"
+		},
+		"389": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/utils.ts",
+			"qualifiedName": "__type"
+		},
+		"390": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/utils.ts",
+			"qualifiedName": "__type"
+		},
+		"391": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/utils.ts",
+			"qualifiedName": "__type.default"
+		},
+		"392": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/core/utils.ts",
+			"qualifiedName": "__type.meta"
+		},
+		"393": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/dev/watcher.ts",
+			"qualifiedName": "createFileWatcher"
+		},
+		"394": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/dev/watcher.ts",
+			"qualifiedName": "createFileWatcher"
+		},
+		"395": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/dev/watcher.ts",
+			"qualifiedName": "config"
+		},
+		"396": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/dev/server.ts",
+			"qualifiedName": "createDevServer"
+		},
+		"397": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/dev/server.ts",
+			"qualifiedName": "createDevServer"
+		},
+		"398": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/dev/server.ts",
+			"qualifiedName": "options"
+		},
+		"399": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/dev.ts",
+			"qualifiedName": "WatcherConfig"
+		},
+		"400": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/dev.ts",
+			"qualifiedName": "WatcherConfig.directory"
+		},
+		"401": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/dev.ts",
+			"qualifiedName": "WatcherConfig.extensions"
+		},
+		"402": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/dev.ts",
+			"qualifiedName": "WatcherConfig.ignore"
+		},
+		"403": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/dev.ts",
+			"qualifiedName": "DevServerOptions"
+		},
+		"404": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/dev.ts",
+			"qualifiedName": "DevServerOptions.port"
+		},
+		"405": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/dev.ts",
+			"qualifiedName": "DevServerOptions.hotReload"
+		},
+		"406": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/dev.ts",
+			"qualifiedName": "DevServerOptions.middleware"
+		},
+		"407": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/dev.ts",
+			"qualifiedName": "DevServerOptions.routes"
+		},
+		"408": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/config.ts",
+			"qualifiedName": "FileRouterOptions"
+		},
+		"409": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/config.ts",
+			"qualifiedName": "FileRouterOptions.routesDir"
+		},
+		"410": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/config.ts",
+			"qualifiedName": "FileRouterOptions.extensions"
+		},
+		"411": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/config.ts",
+			"qualifiedName": "FileRouterOptions.layouts"
+		},
+		"412": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/config.ts",
+			"qualifiedName": "FileRouterOptions.lazyLoading"
+		},
+		"413": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/config.ts",
+			"qualifiedName": "FileRouterOptions.preloading"
+		},
+		"414": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/config.ts",
+			"qualifiedName": "FileRouterOptions.transform"
+		},
+		"415": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/config.ts",
+			"qualifiedName": "__type"
+		},
+		"416": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/config.ts",
+			"qualifiedName": "__type"
+		},
+		"417": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/config.ts",
+			"qualifiedName": "path"
+		},
+		"418": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/config.ts",
+			"qualifiedName": "FileRouterOptions.dev"
+		},
+		"419": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/config.ts",
+			"qualifiedName": "__type"
+		},
+		"420": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/config.ts",
+			"qualifiedName": "__type.hotReload"
+		},
+		"421": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/config.ts",
+			"qualifiedName": "__type.port"
+		},
+		"422": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/route.ts",
+			"qualifiedName": "RouteConfig"
+		},
+		"423": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/route.ts",
+			"qualifiedName": "RouteConfig.path"
+		},
+		"424": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/route.ts",
+			"qualifiedName": "RouteConfig.component"
+		},
+		"425": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/route.ts",
+			"qualifiedName": "RouteConfig.layout"
+		},
+		"426": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/route.ts",
+			"qualifiedName": "RouteConfig.meta"
+		},
+		"427": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/route.ts",
+			"qualifiedName": "__type"
+		},
+		"428": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/route.ts",
+			"qualifiedName": "__type.title"
+		},
+		"429": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/route.ts",
+			"qualifiedName": "__type.description"
+		},
+		"430": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/route.ts",
+			"qualifiedName": "__type.guards"
+		},
+		"431": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/route.ts",
+			"qualifiedName": "__type.middleware"
+		},
+		"432": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/route.ts",
+			"qualifiedName": "__type.__index"
+		},
+		"434": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/route.ts",
+			"qualifiedName": "LayoutConfig"
+		},
+		"435": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/route.ts",
+			"qualifiedName": "LayoutConfig.component"
+		},
+		"436": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/route.ts",
+			"qualifiedName": "LayoutConfig.meta"
+		},
+		"437": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/route.ts",
+			"qualifiedName": "__type"
+		},
+		"438": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/route.ts",
+			"qualifiedName": "__type.title"
+		},
+		"439": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/route.ts",
+			"qualifiedName": "__type.description"
+		},
+		"440": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/types/route.ts",
+			"qualifiedName": "__type.__index"
+		},
+		"442": {
+			"packageName": "@swissjs/core",
+			"packagePath": "dist/types/index.d.ts",
+			"qualifiedName": "RouteDefinition"
+		},
+		"443": {
+			"packageName": "@swissjs/core",
+			"packagePath": "dist/types/index.d.ts",
+			"qualifiedName": "RouteDefinition.path"
+		},
+		"444": {
+			"packageName": "@swissjs/core",
+			"packagePath": "dist/types/index.d.ts",
+			"qualifiedName": "RouteDefinition.component"
+		},
+		"445": {
+			"packageName": "@swissjs/core",
+			"packagePath": "dist/types/index.d.ts",
+			"qualifiedName": "RouteDefinition.layout"
+		},
+		"446": {
+			"packageName": "@swissjs/core",
+			"packagePath": "dist/types/index.d.ts",
+			"qualifiedName": "RouteDefinition.children"
+		},
+		"447": {
+			"packageName": "@swissjs/core",
+			"packagePath": "dist/types/index.d.ts",
+			"qualifiedName": "RouteDefinition.meta"
+		},
+		"448": {
+			"packageName": "@swissjs/core",
+			"packagePath": "dist/types/index.d.ts",
+			"qualifiedName": "ComponentConstructor"
+		},
+		"449": {
+			"packageName": "@swissjs/core",
+			"packagePath": "dist/types/index.d.ts",
+			"qualifiedName": "ComponentConstructor"
+		},
+		"450": {
+			"packageName": "@swissjs/core",
+			"packagePath": "dist/types/index.d.ts",
+			"qualifiedName": "ComponentConstructor"
+		},
+		"451": {
+			"packageName": "@swissjs/core",
+			"packagePath": "dist/types/index.d.ts",
+			"qualifiedName": "args"
+		},
+		"452": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/utils/route.ts",
+			"qualifiedName": "normalizeRoutePath"
+		},
+		"453": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/utils/route.ts",
+			"qualifiedName": "normalizeRoutePath"
+		},
+		"454": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/utils/route.ts",
+			"qualifiedName": "path"
+		},
+		"455": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/utils/route.ts",
+			"qualifiedName": "validateRoutePath"
+		},
+		"456": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/utils/route.ts",
+			"qualifiedName": "validateRoutePath"
+		},
+		"457": {
+			"packageName": "@swissjs/plugin-file-router",
+			"packagePath": "src/utils/route.ts",
+			"qualifiedName": "path"
+		}
+	},
+	"files": {
+		"entries": {
+			"1": "plugins/file-router/src/index.ts"
+		},
+		"reflections": {
+			"1": 272
+		}
+	}
+}

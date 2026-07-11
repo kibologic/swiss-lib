@@ -25,9 +25,10 @@ try {
     if (!e.isDirectory()) continue;
     // Ignore hidden dirs or vitepress cache dirs if any
     if (e.name.startsWith('.')) continue;
-    const indexPath = resolve(apiDir, e.name, 'index.md');
+    const indexMdPath = resolve(apiDir, e.name, 'index.md');
     const readmePath = resolve(apiDir, e.name, 'README.md');
-    if (existsSync(indexPath) || existsSync(readmePath)) {
+    const indexHtmlPath = resolve(apiDir, e.name, 'index.html');
+    if (existsSync(indexMdPath) || existsSync(readmePath) || existsSync(indexHtmlPath)) {
       links.push(`- [${e.name}](/api/${e.name}/)`);
     }
   }

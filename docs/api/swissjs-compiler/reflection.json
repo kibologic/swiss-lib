@@ -1,0 +1,2281 @@
+{
+	"schemaVersion": "2.0",
+	"id": 1,
+	"name": "@swissjs/compiler",
+	"variant": "project",
+	"kind": 1,
+	"flags": {},
+	"children": [
+		{
+			"id": 2,
+			"name": "UiCompiler",
+			"variant": "declaration",
+			"kind": 128,
+			"flags": {},
+			"children": [
+				{
+					"id": 3,
+					"name": "constructor",
+					"variant": "declaration",
+					"kind": 512,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "compiler.ts",
+							"line": 19,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/compiler.ts#L19"
+						}
+					],
+					"signatures": [
+						{
+							"id": 4,
+							"name": "UiCompiler",
+							"variant": "signature",
+							"kind": 16384,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "compiler.ts",
+									"line": 19,
+									"character": 2,
+									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/compiler.ts#L19"
+								}
+							],
+							"parameters": [
+								{
+									"id": 5,
+									"name": "options",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "reference",
+										"target": 61,
+										"name": "CompileOptions",
+										"package": "@swissjs/compiler"
+									},
+									"defaultValue": "{}"
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": 2,
+								"name": "UiCompiler",
+								"package": "@swissjs/compiler"
+							}
+						}
+					]
+				},
+				{
+					"id": 12,
+					"name": "compile",
+					"variant": "declaration",
+					"kind": 2048,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "compiler.ts",
+							"line": 51,
+							"character": 8,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/compiler.ts#L51"
+						}
+					],
+					"signatures": [
+						{
+							"id": 13,
+							"name": "compile",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "compiler.ts",
+									"line": 51,
+									"character": 8,
+									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/compiler.ts#L51"
+								}
+							],
+							"parameters": [
+								{
+									"id": 14,
+									"name": "source",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								},
+								{
+									"id": 15,
+									"name": "filePath",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"packageName": "typescript",
+									"packagePath": "lib/lib.es5.d.ts",
+									"qualifiedName": "Promise"
+								},
+								"typeArguments": [
+									{
+										"type": "intrinsic",
+										"name": "string"
+									}
+								],
+								"name": "Promise",
+								"package": "typescript"
+							}
+						}
+					]
+				},
+				{
+					"id": 16,
+					"name": "compileAsync",
+					"variant": "declaration",
+					"kind": 2048,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "compiler.ts",
+							"line": 56,
+							"character": 8,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/compiler.ts#L56"
+						}
+					],
+					"signatures": [
+						{
+							"id": 17,
+							"name": "compileAsync",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "compiler.ts",
+									"line": 56,
+									"character": 8,
+									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/compiler.ts#L56"
+								}
+							],
+							"parameters": [
+								{
+									"id": 18,
+									"name": "source",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								},
+								{
+									"id": 19,
+									"name": "filePath",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"packageName": "typescript",
+									"packagePath": "lib/lib.es5.d.ts",
+									"qualifiedName": "Promise"
+								},
+								"typeArguments": [
+									{
+										"type": "intrinsic",
+										"name": "string"
+									}
+								],
+								"name": "Promise",
+								"package": "typescript"
+							}
+						}
+					]
+				},
+				{
+					"id": 30,
+					"name": "compileDirectory",
+					"variant": "declaration",
+					"kind": 2048,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "compiler.ts",
+							"line": 209,
+							"character": 8,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/compiler.ts#L209"
+						}
+					],
+					"signatures": [
+						{
+							"id": 31,
+							"name": "compileDirectory",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "compiler.ts",
+									"line": 209,
+									"character": 8,
+									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/compiler.ts#L209"
+								}
+							],
+							"parameters": [
+								{
+									"id": 32,
+									"name": "inputDir",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								},
+								{
+									"id": 33,
+									"name": "outputDir",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"packageName": "typescript",
+									"packagePath": "lib/lib.es5.d.ts",
+									"qualifiedName": "Promise"
+								},
+								"typeArguments": [
+									{
+										"type": "intrinsic",
+										"name": "void"
+									}
+								],
+								"name": "Promise",
+								"package": "typescript"
+							}
+						}
+					]
+				},
+				{
+					"id": 8,
+					"name": "compileFile",
+					"variant": "declaration",
+					"kind": 2048,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "compiler.ts",
+							"line": 29,
+							"character": 8,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/compiler.ts#L29"
+						}
+					],
+					"signatures": [
+						{
+							"id": 9,
+							"name": "compileFile",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "compiler.ts",
+									"line": 29,
+									"character": 8,
+									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/compiler.ts#L29"
+								}
+							],
+							"parameters": [
+								{
+									"id": 10,
+									"name": "filePath",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								},
+								{
+									"id": 11,
+									"name": "outputPath",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {
+										"isOptional": true
+									},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"packageName": "typescript",
+									"packagePath": "lib/lib.es5.d.ts",
+									"qualifiedName": "Promise"
+								},
+								"typeArguments": [
+									{
+										"type": "intrinsic",
+										"name": "string"
+									}
+								],
+								"name": "Promise",
+								"package": "typescript"
+							}
+						}
+					]
+				},
+				{
+					"id": 34,
+					"name": "compileTypeScriptToJavaScript",
+					"variant": "declaration",
+					"kind": 2048,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "compiler.ts",
+							"line": 225,
+							"character": 8,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/compiler.ts#L225"
+						}
+					],
+					"signatures": [
+						{
+							"id": 35,
+							"name": "compileTypeScriptToJavaScript",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Transpile all TypeScript files under inputDir to JavaScript into outputDir.\r\nUsed by the CLI build to finalize the .swiss-temp output."
+									}
+								]
+							},
+							"sources": [
+								{
+									"fileName": "compiler.ts",
+									"line": 225,
+									"character": 8,
+									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/compiler.ts#L225"
+								}
+							],
+							"parameters": [
+								{
+									"id": 36,
+									"name": "inputDir",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								},
+								{
+									"id": 37,
+									"name": "outputDir",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"packageName": "typescript",
+									"packagePath": "lib/lib.es5.d.ts",
+									"qualifiedName": "Promise"
+								},
+								"typeArguments": [
+									{
+										"type": "intrinsic",
+										"name": "boolean"
+									}
+								],
+								"name": "Promise",
+								"package": "typescript"
+							}
+						}
+					]
+				},
+				{
+					"id": 38,
+					"name": "watch",
+					"variant": "declaration",
+					"kind": 2048,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "compiler.ts",
+							"line": 250,
+							"character": 8,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/compiler.ts#L250"
+						}
+					],
+					"signatures": [
+						{
+							"id": 39,
+							"name": "watch",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "compiler.ts",
+									"line": 250,
+									"character": 8,
+									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/compiler.ts#L250"
+								}
+							],
+							"parameters": [
+								{
+									"id": 40,
+									"name": "inputPath",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								},
+								{
+									"id": 41,
+									"name": "outputPath",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {
+										"isOptional": true
+									},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"packageName": "typescript",
+									"packagePath": "lib/lib.es5.d.ts",
+									"qualifiedName": "Promise"
+								},
+								"typeArguments": [
+									{
+										"type": "intrinsic",
+										"name": "void"
+									}
+								],
+								"name": "Promise",
+								"package": "typescript"
+							}
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Constructors",
+					"children": [
+						3
+					]
+				},
+				{
+					"title": "Methods",
+					"children": [
+						12,
+						16,
+						30,
+						8,
+						34,
+						38
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "compiler.ts",
+					"line": 15,
+					"character": 13,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/compiler.ts#L15"
+				}
+			]
+		},
+		{
+			"id": 61,
+			"name": "CompileOptions",
+			"variant": "declaration",
+			"kind": 256,
+			"flags": {},
+			"children": [
+				{
+					"id": 66,
+					"name": "jsxImportSource",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Package that exports createElement, Fragment, and Signal.\r\nDefaults to the framework's own core package but can be set to any\r\npackage that satisfies the same interface (e.g. a fork or re-export)."
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "types.ts",
+							"line": 13,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/types.ts#L13"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				},
+				{
+					"id": 63,
+					"name": "module",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"sources": [
+						{
+							"fileName": "types.ts",
+							"line": 5,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/types.ts#L5"
+						}
+					],
+					"type": {
+						"type": "reference",
+						"target": {
+							"packageName": "typescript",
+							"packagePath": "lib/typescript.d.ts",
+							"qualifiedName": "ts.ModuleKind"
+						},
+						"name": "ModuleKind",
+						"package": "typescript",
+						"qualifiedName": "ts.ModuleKind"
+					}
+				},
+				{
+					"id": 65,
+					"name": "outputFormat",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"sources": [
+						{
+							"fileName": "types.ts",
+							"line": 7,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/types.ts#L7"
+						}
+					],
+					"type": {
+						"type": "union",
+						"types": [
+							{
+								"type": "literal",
+								"value": "typescript"
+							},
+							{
+								"type": "literal",
+								"value": "javascript"
+							}
+						]
+					}
+				},
+				{
+					"id": 64,
+					"name": "sourceMap",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"sources": [
+						{
+							"fileName": "types.ts",
+							"line": 6,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/types.ts#L6"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "boolean"
+					}
+				},
+				{
+					"id": 62,
+					"name": "target",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"sources": [
+						{
+							"fileName": "types.ts",
+							"line": 4,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/types.ts#L4"
+						}
+					],
+					"type": {
+						"type": "reference",
+						"target": {
+							"packageName": "typescript",
+							"packagePath": "lib/typescript.d.ts",
+							"qualifiedName": "ts.ScriptTarget"
+						},
+						"name": "ScriptTarget",
+						"package": "typescript",
+						"qualifiedName": "ts.ScriptTarget"
+					}
+				}
+			],
+			"groups": [
+				{
+					"title": "Properties",
+					"children": [
+						66,
+						63,
+						65,
+						64,
+						62
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "types.ts",
+					"line": 3,
+					"character": 17,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/types.ts#L3"
+				}
+			]
+		},
+		{
+			"id": 100,
+			"name": "Position",
+			"variant": "declaration",
+			"kind": 256,
+			"flags": {},
+			"children": [
+				{
+					"id": 103,
+					"name": "column",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "template-parser.ts",
+							"line": 21,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/template-parser.ts#L21"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "number"
+					}
+				},
+				{
+					"id": 102,
+					"name": "line",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "template-parser.ts",
+							"line": 20,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/template-parser.ts#L20"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "number"
+					}
+				},
+				{
+					"id": 101,
+					"name": "offset",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "template-parser.ts",
+							"line": 19,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/template-parser.ts#L19"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "number"
+					}
+				}
+			],
+			"groups": [
+				{
+					"title": "Properties",
+					"children": [
+						103,
+						102,
+						101
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "template-parser.ts",
+					"line": 18,
+					"character": 17,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/template-parser.ts#L18"
+				}
+			]
+		},
+		{
+			"id": 70,
+			"name": "TemplateAST",
+			"variant": "declaration",
+			"kind": 256,
+			"flags": {},
+			"children": [
+				{
+					"id": 73,
+					"name": "errors",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "template-parser.ts",
+							"line": 51,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/template-parser.ts#L51"
+						}
+					],
+					"type": {
+						"type": "array",
+						"elementType": {
+							"type": "reference",
+							"target": 87,
+							"name": "TemplateParseError",
+							"package": "@swissjs/compiler"
+						}
+					}
+				},
+				{
+					"id": 71,
+					"name": "root",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "template-parser.ts",
+							"line": 49,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/template-parser.ts#L49"
+						}
+					],
+					"type": {
+						"type": "reference",
+						"target": 75,
+						"name": "TemplateNode",
+						"package": "@swissjs/compiler"
+					}
+				},
+				{
+					"id": 72,
+					"name": "slots",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "template-parser.ts",
+							"line": 50,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/template-parser.ts#L50"
+						}
+					],
+					"type": {
+						"type": "array",
+						"elementType": {
+							"type": "intrinsic",
+							"name": "string"
+						}
+					}
+				},
+				{
+					"id": 74,
+					"name": "source",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "template-parser.ts",
+							"line": 52,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/template-parser.ts#L52"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				}
+			],
+			"groups": [
+				{
+					"title": "Properties",
+					"children": [
+						73,
+						71,
+						72,
+						74
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "template-parser.ts",
+					"line": 48,
+					"character": 17,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/template-parser.ts#L48"
+				}
+			]
+		},
+		{
+			"id": 75,
+			"name": "TemplateNode",
+			"variant": "declaration",
+			"kind": 256,
+			"flags": {},
+			"children": [
+				{
+					"id": 79,
+					"name": "children",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "template-parser.ts",
+							"line": 33,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/template-parser.ts#L33"
+						}
+					],
+					"type": {
+						"type": "array",
+						"elementType": {
+							"type": "reference",
+							"target": 75,
+							"name": "TemplateNode",
+							"package": "@swissjs/compiler"
+						}
+					}
+				},
+				{
+					"id": 83,
+					"name": "end",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "template-parser.ts",
+							"line": 37,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/template-parser.ts#L37"
+						}
+					],
+					"type": {
+						"type": "reference",
+						"target": 100,
+						"name": "Position",
+						"package": "@swissjs/compiler"
+					}
+				},
+				{
+					"id": 80,
+					"name": "expression",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"sources": [
+						{
+							"fileName": "template-parser.ts",
+							"line": 34,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/template-parser.ts#L34"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				},
+				{
+					"id": 76,
+					"name": "kind",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "template-parser.ts",
+							"line": 30,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/template-parser.ts#L30"
+						}
+					],
+					"type": {
+						"type": "reference",
+						"target": 86,
+						"name": "TemplateNodeKind",
+						"package": "@swissjs/compiler"
+					}
+				},
+				{
+					"id": 78,
+					"name": "props",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "template-parser.ts",
+							"line": 32,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/template-parser.ts#L32"
+						}
+					],
+					"type": {
+						"type": "reference",
+						"target": {
+							"packageName": "typescript",
+							"packagePath": "lib/lib.es5.d.ts",
+							"qualifiedName": "Record"
+						},
+						"typeArguments": [
+							{
+								"type": "intrinsic",
+								"name": "string"
+							},
+							{
+								"type": "reference",
+								"target": 91,
+								"name": "TemplatePropValue",
+								"package": "@swissjs/compiler"
+							}
+						],
+						"name": "Record",
+						"package": "typescript"
+					}
+				},
+				{
+					"id": 84,
+					"name": "selfClosing",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"sources": [
+						{
+							"fileName": "template-parser.ts",
+							"line": 38,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/template-parser.ts#L38"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "boolean"
+					}
+				},
+				{
+					"id": 82,
+					"name": "start",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "template-parser.ts",
+							"line": 36,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/template-parser.ts#L36"
+						}
+					],
+					"type": {
+						"type": "reference",
+						"target": 100,
+						"name": "Position",
+						"package": "@swissjs/compiler"
+					}
+				},
+				{
+					"id": 77,
+					"name": "tag",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"sources": [
+						{
+							"fileName": "template-parser.ts",
+							"line": 31,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/template-parser.ts#L31"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				},
+				{
+					"id": 81,
+					"name": "text",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"sources": [
+						{
+							"fileName": "template-parser.ts",
+							"line": 35,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/template-parser.ts#L35"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				},
+				{
+					"id": 85,
+					"name": "unclosed",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"sources": [
+						{
+							"fileName": "template-parser.ts",
+							"line": 39,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/template-parser.ts#L39"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "boolean"
+					}
+				}
+			],
+			"groups": [
+				{
+					"title": "Properties",
+					"children": [
+						79,
+						83,
+						80,
+						76,
+						78,
+						84,
+						82,
+						77,
+						81,
+						85
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "template-parser.ts",
+					"line": 29,
+					"character": 17,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/template-parser.ts#L29"
+				}
+			]
+		},
+		{
+			"id": 87,
+			"name": "TemplateParseError",
+			"variant": "declaration",
+			"kind": 256,
+			"flags": {},
+			"children": [
+				{
+					"id": 90,
+					"name": "end",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "template-parser.ts",
+							"line": 45,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/template-parser.ts#L45"
+						}
+					],
+					"type": {
+						"type": "reference",
+						"target": 100,
+						"name": "Position",
+						"package": "@swissjs/compiler"
+					}
+				},
+				{
+					"id": 88,
+					"name": "message",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "template-parser.ts",
+							"line": 43,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/template-parser.ts#L43"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				},
+				{
+					"id": 89,
+					"name": "start",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "template-parser.ts",
+							"line": 44,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/template-parser.ts#L44"
+						}
+					],
+					"type": {
+						"type": "reference",
+						"target": 100,
+						"name": "Position",
+						"package": "@swissjs/compiler"
+					}
+				}
+			],
+			"groups": [
+				{
+					"title": "Properties",
+					"children": [
+						90,
+						88,
+						89
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "template-parser.ts",
+					"line": 42,
+					"character": 17,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/template-parser.ts#L42"
+				}
+			]
+		},
+		{
+			"id": 86,
+			"name": "TemplateNodeKind",
+			"variant": "declaration",
+			"kind": 2097152,
+			"flags": {},
+			"sources": [
+				{
+					"fileName": "template-parser.ts",
+					"line": 9,
+					"character": 12,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/template-parser.ts#L9"
+				}
+			],
+			"type": {
+				"type": "union",
+				"types": [
+					{
+						"type": "literal",
+						"value": "element"
+					},
+					{
+						"type": "literal",
+						"value": "component"
+					},
+					{
+						"type": "literal",
+						"value": "text"
+					},
+					{
+						"type": "literal",
+						"value": "expression"
+					},
+					{
+						"type": "literal",
+						"value": "slot"
+					},
+					{
+						"type": "literal",
+						"value": "fragment"
+					},
+					{
+						"type": "literal",
+						"value": "comment"
+					}
+				]
+			}
+		},
+		{
+			"id": 91,
+			"name": "TemplatePropValue",
+			"variant": "declaration",
+			"kind": 2097152,
+			"flags": {},
+			"sources": [
+				{
+					"fileName": "template-parser.ts",
+					"line": 24,
+					"character": 12,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/template-parser.ts#L24"
+				}
+			],
+			"type": {
+				"type": "union",
+				"types": [
+					{
+						"type": "reflection",
+						"declaration": {
+							"id": 92,
+							"name": "__type",
+							"variant": "declaration",
+							"kind": 65536,
+							"flags": {},
+							"children": [
+								{
+									"id": 93,
+									"name": "kind",
+									"variant": "declaration",
+									"kind": 1024,
+									"flags": {},
+									"sources": [
+										{
+											"fileName": "template-parser.ts",
+											"line": 25,
+											"character": 6,
+											"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/template-parser.ts#L25"
+										}
+									],
+									"type": {
+										"type": "literal",
+										"value": "static"
+									}
+								},
+								{
+									"id": 94,
+									"name": "value",
+									"variant": "declaration",
+									"kind": 1024,
+									"flags": {},
+									"sources": [
+										{
+											"fileName": "template-parser.ts",
+											"line": 25,
+											"character": 22,
+											"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/template-parser.ts#L25"
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"groups": [
+								{
+									"title": "Properties",
+									"children": [
+										93,
+										94
+									]
+								}
+							],
+							"sources": [
+								{
+									"fileName": "template-parser.ts",
+									"line": 25,
+									"character": 4,
+									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/template-parser.ts#L25"
+								}
+							]
+						}
+					},
+					{
+						"type": "reflection",
+						"declaration": {
+							"id": 95,
+							"name": "__type",
+							"variant": "declaration",
+							"kind": 65536,
+							"flags": {},
+							"children": [
+								{
+									"id": 96,
+									"name": "kind",
+									"variant": "declaration",
+									"kind": 1024,
+									"flags": {},
+									"sources": [
+										{
+											"fileName": "template-parser.ts",
+											"line": 26,
+											"character": 6,
+											"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/template-parser.ts#L26"
+										}
+									],
+									"type": {
+										"type": "literal",
+										"value": "expression"
+									}
+								},
+								{
+									"id": 97,
+									"name": "value",
+									"variant": "declaration",
+									"kind": 1024,
+									"flags": {},
+									"sources": [
+										{
+											"fileName": "template-parser.ts",
+											"line": 26,
+											"character": 26,
+											"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/template-parser.ts#L26"
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"groups": [
+								{
+									"title": "Properties",
+									"children": [
+										96,
+										97
+									]
+								}
+							],
+							"sources": [
+								{
+									"fileName": "template-parser.ts",
+									"line": 26,
+									"character": 4,
+									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/template-parser.ts#L26"
+								}
+							]
+						}
+					},
+					{
+						"type": "reflection",
+						"declaration": {
+							"id": 98,
+							"name": "__type",
+							"variant": "declaration",
+							"kind": 65536,
+							"flags": {},
+							"children": [
+								{
+									"id": 99,
+									"name": "kind",
+									"variant": "declaration",
+									"kind": 1024,
+									"flags": {},
+									"sources": [
+										{
+											"fileName": "template-parser.ts",
+											"line": 27,
+											"character": 6,
+											"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/template-parser.ts#L27"
+										}
+									],
+									"type": {
+										"type": "literal",
+										"value": "boolean"
+									}
+								}
+							],
+							"groups": [
+								{
+									"title": "Properties",
+									"children": [
+										99
+									]
+								}
+							],
+							"sources": [
+								{
+									"fileName": "template-parser.ts",
+									"line": 27,
+									"character": 4,
+									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/template-parser.ts#L27"
+								}
+							]
+						}
+					}
+				]
+			}
+		},
+		{
+			"id": 67,
+			"name": "parseTemplate",
+			"variant": "declaration",
+			"kind": 64,
+			"flags": {},
+			"sources": [
+				{
+					"fileName": "template-parser.ts",
+					"line": 295,
+					"character": 16,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/template-parser.ts#L295"
+				}
+			],
+			"signatures": [
+				{
+					"id": 68,
+					"name": "parseTemplate",
+					"variant": "signature",
+					"kind": 4096,
+					"flags": {},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Parse a SwissJS template (JSX content from a render method or .uix file)\ninto a TemplateAST.\n\nThe source may be the full content of a .ui/.uix file, or just the JSX\nportion extracted from a render() method body. The parser does not\ntransform the source — that is the compiler pipeline's responsibility."
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "template-parser.ts",
+							"line": 295,
+							"character": 16,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/template-parser.ts#L295"
+						}
+					],
+					"parameters": [
+						{
+							"id": 69,
+							"name": "source",
+							"variant": "param",
+							"kind": 32768,
+							"flags": {},
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						}
+					],
+					"type": {
+						"type": "reference",
+						"target": 70,
+						"name": "TemplateAST",
+						"package": "@swissjs/compiler"
+					}
+				}
+			]
+		},
+		{
+			"id": 49,
+			"name": "preprocessSwissSyntax",
+			"variant": "declaration",
+			"kind": 64,
+			"flags": {},
+			"sources": [
+				{
+					"fileName": "transformers/swiss-syntax.ts",
+					"line": 270,
+					"character": 16,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/transformers/swiss-syntax.ts#L270"
+				}
+			],
+			"signatures": [
+				{
+					"id": 50,
+					"name": "preprocessSwissSyntax",
+					"variant": "signature",
+					"kind": 4096,
+					"flags": {},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Phase 1: Lexical transformation (string-based preprocessing)\r\nConverts Swiss syntax to valid TypeScript before AST parsing"
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "transformers/swiss-syntax.ts",
+							"line": 270,
+							"character": 16,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/transformers/swiss-syntax.ts#L270"
+						}
+					],
+					"parameters": [
+						{
+							"id": 51,
+							"name": "source",
+							"variant": "param",
+							"kind": 32768,
+							"flags": {},
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 52,
+							"name": "filePath",
+							"variant": "param",
+							"kind": 32768,
+							"flags": {
+								"isOptional": true
+							},
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 53,
+							"name": "jsxImportSource",
+							"variant": "param",
+							"kind": 32768,
+							"flags": {},
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							},
+							"defaultValue": "\"@swissjs/core\""
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				}
+			]
+		},
+		{
+			"id": 59,
+			"name": "swissSyntaxTransformer",
+			"variant": "declaration",
+			"kind": 64,
+			"flags": {},
+			"sources": [
+				{
+					"fileName": "transformers/swiss-syntax.ts",
+					"line": 609,
+					"character": 16,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/transformers/swiss-syntax.ts#L609"
+				}
+			],
+			"signatures": [
+				{
+					"id": 60,
+					"name": "swissSyntaxTransformer",
+					"variant": "signature",
+					"kind": 4096,
+					"flags": {},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Phase 2: AST transformation\r\n- Moves "
+							},
+							{
+								"kind": "code",
+								"text": "`props = { ... }`"
+							},
+							{
+								"kind": "text",
+								"text": " off instance (→ "
+							},
+							{
+								"kind": "code",
+								"text": "`static propTypes`"
+							},
+							{
+								"kind": "text",
+								"text": ") on all SwissComponent subclasses\r\n- Adds necessary @swissjs/core imports when not already present"
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "transformers/swiss-syntax.ts",
+							"line": 609,
+							"character": 16,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/transformers/swiss-syntax.ts#L609"
+						}
+					],
+					"type": {
+						"type": "reference",
+						"target": {
+							"packageName": "typescript",
+							"packagePath": "lib/typescript.d.ts",
+							"qualifiedName": "ts.TransformerFactory"
+						},
+						"typeArguments": [
+							{
+								"type": "reference",
+								"target": {
+									"packageName": "typescript",
+									"packagePath": "lib/typescript.d.ts",
+									"qualifiedName": "ts.SourceFile"
+								},
+								"name": "SourceFile",
+								"package": "typescript",
+								"qualifiedName": "ts.SourceFile"
+							}
+						],
+						"name": "TransformerFactory",
+						"package": "typescript",
+						"qualifiedName": "ts.TransformerFactory"
+					}
+				}
+			]
+		},
+		{
+			"id": 54,
+			"name": "transformSwissSyntax",
+			"variant": "declaration",
+			"kind": 64,
+			"flags": {},
+			"sources": [
+				{
+					"fileName": "transformers/swiss-syntax.ts",
+					"line": 689,
+					"character": 16,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/transformers/swiss-syntax.ts#L689"
+				}
+			],
+			"signatures": [
+				{
+					"id": 55,
+					"name": "transformSwissSyntax",
+					"variant": "signature",
+					"kind": 4096,
+					"flags": {},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Main transformer function that processes Swiss syntax files\r\nCombines Phase 1 (lexical) and Phase 2 (AST) transformations"
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "transformers/swiss-syntax.ts",
+							"line": 689,
+							"character": 16,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/compiler/src/transformers/swiss-syntax.ts#L689"
+						}
+					],
+					"parameters": [
+						{
+							"id": 56,
+							"name": "source",
+							"variant": "param",
+							"kind": 32768,
+							"flags": {},
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 57,
+							"name": "fileName",
+							"variant": "param",
+							"kind": 32768,
+							"flags": {},
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							},
+							"defaultValue": "\"source.ui\""
+						},
+						{
+							"id": 58,
+							"name": "_options",
+							"variant": "param",
+							"kind": 32768,
+							"flags": {},
+							"type": {
+								"type": "reference",
+								"target": {
+									"packageName": "@swissjs/compiler",
+									"packagePath": "src/transformers/swiss-syntax.ts",
+									"qualifiedName": "SwissSyntaxOptions"
+								},
+								"name": "SwissSyntaxOptions",
+								"package": "@swissjs/compiler"
+							},
+							"defaultValue": "{}"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				}
+			]
+		}
+	],
+	"groups": [
+		{
+			"title": "Classes",
+			"children": [
+				2
+			]
+		},
+		{
+			"title": "Interfaces",
+			"children": [
+				61,
+				100,
+				70,
+				75,
+				87
+			]
+		},
+		{
+			"title": "Type Aliases",
+			"children": [
+				86,
+				91
+			]
+		},
+		{
+			"title": "Functions",
+			"children": [
+				67,
+				49,
+				59,
+				54
+			]
+		}
+	],
+	"packageName": "@swissjs/compiler",
+	"packageVersion": "1.2.7",
+	"symbolIdMap": {
+		"1": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/index.ts",
+			"qualifiedName": ""
+		},
+		"2": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/compiler.ts",
+			"qualifiedName": "UiCompiler"
+		},
+		"3": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/compiler.ts",
+			"qualifiedName": "UiCompiler.__constructor"
+		},
+		"4": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/compiler.ts",
+			"qualifiedName": "UiCompiler"
+		},
+		"5": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/compiler.ts",
+			"qualifiedName": "options"
+		},
+		"8": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/compiler.ts",
+			"qualifiedName": "UiCompiler.compileFile"
+		},
+		"9": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/compiler.ts",
+			"qualifiedName": "UiCompiler.compileFile"
+		},
+		"10": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/compiler.ts",
+			"qualifiedName": "filePath"
+		},
+		"11": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/compiler.ts",
+			"qualifiedName": "outputPath"
+		},
+		"12": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/compiler.ts",
+			"qualifiedName": "UiCompiler.compile"
+		},
+		"13": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/compiler.ts",
+			"qualifiedName": "UiCompiler.compile"
+		},
+		"14": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/compiler.ts",
+			"qualifiedName": "source"
+		},
+		"15": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/compiler.ts",
+			"qualifiedName": "filePath"
+		},
+		"16": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/compiler.ts",
+			"qualifiedName": "UiCompiler.compileAsync"
+		},
+		"17": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/compiler.ts",
+			"qualifiedName": "UiCompiler.compileAsync"
+		},
+		"18": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/compiler.ts",
+			"qualifiedName": "source"
+		},
+		"19": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/compiler.ts",
+			"qualifiedName": "filePath"
+		},
+		"30": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/compiler.ts",
+			"qualifiedName": "UiCompiler.compileDirectory"
+		},
+		"31": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/compiler.ts",
+			"qualifiedName": "UiCompiler.compileDirectory"
+		},
+		"32": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/compiler.ts",
+			"qualifiedName": "inputDir"
+		},
+		"33": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/compiler.ts",
+			"qualifiedName": "outputDir"
+		},
+		"34": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/compiler.ts",
+			"qualifiedName": "UiCompiler.compileTypeScriptToJavaScript"
+		},
+		"35": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/compiler.ts",
+			"qualifiedName": "UiCompiler.compileTypeScriptToJavaScript"
+		},
+		"36": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/compiler.ts",
+			"qualifiedName": "inputDir"
+		},
+		"37": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/compiler.ts",
+			"qualifiedName": "outputDir"
+		},
+		"38": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/compiler.ts",
+			"qualifiedName": "UiCompiler.watch"
+		},
+		"39": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/compiler.ts",
+			"qualifiedName": "UiCompiler.watch"
+		},
+		"40": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/compiler.ts",
+			"qualifiedName": "inputPath"
+		},
+		"41": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/compiler.ts",
+			"qualifiedName": "outputPath"
+		},
+		"49": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/transformers/swiss-syntax.ts",
+			"qualifiedName": "preprocessSwissSyntax"
+		},
+		"50": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/transformers/swiss-syntax.ts",
+			"qualifiedName": "preprocessSwissSyntax"
+		},
+		"51": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/transformers/swiss-syntax.ts",
+			"qualifiedName": "source"
+		},
+		"52": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/transformers/swiss-syntax.ts",
+			"qualifiedName": "filePath"
+		},
+		"53": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/transformers/swiss-syntax.ts",
+			"qualifiedName": "jsxImportSource"
+		},
+		"54": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/transformers/swiss-syntax.ts",
+			"qualifiedName": "transformSwissSyntax"
+		},
+		"55": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/transformers/swiss-syntax.ts",
+			"qualifiedName": "transformSwissSyntax"
+		},
+		"56": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/transformers/swiss-syntax.ts",
+			"qualifiedName": "source"
+		},
+		"57": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/transformers/swiss-syntax.ts",
+			"qualifiedName": "fileName"
+		},
+		"58": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/transformers/swiss-syntax.ts",
+			"qualifiedName": "_options"
+		},
+		"59": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/transformers/swiss-syntax.ts",
+			"qualifiedName": "swissSyntaxTransformer"
+		},
+		"60": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/transformers/swiss-syntax.ts",
+			"qualifiedName": "swissSyntaxTransformer"
+		},
+		"61": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/types.ts",
+			"qualifiedName": "CompileOptions"
+		},
+		"62": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/types.ts",
+			"qualifiedName": "CompileOptions.target"
+		},
+		"63": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/types.ts",
+			"qualifiedName": "CompileOptions.module"
+		},
+		"64": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/types.ts",
+			"qualifiedName": "CompileOptions.sourceMap"
+		},
+		"65": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/types.ts",
+			"qualifiedName": "CompileOptions.outputFormat"
+		},
+		"66": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/types.ts",
+			"qualifiedName": "CompileOptions.jsxImportSource"
+		},
+		"67": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/template-parser.ts",
+			"qualifiedName": "parseTemplate"
+		},
+		"68": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/template-parser.ts",
+			"qualifiedName": "parseTemplate"
+		},
+		"69": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/template-parser.ts",
+			"qualifiedName": "source"
+		},
+		"70": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/template-parser.ts",
+			"qualifiedName": "TemplateAST"
+		},
+		"71": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/template-parser.ts",
+			"qualifiedName": "TemplateAST.root"
+		},
+		"72": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/template-parser.ts",
+			"qualifiedName": "TemplateAST.slots"
+		},
+		"73": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/template-parser.ts",
+			"qualifiedName": "TemplateAST.errors"
+		},
+		"74": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/template-parser.ts",
+			"qualifiedName": "TemplateAST.source"
+		},
+		"75": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/template-parser.ts",
+			"qualifiedName": "TemplateNode"
+		},
+		"76": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/template-parser.ts",
+			"qualifiedName": "TemplateNode.kind"
+		},
+		"77": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/template-parser.ts",
+			"qualifiedName": "TemplateNode.tag"
+		},
+		"78": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/template-parser.ts",
+			"qualifiedName": "TemplateNode.props"
+		},
+		"79": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/template-parser.ts",
+			"qualifiedName": "TemplateNode.children"
+		},
+		"80": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/template-parser.ts",
+			"qualifiedName": "TemplateNode.expression"
+		},
+		"81": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/template-parser.ts",
+			"qualifiedName": "TemplateNode.text"
+		},
+		"82": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/template-parser.ts",
+			"qualifiedName": "TemplateNode.start"
+		},
+		"83": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/template-parser.ts",
+			"qualifiedName": "TemplateNode.end"
+		},
+		"84": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/template-parser.ts",
+			"qualifiedName": "TemplateNode.selfClosing"
+		},
+		"85": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/template-parser.ts",
+			"qualifiedName": "TemplateNode.unclosed"
+		},
+		"86": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/template-parser.ts",
+			"qualifiedName": "TemplateNodeKind"
+		},
+		"87": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/template-parser.ts",
+			"qualifiedName": "TemplateParseError"
+		},
+		"88": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/template-parser.ts",
+			"qualifiedName": "TemplateParseError.message"
+		},
+		"89": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/template-parser.ts",
+			"qualifiedName": "TemplateParseError.start"
+		},
+		"90": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/template-parser.ts",
+			"qualifiedName": "TemplateParseError.end"
+		},
+		"91": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/template-parser.ts",
+			"qualifiedName": "TemplatePropValue"
+		},
+		"92": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/template-parser.ts",
+			"qualifiedName": "__type"
+		},
+		"93": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/template-parser.ts",
+			"qualifiedName": "__type.kind"
+		},
+		"94": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/template-parser.ts",
+			"qualifiedName": "__type.value"
+		},
+		"95": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/template-parser.ts",
+			"qualifiedName": "__type"
+		},
+		"96": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/template-parser.ts",
+			"qualifiedName": "__type.kind"
+		},
+		"97": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/template-parser.ts",
+			"qualifiedName": "__type.value"
+		},
+		"98": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/template-parser.ts",
+			"qualifiedName": "__type"
+		},
+		"99": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/template-parser.ts",
+			"qualifiedName": "__type.kind"
+		},
+		"100": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/template-parser.ts",
+			"qualifiedName": "Position"
+		},
+		"101": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/template-parser.ts",
+			"qualifiedName": "Position.offset"
+		},
+		"102": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/template-parser.ts",
+			"qualifiedName": "Position.line"
+		},
+		"103": {
+			"packageName": "@swissjs/compiler",
+			"packagePath": "src/template-parser.ts",
+			"qualifiedName": "Position.column"
+		}
+	},
+	"files": {
+		"entries": {
+			"1": "compiler/src/index.ts"
+		},
+		"reflections": {
+			"1": 1
+		}
+	}
+}

@@ -2,16 +2,28 @@ name: Docs
 
 on:
   push:
-    branches: [develop, staging, main]
+    branches: [development, staging, main]
     paths:
-      - 'packages/**/src/**'
+      - 'runtime/src/**'
+      - 'compiler/src/**'
+      - 'cli/src/**'
+      - 'shared/src/**'
+      - 'router/src/**'
+      - 'security/src/**'
+      - 'plugins/*/src/**'
       - 'docs/**'
       - 'scripts/docs-redactor.mjs'
       - '.github/workflows/docs.yml'
   pull_request:
-    branches: [develop, staging, main]
+    branches: [development, staging, main]
     paths:
-      - 'packages/**/src/**'
+      - 'runtime/src/**'
+      - 'compiler/src/**'
+      - 'cli/src/**'
+      - 'shared/src/**'
+      - 'router/src/**'
+      - 'security/src/**'
+      - 'plugins/*/src/**'
       - 'docs/**'
       - 'scripts/docs-redactor.mjs'
 
