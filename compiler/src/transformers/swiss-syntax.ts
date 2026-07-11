@@ -53,20 +53,24 @@ export interface SwissSyntaxOptions {
 // ─── SECTION: State Transform Helpers ────────────────────────────────────────
 
 /**
- * Parses the content of a `state { }` block and generates a Signal-backed
- * getter/setter pair. Uses a character-by-character depth counter so that
- * initializers containing nested braces (e.g. `{}`, `{ key: true }`) are
- * captured correctly. Fixes CG-04.
+ * Parses ONE `let name: type = initializer;` declaration starting at `start`
+ * within `blockContent` and returns the generated Signal-backed getter/setter
+ * pair plus the index just past its terminating `;` (or end of string, for a
+ * declaration with no initializer and no trailing semicolon). Returns null if
+ * no `let` declaration starts at `start` (mixed with whitespace before it).
  */
-function parseAndReplaceStateBlock(blockContent: string): string {
-  const letMatch = /^\s*let\s+(\w+)\s*:\s*/.exec(blockContent);
-  if (!letMatch) return `{${blockContent}}`;
+function parseOneStateDecl(
+  blockContent: string,
+  start: number,
+): { code: string; next: number } | null {
+  const letMatch = /^\s*let\s+(\w+)\s*:\s*/.exec(blockContent.slice(start));
+  if (!letMatch) return null;
 
   const name = letMatch[1];
-  let i = letMatch[0].length;
+  let i = start + letMatch[0].length;
 
   // Read type: everything until `=` or `;` at brace-depth 0
-  let typeStart = i;
+  const typeStart = i;
   let depth = 0;
   while (i < blockContent.length) {
     const ch = blockContent[i];
@@ -79,11 +83,14 @@ function parseAndReplaceStateBlock(blockContent: string): string {
 
   if (blockContent[i] !== "=") {
     // No initializer
-    return (
-      `private _${name}$: Signal<${type}> = new Signal<${type}>(undefined as unknown as ${type});\n` +
-      `  private get ${name}(): ${type} { return this._${name}$.value; }\n` +
-      `  private set ${name}(v: ${type}) { this._${name}$.value = v; }`
-    );
+    const next = blockContent[i] === ";" ? i + 1 : i;
+    return {
+      code:
+        `private _${name}$: Signal<${type}> = new Signal<${type}>(undefined as unknown as ${type});\n` +
+        `  private get ${name}(): ${type} { return this._${name}$.value; }\n` +
+        `  private set ${name}(v: ${type}) { this._${name}$.value = v; }`,
+      next,
+    };
   }
 
   // Skip '=' and leading whitespace
@@ -101,12 +108,41 @@ function parseAndReplaceStateBlock(blockContent: string): string {
     i++;
   }
   const initializer = blockContent.slice(initStart, i).trim();
+  const next = i < blockContent.length ? i + 1 : i;
 
-  return (
-    `private _${name}$: Signal<${type}> = new Signal<${type}>(${initializer});\n` +
-    `  private get ${name}(): ${type} { return this._${name}$.value; }\n` +
-    `  private set ${name}(v: ${type}) { this._${name}$.value = v; }`
-  );
+  return {
+    code:
+      `private _${name}$: Signal<${type}> = new Signal<${type}>(${initializer});\n` +
+      `  private get ${name}(): ${type} { return this._${name}$.value; }\n` +
+      `  private set ${name}(v: ${type}) { this._${name}$.value = v; }`,
+    next,
+  };
+}
+
+/**
+ * Parses the content of a `state { }` block and generates a Signal-backed
+ * getter/setter pair for EVERY `let` declaration it contains — a `state {}`
+ * block is allowed to declare more than one field (seen throughout the
+ * codebase, e.g. SecurityPanel.uix grouping password + session fields in one
+ * block). Uses a character-by-character depth counter so that initializers
+ * containing nested braces (e.g. `{}`, `{ key: true }`) are captured
+ * correctly. Fixes CG-04. Previously only the FIRST `let` in a block was
+ * compiled and every subsequent declaration in the same block was silently
+ * dropped from the output entirely (not even as a plain field) — any state
+ * after the first in a multi-declaration block was invisible to reactivity,
+ * so reassigning it from application code never triggered a re-render.
+ */
+function parseAndReplaceStateBlock(blockContent: string): string {
+  const parts: string[] = [];
+  let pos = 0;
+  while (pos < blockContent.length) {
+    const decl = parseOneStateDecl(blockContent, pos);
+    if (!decl) break;
+    parts.push(decl.code);
+    pos = decl.next;
+  }
+  if (parts.length === 0) return `{${blockContent}}`;
+  return parts.join("\n  ");
 }
 
 /**

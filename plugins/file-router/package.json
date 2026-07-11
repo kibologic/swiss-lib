@@ -1,6 +1,6 @@
 {
   "name": "@swissjs/plugin-file-router",
-  "version": "1.2.3",
+  "version": "1.2.5",
   "description": "File-based routing plugin for SwissJS",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -60,7 +60,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ThembaMzumara/SWISS.git"
+    "url": "https://github.com/kibologic/swiss-lib.git"
   },
   "homepage": "https://github.com/ThembaMzumara/SWISS#readme",
   "bugs": {

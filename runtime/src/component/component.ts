@@ -440,8 +440,22 @@ export class SwissComponent<
     // dom-creation.ts calls initialize() (and therefore setupReactivity()) WITHOUT going
     // through mount(container), so _container is never set for child components.
     // We must still be able to commit reactive updates using the existing DOM node.
+    //
+    // Same staleness hazard as reconcileChildren's oldChildren loop (see
+    // reconciliation.ts): oldVNode.dom is tied to a specific vnode object
+    // from a past render, and can go stale if a separate commit path (e.g.
+    // the explicit scheduleUpdate()/performUpdate() route vs. this
+    // signal-effect-driven commitVNode route) already replaced this
+    // component's root element without that old vnode object ever being
+    // told. this._domNode is a plain instance field every commit path
+    // updates directly, so it can't carry that same staleness — prefer it,
+    // and only trust oldVNode.dom when it's still genuinely connected to
+    // the document.
     const oldVNodeBase = typeof oldVNode === "object" && oldVNode !== null ? oldVNode as VNodeBase : null;
-    const existingDom: Node | null = (oldVNodeBase?.dom as Node | null) ?? this._domNode ?? null;
+    const oldVNodeDom = oldVNodeBase?.dom as Node | undefined;
+    const oldVNodeDomIsLive = oldVNodeDom != null && oldVNodeDom.isConnected;
+    const existingDom: Node | null =
+      this._domNode ?? (oldVNodeDomIsLive ? oldVNodeDom : null) ?? null;
 
     if (!container && !existingDom) return;
 

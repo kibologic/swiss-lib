@@ -1,5 +1,29 @@
 # @swissjs/core
 
+## 1.2.5
+
+### Patch Changes
+
+- Fix a reconciliation bug where a child element already correctly present in the DOM could be silently deleted during a later update, even though both the old and new vnode trees described it identically.
+
+  Root cause: `reconcileChildren`'s old-children pass resolved each child's DOM node as `vnode.dom ?? liveDOMNode`, unconditionally trusting a vnode's own `.dom` reference over the node actually live in the parent. When two independent commit pipelines for the same component (an explicit `scheduleUpdate()` call and a signal-driven reactive commit) each built and committed their own vnode tree in close succession, a vnode object from an earlier cycle could carry a `.dom` pointer to a node a later cycle had already replaced. Trusting that stale pointer meant the update silently patched a detached node while the real live child was never marked as processed, so the "remove leftover nodes" cleanup deleted it.
+
+  Fix: only trust a vnode's own `.dom` reference when it's still genuinely attached to the parent/document being reconciled; otherwise fall back to the live DOM, which can never be stale. Applied both in `reconcileChildren` (children-level) and `SwissComponent.commitVNode` (component-root-level), the same class of staleness hazard existed in both places.
+
+## 1.2.4
+
+### Patch Changes
+
+- 740e578: Patch release: no behavior change to shipped code.
+  - Removed two unreferenced scratch/dev artifacts from the compiler package
+    (`compiler/_test_verify.mjs`, `compiler/temp-5O81gD/`) — dead code cleanup,
+    zero importers.
+  - Documented SSR/hydration as experimental/unsupported (comment-only) pending
+    the stable node-identity fix tracked in FABLE-FRAME-001.
+  - Extended the runtime's reconciliation regression test suite (null-child
+    slot collapse, list reorder, fragment child reorder) — test-only, not
+    shipped in the published package.
+
 ## 1.2.1
 
 ### Patch Changes

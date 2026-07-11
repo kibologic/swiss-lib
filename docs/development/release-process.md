@@ -134,3 +134,20 @@ This repo uses Changesets for versioning and publishing.
 
 - Notes
   - Workflows are intentionally not mirrored to the public repo. If needed later, grant the App `Workflows: Read & write` on the public repo and remove the excludes.
+
+---
+
+## Local Iteration Loop (Testing Only — Not a Substitute for Release)
+
+`alpine-erp` and `alpine-erp-core` don't live-link swiss-lib's monorepo source. Both resolve `@swissjs/core` to a vendored, pre-built copy at `node_modules/.pnpm/@swissjs+core@1.2.4/node_modules/@swissjs/core/dist/` — a real directory, not a symlink back to swiss-lib. All other `@swissjs/core` paths in either repo's `node_modules` are symlinks pointing at that one real directory, so a single sync target covers every consumer.
+
+For rapid local iteration while debugging swiss-lib:
+
+1. Edit TypeScript source in `swiss-lib/runtime/src/`.
+2. Run `pnpm exec tsc -b` inside `swiss-lib/runtime` to compile to `dist/`.
+3. `rsync -a --delete` that fresh `dist/` over the vendored copy at the pnpm-store path above.
+4. Reload the app in the browser — the swite dev servers (port 3000 for alpine-erp-core, port 4000 for alpine-erp's federated module service) serve the patched JS immediately.
+
+This is a **hand-patch for testing only**. It bypasses real npm package resolution entirely and gets wiped by any genuine `pnpm install`. It must never be treated as a shipped fix.
+
+**Explicit rule going forward**: only a stable, battle-tested swiss-lib change goes through the real release cycle described above — version bump in `swiss-lib/runtime/package.json`, full test suite green, `npm publish`, then bump the dependency version in alpine's `package.json` and run a real `pnpm install`. The rsync loop is exclusively for iterating toward that state, not a substitute for it.

@@ -1,6 +1,6 @@
 {
   "name": "@swissjs/router",
-  "version": "1.2.1",
+  "version": "1.2.5",
   "description": "Swiss framework routing and SSR",
   "type": "module",
   "main": "dist/index.js",
@@ -20,6 +20,10 @@
   ],
   "author": "Themba Mzumara",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kibologic/swiss-lib.git"
+  },
   "dependencies": {
     "@swissjs/core": "workspace:*"
   },

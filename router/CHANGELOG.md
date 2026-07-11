@@ -1,5 +1,29 @@
 # @kibologic/router
 
+## 1.2.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @swissjs/core@1.2.5
+
+## 1.2.4
+
+### Patch Changes
+
+- 740e578: Patch release: no behavior change to shipped code.
+  - Removed two unreferenced scratch/dev artifacts from the compiler package
+    (`compiler/_test_verify.mjs`, `compiler/temp-5O81gD/`) — dead code cleanup,
+    zero importers.
+  - Documented SSR/hydration as experimental/unsupported (comment-only) pending
+    the stable node-identity fix tracked in FABLE-FRAME-001.
+  - Extended the runtime's reconciliation regression test suite (null-child
+    slot collapse, list reorder, fragment child reorder) — test-only, not
+    shipped in the published package.
+
+- Updated dependencies [740e578]
+  - @swissjs/core@1.2.4
+
 ## 1.2.1
 
 ### Patch Changes

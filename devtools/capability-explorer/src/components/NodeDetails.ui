@@ -1,4 +1,4 @@
-import { SwissComponent } from '@kibologic/core';
+import { SwissComponent } from '@swissjs/core';
 import type { ComponentNode, CapabilityConflict } from '../services/DataService.js';
 
 interface NodeDetailsProps {

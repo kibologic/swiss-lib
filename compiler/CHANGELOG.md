@@ -1,5 +1,39 @@
 # @swissjs/compiler
 
+## 1.2.6
+
+### Patch Changes
+
+- Fix `.ui` files never receiving JSX transformation via `compile()`/`compileFile()`, and consolidate `compile()` to delegate to `compileAsync()` instead of maintaining two independently-drifted implementations.
+
+  `compile()` previously only ran the JSX transform for `.uix` files, never `.ui` files, so any `.ui` file compiled through `compile()`/`compileFile()` (as opposed to the `compileAsync()` path swite's dev server and build engine actually use) came out with raw, untransformed JSX syntax still in it. `compileAsync()` is now the single implementation; `compile()` delegates to it.
+
+  Also adds an AST-based `sourceHasJsx()` check (via TypeScript's own parser) so `.ui` files without JSX — pure logic/config files, which are common and valid per `.ui`'s "component files, not necessarily visual" convention — skip the esbuild JSX pass entirely rather than being unconditionally re-serialized by it.
+
+## 1.2.5
+
+### Patch Changes
+
+- Fix `state { }` blocks silently dropping every field after the first when a block declares more than one `let`.
+
+  `parseAndReplaceStateBlock` previously parsed only the first `let name: type = initializer;` declaration in a block and discarded the rest of the block's content entirely — not even as a plain, non-reactive field. Any component with `state { let a = ...; let b = ...; }` (a pattern used throughout real components, e.g. grouping related fields in one block) had `b` silently missing from the compiled output: reading it was `undefined`, and writing it did nothing, with no error or warning anywhere.
+
+  Fix: `parseAndReplaceStateBlock` now loops over every `let` declaration in the block via a new `parseOneStateDecl` helper, generating a Signal-backed getter/setter pair for each one.
+
+## 1.2.4
+
+### Patch Changes
+
+- 740e578: Patch release: no behavior change to shipped code.
+  - Removed two unreferenced scratch/dev artifacts from the compiler package
+    (`compiler/_test_verify.mjs`, `compiler/temp-5O81gD/`) — dead code cleanup,
+    zero importers.
+  - Documented SSR/hydration as experimental/unsupported (comment-only) pending
+    the stable node-identity fix tracked in FABLE-FRAME-001.
+  - Extended the runtime's reconciliation regression test suite (null-child
+    slot collapse, list reorder, fragment child reorder) — test-only, not
+    shipped in the published package.
+
 ## 1.2.1
 
 ### Patch Changes

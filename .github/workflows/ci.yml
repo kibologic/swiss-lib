@@ -30,8 +30,16 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # components' build script imports @swissjs/cli's compiled output
+      # directly, so cli must be built first (it's excluded from the main
+      # build below).
+      - name: Build @swissjs/cli
+        run: pnpm --filter "@swissjs/cli" run build
+
+      # Uses pnpm's own recursive build (-r), not turbo -- see the identical
+      # comment in release.yml for the full investigation.
       - name: Build
-        run: pnpm turbo run build --filter="!@swissjs/css" --filter="!@swissjs/cli"
+        run: pnpm -r --filter="!@swissjs/css" --filter="!@swissjs/cli" run build
 
       - name: Test
         run: pnpm test

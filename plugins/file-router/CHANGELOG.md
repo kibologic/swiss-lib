@@ -1,5 +1,17 @@
 <!--
 
+## 1.2.5
+### Patch Changes
+
+- Updated dependencies
+  - @swissjs/core@1.2.5
+
+## 1.2.4
+### Patch Changes
+
+- Updated dependencies [740e578]
+  - @swissjs/core@1.2.4
+
 ## 1.2.3
 ### Patch Changes
 

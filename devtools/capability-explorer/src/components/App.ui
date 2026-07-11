@@ -1,4 +1,4 @@
-import { SwissComponent, html } from '@kibologic/core';
+import { SwissComponent, html } from '@swissjs/core';
 import { DataService, type ComponentNode, type CapabilityConflict } from '../services/DataService.js';
 import ComponentTree from './ComponentTree.ui';
 

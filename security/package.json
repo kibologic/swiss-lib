@@ -15,7 +15,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "node node_modules/typescript/bin/tsc -b",
+    "build": "pnpm exec tsc -b",
     "dev": "pnpm exec tsc -b --watch",
     "test": "pnpm exec vitest",
     "test:watch": "pnpm exec vitest --watch",
@@ -49,7 +49,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ThembaMzumara/SWISS.git"
+    "url": "https://github.com/kibologic/swiss-lib.git"
   },
   "homepage": "https://github.com/ThembaMzumara/SWISS#readme",
   "bugs": {

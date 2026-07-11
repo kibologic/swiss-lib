@@ -37,43 +37,19 @@ export class UiCompiler {
     return compiled;
   }
 
-  // Compile method with support for both sync and async operations
-  // For backward compatibility, it's marked as async but can be used synchronously for simple cases
+  // compile() and compileAsync() used to be two separate implementations
+  // that were expected to be kept in sync by hand ("Ideally compileAsync
+  // matches the logic of compile" -- an aspiration that had already drifted
+  // false: compile() only ran JSX transform for .uix, never .ui, so any .ui
+  // file compiled through compile()/compileFile() came out with raw,
+  // untransformed JSX syntax). compileAsync() is the one real production
+  // code paths actually use -- swite's dev server (base-handler.ts) and its
+  // build engine (builder.ts) both call compileAsync() exclusively, never
+  // compile() -- so it's the version that's actually been exercised and
+  // hardened. compile() now just delegates to it; nothing needs two
+  // divergent implementations to maintain.
   async compile(source: string, filePath: string): Promise<string> {
-    // Apply Swiss syntax transformation for .ui and .uix files
-    let processedSource = source;
-    if (filePath.endsWith(".ui") || filePath.endsWith(".uix")) {
-      const { preprocessSwissSyntax } = await import(
-        "./transformers/swiss-syntax.js"
-      );
-      processedSource = preprocessSwissSyntax(source, filePath, this._jsxImportSource);
-      // Strip JSDoc comments (/** ... */) to prevent parsing issues
-      processedSource = this.stripJSDocComments(processedSource);
-    }
-
-    // Process imports
-    let result = processImports(processedSource, filePath);
-
-    // Check if this is a .uix file (JSX support)
-    const isUixFile = filePath.endsWith(".uix");
-
-    if (isUixFile) {
-      // Transform JSX in .uix files
-      try {
-        const { transformWithJsx } = await import(
-          "./transformers/jsx-transformer.js"
-        );
-        result = transformWithJsx(result, filePath, this._jsxImportSource);
-      } catch (error) {
-        console.error("Error transforming JSX:", error);
-        throw error;
-      }
-    }
-
-    // For JSX and TypeScript, we need async processing
-    // This method is kept synchronous for backward compatibility with tests
-    // For full async processing, use compileAsync
-    return result;
+    return this.compileAsync(source, filePath);
   }
 
   // Async compile method for complex cases (JSX, TypeScript)
@@ -88,10 +64,6 @@ export class UiCompiler {
       // Strip JSDoc comments (/** ... */) to prevent parsing issues
       processedSource = this.stripJSDocComments(processedSource);
     }
-
-    // For .uix files, we've already handled JSX in the compile method if called synchronously,
-    // but here we ensure it goes through the async pipeline if needed.
-    // Ideally compileAsync matches the logic of compile but purely async.
 
     if (filePath.endsWith(".uix")) {
       // Treat as TSX (TypeScript + JSX)
@@ -108,10 +80,25 @@ export class UiCompiler {
     }
 
     if (filePath.endsWith(".ui")) {
-      // .ui files contain JSX in render() methods — must use JSX transform pipeline
-      // (same as .uix) so output is createElement() calls, not raw JSX syntax.
-      // Using jsx:"preserve" here caused es-module-lexer to fail (CG-02).
+      // .ui files MAY contain JSX in render() methods -- when they do, must
+      // use the JSX transform pipeline (same as .uix) so output is
+      // createElement() calls, not raw JSX syntax. Using jsx:"preserve" here
+      // caused es-module-lexer to fail (CG-02).
+      //
+      // But unlike .uix (which is JSX/layout-composition by convention --
+      // every real .uix file has JSX in it), .ui is documented as "component
+      // files -- everything SwissJS UI + logic", and plenty of real .ui
+      // files are pure logic/config with no JSX at all (e.g. an html``
+      // tagged-template component, or a non-visual service class). Running
+      // esbuild's tsx-loader transform unconditionally on those re-serializes
+      // the whole file as a side effect of the JSX pass -- stripping/
+      // reformatting comments the file never asked to have touched -- even
+      // though there was no JSX to transform. Only pay that cost when the
+      // file actually has JSX in it.
       const result = processImports(processedSource, filePath);
+      if (!this.sourceHasJsx(result)) {
+        return result;
+      }
       return this.transformJsxWithEsbuild(result, filePath);
     }
 
@@ -120,7 +107,44 @@ export class UiCompiler {
       return this.transformJsxWithEsbuild(source, filePath);
     }
 
-    return source;
+    // Every other extension (.ts, .js, ...) still needs import processing --
+    // this is also where invalid-import diagnostics live (e.g. the '1ui'
+    // pseudo-import check), which previously ran unconditionally for every
+    // file compile() touched, before compile() was consolidated to delegate
+    // here. Skipping it for "plain" files silently dropped that validation.
+    return processImports(source, filePath);
+  }
+
+  // Parses `source` as TSX and walks the AST for an actual JSX node, rather
+  // than a regex heuristic -- `<Foo` shows up in plenty of non-JSX TS too
+  // (generics, comparisons), and TypeScript's own parser is already a
+  // dependency here. A parse error means the source isn't valid TSX as-is
+  // (e.g. it still has un-transformed html`` tagged templates the caller
+  // hasn't processed yet), which just means "no JSX", not a hard failure --
+  // the caller falls back to leaving the source untouched either way.
+  private sourceHasJsx(source: string): boolean {
+    const sourceFile = ts.createSourceFile(
+      "check.tsx",
+      source,
+      ts.ScriptTarget.Latest,
+      /* setParentNodes */ false,
+      ts.ScriptKind.TSX,
+    );
+    let found = false;
+    const visit = (node: ts.Node): void => {
+      if (found) return;
+      if (
+        ts.isJsxElement(node) ||
+        ts.isJsxSelfClosingElement(node) ||
+        ts.isJsxFragment(node)
+      ) {
+        found = true;
+        return;
+      }
+      ts.forEachChild(node, visit);
+    };
+    visit(sourceFile);
+    return found;
   }
 
   private async transformJsxWithEsbuild(
