@@ -42,9 +42,6 @@ Command-line interface for SwissJS development.
 ### [@swissjs/compiler](./compiler/index.md)
 Compiler for .ui and .uix files.
 
-### [vscode-swiss](./vscode-swiss/index.md)
-VS Code extension for SwissJS development.
-
 ## Security
 
 ### [@swissjs/security](./security/index.md)
