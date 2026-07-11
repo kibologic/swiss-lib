@@ -1,0 +1,308 @@
+{
+  "cli/src/__tests__/build-command.test.ts": {
+    "security/detect-non-literal-fs-filename": 1
+  },
+  "cli/src/commands/build.ts": {
+    "security/detect-non-literal-fs-filename": 15
+  },
+  "cli/src/commands/compile.ts": {
+    "security/detect-non-literal-fs-filename": 4
+  },
+  "cli/src/commands/serve.ts": {
+    "security/detect-non-literal-fs-filename": 3
+  },
+  "cli/src/commands/workspace.ts": {
+    "security/detect-non-literal-fs-filename": 4
+  },
+  "cli/src/forge/file-generator.ts": {
+    "security/detect-non-literal-fs-filename": 6
+  },
+  "cli/src/forge/prompt-engine.ts": {
+    "security/detect-non-literal-regexp": 1
+  },
+  "cli/src/forge/registry.ts": {
+    "security/detect-non-literal-fs-filename": 3
+  },
+  "cli/src/forge/template-engine.ts": {
+    "@typescript-eslint/no-unused-vars": 1
+  },
+  "cli/src/server/unified-server.ts": {
+    "security/detect-non-literal-fs-filename": 4
+  },
+  "cli/src/utils/compileUiFiles.ts": {
+    "security/detect-non-literal-fs-filename": 3
+  },
+  "cli/src/workspace/DependencyResolver.ts": {
+    "security/detect-non-literal-fs-filename": 6
+  },
+  "cli/src/workspace/SyncManager.ts": {
+    "security/detect-non-literal-fs-filename": 18
+  },
+  "cli/src/workspace/WorkspaceManager.ts": {
+    "security/detect-non-literal-fs-filename": 7
+  },
+  "compiler/__tests__/capability-import-resolution.test.ts": {
+    "security/detect-non-literal-fs-filename": 2
+  },
+  "compiler/__tests__/invalid-oneui-import.test.ts": {
+    "security/detect-non-literal-fs-filename": 1
+  },
+  "compiler/__tests__/jsdoc-fix-verification.test.ts": {
+    "security/detect-non-literal-fs-filename": 1,
+    "@typescript-eslint/no-unused-vars": 1
+  },
+  "compiler/__tests__/jsdoc-real-world.test.ts": {
+    "@typescript-eslint/no-unused-vars": 2
+  },
+  "compiler/__tests__/jsx/jsx-integration.test.ts": {
+    "security/detect-non-literal-fs-filename": 6
+  },
+  "compiler/__tests__/oneui-import-rewrite.test.ts": {
+    "security/detect-non-literal-fs-filename": 1
+  },
+  "compiler/__tests__/state-signal.test.ts": {
+    "@typescript-eslint/no-unused-vars": 1
+  },
+  "compiler/__tests__/test-utils.ts": {
+    "security/detect-non-literal-fs-filename": 3
+  },
+  "compiler/src/compiler.ts": {
+    "security/detect-non-literal-fs-filename": 3
+  },
+  "compiler/src/transformers/swiss-syntax.ts": {
+    "security/detect-non-literal-regexp": 1,
+    "security/detect-unsafe-regex": 1,
+    "@typescript-eslint/no-unused-vars": 1
+  },
+  "compiler/src/transformers/utils.ts": {
+    "security/detect-non-literal-regexp": 3,
+    "security/detect-non-literal-fs-filename": 2
+  },
+  "compiler/src/utils/file-utils.ts": {
+    "security/detect-non-literal-fs-filename": 2
+  },
+  "compiler/src/utils/typescript-utils.ts": {
+    "security/detect-unsafe-regex": 1,
+    "security/detect-non-literal-fs-filename": 1
+  },
+  "compiler/test-swiss.mjs": {
+    "@typescript-eslint/no-unused-vars": 1
+  },
+  "components/test/setup.ts": {
+    "(no-rule-id)": 1,
+    "@typescript-eslint/no-explicit-any": 1,
+    "@typescript-eslint/no-unused-vars": 1
+  },
+  "css/src/compiler/index.ts": {
+    "security/detect-unsafe-regex": 1
+  },
+  "css/src/modules/transformer.ts": {
+    "security/detect-non-literal-regexp": 1
+  },
+  "docs/.vitepress/cache/deps/@theme_index.js": {
+    "@typescript-eslint/no-unused-vars": 2,
+    "@typescript-eslint/no-unused-expressions": 1
+  },
+  "docs/.vitepress/cache/deps/chunk-CQCXOPJ4.js": {
+    "@typescript-eslint/no-unused-expressions": 42,
+    "@typescript-eslint/no-unused-vars": 14,
+    "@typescript-eslint/no-this-alias": 5,
+    "@typescript-eslint/ban-ts-comment": 1,
+    "(no-rule-id)": 3
+  },
+  "docs/.vitepress/cache/deps/chunk-U5FA7MQ6.js": {
+    "@typescript-eslint/no-unused-expressions": 65,
+    "security/detect-unsafe-regex": 4,
+    "@typescript-eslint/no-unused-vars": 4
+  },
+  "docs/.vitepress/cache/deps/vitepress___@vue_devtools-api.js": {
+    "@typescript-eslint/no-unused-vars": 29,
+    "security/detect-non-literal-regexp": 6,
+    "@typescript-eslint/no-unused-expressions": 25,
+    "es5/no-es6-methods": 1
+  },
+  "docs/.vitepress/config.ts": {
+    "security/detect-non-literal-fs-filename": 1
+  },
+  "plugins/file-router/src/core/scanner.ts": {
+    "security/detect-non-literal-fs-filename": 1
+  },
+  "plugins/file-router/src/core/transformer.ts": {
+    "security/detect-non-literal-regexp": 2
+  },
+  "plugins/web-storage/docs/assets/main.js": {
+    "@typescript-eslint/no-unused-expressions": 171,
+    "@typescript-eslint/no-this-alias": 2,
+    "@typescript-eslint/no-unused-vars": 1
+  },
+  "router/src/api/handler.ts": {
+    "@typescript-eslint/no-unused-vars": 2
+  },
+  "router/src/api/scanner.ts": {
+    "security/detect-non-literal-fs-filename": 1
+  },
+  "router/src/core/link.ts": {
+    "@typescript-eslint/no-unused-vars": 1
+  },
+  "router/src/ssr/server-renderer.ts": {
+    "@typescript-eslint/no-unused-vars": 1
+  },
+  "router/tests/matcher.test.ts": {
+    "@typescript-eslint/no-unused-vars": 1
+  },
+  "router/tests/router.test.ts": {
+    "@typescript-eslint/no-explicit-any": 1,
+    "prefer-const": 1
+  },
+  "runtime/__benchmarks__/render.bench.ts": {
+    "@typescript-eslint/no-explicit-any": 1
+  },
+  "runtime/__benchmarks__/run.js": {
+    "@typescript-eslint/no-unused-vars": 1
+  },
+  "runtime/__tests__/plugins/plugin-manager.test.ts": {
+    "@typescript-eslint/no-unused-vars": 1
+  },
+  "runtime/__tests__/regression/input-focus.test.ts": {
+    "@typescript-eslint/no-unused-vars": 2,
+    "@typescript-eslint/no-explicit-any": 12
+  },
+  "runtime/scripts/inject-version.js": {
+    "security/detect-non-literal-fs-filename": 3
+  },
+  "runtime/src/__tests__/core.test.ts": {
+    "@typescript-eslint/no-explicit-any": 6
+  },
+  "runtime/src/__tests__/reactivity-coalescing.test.ts": {
+    "@typescript-eslint/no-unused-vars": 2,
+    "@typescript-eslint/no-explicit-any": 24
+  },
+  "runtime/src/__tests__/record-header-repro.test.ts": {
+    "@typescript-eslint/no-unused-vars": 2
+  },
+  "runtime/src/component/component.ts": {
+    "@typescript-eslint/no-unused-vars": 12
+  },
+  "runtime/src/component/decorators/capability-decorator.ts": {
+    "@typescript-eslint/no-explicit-any": 4
+  },
+  "runtime/src/component/decorators/component-decorator.ts": {
+    "@typescript-eslint/no-explicit-any": 2
+  },
+  "runtime/src/component/decorators/lifecycle-decorator.ts": {
+    "@typescript-eslint/no-unused-vars": 1,
+    "@typescript-eslint/no-explicit-any": 6
+  },
+  "runtime/src/component/decorators/performance-decorator.ts": {
+    "@typescript-eslint/no-explicit-any": 12
+  },
+  "runtime/src/component/update-manager.ts": {
+    "@typescript-eslint/no-unused-vars": 1
+  },
+  "runtime/src/component/update-strategies.ts": {
+    "prefer-const": 2
+  },
+  "runtime/src/devtools/bridge.ts": {
+    "@typescript-eslint/no-unused-vars": 11
+  },
+  "runtime/src/error/error-reporter.ts": {
+    "@typescript-eslint/no-unused-vars": 1
+  },
+  "runtime/src/fenestration/registry.ts": {
+    "security/detect-unsafe-regex": 1
+  },
+  "runtime/src/framework/expression-evaluator.ts": {
+    "security/detect-non-literal-regexp": 1
+  },
+  "runtime/src/framework/framework.ts": {
+    "@typescript-eslint/no-unused-vars": 2
+  },
+  "runtime/src/hooks/hookRegistry.ts": {
+    "@typescript-eslint/no-unused-vars": 1
+  },
+  "runtime/src/jsx.d.ts": {
+    "@typescript-eslint/no-empty-object-type": 2
+  },
+  "runtime/src/reactivity/effect.ts": {
+    "@typescript-eslint/no-unused-vars": 1
+  },
+  "runtime/src/reactivity/signals.ts": {
+    "@typescript-eslint/no-var-requires": 1
+  },
+  "runtime/src/renderer/component-rendering.ts": {
+    "@typescript-eslint/no-unused-vars": 2
+  },
+  "runtime/src/renderer/reconciliation.ts": {
+    "@typescript-eslint/no-unused-vars": 4
+  },
+  "runtime/src/renderer/renderer.ts": {
+    "@typescript-eslint/no-unused-vars": 3,
+    "prefer-const": 6
+  },
+  "runtime/src/runtime/adapters/bun-adapter.ts": {
+    "security/detect-non-literal-fs-filename": 1
+  },
+  "runtime/src/runtime/adapters/node-adapter.ts": {
+    "security/detect-non-literal-fs-filename": 4,
+    "security/detect-child-process": 1,
+    "(no-rule-id)": 1,
+    "@typescript-eslint/no-explicit-any": 1
+  },
+  "runtime/src/runtime/dev-server.ts": {
+    "@typescript-eslint/no-explicit-any": 1
+  },
+  "runtime/src/runtime/runtime-service.ts": {
+    "@typescript-eslint/no-explicit-any": 1
+  },
+  "scripts/bundle-report.mjs": {
+    "@typescript-eslint/no-unused-vars": 3,
+    "security/detect-non-literal-fs-filename": 8
+  },
+  "scripts/bundle-size-report.mjs": {
+    "security/detect-non-literal-fs-filename": 4
+  },
+  "scripts/check-barrels.mjs": {
+    "security/detect-non-literal-fs-filename": 13
+  },
+  "scripts/check-deep-imports.mjs": {
+    "security/detect-non-literal-fs-filename": 2
+  },
+  "scripts/check-ui-format.mjs": {
+    "security/detect-non-literal-fs-filename": 2
+  },
+  "scripts/docs-redactor.mjs": {
+    "@typescript-eslint/no-unused-vars": 1,
+    "security/detect-non-literal-fs-filename": 4
+  },
+  "scripts/loc-report.mjs": {
+    "security/detect-non-literal-fs-filename": 7
+  },
+  "scripts/promotion-filter.mjs": {
+    "security/detect-non-literal-fs-filename": 2
+  },
+  "scripts/verify-licensing.mjs": {
+    "security/detect-non-literal-fs-filename": 5
+  },
+  "security/src/engine.ts": {
+    "security/detect-unsafe-regex": 1
+  },
+  "security/src/middleware/validation-middleware.ts": {
+    "(no-rule-id)": 1
+  },
+  "security/src/services/validator.ts": {
+    "security/detect-non-literal-regexp": 1
+  },
+  "shared/src/fixDtsExtensions.ts": {
+    "security/detect-non-literal-fs-filename": 4
+  },
+  "tools/docs-runner/ensure-api-index.mjs": {
+    "security/detect-non-literal-fs-filename": 3
+  },
+  "tools/docs-runner/generate.mjs": {
+    "security/detect-non-literal-fs-filename": 12,
+    "@typescript-eslint/no-unused-vars": 1
+  },
+  "tools/redactor/redactor.mjs": {
+    "security/detect-non-literal-fs-filename": 5
+  }
+}
