@@ -39,7 +39,7 @@ jobs:
       # Uses pnpm's own recursive build (-r), not turbo -- see the identical
       # comment in release.yml for the full investigation.
       - name: Build
-        run: pnpm -r --filter="!@swissjs/css" --filter="!@swissjs/cli" run build
+        run: pnpm -r --filter="!@swissjs/cli" run build
 
       - name: Test
         run: pnpm test

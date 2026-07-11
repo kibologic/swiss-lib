@@ -1,13 +1,13 @@
 {
 	"schemaVersion": "2.0",
-	"id": 4216,
+	"id": 4055,
 	"name": "@swissjs/shared",
 	"variant": "project",
 	"kind": 1,
 	"flags": {},
 	"children": [
 		{
-			"id": 4217,
+			"id": 4056,
 			"name": "fixDtsExtensions",
 			"variant": "declaration",
 			"kind": 64,
@@ -17,12 +17,12 @@
 					"fileName": "fixDtsExtensions.ts",
 					"line": 10,
 					"character": 22,
-					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/shared/src/fixDtsExtensions.ts#L10"
+					"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/shared/src/fixDtsExtensions.ts#L10"
 				}
 			],
 			"signatures": [
 				{
-					"id": 4218,
+					"id": 4057,
 					"name": "fixDtsExtensions",
 					"variant": "signature",
 					"kind": 4096,
@@ -32,12 +32,12 @@
 							"fileName": "fixDtsExtensions.ts",
 							"line": 10,
 							"character": 22,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/shared/src/fixDtsExtensions.ts#L10"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/shared/src/fixDtsExtensions.ts#L10"
 						}
 					],
 					"parameters": [
 						{
-							"id": 4219,
+							"id": 4058,
 							"name": "distDir",
 							"variant": "param",
 							"kind": 32768,
@@ -48,7 +48,7 @@
 							}
 						},
 						{
-							"id": 4220,
+							"id": 4059,
 							"name": "debug",
 							"variant": "param",
 							"kind": 32768,
@@ -84,34 +84,34 @@
 		{
 			"title": "Functions",
 			"children": [
-				4217
+				4056
 			]
 		}
 	],
 	"packageName": "@swissjs/shared",
 	"packageVersion": "1.2.1",
 	"symbolIdMap": {
-		"4216": {
+		"4055": {
 			"packageName": "@swissjs/shared",
 			"packagePath": "src/index.ts",
 			"qualifiedName": ""
 		},
-		"4217": {
+		"4056": {
 			"packageName": "@swissjs/shared",
 			"packagePath": "src/fixDtsExtensions.ts",
 			"qualifiedName": "fixDtsExtensions"
 		},
-		"4218": {
+		"4057": {
 			"packageName": "@swissjs/shared",
 			"packagePath": "src/fixDtsExtensions.ts",
 			"qualifiedName": "fixDtsExtensions"
 		},
-		"4219": {
+		"4058": {
 			"packageName": "@swissjs/shared",
 			"packagePath": "src/fixDtsExtensions.ts",
 			"qualifiedName": "distDir"
 		},
-		"4220": {
+		"4059": {
 			"packageName": "@swissjs/shared",
 			"packagePath": "src/fixDtsExtensions.ts",
 			"qualifiedName": "debug"
@@ -122,7 +122,7 @@
 			"1": "shared/src/index.ts"
 		},
 		"reflections": {
-			"1": 4216
+			"1": 4055
 		}
 	}
 }

@@ -14,7 +14,6 @@ The SwissJS framework monorepo. TypeScript-first web framework with its own synt
 | `compiler/` | `@swissjs/compiler` | 0.1.4 | Swiss syntax transformer and `.ui`/`.uix` compilation pipeline |
 | `shared/` | `@swissjs/shared` | 0.1.15 | Internal utilities shared across packages |
 | `router/` | `@swissjs/router` | 0.1.4 | Client-side routing and SSR |
-| `css/` | `@swissjs/css` | 0.1.4 | CSS modules and asset handling |
 | `components/` | `@swissjs/components` | 0.1.4 | Base UI component library |
 | `security/` | `@swissjs/security` | 0.1.13 | Security engine, policies, rate limiting, validation middleware |
 | `cli/` | `@swissjs/cli` | 0.1.6 | `swiss` CLI — dev, build, create, compile, serve |
