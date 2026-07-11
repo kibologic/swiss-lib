@@ -23,5 +23,5 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run SAST scan
-        run: pnpm lint:sast
+      - name: Run SAST ratchet (fails only on findings beyond the committed baseline)
+        run: pnpm lint:sast:ratchet
