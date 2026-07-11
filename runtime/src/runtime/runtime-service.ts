@@ -41,6 +41,9 @@ export class RuntimeService {
     
     switch (runtimeType) {
       case 'bun': {
+        // nosemgrep: no-eval -- indirect-eval trick to obtain a genuine dynamic
+        // import() that TS/bundlers won't statically rewrite to require(); the
+        // argument is always a literal module specifier, never untrusted input.
         const { BunAdapter } = await (eval('import') as (m: string) => Promise<any>)('./adapters/bun-adapter.js');
         return new BunAdapter();
       }
