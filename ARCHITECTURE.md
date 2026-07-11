@@ -9,7 +9,6 @@ swiss-lib/
 ├── runtime/    @swissjs/core       — component model, reactivity, renderer
 ├── compiler/   @swissjs/compiler   — .ui/.uix syntax transformer, compilation pipeline
 ├── router/     @swissjs/router     — client-side routing, SSR
-├── css/        @swissjs/css        — CSS modules, asset handling
 ├── components/ @swissjs/components — base UI component library
 ├── security/   @swissjs/security   — security engine, policies, rate limiting
 ├── cli/        @swissjs/cli        — `swiss` CLI (dev, build, create, compile, serve)
@@ -18,7 +17,8 @@ swiss-lib/
 ├── internal/   —                   — internal build tooling
 └── plugins/
     ├── file-router/  @swissjs/plugin-file-router
-    └── web-storage/  @swissjs/plugin-web-storage
+    ├── web-storage/  @swissjs/plugin-web-storage
+    └── vite/         @swissjs/vite-plugin — Vite plugin for .ui/.uix compilation
 ```
 
 ## Compilation pipeline

@@ -1,20 +1,20 @@
 {
 	"schemaVersion": "2.0",
-	"id": 458,
+	"id": 297,
 	"name": "@swissjs/plugin-web-storage",
 	"variant": "project",
 	"kind": 1,
 	"flags": {},
 	"children": [
 		{
-			"id": 476,
+			"id": 315,
 			"name": "KeyValueStorageAsync",
 			"variant": "declaration",
 			"kind": 256,
 			"flags": {},
 			"children": [
 				{
-					"id": 487,
+					"id": 326,
 					"name": "clear",
 					"variant": "declaration",
 					"kind": 2048,
@@ -24,12 +24,12 @@
 							"fileName": "public/types.ts",
 							"line": 18,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/types.ts#L18"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/web-storage/src/public/types.ts#L18"
 						}
 					],
 					"signatures": [
 						{
-							"id": 488,
+							"id": 327,
 							"name": "clear",
 							"variant": "signature",
 							"kind": 4096,
@@ -39,7 +39,7 @@
 									"fileName": "public/types.ts",
 									"line": 18,
 									"character": 2,
-									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/types.ts#L18"
+									"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/web-storage/src/public/types.ts#L18"
 								}
 							],
 							"type": {
@@ -62,7 +62,7 @@
 					]
 				},
 				{
-					"id": 477,
+					"id": 316,
 					"name": "get",
 					"variant": "declaration",
 					"kind": 2048,
@@ -72,12 +72,12 @@
 							"fileName": "public/types.ts",
 							"line": 15,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/types.ts#L15"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/web-storage/src/public/types.ts#L15"
 						}
 					],
 					"signatures": [
 						{
-							"id": 478,
+							"id": 317,
 							"name": "get",
 							"variant": "signature",
 							"kind": 4096,
@@ -87,12 +87,12 @@
 									"fileName": "public/types.ts",
 									"line": 15,
 									"character": 2,
-									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/types.ts#L15"
+									"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/web-storage/src/public/types.ts#L15"
 								}
 							],
 							"parameters": [
 								{
-									"id": 479,
+									"id": 318,
 									"name": "key",
 									"variant": "param",
 									"kind": 32768,
@@ -123,7 +123,7 @@
 					]
 				},
 				{
-					"id": 484,
+					"id": 323,
 					"name": "remove",
 					"variant": "declaration",
 					"kind": 2048,
@@ -133,12 +133,12 @@
 							"fileName": "public/types.ts",
 							"line": 17,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/types.ts#L17"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/web-storage/src/public/types.ts#L17"
 						}
 					],
 					"signatures": [
 						{
-							"id": 485,
+							"id": 324,
 							"name": "remove",
 							"variant": "signature",
 							"kind": 4096,
@@ -148,12 +148,12 @@
 									"fileName": "public/types.ts",
 									"line": 17,
 									"character": 2,
-									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/types.ts#L17"
+									"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/web-storage/src/public/types.ts#L17"
 								}
 							],
 							"parameters": [
 								{
-									"id": 486,
+									"id": 325,
 									"name": "key",
 									"variant": "param",
 									"kind": 32768,
@@ -184,7 +184,7 @@
 					]
 				},
 				{
-					"id": 480,
+					"id": 319,
 					"name": "set",
 					"variant": "declaration",
 					"kind": 2048,
@@ -194,12 +194,12 @@
 							"fileName": "public/types.ts",
 							"line": 16,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/types.ts#L16"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/web-storage/src/public/types.ts#L16"
 						}
 					],
 					"signatures": [
 						{
-							"id": 481,
+							"id": 320,
 							"name": "set",
 							"variant": "signature",
 							"kind": 4096,
@@ -209,12 +209,12 @@
 									"fileName": "public/types.ts",
 									"line": 16,
 									"character": 2,
-									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/types.ts#L16"
+									"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/web-storage/src/public/types.ts#L16"
 								}
 							],
 							"parameters": [
 								{
-									"id": 482,
+									"id": 321,
 									"name": "key",
 									"variant": "param",
 									"kind": 32768,
@@ -225,7 +225,7 @@
 									}
 								},
 								{
-									"id": 483,
+									"id": 322,
 									"name": "value",
 									"variant": "param",
 									"kind": 32768,
@@ -260,10 +260,10 @@
 				{
 					"title": "Methods",
 					"children": [
-						487,
-						477,
-						484,
-						480
+						326,
+						316,
+						323,
+						319
 					]
 				}
 			],
@@ -272,19 +272,19 @@
 					"fileName": "public/types.ts",
 					"line": 14,
 					"character": 17,
-					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/types.ts#L14"
+					"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/web-storage/src/public/types.ts#L14"
 				}
 			]
 		},
 		{
-			"id": 463,
+			"id": 302,
 			"name": "KeyValueStorageSync",
 			"variant": "declaration",
 			"kind": 256,
 			"flags": {},
 			"children": [
 				{
-					"id": 474,
+					"id": 313,
 					"name": "clear",
 					"variant": "declaration",
 					"kind": 2048,
@@ -294,12 +294,12 @@
 							"fileName": "public/types.ts",
 							"line": 11,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/types.ts#L11"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/web-storage/src/public/types.ts#L11"
 						}
 					],
 					"signatures": [
 						{
-							"id": 475,
+							"id": 314,
 							"name": "clear",
 							"variant": "signature",
 							"kind": 4096,
@@ -309,7 +309,7 @@
 									"fileName": "public/types.ts",
 									"line": 11,
 									"character": 2,
-									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/types.ts#L11"
+									"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/web-storage/src/public/types.ts#L11"
 								}
 							],
 							"type": {
@@ -320,7 +320,7 @@
 					]
 				},
 				{
-					"id": 464,
+					"id": 303,
 					"name": "get",
 					"variant": "declaration",
 					"kind": 2048,
@@ -330,12 +330,12 @@
 							"fileName": "public/types.ts",
 							"line": 8,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/types.ts#L8"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/web-storage/src/public/types.ts#L8"
 						}
 					],
 					"signatures": [
 						{
-							"id": 465,
+							"id": 304,
 							"name": "get",
 							"variant": "signature",
 							"kind": 4096,
@@ -345,12 +345,12 @@
 									"fileName": "public/types.ts",
 									"line": 8,
 									"character": 2,
-									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/types.ts#L8"
+									"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/web-storage/src/public/types.ts#L8"
 								}
 							],
 							"parameters": [
 								{
-									"id": 466,
+									"id": 305,
 									"name": "key",
 									"variant": "param",
 									"kind": 32768,
@@ -369,7 +369,7 @@
 					]
 				},
 				{
-					"id": 471,
+					"id": 310,
 					"name": "remove",
 					"variant": "declaration",
 					"kind": 2048,
@@ -379,12 +379,12 @@
 							"fileName": "public/types.ts",
 							"line": 10,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/types.ts#L10"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/web-storage/src/public/types.ts#L10"
 						}
 					],
 					"signatures": [
 						{
-							"id": 472,
+							"id": 311,
 							"name": "remove",
 							"variant": "signature",
 							"kind": 4096,
@@ -394,12 +394,12 @@
 									"fileName": "public/types.ts",
 									"line": 10,
 									"character": 2,
-									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/types.ts#L10"
+									"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/web-storage/src/public/types.ts#L10"
 								}
 							],
 							"parameters": [
 								{
-									"id": 473,
+									"id": 312,
 									"name": "key",
 									"variant": "param",
 									"kind": 32768,
@@ -418,7 +418,7 @@
 					]
 				},
 				{
-					"id": 467,
+					"id": 306,
 					"name": "set",
 					"variant": "declaration",
 					"kind": 2048,
@@ -428,12 +428,12 @@
 							"fileName": "public/types.ts",
 							"line": 9,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/types.ts#L9"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/web-storage/src/public/types.ts#L9"
 						}
 					],
 					"signatures": [
 						{
-							"id": 468,
+							"id": 307,
 							"name": "set",
 							"variant": "signature",
 							"kind": 4096,
@@ -443,12 +443,12 @@
 									"fileName": "public/types.ts",
 									"line": 9,
 									"character": 2,
-									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/types.ts#L9"
+									"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/web-storage/src/public/types.ts#L9"
 								}
 							],
 							"parameters": [
 								{
-									"id": 469,
+									"id": 308,
 									"name": "key",
 									"variant": "param",
 									"kind": 32768,
@@ -459,7 +459,7 @@
 									}
 								},
 								{
-									"id": 470,
+									"id": 309,
 									"name": "value",
 									"variant": "param",
 									"kind": 32768,
@@ -482,10 +482,10 @@
 				{
 					"title": "Methods",
 					"children": [
-						474,
-						464,
-						471,
-						467
+						313,
+						303,
+						310,
+						306
 					]
 				}
 			],
@@ -494,12 +494,12 @@
 					"fileName": "public/types.ts",
 					"line": 7,
 					"character": 17,
-					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/types.ts#L7"
+					"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/web-storage/src/public/types.ts#L7"
 				}
 			]
 		},
 		{
-			"id": 489,
+			"id": 328,
 			"name": "StorageNamespace",
 			"variant": "declaration",
 			"kind": 2097152,
@@ -509,7 +509,7 @@
 					"fileName": "public/types.ts",
 					"line": 21,
 					"character": 12,
-					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/types.ts#L21"
+					"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/web-storage/src/public/types.ts#L21"
 				}
 			],
 			"type": {
@@ -531,7 +531,7 @@
 			}
 		},
 		{
-			"id": 462,
+			"id": 301,
 			"name": "STORAGE_INDEXED",
 			"variant": "declaration",
 			"kind": 32,
@@ -543,7 +543,7 @@
 					"fileName": "public/services.ts",
 					"line": 9,
 					"character": 13,
-					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/services.ts#L9"
+					"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/web-storage/src/public/services.ts#L9"
 				}
 			],
 			"type": {
@@ -553,7 +553,7 @@
 			"defaultValue": "'storage:indexed'"
 		},
 		{
-			"id": 460,
+			"id": 299,
 			"name": "STORAGE_LOCAL",
 			"variant": "declaration",
 			"kind": 32,
@@ -565,7 +565,7 @@
 					"fileName": "public/services.ts",
 					"line": 7,
 					"character": 13,
-					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/services.ts#L7"
+					"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/web-storage/src/public/services.ts#L7"
 				}
 			],
 			"type": {
@@ -575,7 +575,7 @@
 			"defaultValue": "'storage:local'"
 		},
 		{
-			"id": 461,
+			"id": 300,
 			"name": "STORAGE_SESSION",
 			"variant": "declaration",
 			"kind": 32,
@@ -587,7 +587,7 @@
 					"fileName": "public/services.ts",
 					"line": 8,
 					"character": 13,
-					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/services.ts#L8"
+					"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/web-storage/src/public/services.ts#L8"
 				}
 			],
 			"type": {
@@ -597,7 +597,7 @@
 			"defaultValue": "'storage:session'"
 		},
 		{
-			"id": 459,
+			"id": 298,
 			"name": "WebStoragePlugin",
 			"variant": "declaration",
 			"kind": 32,
@@ -609,7 +609,7 @@
 					"fileName": "plugin.ts",
 					"line": 13,
 					"character": 13,
-					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/plugin.ts#L13"
+					"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/web-storage/src/plugin.ts#L13"
 				}
 			],
 			"type": {
@@ -625,7 +625,7 @@
 			"defaultValue": "..."
 		},
 		{
-			"id": 492,
+			"id": 331,
 			"name": "createIndexedStorage",
 			"variant": "declaration",
 			"kind": 64,
@@ -635,12 +635,12 @@
 					"fileName": "runtime/indexed.ts",
 					"line": 78,
 					"character": 16,
-					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/runtime/indexed.ts#L78"
+					"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/web-storage/src/runtime/indexed.ts#L78"
 				}
 			],
 			"signatures": [
 				{
-					"id": 493,
+					"id": 332,
 					"name": "createIndexedStorage",
 					"variant": "signature",
 					"kind": 4096,
@@ -650,12 +650,12 @@
 							"fileName": "runtime/indexed.ts",
 							"line": 78,
 							"character": 16,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/runtime/indexed.ts#L78"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/web-storage/src/runtime/indexed.ts#L78"
 						}
 					],
 					"type": {
 						"type": "reference",
-						"target": 476,
+						"target": 315,
 						"name": "KeyValueStorageAsync",
 						"package": "@swissjs/plugin-web-storage"
 					}
@@ -663,7 +663,7 @@
 			]
 		},
 		{
-			"id": 494,
+			"id": 333,
 			"name": "createLocalStorage",
 			"variant": "declaration",
 			"kind": 64,
@@ -673,12 +673,12 @@
 					"fileName": "runtime/local.ts",
 					"line": 10,
 					"character": 16,
-					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/runtime/local.ts#L10"
+					"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/web-storage/src/runtime/local.ts#L10"
 				}
 			],
 			"signatures": [
 				{
-					"id": 495,
+					"id": 334,
 					"name": "createLocalStorage",
 					"variant": "signature",
 					"kind": 4096,
@@ -688,12 +688,12 @@
 							"fileName": "runtime/local.ts",
 							"line": 10,
 							"character": 16,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/runtime/local.ts#L10"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/web-storage/src/runtime/local.ts#L10"
 						}
 					],
 					"type": {
 						"type": "reference",
-						"target": 463,
+						"target": 302,
 						"name": "KeyValueStorageSync",
 						"package": "@swissjs/plugin-web-storage"
 					}
@@ -701,7 +701,7 @@
 			]
 		},
 		{
-			"id": 496,
+			"id": 335,
 			"name": "createSessionStorage",
 			"variant": "declaration",
 			"kind": 64,
@@ -711,12 +711,12 @@
 					"fileName": "runtime/session.ts",
 					"line": 10,
 					"character": 16,
-					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/runtime/session.ts#L10"
+					"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/web-storage/src/runtime/session.ts#L10"
 				}
 			],
 			"signatures": [
 				{
-					"id": 497,
+					"id": 336,
 					"name": "createSessionStorage",
 					"variant": "signature",
 					"kind": 4096,
@@ -726,12 +726,12 @@
 							"fileName": "runtime/session.ts",
 							"line": 10,
 							"character": 16,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/runtime/session.ts#L10"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/web-storage/src/runtime/session.ts#L10"
 						}
 					],
 					"type": {
 						"type": "reference",
-						"target": 463,
+						"target": 302,
 						"name": "KeyValueStorageSync",
 						"package": "@swissjs/plugin-web-storage"
 					}
@@ -739,7 +739,7 @@
 			]
 		},
 		{
-			"id": 490,
+			"id": 329,
 			"name": "isBrowser",
 			"variant": "declaration",
 			"kind": 64,
@@ -749,12 +749,12 @@
 					"fileName": "runtime/env.ts",
 					"line": 7,
 					"character": 16,
-					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/runtime/env.ts#L7"
+					"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/web-storage/src/runtime/env.ts#L7"
 				}
 			],
 			"signatures": [
 				{
-					"id": 491,
+					"id": 330,
 					"name": "isBrowser",
 					"variant": "signature",
 					"kind": 4096,
@@ -764,7 +764,7 @@
 							"fileName": "runtime/env.ts",
 							"line": 7,
 							"character": 16,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/runtime/env.ts#L7"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/web-storage/src/runtime/env.ts#L7"
 						}
 					],
 					"type": {
@@ -779,234 +779,234 @@
 		{
 			"title": "Interfaces",
 			"children": [
-				476,
-				463
+				315,
+				302
 			]
 		},
 		{
 			"title": "Type Aliases",
 			"children": [
-				489
+				328
 			]
 		},
 		{
 			"title": "Variables",
 			"children": [
-				462,
-				460,
-				461,
-				459
+				301,
+				299,
+				300,
+				298
 			]
 		},
 		{
 			"title": "Functions",
 			"children": [
-				492,
-				494,
-				496,
-				490
+				331,
+				333,
+				335,
+				329
 			]
 		}
 	],
 	"packageName": "@swissjs/plugin-web-storage",
 	"packageVersion": "1.2.8",
 	"symbolIdMap": {
-		"458": {
+		"297": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/index.ts",
 			"qualifiedName": ""
 		},
-		"459": {
+		"298": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/plugin.ts",
 			"qualifiedName": "WebStoragePlugin"
 		},
-		"460": {
+		"299": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/public/services.ts",
 			"qualifiedName": "STORAGE_LOCAL"
 		},
-		"461": {
+		"300": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/public/services.ts",
 			"qualifiedName": "STORAGE_SESSION"
 		},
-		"462": {
+		"301": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/public/services.ts",
 			"qualifiedName": "STORAGE_INDEXED"
 		},
-		"463": {
+		"302": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "KeyValueStorageSync"
 		},
-		"464": {
+		"303": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "KeyValueStorageSync.get"
 		},
-		"465": {
+		"304": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "KeyValueStorageSync.get"
 		},
-		"466": {
+		"305": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "key"
 		},
-		"467": {
+		"306": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "KeyValueStorageSync.set"
 		},
-		"468": {
+		"307": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "KeyValueStorageSync.set"
 		},
-		"469": {
+		"308": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "key"
 		},
-		"470": {
+		"309": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "value"
 		},
-		"471": {
+		"310": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "KeyValueStorageSync.remove"
 		},
-		"472": {
+		"311": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "KeyValueStorageSync.remove"
 		},
-		"473": {
+		"312": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "key"
 		},
-		"474": {
+		"313": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "KeyValueStorageSync.clear"
 		},
-		"475": {
+		"314": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "KeyValueStorageSync.clear"
 		},
-		"476": {
+		"315": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "KeyValueStorageAsync"
 		},
-		"477": {
+		"316": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "KeyValueStorageAsync.get"
 		},
-		"478": {
+		"317": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "KeyValueStorageAsync.get"
 		},
-		"479": {
+		"318": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "key"
 		},
-		"480": {
+		"319": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "KeyValueStorageAsync.set"
 		},
-		"481": {
+		"320": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "KeyValueStorageAsync.set"
 		},
-		"482": {
+		"321": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "key"
 		},
-		"483": {
+		"322": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "value"
 		},
-		"484": {
+		"323": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "KeyValueStorageAsync.remove"
 		},
-		"485": {
+		"324": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "KeyValueStorageAsync.remove"
 		},
-		"486": {
+		"325": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "key"
 		},
-		"487": {
+		"326": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "KeyValueStorageAsync.clear"
 		},
-		"488": {
+		"327": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "KeyValueStorageAsync.clear"
 		},
-		"489": {
+		"328": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/public/types.ts",
 			"qualifiedName": "StorageNamespace"
 		},
-		"490": {
+		"329": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/runtime/env.ts",
 			"qualifiedName": "isBrowser"
 		},
-		"491": {
+		"330": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/runtime/env.ts",
 			"qualifiedName": "isBrowser"
 		},
-		"492": {
+		"331": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/runtime/indexed.ts",
 			"qualifiedName": "createIndexedStorage"
 		},
-		"493": {
+		"332": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/runtime/indexed.ts",
 			"qualifiedName": "createIndexedStorage"
 		},
-		"494": {
+		"333": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/runtime/local.ts",
 			"qualifiedName": "createLocalStorage"
 		},
-		"495": {
+		"334": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/runtime/local.ts",
 			"qualifiedName": "createLocalStorage"
 		},
-		"496": {
+		"335": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/runtime/session.ts",
 			"qualifiedName": "createSessionStorage"
 		},
-		"497": {
+		"336": {
 			"packageName": "@swissjs/plugin-web-storage",
 			"packagePath": "src/runtime/session.ts",
 			"qualifiedName": "createSessionStorage"
@@ -1017,7 +1017,7 @@
 			"1": "plugins/web-storage/src/index.ts"
 		},
 		"reflections": {
-			"1": 458
+			"1": 297
 		}
 	}
 }

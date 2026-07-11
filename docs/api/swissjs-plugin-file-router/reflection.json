@@ -1,34 +1,34 @@
 {
 	"schemaVersion": "2.0",
-	"id": 272,
+	"id": 104,
 	"name": "@swissjs/plugin-file-router",
 	"variant": "project",
 	"kind": 1,
 	"flags": {},
 	"children": [
 		{
-			"id": 354,
+			"id": 186,
 			"name": "PathTransformer",
 			"variant": "declaration",
 			"kind": 128,
 			"flags": {},
 			"children": [
 				{
-					"id": 355,
+					"id": 187,
 					"name": "constructor",
 					"variant": "declaration",
 					"kind": 512,
 					"flags": {},
 					"signatures": [
 						{
-							"id": 356,
+							"id": 188,
 							"name": "PathTransformer",
 							"variant": "signature",
 							"kind": 16384,
 							"flags": {},
 							"type": {
 								"type": "reference",
-								"target": 354,
+								"target": 186,
 								"name": "PathTransformer",
 								"package": "@swissjs/plugin-file-router"
 							}
@@ -36,7 +36,7 @@
 					]
 				},
 				{
-					"id": 367,
+					"id": 199,
 					"name": "extractParamNames",
 					"variant": "declaration",
 					"kind": 2048,
@@ -46,12 +46,12 @@
 							"fileName": "plugins/file-router/src/core/transformer.ts",
 							"line": 93,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/transformer.ts#L93"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/transformer.ts#L93"
 						}
 					],
 					"signatures": [
 						{
-							"id": 368,
+							"id": 200,
 							"name": "extractParamNames",
 							"variant": "signature",
 							"kind": 4096,
@@ -69,12 +69,12 @@
 									"fileName": "plugins/file-router/src/core/transformer.ts",
 									"line": 93,
 									"character": 2,
-									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/transformer.ts#L93"
+									"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/transformer.ts#L93"
 								}
 							],
 							"parameters": [
 								{
-									"id": 369,
+									"id": 201,
 									"name": "route",
 									"variant": "param",
 									"kind": 32768,
@@ -96,7 +96,7 @@
 					]
 				},
 				{
-					"id": 357,
+					"id": 189,
 					"name": "filePathToRoute",
 					"variant": "declaration",
 					"kind": 2048,
@@ -106,12 +106,12 @@
 							"fileName": "plugins/file-router/src/core/transformer.ts",
 							"line": 17,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/transformer.ts#L17"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/transformer.ts#L17"
 						}
 					],
 					"signatures": [
 						{
-							"id": 358,
+							"id": 190,
 							"name": "filePathToRoute",
 							"variant": "signature",
 							"kind": 4096,
@@ -129,12 +129,12 @@
 									"fileName": "plugins/file-router/src/core/transformer.ts",
 									"line": 17,
 									"character": 2,
-									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/transformer.ts#L17"
+									"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/transformer.ts#L17"
 								}
 							],
 							"parameters": [
 								{
-									"id": 359,
+									"id": 191,
 									"name": "filePath",
 									"variant": "param",
 									"kind": 32768,
@@ -145,7 +145,7 @@
 									}
 								},
 								{
-									"id": 360,
+									"id": 192,
 									"name": "routePrefix",
 									"variant": "param",
 									"kind": 32768,
@@ -157,7 +157,7 @@
 									"defaultValue": "''"
 								},
 								{
-									"id": 361,
+									"id": 193,
 									"name": "baseDir",
 									"variant": "param",
 									"kind": 32768,
@@ -177,7 +177,7 @@
 					]
 				},
 				{
-					"id": 370,
+					"id": 202,
 					"name": "matchRoute",
 					"variant": "declaration",
 					"kind": 2048,
@@ -187,12 +187,12 @@
 							"fileName": "plugins/file-router/src/core/transformer.ts",
 							"line": 101,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/transformer.ts#L101"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/transformer.ts#L101"
 						}
 					],
 					"signatures": [
 						{
-							"id": 371,
+							"id": 203,
 							"name": "matchRoute",
 							"variant": "signature",
 							"kind": 4096,
@@ -210,12 +210,12 @@
 									"fileName": "plugins/file-router/src/core/transformer.ts",
 									"line": 101,
 									"character": 2,
-									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/transformer.ts#L101"
+									"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/transformer.ts#L101"
 								}
 							],
 							"parameters": [
 								{
-									"id": 372,
+									"id": 204,
 									"name": "pattern",
 									"variant": "param",
 									"kind": 32768,
@@ -226,7 +226,7 @@
 									}
 								},
 								{
-									"id": 373,
+									"id": 205,
 									"name": "path",
 									"variant": "param",
 									"kind": 32768,
@@ -240,14 +240,14 @@
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 374,
+									"id": 206,
 									"name": "__type",
 									"variant": "declaration",
 									"kind": 65536,
 									"flags": {},
 									"children": [
 										{
-											"id": 375,
+											"id": 207,
 											"name": "match",
 											"variant": "declaration",
 											"kind": 1024,
@@ -257,7 +257,7 @@
 													"fileName": "plugins/file-router/src/core/transformer.ts",
 													"line": 101,
 													"character": 47,
-													"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/transformer.ts#L101"
+													"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/transformer.ts#L101"
 												}
 											],
 											"type": {
@@ -266,7 +266,7 @@
 											}
 										},
 										{
-											"id": 376,
+											"id": 208,
 											"name": "params",
 											"variant": "declaration",
 											"kind": 1024,
@@ -276,7 +276,7 @@
 													"fileName": "plugins/file-router/src/core/transformer.ts",
 													"line": 101,
 													"character": 63,
-													"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/transformer.ts#L101"
+													"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/transformer.ts#L101"
 												}
 											],
 											"type": {
@@ -305,8 +305,8 @@
 										{
 											"title": "Properties",
 											"children": [
-												375,
-												376
+												207,
+												208
 											]
 										}
 									],
@@ -315,7 +315,7 @@
 											"fileName": "plugins/file-router/src/core/transformer.ts",
 											"line": 101,
 											"character": 45,
-											"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/transformer.ts#L101"
+											"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/transformer.ts#L101"
 										}
 									]
 								}
@@ -324,7 +324,7 @@
 					]
 				},
 				{
-					"id": 362,
+					"id": 194,
 					"name": "routeToFilePaths",
 					"variant": "declaration",
 					"kind": 2048,
@@ -334,12 +334,12 @@
 							"fileName": "plugins/file-router/src/core/transformer.ts",
 							"line": 73,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/transformer.ts#L73"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/transformer.ts#L73"
 						}
 					],
 					"signatures": [
 						{
-							"id": 363,
+							"id": 195,
 							"name": "routeToFilePaths",
 							"variant": "signature",
 							"kind": 4096,
@@ -357,12 +357,12 @@
 									"fileName": "plugins/file-router/src/core/transformer.ts",
 									"line": 73,
 									"character": 2,
-									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/transformer.ts#L73"
+									"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/transformer.ts#L73"
 								}
 							],
 							"parameters": [
 								{
-									"id": 364,
+									"id": 196,
 									"name": "route",
 									"variant": "param",
 									"kind": 32768,
@@ -373,7 +373,7 @@
 									}
 								},
 								{
-									"id": 365,
+									"id": 197,
 									"name": "routesDir",
 									"variant": "param",
 									"kind": 32768,
@@ -384,7 +384,7 @@
 									}
 								},
 								{
-									"id": 366,
+									"id": 198,
 									"name": "extensions",
 									"variant": "param",
 									"kind": 32768,
@@ -413,16 +413,16 @@
 				{
 					"title": "Constructors",
 					"children": [
-						355
+						187
 					]
 				},
 				{
 					"title": "Methods",
 					"children": [
-						367,
-						357,
-						370,
-						362
+						199,
+						189,
+						202,
+						194
 					]
 				}
 			],
@@ -431,33 +431,33 @@
 					"fileName": "plugins/file-router/src/core/transformer.ts",
 					"line": 7,
 					"character": 13,
-					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/transformer.ts#L7"
+					"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/transformer.ts#L7"
 				}
 			]
 		},
 		{
-			"id": 317,
+			"id": 149,
 			"name": "RouteMatcher",
 			"variant": "declaration",
 			"kind": 128,
 			"flags": {},
 			"children": [
 				{
-					"id": 318,
+					"id": 150,
 					"name": "constructor",
 					"variant": "declaration",
 					"kind": 512,
 					"flags": {},
 					"signatures": [
 						{
-							"id": 319,
+							"id": 151,
 							"name": "RouteMatcher",
 							"variant": "signature",
 							"kind": 16384,
 							"flags": {},
 							"type": {
 								"type": "reference",
-								"target": 317,
+								"target": 149,
 								"name": "RouteMatcher",
 								"package": "@swissjs/plugin-file-router"
 							}
@@ -465,7 +465,7 @@
 					]
 				},
 				{
-					"id": 328,
+					"id": 160,
 					"name": "findBestMatch",
 					"variant": "declaration",
 					"kind": 2048,
@@ -475,12 +475,12 @@
 							"fileName": "plugins/file-router/src/core/matcher.ts",
 							"line": 22,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L22"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/matcher.ts#L22"
 						}
 					],
 					"signatures": [
 						{
-							"id": 329,
+							"id": 161,
 							"name": "findBestMatch",
 							"variant": "signature",
 							"kind": 4096,
@@ -498,12 +498,12 @@
 									"fileName": "plugins/file-router/src/core/matcher.ts",
 									"line": 22,
 									"character": 2,
-									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L22"
+									"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/matcher.ts#L22"
 								}
 							],
 							"parameters": [
 								{
-									"id": 330,
+									"id": 162,
 									"name": "routes",
 									"variant": "param",
 									"kind": 32768,
@@ -513,14 +513,14 @@
 										"elementType": {
 											"type": "reflection",
 											"declaration": {
-												"id": 331,
+												"id": 163,
 												"name": "__type",
 												"variant": "declaration",
 												"kind": 65536,
 												"flags": {},
 												"children": [
 													{
-														"id": 332,
+														"id": 164,
 														"name": "path",
 														"variant": "declaration",
 														"kind": 1024,
@@ -530,7 +530,7 @@
 																"fileName": "plugins/file-router/src/core/matcher.ts",
 																"line": 23,
 																"character": 20,
-																"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L23"
+																"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/matcher.ts#L23"
 															}
 														],
 														"type": {
@@ -543,7 +543,7 @@
 													{
 														"title": "Properties",
 														"children": [
-															332
+															164
 														]
 													}
 												],
@@ -552,12 +552,12 @@
 														"fileName": "plugins/file-router/src/core/matcher.ts",
 														"line": 23,
 														"character": 18,
-														"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L23"
+														"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/matcher.ts#L23"
 													}
 												],
 												"indexSignatures": [
 													{
-														"id": 333,
+														"id": 165,
 														"name": "__index",
 														"variant": "signature",
 														"kind": 8192,
@@ -567,12 +567,12 @@
 																"fileName": "plugins/file-router/src/core/matcher.ts",
 																"line": 23,
 																"character": 34,
-																"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L23"
+																"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/matcher.ts#L23"
 															}
 														],
 														"parameters": [
 															{
-																"id": 334,
+																"id": 166,
 																"name": "key",
 																"variant": "param",
 																"kind": 32768,
@@ -594,7 +594,7 @@
 									}
 								},
 								{
-									"id": 335,
+									"id": 167,
 									"name": "path",
 									"variant": "param",
 									"kind": 32768,
@@ -608,14 +608,14 @@
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 336,
+									"id": 168,
 									"name": "__type",
 									"variant": "declaration",
 									"kind": 65536,
 									"flags": {},
 									"children": [
 										{
-											"id": 342,
+											"id": 174,
 											"name": "params",
 											"variant": "declaration",
 											"kind": 1024,
@@ -625,7 +625,7 @@
 													"fileName": "plugins/file-router/src/core/matcher.ts",
 													"line": 25,
 													"character": 56,
-													"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L25"
+													"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/matcher.ts#L25"
 												}
 											],
 											"type": {
@@ -650,7 +650,7 @@
 											}
 										},
 										{
-											"id": 337,
+											"id": 169,
 											"name": "route",
 											"variant": "declaration",
 											"kind": 1024,
@@ -660,20 +660,20 @@
 													"fileName": "plugins/file-router/src/core/matcher.ts",
 													"line": 25,
 													"character": 7,
-													"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L25"
+													"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/matcher.ts#L25"
 												}
 											],
 											"type": {
 												"type": "reflection",
 												"declaration": {
-													"id": 338,
+													"id": 170,
 													"name": "__type",
 													"variant": "declaration",
 													"kind": 65536,
 													"flags": {},
 													"children": [
 														{
-															"id": 339,
+															"id": 171,
 															"name": "path",
 															"variant": "declaration",
 															"kind": 1024,
@@ -683,7 +683,7 @@
 																	"fileName": "plugins/file-router/src/core/matcher.ts",
 																	"line": 25,
 																	"character": 16,
-																	"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L25"
+																	"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/matcher.ts#L25"
 																}
 															],
 															"type": {
@@ -696,7 +696,7 @@
 														{
 															"title": "Properties",
 															"children": [
-																339
+																171
 															]
 														}
 													],
@@ -705,12 +705,12 @@
 															"fileName": "plugins/file-router/src/core/matcher.ts",
 															"line": 25,
 															"character": 14,
-															"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L25"
+															"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/matcher.ts#L25"
 														}
 													],
 													"indexSignatures": [
 														{
-															"id": 340,
+															"id": 172,
 															"name": "__index",
 															"variant": "signature",
 															"kind": 8192,
@@ -720,12 +720,12 @@
 																	"fileName": "plugins/file-router/src/core/matcher.ts",
 																	"line": 25,
 																	"character": 30,
-																	"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L25"
+																	"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/matcher.ts#L25"
 																}
 															],
 															"parameters": [
 																{
-																	"id": 341,
+																	"id": 173,
 																	"name": "key",
 																	"variant": "param",
 																	"kind": 32768,
@@ -750,8 +750,8 @@
 										{
 											"title": "Properties",
 											"children": [
-												342,
-												337
+												174,
+												169
 											]
 										}
 									],
@@ -760,7 +760,7 @@
 											"fileName": "plugins/file-router/src/core/matcher.ts",
 											"line": 25,
 											"character": 5,
-											"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L25"
+											"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/matcher.ts#L25"
 										}
 									]
 								}
@@ -769,7 +769,7 @@
 					]
 				},
 				{
-					"id": 321,
+					"id": 153,
 					"name": "matchRoute",
 					"variant": "declaration",
 					"kind": 2048,
@@ -779,12 +779,12 @@
 							"fileName": "plugins/file-router/src/core/matcher.ts",
 							"line": 15,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L15"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/matcher.ts#L15"
 						}
 					],
 					"signatures": [
 						{
-							"id": 322,
+							"id": 154,
 							"name": "matchRoute",
 							"variant": "signature",
 							"kind": 4096,
@@ -802,12 +802,12 @@
 									"fileName": "plugins/file-router/src/core/matcher.ts",
 									"line": 15,
 									"character": 2,
-									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L15"
+									"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/matcher.ts#L15"
 								}
 							],
 							"parameters": [
 								{
-									"id": 323,
+									"id": 155,
 									"name": "pattern",
 									"variant": "param",
 									"kind": 32768,
@@ -818,7 +818,7 @@
 									}
 								},
 								{
-									"id": 324,
+									"id": 156,
 									"name": "path",
 									"variant": "param",
 									"kind": 32768,
@@ -832,14 +832,14 @@
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 325,
+									"id": 157,
 									"name": "__type",
 									"variant": "declaration",
 									"kind": 65536,
 									"flags": {},
 									"children": [
 										{
-											"id": 326,
+											"id": 158,
 											"name": "match",
 											"variant": "declaration",
 											"kind": 1024,
@@ -849,7 +849,7 @@
 													"fileName": "plugins/file-router/src/core/matcher.ts",
 													"line": 15,
 													"character": 47,
-													"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L15"
+													"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/matcher.ts#L15"
 												}
 											],
 											"type": {
@@ -858,7 +858,7 @@
 											}
 										},
 										{
-											"id": 327,
+											"id": 159,
 											"name": "params",
 											"variant": "declaration",
 											"kind": 1024,
@@ -868,7 +868,7 @@
 													"fileName": "plugins/file-router/src/core/matcher.ts",
 													"line": 15,
 													"character": 63,
-													"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L15"
+													"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/matcher.ts#L15"
 												}
 											],
 											"type": {
@@ -897,8 +897,8 @@
 										{
 											"title": "Properties",
 											"children": [
-												326,
-												327
+												158,
+												159
 											]
 										}
 									],
@@ -907,7 +907,7 @@
 											"fileName": "plugins/file-router/src/core/matcher.ts",
 											"line": 15,
 											"character": 45,
-											"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L15"
+											"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/matcher.ts#L15"
 										}
 									]
 								}
@@ -916,7 +916,7 @@
 					]
 				},
 				{
-					"id": 343,
+					"id": 175,
 					"name": "sortRoutesBySpecificity",
 					"variant": "declaration",
 					"kind": 2048,
@@ -926,12 +926,12 @@
 							"fileName": "plugins/file-router/src/core/matcher.ts",
 							"line": 39,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L39"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/matcher.ts#L39"
 						}
 					],
 					"signatures": [
 						{
-							"id": 344,
+							"id": 176,
 							"name": "sortRoutesBySpecificity",
 							"variant": "signature",
 							"kind": 4096,
@@ -949,12 +949,12 @@
 									"fileName": "plugins/file-router/src/core/matcher.ts",
 									"line": 39,
 									"character": 2,
-									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L39"
+									"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/matcher.ts#L39"
 								}
 							],
 							"parameters": [
 								{
-									"id": 345,
+									"id": 177,
 									"name": "routes",
 									"variant": "param",
 									"kind": 32768,
@@ -964,14 +964,14 @@
 										"elementType": {
 											"type": "reflection",
 											"declaration": {
-												"id": 346,
+												"id": 178,
 												"name": "__type",
 												"variant": "declaration",
 												"kind": 65536,
 												"flags": {},
 												"children": [
 													{
-														"id": 347,
+														"id": 179,
 														"name": "path",
 														"variant": "declaration",
 														"kind": 1024,
@@ -981,7 +981,7 @@
 																"fileName": "plugins/file-router/src/core/matcher.ts",
 																"line": 40,
 																"character": 20,
-																"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L40"
+																"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/matcher.ts#L40"
 															}
 														],
 														"type": {
@@ -994,7 +994,7 @@
 													{
 														"title": "Properties",
 														"children": [
-															347
+															179
 														]
 													}
 												],
@@ -1003,12 +1003,12 @@
 														"fileName": "plugins/file-router/src/core/matcher.ts",
 														"line": 40,
 														"character": 18,
-														"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L40"
+														"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/matcher.ts#L40"
 													}
 												],
 												"indexSignatures": [
 													{
-														"id": 348,
+														"id": 180,
 														"name": "__index",
 														"variant": "signature",
 														"kind": 8192,
@@ -1018,12 +1018,12 @@
 																"fileName": "plugins/file-router/src/core/matcher.ts",
 																"line": 40,
 																"character": 34,
-																"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L40"
+																"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/matcher.ts#L40"
 															}
 														],
 														"parameters": [
 															{
-																"id": 349,
+																"id": 181,
 																"name": "key",
 																"variant": "param",
 																"kind": 32768,
@@ -1050,14 +1050,14 @@
 								"elementType": {
 									"type": "reflection",
 									"declaration": {
-										"id": 350,
+										"id": 182,
 										"name": "__type",
 										"variant": "declaration",
 										"kind": 65536,
 										"flags": {},
 										"children": [
 											{
-												"id": 351,
+												"id": 183,
 												"name": "path",
 												"variant": "declaration",
 												"kind": 1024,
@@ -1067,7 +1067,7 @@
 														"fileName": "plugins/file-router/src/core/matcher.ts",
 														"line": 41,
 														"character": 13,
-														"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L41"
+														"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/matcher.ts#L41"
 													}
 												],
 												"type": {
@@ -1080,7 +1080,7 @@
 											{
 												"title": "Properties",
 												"children": [
-													351
+													183
 												]
 											}
 										],
@@ -1089,12 +1089,12 @@
 												"fileName": "plugins/file-router/src/core/matcher.ts",
 												"line": 41,
 												"character": 11,
-												"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L41"
+												"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/matcher.ts#L41"
 											}
 										],
 										"indexSignatures": [
 											{
-												"id": 352,
+												"id": 184,
 												"name": "__index",
 												"variant": "signature",
 												"kind": 8192,
@@ -1104,12 +1104,12 @@
 														"fileName": "plugins/file-router/src/core/matcher.ts",
 														"line": 41,
 														"character": 27,
-														"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L41"
+														"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/matcher.ts#L41"
 													}
 												],
 												"parameters": [
 													{
-														"id": 353,
+														"id": 185,
 														"name": "key",
 														"variant": "param",
 														"kind": 32768,
@@ -1137,15 +1137,15 @@
 				{
 					"title": "Constructors",
 					"children": [
-						318
+						150
 					]
 				},
 				{
 					"title": "Methods",
 					"children": [
-						328,
-						321,
-						343
+						160,
+						153,
+						175
 					]
 				}
 			],
@@ -1154,19 +1154,19 @@
 					"fileName": "plugins/file-router/src/core/matcher.ts",
 					"line": 9,
 					"character": 13,
-					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/matcher.ts#L9"
+					"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/matcher.ts#L9"
 				}
 			]
 		},
 		{
-			"id": 292,
+			"id": 124,
 			"name": "RouteScanner",
 			"variant": "declaration",
 			"kind": 128,
 			"flags": {},
 			"children": [
 				{
-					"id": 293,
+					"id": 125,
 					"name": "constructor",
 					"variant": "declaration",
 					"kind": 512,
@@ -1176,12 +1176,12 @@
 							"fileName": "plugins/file-router/src/core/scanner.ts",
 							"line": 17,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/scanner.ts#L17"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/scanner.ts#L17"
 						}
 					],
 					"signatures": [
 						{
-							"id": 294,
+							"id": 126,
 							"name": "RouteScanner",
 							"variant": "signature",
 							"kind": 16384,
@@ -1191,19 +1191,19 @@
 									"fileName": "plugins/file-router/src/core/scanner.ts",
 									"line": 17,
 									"character": 2,
-									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/scanner.ts#L17"
+									"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/scanner.ts#L17"
 								}
 							],
 							"parameters": [
 								{
-									"id": 295,
+									"id": 127,
 									"name": "config",
 									"variant": "param",
 									"kind": 32768,
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 408,
+										"target": 240,
 										"name": "FileRouterOptions",
 										"package": "@swissjs/plugin-file-router"
 									}
@@ -1211,7 +1211,7 @@
 							],
 							"type": {
 								"type": "reference",
-								"target": 292,
+								"target": 124,
 								"name": "RouteScanner",
 								"package": "@swissjs/plugin-file-router"
 							}
@@ -1219,7 +1219,7 @@
 					]
 				},
 				{
-					"id": 299,
+					"id": 131,
 					"name": "scanRoutes",
 					"variant": "declaration",
 					"kind": 2048,
@@ -1229,12 +1229,12 @@
 							"fileName": "plugins/file-router/src/core/scanner.ts",
 							"line": 19,
 							"character": 8,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/scanner.ts#L19"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/scanner.ts#L19"
 						}
 					],
 					"signatures": [
 						{
-							"id": 300,
+							"id": 132,
 							"name": "scanRoutes",
 							"variant": "signature",
 							"kind": 4096,
@@ -1244,12 +1244,12 @@
 									"fileName": "plugins/file-router/src/core/scanner.ts",
 									"line": 19,
 									"character": 8,
-									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/scanner.ts#L19"
+									"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/scanner.ts#L19"
 								}
 							],
 							"parameters": [
 								{
-									"id": 301,
+									"id": 133,
 									"name": "directory",
 									"variant": "param",
 									"kind": 32768,
@@ -1272,7 +1272,7 @@
 										"type": "array",
 										"elementType": {
 											"type": "reference",
-											"target": 442,
+											"target": 274,
 											"name": "RouteDefinition",
 											"package": "@swissjs/core"
 										}
@@ -1289,13 +1289,13 @@
 				{
 					"title": "Constructors",
 					"children": [
-						293
+						125
 					]
 				},
 				{
 					"title": "Methods",
 					"children": [
-						299
+						131
 					]
 				}
 			],
@@ -1304,19 +1304,19 @@
 					"fileName": "plugins/file-router/src/core/scanner.ts",
 					"line": 13,
 					"character": 13,
-					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/scanner.ts#L13"
+					"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/scanner.ts#L13"
 				}
 			]
 		},
 		{
-			"id": 448,
+			"id": 280,
 			"name": "ComponentConstructor",
 			"variant": "declaration",
 			"kind": 256,
 			"flags": {},
 			"children": [
 				{
-					"id": 449,
+					"id": 281,
 					"name": "constructor",
 					"variant": "declaration",
 					"kind": 512,
@@ -1330,7 +1330,7 @@
 					],
 					"signatures": [
 						{
-							"id": 450,
+							"id": 282,
 							"name": "ComponentConstructor",
 							"variant": "signature",
 							"kind": 16384,
@@ -1344,7 +1344,7 @@
 							],
 							"parameters": [
 								{
-									"id": 451,
+									"id": 283,
 									"name": "args",
 									"variant": "param",
 									"kind": 32768,
@@ -1372,7 +1372,7 @@
 				{
 					"title": "Constructors",
 					"children": [
-						449
+						281
 					]
 				}
 			],
@@ -1385,14 +1385,14 @@
 			]
 		},
 		{
-			"id": 283,
+			"id": 115,
 			"name": "DevServer",
 			"variant": "declaration",
 			"kind": 256,
 			"flags": {},
 			"children": [
 				{
-					"id": 288,
+					"id": 120,
 					"name": "port",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1402,7 +1402,7 @@
 							"fileName": "plugins/file-router/src/types/dev.ts",
 							"line": 41,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L41"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/dev.ts#L41"
 						}
 					],
 					"type": {
@@ -1411,7 +1411,7 @@
 					}
 				},
 				{
-					"id": 284,
+					"id": 116,
 					"name": "start",
 					"variant": "declaration",
 					"kind": 2048,
@@ -1421,12 +1421,12 @@
 							"fileName": "plugins/file-router/src/types/dev.ts",
 							"line": 39,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L39"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/dev.ts#L39"
 						}
 					],
 					"signatures": [
 						{
-							"id": 285,
+							"id": 117,
 							"name": "start",
 							"variant": "signature",
 							"kind": 4096,
@@ -1436,7 +1436,7 @@
 									"fileName": "plugins/file-router/src/types/dev.ts",
 									"line": 39,
 									"character": 2,
-									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L39"
+									"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/dev.ts#L39"
 								}
 							],
 							"type": {
@@ -1459,7 +1459,7 @@
 					]
 				},
 				{
-					"id": 286,
+					"id": 118,
 					"name": "stop",
 					"variant": "declaration",
 					"kind": 2048,
@@ -1469,12 +1469,12 @@
 							"fileName": "plugins/file-router/src/types/dev.ts",
 							"line": 40,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L40"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/dev.ts#L40"
 						}
 					],
 					"signatures": [
 						{
-							"id": 287,
+							"id": 119,
 							"name": "stop",
 							"variant": "signature",
 							"kind": 4096,
@@ -1484,7 +1484,7 @@
 									"fileName": "plugins/file-router/src/types/dev.ts",
 									"line": 40,
 									"character": 2,
-									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L40"
+									"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/dev.ts#L40"
 								}
 							],
 							"type": {
@@ -1511,14 +1511,14 @@
 				{
 					"title": "Properties",
 					"children": [
-						288
+						120
 					]
 				},
 				{
 					"title": "Methods",
 					"children": [
-						284,
-						286
+						116,
+						118
 					]
 				}
 			],
@@ -1527,19 +1527,19 @@
 					"fileName": "plugins/file-router/src/types/dev.ts",
 					"line": 38,
 					"character": 17,
-					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L38"
+					"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/dev.ts#L38"
 				}
 			]
 		},
 		{
-			"id": 403,
+			"id": 235,
 			"name": "DevServerOptions",
 			"variant": "declaration",
 			"kind": 256,
 			"flags": {},
 			"children": [
 				{
-					"id": 405,
+					"id": 237,
 					"name": "hotReload",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1559,7 +1559,7 @@
 							"fileName": "plugins/file-router/src/types/dev.ts",
 							"line": 23,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L23"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/dev.ts#L23"
 						}
 					],
 					"type": {
@@ -1568,7 +1568,7 @@
 					}
 				},
 				{
-					"id": 406,
+					"id": 238,
 					"name": "middleware",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1588,7 +1588,7 @@
 							"fileName": "plugins/file-router/src/types/dev.ts",
 							"line": 26,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L26"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/dev.ts#L26"
 						}
 					],
 					"type": {
@@ -1600,7 +1600,7 @@
 					}
 				},
 				{
-					"id": 404,
+					"id": 236,
 					"name": "port",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1620,7 +1620,7 @@
 							"fileName": "plugins/file-router/src/types/dev.ts",
 							"line": 20,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L20"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/dev.ts#L20"
 						}
 					],
 					"type": {
@@ -1629,7 +1629,7 @@
 					}
 				},
 				{
-					"id": 407,
+					"id": 239,
 					"name": "routes",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1649,7 +1649,7 @@
 							"fileName": "plugins/file-router/src/types/dev.ts",
 							"line": 29,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L29"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/dev.ts#L29"
 						}
 					],
 					"type": {
@@ -1678,10 +1678,10 @@
 				{
 					"title": "Properties",
 					"children": [
-						405,
-						406,
-						404,
-						407
+						237,
+						238,
+						236,
+						239
 					]
 				}
 			],
@@ -1690,19 +1690,19 @@
 					"fileName": "plugins/file-router/src/types/dev.ts",
 					"line": 18,
 					"character": 17,
-					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L18"
+					"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/dev.ts#L18"
 				}
 			]
 		},
 		{
-			"id": 408,
+			"id": 240,
 			"name": "FileRouterOptions",
 			"variant": "declaration",
 			"kind": 256,
 			"flags": {},
 			"children": [
 				{
-					"id": 418,
+					"id": 250,
 					"name": "dev",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1722,20 +1722,20 @@
 							"fileName": "plugins/file-router/src/types/config.ts",
 							"line": 27,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/config.ts#L27"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/config.ts#L27"
 						}
 					],
 					"type": {
 						"type": "reflection",
 						"declaration": {
-							"id": 419,
+							"id": 251,
 							"name": "__type",
 							"variant": "declaration",
 							"kind": 65536,
 							"flags": {},
 							"children": [
 								{
-									"id": 420,
+									"id": 252,
 									"name": "hotReload",
 									"variant": "declaration",
 									"kind": 1024,
@@ -1747,7 +1747,7 @@
 											"fileName": "plugins/file-router/src/types/config.ts",
 											"line": 28,
 											"character": 4,
-											"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/config.ts#L28"
+											"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/config.ts#L28"
 										}
 									],
 									"type": {
@@ -1756,7 +1756,7 @@
 									}
 								},
 								{
-									"id": 421,
+									"id": 253,
 									"name": "port",
 									"variant": "declaration",
 									"kind": 1024,
@@ -1768,7 +1768,7 @@
 											"fileName": "plugins/file-router/src/types/config.ts",
 											"line": 29,
 											"character": 4,
-											"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/config.ts#L29"
+											"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/config.ts#L29"
 										}
 									],
 									"type": {
@@ -1781,8 +1781,8 @@
 								{
 									"title": "Properties",
 									"children": [
-										420,
-										421
+										252,
+										253
 									]
 								}
 							],
@@ -1791,14 +1791,14 @@
 									"fileName": "plugins/file-router/src/types/config.ts",
 									"line": 27,
 									"character": 8,
-									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/config.ts#L27"
+									"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/config.ts#L27"
 								}
 							]
 						}
 					}
 				},
 				{
-					"id": 410,
+					"id": 242,
 					"name": "extensions",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1818,7 +1818,7 @@
 							"fileName": "plugins/file-router/src/types/config.ts",
 							"line": 12,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/config.ts#L12"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/config.ts#L12"
 						}
 					],
 					"type": {
@@ -1830,7 +1830,7 @@
 					}
 				},
 				{
-					"id": 411,
+					"id": 243,
 					"name": "layouts",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1850,7 +1850,7 @@
 							"fileName": "plugins/file-router/src/types/config.ts",
 							"line": 15,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/config.ts#L15"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/config.ts#L15"
 						}
 					],
 					"type": {
@@ -1859,7 +1859,7 @@
 					}
 				},
 				{
-					"id": 412,
+					"id": 244,
 					"name": "lazyLoading",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1879,7 +1879,7 @@
 							"fileName": "plugins/file-router/src/types/config.ts",
 							"line": 18,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/config.ts#L18"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/config.ts#L18"
 						}
 					],
 					"type": {
@@ -1888,7 +1888,7 @@
 					}
 				},
 				{
-					"id": 413,
+					"id": 245,
 					"name": "preloading",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1908,7 +1908,7 @@
 							"fileName": "plugins/file-router/src/types/config.ts",
 							"line": 21,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/config.ts#L21"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/config.ts#L21"
 						}
 					],
 					"type": {
@@ -1917,7 +1917,7 @@
 					}
 				},
 				{
-					"id": 409,
+					"id": 241,
 					"name": "routesDir",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1937,7 +1937,7 @@
 							"fileName": "plugins/file-router/src/types/config.ts",
 							"line": 9,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/config.ts#L9"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/config.ts#L9"
 						}
 					],
 					"type": {
@@ -1946,7 +1946,7 @@
 					}
 				},
 				{
-					"id": 414,
+					"id": 246,
 					"name": "transform",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1966,13 +1966,13 @@
 							"fileName": "plugins/file-router/src/types/config.ts",
 							"line": 24,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/config.ts#L24"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/config.ts#L24"
 						}
 					],
 					"type": {
 						"type": "reflection",
 						"declaration": {
-							"id": 415,
+							"id": 247,
 							"name": "__type",
 							"variant": "declaration",
 							"kind": 65536,
@@ -1982,12 +1982,12 @@
 									"fileName": "plugins/file-router/src/types/config.ts",
 									"line": 24,
 									"character": 14,
-									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/config.ts#L24"
+									"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/config.ts#L24"
 								}
 							],
 							"signatures": [
 								{
-									"id": 416,
+									"id": 248,
 									"name": "__type",
 									"variant": "signature",
 									"kind": 4096,
@@ -1997,12 +1997,12 @@
 											"fileName": "plugins/file-router/src/types/config.ts",
 											"line": 24,
 											"character": 14,
-											"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/config.ts#L24"
+											"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/config.ts#L24"
 										}
 									],
 									"parameters": [
 										{
-											"id": 417,
+											"id": 249,
 											"name": "path",
 											"variant": "param",
 											"kind": 32768,
@@ -2027,13 +2027,13 @@
 				{
 					"title": "Properties",
 					"children": [
-						418,
-						410,
-						411,
-						412,
-						413,
-						409,
-						414
+						250,
+						242,
+						243,
+						244,
+						245,
+						241,
+						246
 					]
 				}
 			],
@@ -2042,19 +2042,19 @@
 					"fileName": "plugins/file-router/src/types/config.ts",
 					"line": 7,
 					"character": 17,
-					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/config.ts#L7"
+					"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/config.ts#L7"
 				}
 			]
 		},
 		{
-			"id": 273,
+			"id": 105,
 			"name": "FileWatcher",
 			"variant": "declaration",
 			"kind": 256,
 			"flags": {},
 			"children": [
 				{
-					"id": 281,
+					"id": 113,
 					"name": "close",
 					"variant": "declaration",
 					"kind": 2048,
@@ -2064,12 +2064,12 @@
 							"fileName": "plugins/file-router/src/types/dev.ts",
 							"line": 35,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L35"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/dev.ts#L35"
 						}
 					],
 					"signatures": [
 						{
-							"id": 282,
+							"id": 114,
 							"name": "close",
 							"variant": "signature",
 							"kind": 4096,
@@ -2079,7 +2079,7 @@
 									"fileName": "plugins/file-router/src/types/dev.ts",
 									"line": 35,
 									"character": 2,
-									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L35"
+									"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/dev.ts#L35"
 								}
 							],
 							"type": {
@@ -2102,7 +2102,7 @@
 					]
 				},
 				{
-					"id": 274,
+					"id": 106,
 					"name": "on",
 					"variant": "declaration",
 					"kind": 2048,
@@ -2112,12 +2112,12 @@
 							"fileName": "plugins/file-router/src/types/dev.ts",
 							"line": 34,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L34"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/dev.ts#L34"
 						}
 					],
 					"signatures": [
 						{
-							"id": 275,
+							"id": 107,
 							"name": "on",
 							"variant": "signature",
 							"kind": 4096,
@@ -2127,12 +2127,12 @@
 									"fileName": "plugins/file-router/src/types/dev.ts",
 									"line": 34,
 									"character": 2,
-									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L34"
+									"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/dev.ts#L34"
 								}
 							],
 							"parameters": [
 								{
-									"id": 276,
+									"id": 108,
 									"name": "event",
 									"variant": "param",
 									"kind": 32768,
@@ -2156,7 +2156,7 @@
 									}
 								},
 								{
-									"id": 277,
+									"id": 109,
 									"name": "handler",
 									"variant": "param",
 									"kind": 32768,
@@ -2164,7 +2164,7 @@
 									"type": {
 										"type": "reflection",
 										"declaration": {
-											"id": 278,
+											"id": 110,
 											"name": "__type",
 											"variant": "declaration",
 											"kind": 65536,
@@ -2174,12 +2174,12 @@
 													"fileName": "plugins/file-router/src/types/dev.ts",
 													"line": 34,
 													"character": 50,
-													"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L34"
+													"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/dev.ts#L34"
 												}
 											],
 											"signatures": [
 												{
-													"id": 279,
+													"id": 111,
 													"name": "__type",
 													"variant": "signature",
 													"kind": 4096,
@@ -2189,12 +2189,12 @@
 															"fileName": "plugins/file-router/src/types/dev.ts",
 															"line": 34,
 															"character": 50,
-															"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L34"
+															"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/dev.ts#L34"
 														}
 													],
 													"parameters": [
 														{
-															"id": 280,
+															"id": 112,
 															"name": "path",
 															"variant": "param",
 															"kind": 32768,
@@ -2227,8 +2227,8 @@
 				{
 					"title": "Methods",
 					"children": [
-						281,
-						274
+						113,
+						106
 					]
 				}
 			],
@@ -2237,19 +2237,19 @@
 					"fileName": "plugins/file-router/src/types/dev.ts",
 					"line": 33,
 					"character": 17,
-					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L33"
+					"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/dev.ts#L33"
 				}
 			]
 		},
 		{
-			"id": 434,
+			"id": 266,
 			"name": "LayoutConfig",
 			"variant": "declaration",
 			"kind": 256,
 			"flags": {},
 			"children": [
 				{
-					"id": 435,
+					"id": 267,
 					"name": "component",
 					"variant": "declaration",
 					"kind": 1024,
@@ -2267,7 +2267,7 @@
 							"fileName": "plugins/file-router/src/types/route.ts",
 							"line": 29,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/route.ts#L29"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/route.ts#L29"
 						}
 					],
 					"type": {
@@ -2276,7 +2276,7 @@
 					}
 				},
 				{
-					"id": 436,
+					"id": 268,
 					"name": "meta",
 					"variant": "declaration",
 					"kind": 1024,
@@ -2296,20 +2296,20 @@
 							"fileName": "plugins/file-router/src/types/route.ts",
 							"line": 32,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/route.ts#L32"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/route.ts#L32"
 						}
 					],
 					"type": {
 						"type": "reflection",
 						"declaration": {
-							"id": 437,
+							"id": 269,
 							"name": "__type",
 							"variant": "declaration",
 							"kind": 65536,
 							"flags": {},
 							"children": [
 								{
-									"id": 439,
+									"id": 271,
 									"name": "description",
 									"variant": "declaration",
 									"kind": 1024,
@@ -2321,7 +2321,7 @@
 											"fileName": "plugins/file-router/src/types/route.ts",
 											"line": 34,
 											"character": 4,
-											"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/route.ts#L34"
+											"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/route.ts#L34"
 										}
 									],
 									"type": {
@@ -2330,7 +2330,7 @@
 									}
 								},
 								{
-									"id": 438,
+									"id": 270,
 									"name": "title",
 									"variant": "declaration",
 									"kind": 1024,
@@ -2342,7 +2342,7 @@
 											"fileName": "plugins/file-router/src/types/route.ts",
 											"line": 33,
 											"character": 4,
-											"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/route.ts#L33"
+											"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/route.ts#L33"
 										}
 									],
 									"type": {
@@ -2355,8 +2355,8 @@
 								{
 									"title": "Properties",
 									"children": [
-										439,
-										438
+										271,
+										270
 									]
 								}
 							],
@@ -2365,12 +2365,12 @@
 									"fileName": "plugins/file-router/src/types/route.ts",
 									"line": 32,
 									"character": 9,
-									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/route.ts#L32"
+									"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/route.ts#L32"
 								}
 							],
 							"indexSignatures": [
 								{
-									"id": 440,
+									"id": 272,
 									"name": "__index",
 									"variant": "signature",
 									"kind": 8192,
@@ -2380,12 +2380,12 @@
 											"fileName": "plugins/file-router/src/types/route.ts",
 											"line": 35,
 											"character": 4,
-											"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/route.ts#L35"
+											"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/route.ts#L35"
 										}
 									],
 									"parameters": [
 										{
-											"id": 441,
+											"id": 273,
 											"name": "key",
 											"variant": "param",
 											"kind": 32768,
@@ -2410,8 +2410,8 @@
 				{
 					"title": "Properties",
 					"children": [
-						435,
-						436
+						267,
+						268
 					]
 				}
 			],
@@ -2420,19 +2420,19 @@
 					"fileName": "plugins/file-router/src/types/route.ts",
 					"line": 27,
 					"character": 17,
-					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/route.ts#L27"
+					"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/route.ts#L27"
 				}
 			]
 		},
 		{
-			"id": 422,
+			"id": 254,
 			"name": "RouteConfig",
 			"variant": "declaration",
 			"kind": 256,
 			"flags": {},
 			"children": [
 				{
-					"id": 424,
+					"id": 256,
 					"name": "component",
 					"variant": "declaration",
 					"kind": 1024,
@@ -2450,7 +2450,7 @@
 							"fileName": "plugins/file-router/src/types/route.ts",
 							"line": 12,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/route.ts#L12"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/route.ts#L12"
 						}
 					],
 					"type": {
@@ -2459,7 +2459,7 @@
 					}
 				},
 				{
-					"id": 425,
+					"id": 257,
 					"name": "layout",
 					"variant": "declaration",
 					"kind": 1024,
@@ -2479,7 +2479,7 @@
 							"fileName": "plugins/file-router/src/types/route.ts",
 							"line": 15,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/route.ts#L15"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/route.ts#L15"
 						}
 					],
 					"type": {
@@ -2488,7 +2488,7 @@
 					}
 				},
 				{
-					"id": 426,
+					"id": 258,
 					"name": "meta",
 					"variant": "declaration",
 					"kind": 1024,
@@ -2508,20 +2508,20 @@
 							"fileName": "plugins/file-router/src/types/route.ts",
 							"line": 18,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/route.ts#L18"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/route.ts#L18"
 						}
 					],
 					"type": {
 						"type": "reflection",
 						"declaration": {
-							"id": 427,
+							"id": 259,
 							"name": "__type",
 							"variant": "declaration",
 							"kind": 65536,
 							"flags": {},
 							"children": [
 								{
-									"id": 429,
+									"id": 261,
 									"name": "description",
 									"variant": "declaration",
 									"kind": 1024,
@@ -2533,7 +2533,7 @@
 											"fileName": "plugins/file-router/src/types/route.ts",
 											"line": 20,
 											"character": 4,
-											"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/route.ts#L20"
+											"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/route.ts#L20"
 										}
 									],
 									"type": {
@@ -2542,7 +2542,7 @@
 									}
 								},
 								{
-									"id": 430,
+									"id": 262,
 									"name": "guards",
 									"variant": "declaration",
 									"kind": 1024,
@@ -2554,7 +2554,7 @@
 											"fileName": "plugins/file-router/src/types/route.ts",
 											"line": 21,
 											"character": 4,
-											"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/route.ts#L21"
+											"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/route.ts#L21"
 										}
 									],
 									"type": {
@@ -2566,7 +2566,7 @@
 									}
 								},
 								{
-									"id": 431,
+									"id": 263,
 									"name": "middleware",
 									"variant": "declaration",
 									"kind": 1024,
@@ -2578,7 +2578,7 @@
 											"fileName": "plugins/file-router/src/types/route.ts",
 											"line": 22,
 											"character": 4,
-											"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/route.ts#L22"
+											"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/route.ts#L22"
 										}
 									],
 									"type": {
@@ -2590,7 +2590,7 @@
 									}
 								},
 								{
-									"id": 428,
+									"id": 260,
 									"name": "title",
 									"variant": "declaration",
 									"kind": 1024,
@@ -2602,7 +2602,7 @@
 											"fileName": "plugins/file-router/src/types/route.ts",
 											"line": 19,
 											"character": 4,
-											"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/route.ts#L19"
+											"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/route.ts#L19"
 										}
 									],
 									"type": {
@@ -2615,10 +2615,10 @@
 								{
 									"title": "Properties",
 									"children": [
-										429,
-										430,
-										431,
-										428
+										261,
+										262,
+										263,
+										260
 									]
 								}
 							],
@@ -2627,12 +2627,12 @@
 									"fileName": "plugins/file-router/src/types/route.ts",
 									"line": 18,
 									"character": 9,
-									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/route.ts#L18"
+									"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/route.ts#L18"
 								}
 							],
 							"indexSignatures": [
 								{
-									"id": 432,
+									"id": 264,
 									"name": "__index",
 									"variant": "signature",
 									"kind": 8192,
@@ -2642,12 +2642,12 @@
 											"fileName": "plugins/file-router/src/types/route.ts",
 											"line": 23,
 											"character": 4,
-											"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/route.ts#L23"
+											"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/route.ts#L23"
 										}
 									],
 									"parameters": [
 										{
-											"id": 433,
+											"id": 265,
 											"name": "key",
 											"variant": "param",
 											"kind": 32768,
@@ -2668,7 +2668,7 @@
 					}
 				},
 				{
-					"id": 423,
+					"id": 255,
 					"name": "path",
 					"variant": "declaration",
 					"kind": 1024,
@@ -2686,7 +2686,7 @@
 							"fileName": "plugins/file-router/src/types/route.ts",
 							"line": 9,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/route.ts#L9"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/route.ts#L9"
 						}
 					],
 					"type": {
@@ -2699,10 +2699,10 @@
 				{
 					"title": "Properties",
 					"children": [
-						424,
-						425,
-						426,
-						423
+						256,
+						257,
+						258,
+						255
 					]
 				}
 			],
@@ -2711,19 +2711,19 @@
 					"fileName": "plugins/file-router/src/types/route.ts",
 					"line": 7,
 					"character": 17,
-					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/route.ts#L7"
+					"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/route.ts#L7"
 				}
 			]
 		},
 		{
-			"id": 442,
+			"id": 274,
 			"name": "RouteDefinition",
 			"variant": "declaration",
 			"kind": 256,
 			"flags": {},
 			"children": [
 				{
-					"id": 446,
+					"id": 278,
 					"name": "children",
 					"variant": "declaration",
 					"kind": 1024,
@@ -2741,14 +2741,14 @@
 						"type": "array",
 						"elementType": {
 							"type": "reference",
-							"target": 442,
+							"target": 274,
 							"name": "RouteDefinition",
 							"package": "@swissjs/core"
 						}
 					}
 				},
 				{
-					"id": 444,
+					"id": 276,
 					"name": "component",
 					"variant": "declaration",
 					"kind": 1024,
@@ -2765,7 +2765,7 @@
 						"types": [
 							{
 								"type": "reference",
-								"target": 448,
+								"target": 280,
 								"name": "ComponentConstructor",
 								"package": "@swissjs/core"
 							},
@@ -2783,7 +2783,7 @@
 					}
 				},
 				{
-					"id": 445,
+					"id": 277,
 					"name": "layout",
 					"variant": "declaration",
 					"kind": 1024,
@@ -2802,7 +2802,7 @@
 						"types": [
 							{
 								"type": "reference",
-								"target": 448,
+								"target": 280,
 								"name": "ComponentConstructor",
 								"package": "@swissjs/core"
 							},
@@ -2820,7 +2820,7 @@
 					}
 				},
 				{
-					"id": 447,
+					"id": 279,
 					"name": "meta",
 					"variant": "declaration",
 					"kind": 1024,
@@ -2846,7 +2846,7 @@
 					}
 				},
 				{
-					"id": 443,
+					"id": 275,
 					"name": "path",
 					"variant": "declaration",
 					"kind": 1024,
@@ -2868,11 +2868,11 @@
 				{
 					"title": "Properties",
 					"children": [
-						446,
-						444,
-						445,
-						447,
-						443
+						278,
+						276,
+						277,
+						279,
+						275
 					]
 				}
 			],
@@ -2885,14 +2885,14 @@
 			]
 		},
 		{
-			"id": 399,
+			"id": 231,
 			"name": "WatcherConfig",
 			"variant": "declaration",
 			"kind": 256,
 			"flags": {},
 			"children": [
 				{
-					"id": 400,
+					"id": 232,
 					"name": "directory",
 					"variant": "declaration",
 					"kind": 1024,
@@ -2910,7 +2910,7 @@
 							"fileName": "plugins/file-router/src/types/dev.ts",
 							"line": 9,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L9"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/dev.ts#L9"
 						}
 					],
 					"type": {
@@ -2919,7 +2919,7 @@
 					}
 				},
 				{
-					"id": 401,
+					"id": 233,
 					"name": "extensions",
 					"variant": "declaration",
 					"kind": 1024,
@@ -2939,7 +2939,7 @@
 							"fileName": "plugins/file-router/src/types/dev.ts",
 							"line": 12,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L12"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/dev.ts#L12"
 						}
 					],
 					"type": {
@@ -2951,7 +2951,7 @@
 					}
 				},
 				{
-					"id": 402,
+					"id": 234,
 					"name": "ignore",
 					"variant": "declaration",
 					"kind": 1024,
@@ -2971,7 +2971,7 @@
 							"fileName": "plugins/file-router/src/types/dev.ts",
 							"line": 15,
 							"character": 2,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L15"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/dev.ts#L15"
 						}
 					],
 					"type": {
@@ -2987,9 +2987,9 @@
 				{
 					"title": "Properties",
 					"children": [
-						400,
-						401,
-						402
+						232,
+						233,
+						234
 					]
 				}
 			],
@@ -2998,12 +2998,12 @@
 					"fileName": "plugins/file-router/src/types/dev.ts",
 					"line": 7,
 					"character": 17,
-					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/types/dev.ts#L7"
+					"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/types/dev.ts#L7"
 				}
 			]
 		},
 		{
-			"id": 396,
+			"id": 228,
 			"name": "createDevServer",
 			"variant": "declaration",
 			"kind": 64,
@@ -3013,12 +3013,12 @@
 					"fileName": "plugins/file-router/src/dev/server.ts",
 					"line": 11,
 					"character": 22,
-					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/dev/server.ts#L11"
+					"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/dev/server.ts#L11"
 				}
 			],
 			"signatures": [
 				{
-					"id": 397,
+					"id": 229,
 					"name": "createDevServer",
 					"variant": "signature",
 					"kind": 4096,
@@ -3028,19 +3028,19 @@
 							"fileName": "plugins/file-router/src/dev/server.ts",
 							"line": 11,
 							"character": 22,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/dev/server.ts#L11"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/dev/server.ts#L11"
 						}
 					],
 					"parameters": [
 						{
-							"id": 398,
+							"id": 230,
 							"name": "options",
 							"variant": "param",
 							"kind": 32768,
 							"flags": {},
 							"type": {
 								"type": "reference",
-								"target": 403,
+								"target": 235,
 								"name": "DevServerOptions",
 								"package": "@swissjs/plugin-file-router"
 							},
@@ -3057,7 +3057,7 @@
 						"typeArguments": [
 							{
 								"type": "reference",
-								"target": 283,
+								"target": 115,
 								"name": "DevServer",
 								"package": "@swissjs/plugin-file-router"
 							}
@@ -3069,7 +3069,7 @@
 			]
 		},
 		{
-			"id": 393,
+			"id": 225,
 			"name": "createFileWatcher",
 			"variant": "declaration",
 			"kind": 64,
@@ -3079,12 +3079,12 @@
 					"fileName": "plugins/file-router/src/dev/watcher.ts",
 					"line": 9,
 					"character": 22,
-					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/dev/watcher.ts#L9"
+					"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/dev/watcher.ts#L9"
 				}
 			],
 			"signatures": [
 				{
-					"id": 394,
+					"id": 226,
 					"name": "createFileWatcher",
 					"variant": "signature",
 					"kind": 4096,
@@ -3094,19 +3094,19 @@
 							"fileName": "plugins/file-router/src/dev/watcher.ts",
 							"line": 9,
 							"character": 22,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/dev/watcher.ts#L9"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/dev/watcher.ts#L9"
 						}
 					],
 					"parameters": [
 						{
-							"id": 395,
+							"id": 227,
 							"name": "config",
 							"variant": "param",
 							"kind": 32768,
 							"flags": {},
 							"type": {
 								"type": "reference",
-								"target": 399,
+								"target": 231,
 								"name": "WatcherConfig",
 								"package": "@swissjs/plugin-file-router"
 							}
@@ -3122,7 +3122,7 @@
 						"typeArguments": [
 							{
 								"type": "reference",
-								"target": 273,
+								"target": 105,
 								"name": "FileWatcher",
 								"package": "@swissjs/plugin-file-router"
 							}
@@ -3134,7 +3134,7 @@
 			]
 		},
 		{
-			"id": 377,
+			"id": 209,
 			"name": "createRouteDefinition",
 			"variant": "declaration",
 			"kind": 64,
@@ -3144,12 +3144,12 @@
 					"fileName": "plugins/file-router/src/core/utils.ts",
 					"line": 12,
 					"character": 16,
-					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/utils.ts#L12"
+					"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/utils.ts#L12"
 				}
 			],
 			"signatures": [
 				{
-					"id": 378,
+					"id": 210,
 					"name": "createRouteDefinition",
 					"variant": "signature",
 					"kind": 4096,
@@ -3167,12 +3167,12 @@
 							"fileName": "plugins/file-router/src/core/utils.ts",
 							"line": 12,
 							"character": 16,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/utils.ts#L12"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/utils.ts#L12"
 						}
 					],
 					"parameters": [
 						{
-							"id": 379,
+							"id": 211,
 							"name": "path",
 							"variant": "param",
 							"kind": 32768,
@@ -3183,7 +3183,7 @@
 							}
 						},
 						{
-							"id": 380,
+							"id": 212,
 							"name": "component",
 							"variant": "param",
 							"kind": 32768,
@@ -3191,7 +3191,7 @@
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 381,
+									"id": 213,
 									"name": "__type",
 									"variant": "declaration",
 									"kind": 65536,
@@ -3201,12 +3201,12 @@
 											"fileName": "plugins/file-router/src/core/utils.ts",
 											"line": 14,
 											"character": 13,
-											"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/utils.ts#L14"
+											"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/utils.ts#L14"
 										}
 									],
 									"signatures": [
 										{
-											"id": 382,
+											"id": 214,
 											"name": "__type",
 											"variant": "signature",
 											"kind": 4096,
@@ -3216,7 +3216,7 @@
 													"fileName": "plugins/file-router/src/core/utils.ts",
 													"line": 14,
 													"character": 13,
-													"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/utils.ts#L14"
+													"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/utils.ts#L14"
 												}
 											],
 											"type": {
@@ -3230,14 +3230,14 @@
 													{
 														"type": "reflection",
 														"declaration": {
-															"id": 383,
+															"id": 215,
 															"name": "__type",
 															"variant": "declaration",
 															"kind": 65536,
 															"flags": {},
 															"children": [
 																{
-																	"id": 384,
+																	"id": 216,
 																	"name": "default",
 																	"variant": "declaration",
 																	"kind": 1024,
@@ -3247,12 +3247,12 @@
 																			"fileName": "plugins/file-router/src/core/utils.ts",
 																			"line": 14,
 																			"character": 29,
-																			"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/utils.ts#L14"
+																			"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/utils.ts#L14"
 																		}
 																	],
 																	"type": {
 																		"type": "reference",
-																		"target": 448,
+																		"target": 280,
 																		"name": "ComponentConstructor",
 																		"package": "@swissjs/core"
 																	}
@@ -3262,7 +3262,7 @@
 																{
 																	"title": "Properties",
 																	"children": [
-																		384
+																		216
 																	]
 																}
 															],
@@ -3271,7 +3271,7 @@
 																	"fileName": "plugins/file-router/src/core/utils.ts",
 																	"line": 14,
 																	"character": 27,
-																	"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/utils.ts#L14"
+																	"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/utils.ts#L14"
 																}
 															]
 														}
@@ -3286,7 +3286,7 @@
 							}
 						},
 						{
-							"id": 385,
+							"id": 217,
 							"name": "options",
 							"variant": "param",
 							"kind": 32768,
@@ -3294,14 +3294,14 @@
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 386,
+									"id": 218,
 									"name": "__type",
 									"variant": "declaration",
 									"kind": 65536,
 									"flags": {},
 									"children": [
 										{
-											"id": 387,
+											"id": 219,
 											"name": "layout",
 											"variant": "declaration",
 											"kind": 1024,
@@ -3313,13 +3313,13 @@
 													"fileName": "plugins/file-router/src/core/utils.ts",
 													"line": 16,
 													"character": 4,
-													"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/utils.ts#L16"
+													"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/utils.ts#L16"
 												}
 											],
 											"type": {
 												"type": "reflection",
 												"declaration": {
-													"id": 388,
+													"id": 220,
 													"name": "__type",
 													"variant": "declaration",
 													"kind": 65536,
@@ -3329,12 +3329,12 @@
 															"fileName": "plugins/file-router/src/core/utils.ts",
 															"line": 16,
 															"character": 13,
-															"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/utils.ts#L16"
+															"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/utils.ts#L16"
 														}
 													],
 													"signatures": [
 														{
-															"id": 389,
+															"id": 221,
 															"name": "__type",
 															"variant": "signature",
 															"kind": 4096,
@@ -3344,7 +3344,7 @@
 																	"fileName": "plugins/file-router/src/core/utils.ts",
 																	"line": 16,
 																	"character": 13,
-																	"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/utils.ts#L16"
+																	"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/utils.ts#L16"
 																}
 															],
 															"type": {
@@ -3358,14 +3358,14 @@
 																	{
 																		"type": "reflection",
 																		"declaration": {
-																			"id": 390,
+																			"id": 222,
 																			"name": "__type",
 																			"variant": "declaration",
 																			"kind": 65536,
 																			"flags": {},
 																			"children": [
 																				{
-																					"id": 391,
+																					"id": 223,
 																					"name": "default",
 																					"variant": "declaration",
 																					"kind": 1024,
@@ -3375,12 +3375,12 @@
 																							"fileName": "plugins/file-router/src/core/utils.ts",
 																							"line": 16,
 																							"character": 29,
-																							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/utils.ts#L16"
+																							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/utils.ts#L16"
 																						}
 																					],
 																					"type": {
 																						"type": "reference",
-																						"target": 448,
+																						"target": 280,
 																						"name": "ComponentConstructor",
 																						"package": "@swissjs/core"
 																					}
@@ -3390,7 +3390,7 @@
 																				{
 																					"title": "Properties",
 																					"children": [
-																						391
+																						223
 																					]
 																				}
 																			],
@@ -3399,7 +3399,7 @@
 																					"fileName": "plugins/file-router/src/core/utils.ts",
 																					"line": 16,
 																					"character": 27,
-																					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/utils.ts#L16"
+																					"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/utils.ts#L16"
 																				}
 																			]
 																		}
@@ -3414,7 +3414,7 @@
 											}
 										},
 										{
-											"id": 392,
+											"id": 224,
 											"name": "meta",
 											"variant": "declaration",
 											"kind": 1024,
@@ -3426,7 +3426,7 @@
 													"fileName": "plugins/file-router/src/core/utils.ts",
 													"line": 17,
 													"character": 4,
-													"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/utils.ts#L17"
+													"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/utils.ts#L17"
 												}
 											],
 											"type": {
@@ -3455,8 +3455,8 @@
 										{
 											"title": "Properties",
 											"children": [
-												387,
-												392
+												219,
+												224
 											]
 										}
 									],
@@ -3465,7 +3465,7 @@
 											"fileName": "plugins/file-router/src/core/utils.ts",
 											"line": 15,
 											"character": 11,
-											"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/utils.ts#L15"
+											"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/utils.ts#L15"
 										}
 									]
 								}
@@ -3475,7 +3475,7 @@
 					],
 					"type": {
 						"type": "reference",
-						"target": 442,
+						"target": 274,
 						"name": "RouteDefinition",
 						"package": "@swissjs/core"
 					}
@@ -3483,7 +3483,7 @@
 			]
 		},
 		{
-			"id": 289,
+			"id": 121,
 			"name": "fileRouterPlugin",
 			"variant": "declaration",
 			"kind": 64,
@@ -3493,12 +3493,12 @@
 					"fileName": "plugins/file-router/src/core/plugin.ts",
 					"line": 11,
 					"character": 13,
-					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/plugin.ts#L11"
+					"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/plugin.ts#L11"
 				}
 			],
 			"signatures": [
 				{
-					"id": 290,
+					"id": 122,
 					"name": "fileRouterPlugin",
 					"variant": "signature",
 					"kind": 4096,
@@ -3508,19 +3508,19 @@
 							"fileName": "plugins/file-router/src/core/plugin.ts",
 							"line": 11,
 							"character": 32,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/core/plugin.ts#L11"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/core/plugin.ts#L11"
 						}
 					],
 					"parameters": [
 						{
-							"id": 291,
+							"id": 123,
 							"name": "options",
 							"variant": "param",
 							"kind": 32768,
 							"flags": {},
 							"type": {
 								"type": "reference",
-								"target": 408,
+								"target": 240,
 								"name": "FileRouterOptions",
 								"package": "@swissjs/plugin-file-router"
 							},
@@ -3541,7 +3541,7 @@
 			]
 		},
 		{
-			"id": 452,
+			"id": 284,
 			"name": "normalizeRoutePath",
 			"variant": "declaration",
 			"kind": 64,
@@ -3551,12 +3551,12 @@
 					"fileName": "plugins/file-router/src/utils/route.ts",
 					"line": 10,
 					"character": 16,
-					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/utils/route.ts#L10"
+					"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/utils/route.ts#L10"
 				}
 			],
 			"signatures": [
 				{
-					"id": 453,
+					"id": 285,
 					"name": "normalizeRoutePath",
 					"variant": "signature",
 					"kind": 4096,
@@ -3574,12 +3574,12 @@
 							"fileName": "plugins/file-router/src/utils/route.ts",
 							"line": 10,
 							"character": 16,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/utils/route.ts#L10"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/utils/route.ts#L10"
 						}
 					],
 					"parameters": [
 						{
-							"id": 454,
+							"id": 286,
 							"name": "path",
 							"variant": "param",
 							"kind": 32768,
@@ -3598,7 +3598,7 @@
 			]
 		},
 		{
-			"id": 455,
+			"id": 287,
 			"name": "validateRoutePath",
 			"variant": "declaration",
 			"kind": 64,
@@ -3608,12 +3608,12 @@
 					"fileName": "plugins/file-router/src/utils/route.ts",
 					"line": 27,
 					"character": 16,
-					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/utils/route.ts#L27"
+					"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/utils/route.ts#L27"
 				}
 			],
 			"signatures": [
 				{
-					"id": 456,
+					"id": 288,
 					"name": "validateRoutePath",
 					"variant": "signature",
 					"kind": 4096,
@@ -3631,12 +3631,12 @@
 							"fileName": "plugins/file-router/src/utils/route.ts",
 							"line": 27,
 							"character": 16,
-							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/file-router/src/utils/route.ts#L27"
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/file-router/src/utils/route.ts#L27"
 						}
 					],
 					"parameters": [
 						{
-							"id": 457,
+							"id": 289,
 							"name": "path",
 							"variant": "param",
 							"kind": 32768,
@@ -3659,821 +3659,821 @@
 		{
 			"title": "Classes",
 			"children": [
-				354,
-				317,
-				292
+				186,
+				149,
+				124
 			]
 		},
 		{
 			"title": "Interfaces",
 			"children": [
-				448,
-				283,
-				403,
-				408,
-				273,
-				434,
-				422,
-				442,
-				399
+				280,
+				115,
+				235,
+				240,
+				105,
+				266,
+				254,
+				274,
+				231
 			]
 		},
 		{
 			"title": "Functions",
 			"children": [
-				396,
-				393,
-				377,
-				289,
-				452,
-				455
+				228,
+				225,
+				209,
+				121,
+				284,
+				287
 			]
 		}
 	],
 	"packageName": "@swissjs/plugin-file-router",
 	"packageVersion": "1.2.8",
 	"symbolIdMap": {
-		"272": {
+		"104": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/index.ts",
 			"qualifiedName": ""
 		},
-		"273": {
+		"105": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/dev.ts",
 			"qualifiedName": "FileWatcher"
 		},
-		"274": {
+		"106": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/dev.ts",
 			"qualifiedName": "FileWatcher.on"
 		},
-		"275": {
+		"107": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/dev.ts",
 			"qualifiedName": "FileWatcher.on"
 		},
-		"276": {
+		"108": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/dev.ts",
 			"qualifiedName": "event"
 		},
-		"277": {
+		"109": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/dev.ts",
 			"qualifiedName": "handler"
 		},
-		"278": {
+		"110": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/dev.ts",
 			"qualifiedName": "__type"
 		},
-		"279": {
+		"111": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/dev.ts",
 			"qualifiedName": "__type"
 		},
-		"280": {
+		"112": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/dev.ts",
 			"qualifiedName": "path"
 		},
-		"281": {
+		"113": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/dev.ts",
 			"qualifiedName": "FileWatcher.close"
 		},
-		"282": {
+		"114": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/dev.ts",
 			"qualifiedName": "FileWatcher.close"
 		},
-		"283": {
+		"115": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/dev.ts",
 			"qualifiedName": "DevServer"
 		},
-		"284": {
+		"116": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/dev.ts",
 			"qualifiedName": "DevServer.start"
 		},
-		"285": {
+		"117": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/dev.ts",
 			"qualifiedName": "DevServer.start"
 		},
-		"286": {
+		"118": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/dev.ts",
 			"qualifiedName": "DevServer.stop"
 		},
-		"287": {
+		"119": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/dev.ts",
 			"qualifiedName": "DevServer.stop"
 		},
-		"288": {
+		"120": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/dev.ts",
 			"qualifiedName": "DevServer.port"
 		},
-		"289": {
+		"121": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/plugin.ts",
 			"qualifiedName": "fileRouterPlugin"
 		},
-		"290": {
+		"122": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/plugin.ts",
 			"qualifiedName": "fileRouterPlugin"
 		},
-		"291": {
+		"123": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/plugin.ts",
 			"qualifiedName": "options"
 		},
-		"292": {
+		"124": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/scanner.ts",
 			"qualifiedName": "RouteScanner"
 		},
-		"293": {
+		"125": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/scanner.ts",
 			"qualifiedName": "RouteScanner.__constructor"
 		},
-		"294": {
+		"126": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/scanner.ts",
 			"qualifiedName": "RouteScanner"
 		},
-		"295": {
+		"127": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/scanner.ts",
 			"qualifiedName": "config"
 		},
-		"299": {
+		"131": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/scanner.ts",
 			"qualifiedName": "RouteScanner.scanRoutes"
 		},
-		"300": {
+		"132": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/scanner.ts",
 			"qualifiedName": "RouteScanner.scanRoutes"
 		},
-		"301": {
+		"133": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/scanner.ts",
 			"qualifiedName": "directory"
 		},
-		"317": {
+		"149": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/matcher.ts",
 			"qualifiedName": "RouteMatcher"
 		},
-		"321": {
+		"153": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/matcher.ts",
 			"qualifiedName": "RouteMatcher.matchRoute"
 		},
-		"322": {
+		"154": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/matcher.ts",
 			"qualifiedName": "RouteMatcher.matchRoute"
 		},
-		"323": {
+		"155": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/matcher.ts",
 			"qualifiedName": "pattern"
 		},
-		"324": {
+		"156": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/matcher.ts",
 			"qualifiedName": "path"
 		},
-		"325": {
+		"157": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/matcher.ts",
 			"qualifiedName": "__type"
 		},
-		"326": {
+		"158": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/matcher.ts",
 			"qualifiedName": "__type.match"
 		},
-		"327": {
+		"159": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/matcher.ts",
 			"qualifiedName": "__type.params"
 		},
-		"328": {
+		"160": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/matcher.ts",
 			"qualifiedName": "RouteMatcher.findBestMatch"
 		},
-		"329": {
+		"161": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/matcher.ts",
 			"qualifiedName": "RouteMatcher.findBestMatch"
 		},
-		"330": {
+		"162": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/matcher.ts",
 			"qualifiedName": "routes"
 		},
-		"331": {
+		"163": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/matcher.ts",
 			"qualifiedName": "__type"
 		},
-		"332": {
+		"164": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/matcher.ts",
 			"qualifiedName": "__type.path"
 		},
-		"333": {
+		"165": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/matcher.ts",
 			"qualifiedName": "__type.__index"
 		},
-		"335": {
+		"167": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/matcher.ts",
 			"qualifiedName": "path"
 		},
-		"336": {
+		"168": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/matcher.ts",
 			"qualifiedName": "__type"
 		},
-		"337": {
+		"169": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/matcher.ts",
 			"qualifiedName": "__type.route"
 		},
-		"338": {
+		"170": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/matcher.ts",
 			"qualifiedName": "__type"
 		},
-		"339": {
+		"171": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/matcher.ts",
 			"qualifiedName": "__type.path"
 		},
-		"340": {
+		"172": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/matcher.ts",
 			"qualifiedName": "__type.__index"
 		},
-		"342": {
+		"174": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/matcher.ts",
 			"qualifiedName": "__type.params"
 		},
-		"343": {
+		"175": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/matcher.ts",
 			"qualifiedName": "RouteMatcher.sortRoutesBySpecificity"
 		},
-		"344": {
+		"176": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/matcher.ts",
 			"qualifiedName": "RouteMatcher.sortRoutesBySpecificity"
 		},
-		"345": {
+		"177": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/matcher.ts",
 			"qualifiedName": "routes"
 		},
-		"346": {
+		"178": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/matcher.ts",
 			"qualifiedName": "__type"
 		},
-		"347": {
+		"179": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/matcher.ts",
 			"qualifiedName": "__type.path"
 		},
-		"348": {
+		"180": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/matcher.ts",
 			"qualifiedName": "__type.__index"
 		},
-		"350": {
+		"182": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/matcher.ts",
 			"qualifiedName": "__type"
 		},
-		"351": {
+		"183": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/matcher.ts",
 			"qualifiedName": "__type.path"
 		},
-		"352": {
+		"184": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/matcher.ts",
 			"qualifiedName": "__type.__index"
 		},
-		"354": {
+		"186": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/transformer.ts",
 			"qualifiedName": "PathTransformer"
 		},
-		"357": {
+		"189": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/transformer.ts",
 			"qualifiedName": "PathTransformer.filePathToRoute"
 		},
-		"358": {
+		"190": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/transformer.ts",
 			"qualifiedName": "PathTransformer.filePathToRoute"
 		},
-		"359": {
+		"191": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/transformer.ts",
 			"qualifiedName": "filePath"
 		},
-		"360": {
+		"192": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/transformer.ts",
 			"qualifiedName": "routePrefix"
 		},
-		"361": {
+		"193": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/transformer.ts",
 			"qualifiedName": "baseDir"
 		},
-		"362": {
+		"194": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/transformer.ts",
 			"qualifiedName": "PathTransformer.routeToFilePaths"
 		},
-		"363": {
+		"195": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/transformer.ts",
 			"qualifiedName": "PathTransformer.routeToFilePaths"
 		},
-		"364": {
+		"196": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/transformer.ts",
 			"qualifiedName": "route"
 		},
-		"365": {
+		"197": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/transformer.ts",
 			"qualifiedName": "routesDir"
 		},
-		"366": {
+		"198": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/transformer.ts",
 			"qualifiedName": "extensions"
 		},
-		"367": {
+		"199": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/transformer.ts",
 			"qualifiedName": "PathTransformer.extractParamNames"
 		},
-		"368": {
+		"200": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/transformer.ts",
 			"qualifiedName": "PathTransformer.extractParamNames"
 		},
-		"369": {
+		"201": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/transformer.ts",
 			"qualifiedName": "route"
 		},
-		"370": {
+		"202": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/transformer.ts",
 			"qualifiedName": "PathTransformer.matchRoute"
 		},
-		"371": {
+		"203": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/transformer.ts",
 			"qualifiedName": "PathTransformer.matchRoute"
 		},
-		"372": {
+		"204": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/transformer.ts",
 			"qualifiedName": "pattern"
 		},
-		"373": {
+		"205": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/transformer.ts",
 			"qualifiedName": "path"
 		},
-		"374": {
+		"206": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/transformer.ts",
 			"qualifiedName": "__type"
 		},
-		"375": {
+		"207": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/transformer.ts",
 			"qualifiedName": "__type.match"
 		},
-		"376": {
+		"208": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/transformer.ts",
 			"qualifiedName": "__type.params"
 		},
-		"377": {
+		"209": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/utils.ts",
 			"qualifiedName": "createRouteDefinition"
 		},
-		"378": {
+		"210": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/utils.ts",
 			"qualifiedName": "createRouteDefinition"
 		},
-		"379": {
+		"211": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/utils.ts",
 			"qualifiedName": "path"
 		},
-		"380": {
+		"212": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/utils.ts",
 			"qualifiedName": "component"
 		},
-		"381": {
+		"213": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/utils.ts",
 			"qualifiedName": "__type"
 		},
-		"382": {
+		"214": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/utils.ts",
 			"qualifiedName": "__type"
 		},
-		"383": {
+		"215": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/utils.ts",
 			"qualifiedName": "__type"
 		},
-		"384": {
+		"216": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/utils.ts",
 			"qualifiedName": "__type.default"
 		},
-		"385": {
+		"217": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/utils.ts",
 			"qualifiedName": "options"
 		},
-		"386": {
+		"218": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/utils.ts",
 			"qualifiedName": "__type"
 		},
-		"387": {
+		"219": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/utils.ts",
 			"qualifiedName": "__type.layout"
 		},
-		"388": {
+		"220": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/utils.ts",
 			"qualifiedName": "__type"
 		},
-		"389": {
+		"221": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/utils.ts",
 			"qualifiedName": "__type"
 		},
-		"390": {
+		"222": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/utils.ts",
 			"qualifiedName": "__type"
 		},
-		"391": {
+		"223": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/utils.ts",
 			"qualifiedName": "__type.default"
 		},
-		"392": {
+		"224": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/core/utils.ts",
 			"qualifiedName": "__type.meta"
 		},
-		"393": {
+		"225": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/dev/watcher.ts",
 			"qualifiedName": "createFileWatcher"
 		},
-		"394": {
+		"226": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/dev/watcher.ts",
 			"qualifiedName": "createFileWatcher"
 		},
-		"395": {
+		"227": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/dev/watcher.ts",
 			"qualifiedName": "config"
 		},
-		"396": {
+		"228": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/dev/server.ts",
 			"qualifiedName": "createDevServer"
 		},
-		"397": {
+		"229": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/dev/server.ts",
 			"qualifiedName": "createDevServer"
 		},
-		"398": {
+		"230": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/dev/server.ts",
 			"qualifiedName": "options"
 		},
-		"399": {
+		"231": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/dev.ts",
 			"qualifiedName": "WatcherConfig"
 		},
-		"400": {
+		"232": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/dev.ts",
 			"qualifiedName": "WatcherConfig.directory"
 		},
-		"401": {
+		"233": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/dev.ts",
 			"qualifiedName": "WatcherConfig.extensions"
 		},
-		"402": {
+		"234": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/dev.ts",
 			"qualifiedName": "WatcherConfig.ignore"
 		},
-		"403": {
+		"235": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/dev.ts",
 			"qualifiedName": "DevServerOptions"
 		},
-		"404": {
+		"236": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/dev.ts",
 			"qualifiedName": "DevServerOptions.port"
 		},
-		"405": {
+		"237": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/dev.ts",
 			"qualifiedName": "DevServerOptions.hotReload"
 		},
-		"406": {
+		"238": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/dev.ts",
 			"qualifiedName": "DevServerOptions.middleware"
 		},
-		"407": {
+		"239": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/dev.ts",
 			"qualifiedName": "DevServerOptions.routes"
 		},
-		"408": {
+		"240": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/config.ts",
 			"qualifiedName": "FileRouterOptions"
 		},
-		"409": {
+		"241": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/config.ts",
 			"qualifiedName": "FileRouterOptions.routesDir"
 		},
-		"410": {
+		"242": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/config.ts",
 			"qualifiedName": "FileRouterOptions.extensions"
 		},
-		"411": {
+		"243": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/config.ts",
 			"qualifiedName": "FileRouterOptions.layouts"
 		},
-		"412": {
+		"244": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/config.ts",
 			"qualifiedName": "FileRouterOptions.lazyLoading"
 		},
-		"413": {
+		"245": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/config.ts",
 			"qualifiedName": "FileRouterOptions.preloading"
 		},
-		"414": {
+		"246": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/config.ts",
 			"qualifiedName": "FileRouterOptions.transform"
 		},
-		"415": {
+		"247": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/config.ts",
 			"qualifiedName": "__type"
 		},
-		"416": {
+		"248": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/config.ts",
 			"qualifiedName": "__type"
 		},
-		"417": {
+		"249": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/config.ts",
 			"qualifiedName": "path"
 		},
-		"418": {
+		"250": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/config.ts",
 			"qualifiedName": "FileRouterOptions.dev"
 		},
-		"419": {
+		"251": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/config.ts",
 			"qualifiedName": "__type"
 		},
-		"420": {
+		"252": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/config.ts",
 			"qualifiedName": "__type.hotReload"
 		},
-		"421": {
+		"253": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/config.ts",
 			"qualifiedName": "__type.port"
 		},
-		"422": {
+		"254": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/route.ts",
 			"qualifiedName": "RouteConfig"
 		},
-		"423": {
+		"255": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/route.ts",
 			"qualifiedName": "RouteConfig.path"
 		},
-		"424": {
+		"256": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/route.ts",
 			"qualifiedName": "RouteConfig.component"
 		},
-		"425": {
+		"257": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/route.ts",
 			"qualifiedName": "RouteConfig.layout"
 		},
-		"426": {
+		"258": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/route.ts",
 			"qualifiedName": "RouteConfig.meta"
 		},
-		"427": {
+		"259": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/route.ts",
 			"qualifiedName": "__type"
 		},
-		"428": {
+		"260": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/route.ts",
 			"qualifiedName": "__type.title"
 		},
-		"429": {
+		"261": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/route.ts",
 			"qualifiedName": "__type.description"
 		},
-		"430": {
+		"262": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/route.ts",
 			"qualifiedName": "__type.guards"
 		},
-		"431": {
+		"263": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/route.ts",
 			"qualifiedName": "__type.middleware"
 		},
-		"432": {
+		"264": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/route.ts",
 			"qualifiedName": "__type.__index"
 		},
-		"434": {
+		"266": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/route.ts",
 			"qualifiedName": "LayoutConfig"
 		},
-		"435": {
+		"267": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/route.ts",
 			"qualifiedName": "LayoutConfig.component"
 		},
-		"436": {
+		"268": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/route.ts",
 			"qualifiedName": "LayoutConfig.meta"
 		},
-		"437": {
+		"269": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/route.ts",
 			"qualifiedName": "__type"
 		},
-		"438": {
+		"270": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/route.ts",
 			"qualifiedName": "__type.title"
 		},
-		"439": {
+		"271": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/route.ts",
 			"qualifiedName": "__type.description"
 		},
-		"440": {
+		"272": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/types/route.ts",
 			"qualifiedName": "__type.__index"
 		},
-		"442": {
+		"274": {
 			"packageName": "@swissjs/core",
 			"packagePath": "dist/types/index.d.ts",
 			"qualifiedName": "RouteDefinition"
 		},
-		"443": {
+		"275": {
 			"packageName": "@swissjs/core",
 			"packagePath": "dist/types/index.d.ts",
 			"qualifiedName": "RouteDefinition.path"
 		},
-		"444": {
+		"276": {
 			"packageName": "@swissjs/core",
 			"packagePath": "dist/types/index.d.ts",
 			"qualifiedName": "RouteDefinition.component"
 		},
-		"445": {
+		"277": {
 			"packageName": "@swissjs/core",
 			"packagePath": "dist/types/index.d.ts",
 			"qualifiedName": "RouteDefinition.layout"
 		},
-		"446": {
+		"278": {
 			"packageName": "@swissjs/core",
 			"packagePath": "dist/types/index.d.ts",
 			"qualifiedName": "RouteDefinition.children"
 		},
-		"447": {
+		"279": {
 			"packageName": "@swissjs/core",
 			"packagePath": "dist/types/index.d.ts",
 			"qualifiedName": "RouteDefinition.meta"
 		},
-		"448": {
+		"280": {
 			"packageName": "@swissjs/core",
 			"packagePath": "dist/types/index.d.ts",
 			"qualifiedName": "ComponentConstructor"
 		},
-		"449": {
+		"281": {
 			"packageName": "@swissjs/core",
 			"packagePath": "dist/types/index.d.ts",
 			"qualifiedName": "ComponentConstructor"
 		},
-		"450": {
+		"282": {
 			"packageName": "@swissjs/core",
 			"packagePath": "dist/types/index.d.ts",
 			"qualifiedName": "ComponentConstructor"
 		},
-		"451": {
+		"283": {
 			"packageName": "@swissjs/core",
 			"packagePath": "dist/types/index.d.ts",
 			"qualifiedName": "args"
 		},
-		"452": {
+		"284": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/utils/route.ts",
 			"qualifiedName": "normalizeRoutePath"
 		},
-		"453": {
+		"285": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/utils/route.ts",
 			"qualifiedName": "normalizeRoutePath"
 		},
-		"454": {
+		"286": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/utils/route.ts",
 			"qualifiedName": "path"
 		},
-		"455": {
+		"287": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/utils/route.ts",
 			"qualifiedName": "validateRoutePath"
 		},
-		"456": {
+		"288": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/utils/route.ts",
 			"qualifiedName": "validateRoutePath"
 		},
-		"457": {
+		"289": {
 			"packageName": "@swissjs/plugin-file-router",
 			"packagePath": "src/utils/route.ts",
 			"qualifiedName": "path"
@@ -4484,7 +4484,7 @@
 			"1": "plugins/file-router/src/index.ts"
 		},
 		"reflections": {
-			"1": 272
+			"1": 104
 		}
 	}
 }

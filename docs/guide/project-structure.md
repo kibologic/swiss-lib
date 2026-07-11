@@ -66,13 +66,13 @@ swiss-lib/
 ├── compiler/          # @swissjs/compiler
 ├── shared/            # @swissjs/shared
 ├── router/            # @swissjs/router
-├── css/               # @swissjs/css
 ├── components/        # @swissjs/components
 ├── security/          # @swissjs/security
 ├── cli/               # @swissjs/cli
 ├── plugins/
 │   ├── file-router/   # @swissjs/plugin-file-router
-│   └── web-storage/   # @swissjs/plugin-web-storage
+│   ├── web-storage/   # @swissjs/plugin-web-storage
+│   └── vite/          # @swissjs/vite-plugin
 ├── language/          # language spec scaffold (no package yet)
 ├── internal/          # internal build tooling scaffold
 ├── docs/              # documentation source

@@ -67,7 +67,7 @@ jobs:
       # every test against this repo -- a different code path from turbo's
       # task graph entirely.
       - name: Build
-        run: pnpm -r --filter="!@swissjs/css" --filter="!@swissjs/cli" run build
+        run: pnpm -r --filter="!@swissjs/cli" run build
 
       # No NODE_AUTH_TOKEN: publishing uses npm Trusted Publishing (OIDC),
       # configured per-package on npmjs.com to trust this exact repo +
