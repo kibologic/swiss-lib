@@ -49,7 +49,6 @@ export class ReactivityManager<
 
     let _firstRun = true;
     let _commitPending = false;
-    let _pendingVNode: VNode | null = null;
 
     const renderEffect = effect(() => {
       // Run render inside the effect so state reads are tracked by Signal/Effect.
@@ -66,13 +65,11 @@ export class ReactivityManager<
           return;
         }
 
-        // Coalesce rapid signal changes: store the latest VNode and schedule exactly
-        // one DOM commit per microtask tick. Subsequent changes before the microtask
-        // fires overwrite _pendingVNode so only the final state is committed.
+        // Coalesce rapid signal changes: schedule exactly one DOM commit per
+        // microtask tick, no matter how many signal writes happen before it fires.
         // _signalCommitPending is read by UpdateManager.scheduleUpdate() to avoid
         // queueing a redundant second reconciliation pass when both a signal effect
         // and an explicit scheduleUpdate() fire in the same synchronous event handler.
-        _pendingVNode = newVNode;
         if (_commitPending) return;
         _commitPending = true;
         this.component._signalCommitPending = true;
@@ -80,8 +77,22 @@ export class ReactivityManager<
         queueMicrotask(() => {
           _commitPending = false;
           this.component._signalCommitPending = false;
-          const vnode = _pendingVNode;
-          _pendingVNode = null;
+          // CRITICAL: re-render fresh here instead of committing the VNode
+          // captured when this microtask was queued. A child component's
+          // explicit scheduleUpdate() runs performUpdate() SYNCHRONOUSLY
+          // (see UpdateManager.scheduleUpdate's isChildComponent branch), so
+          // it can commit a newer tree to the DOM *after* this microtask was
+          // queued but *before* it runs. Committing the stale captured VNode
+          // in that case reconciles the (now newer, correct) DOM against an
+          // older description of it, and reconcileChildren's "remove
+          // leftover nodes" step deletes anything the newer commit added
+          // that the stale tree doesn't know about — silently, with no
+          // error, since from the stale tree's perspective those nodes
+          // simply shouldn't be there. Re-rendering fresh at commit time
+          // means this microtask always reconciles against the current
+          // state, so it can only ever be a safe no-op if something else
+          // already committed the same (or newer) result.
+          const vnode = this.component.safeRender();
           if (vnode !== null) this.component.commitVNode(vnode);
         });
       });
