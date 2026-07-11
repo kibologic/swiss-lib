@@ -54,7 +54,7 @@
     "bundle:update": "node scripts/bundle-report.mjs --update --output docs/reports/bundle-report.md",
     "bundle:check": "node scripts/bundle-report.mjs --check",
     "reset": "pnpm clean && pnpm install --frozen-lockfile && pnpm lint && pnpm type-check && pnpm check:policy && pnpm -w check:ui-format && cross-env CI=1 pnpm -w -r --if-present test && pnpm build && pnpm docs:clean:generated && pnpm docs:api && pnpm docs:api:index && pnpm -w check:barrels && npx --yes markdownlint-cli2 \"**/*.md\" \"!docs/api/**\" \"!**/node_modules/**\" \"!**/dist/**\" \"!docs/.vitepress/dist/**\" && pnpm docs:build",
-    "lint:sast": "eslint -c .eslintrc.sast.cjs --max-warnings=0 ."
+    "lint:sast": "eslint -c eslint.config.sast.mjs --max-warnings=0 ."
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.1",
