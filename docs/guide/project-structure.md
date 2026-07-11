@@ -75,7 +75,6 @@ swiss-lib/
 │   └── web-storage/   # @swissjs/plugin-web-storage
 ├── language/          # language spec scaffold (no package yet)
 ├── internal/          # internal build tooling scaffold
-├── devtools/          # devtools apps (capability-explorer, runtime inspector, etc.)
 ├── docs/              # documentation source
 ├── apps/              # internal demo/test apps
 ├── pnpm-workspace.yaml
