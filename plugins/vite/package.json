@@ -1,0 +1,65 @@
+{
+  "name": "@swissjs/vite-plugin",
+  "version": "0.2.0",
+  "description": "Vite plugin for compiling SwissJS .ui/.uix files -- delegates to @swissjs/compiler's own transform, no compilation logic of its own",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "dependencies": {
+    "@swissjs/compiler": "workspace:*",
+    "esbuild": "^0.25.0"
+  },
+  "peerDependencies": {
+    "vite": ">=5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.2.0",
+    "typescript": "5.8.2",
+    "vite": "^5.4.19",
+    "vitest": "^3.2.4"
+  },
+  "scripts": {
+    "build": "pnpm exec tsc -b",
+    "dev": "pnpm exec tsc -b --watch",
+    "type-check": "pnpm exec tsc --noEmit",
+    "test": "pnpm exec vitest run",
+    "test:watch": "pnpm exec vitest --watch",
+    "clean": "rm -rf dist node_modules && rm -f tsconfig.tsbuildinfo",
+    "lint": "pnpm exec eslint src --ext .ts,.tsx",
+    "docs:api": "pnpm exec typedoc"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "Themba Mzumara",
+    "email": "themba@swissjs.dev",
+    "url": "https://github.com/ThembaMzumara"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kibologic/swiss-lib.git"
+  },
+  "homepage": "https://github.com/ThembaMzumara/SWISS#readme",
+  "bugs": {
+    "url": "https://github.com/ThembaMzumara/SWISS/issues"
+  },
+  "keywords": [
+    "swissjs",
+    "vite",
+    "vite-plugin",
+    "framework"
+  ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
+  }
+}
