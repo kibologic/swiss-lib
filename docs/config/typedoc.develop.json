@@ -1,15 +1,19 @@
 {
   "$schema": "https://typedoc.org/schema.json",
   "entryPoints": [
-    "packages/*/src/index.ts",
-    "packages/plugins/*/src/index.ts",
-    "packages/devtools/*/src/index.ts"
+    "../../runtime/src/index.ts",
+    "../../compiler/src/index.ts",
+    "../../cli/src/index.ts",
+    "../../shared/src/index.ts",
+    "../../router/src/index.ts",
+    "../../security/src/index.ts",
+    "../../plugins/*/src/index.ts"
   ],
   "hideGenerator": true,
   "skipErrorChecking": true,
   "plugin": ["typedoc-plugin-markdown"],
   "readme": "none",
-  "tsconfig": "./tsconfig.base.json",
+  "tsconfig": "../../tsconfig.base.json",
   "categorizeByGroup": true,
   "excludeInternal": false,
   "excludePrivate": false,

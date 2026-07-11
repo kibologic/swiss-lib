@@ -1,0 +1,128 @@
+{
+	"schemaVersion": "2.0",
+	"id": 4216,
+	"name": "@swissjs/shared",
+	"variant": "project",
+	"kind": 1,
+	"flags": {},
+	"children": [
+		{
+			"id": 4217,
+			"name": "fixDtsExtensions",
+			"variant": "declaration",
+			"kind": 64,
+			"flags": {},
+			"sources": [
+				{
+					"fileName": "fixDtsExtensions.ts",
+					"line": 10,
+					"character": 22,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/shared/src/fixDtsExtensions.ts#L10"
+				}
+			],
+			"signatures": [
+				{
+					"id": 4218,
+					"name": "fixDtsExtensions",
+					"variant": "signature",
+					"kind": 4096,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "fixDtsExtensions.ts",
+							"line": 10,
+							"character": 22,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/shared/src/fixDtsExtensions.ts#L10"
+						}
+					],
+					"parameters": [
+						{
+							"id": 4219,
+							"name": "distDir",
+							"variant": "param",
+							"kind": 32768,
+							"flags": {},
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 4220,
+							"name": "debug",
+							"variant": "param",
+							"kind": 32768,
+							"flags": {},
+							"type": {
+								"type": "intrinsic",
+								"name": "boolean"
+							},
+							"defaultValue": "false"
+						}
+					],
+					"type": {
+						"type": "reference",
+						"target": {
+							"packageName": "typescript",
+							"packagePath": "lib/lib.es5.d.ts",
+							"qualifiedName": "Promise"
+						},
+						"typeArguments": [
+							{
+								"type": "intrinsic",
+								"name": "void"
+							}
+						],
+						"name": "Promise",
+						"package": "typescript"
+					}
+				}
+			]
+		}
+	],
+	"groups": [
+		{
+			"title": "Functions",
+			"children": [
+				4217
+			]
+		}
+	],
+	"packageName": "@swissjs/shared",
+	"packageVersion": "1.2.1",
+	"symbolIdMap": {
+		"4216": {
+			"packageName": "@swissjs/shared",
+			"packagePath": "src/index.ts",
+			"qualifiedName": ""
+		},
+		"4217": {
+			"packageName": "@swissjs/shared",
+			"packagePath": "src/fixDtsExtensions.ts",
+			"qualifiedName": "fixDtsExtensions"
+		},
+		"4218": {
+			"packageName": "@swissjs/shared",
+			"packagePath": "src/fixDtsExtensions.ts",
+			"qualifiedName": "fixDtsExtensions"
+		},
+		"4219": {
+			"packageName": "@swissjs/shared",
+			"packagePath": "src/fixDtsExtensions.ts",
+			"qualifiedName": "distDir"
+		},
+		"4220": {
+			"packageName": "@swissjs/shared",
+			"packagePath": "src/fixDtsExtensions.ts",
+			"qualifiedName": "debug"
+		}
+	},
+	"files": {
+		"entries": {
+			"1": "shared/src/index.ts"
+		},
+		"reflections": {
+			"1": 4216
+		}
+	}
+}
