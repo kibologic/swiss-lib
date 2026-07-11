@@ -1,0 +1,1023 @@
+{
+	"schemaVersion": "2.0",
+	"id": 458,
+	"name": "@swissjs/plugin-web-storage",
+	"variant": "project",
+	"kind": 1,
+	"flags": {},
+	"children": [
+		{
+			"id": 476,
+			"name": "KeyValueStorageAsync",
+			"variant": "declaration",
+			"kind": 256,
+			"flags": {},
+			"children": [
+				{
+					"id": 487,
+					"name": "clear",
+					"variant": "declaration",
+					"kind": 2048,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "public/types.ts",
+							"line": 18,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/types.ts#L18"
+						}
+					],
+					"signatures": [
+						{
+							"id": 488,
+							"name": "clear",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "public/types.ts",
+									"line": 18,
+									"character": 2,
+									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/types.ts#L18"
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"packageName": "typescript",
+									"packagePath": "lib/lib.es5.d.ts",
+									"qualifiedName": "Promise"
+								},
+								"typeArguments": [
+									{
+										"type": "intrinsic",
+										"name": "void"
+									}
+								],
+								"name": "Promise",
+								"package": "typescript"
+							}
+						}
+					]
+				},
+				{
+					"id": 477,
+					"name": "get",
+					"variant": "declaration",
+					"kind": 2048,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "public/types.ts",
+							"line": 15,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/types.ts#L15"
+						}
+					],
+					"signatures": [
+						{
+							"id": 478,
+							"name": "get",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "public/types.ts",
+									"line": 15,
+									"character": 2,
+									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/types.ts#L15"
+								}
+							],
+							"parameters": [
+								{
+									"id": 479,
+									"name": "key",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"packageName": "typescript",
+									"packagePath": "lib/lib.es5.d.ts",
+									"qualifiedName": "Promise"
+								},
+								"typeArguments": [
+									{
+										"type": "intrinsic",
+										"name": "string"
+									}
+								],
+								"name": "Promise",
+								"package": "typescript"
+							}
+						}
+					]
+				},
+				{
+					"id": 484,
+					"name": "remove",
+					"variant": "declaration",
+					"kind": 2048,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "public/types.ts",
+							"line": 17,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/types.ts#L17"
+						}
+					],
+					"signatures": [
+						{
+							"id": 485,
+							"name": "remove",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "public/types.ts",
+									"line": 17,
+									"character": 2,
+									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/types.ts#L17"
+								}
+							],
+							"parameters": [
+								{
+									"id": 486,
+									"name": "key",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"packageName": "typescript",
+									"packagePath": "lib/lib.es5.d.ts",
+									"qualifiedName": "Promise"
+								},
+								"typeArguments": [
+									{
+										"type": "intrinsic",
+										"name": "void"
+									}
+								],
+								"name": "Promise",
+								"package": "typescript"
+							}
+						}
+					]
+				},
+				{
+					"id": 480,
+					"name": "set",
+					"variant": "declaration",
+					"kind": 2048,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "public/types.ts",
+							"line": 16,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/types.ts#L16"
+						}
+					],
+					"signatures": [
+						{
+							"id": 481,
+							"name": "set",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "public/types.ts",
+									"line": 16,
+									"character": 2,
+									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/types.ts#L16"
+								}
+							],
+							"parameters": [
+								{
+									"id": 482,
+									"name": "key",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								},
+								{
+									"id": 483,
+									"name": "value",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"packageName": "typescript",
+									"packagePath": "lib/lib.es5.d.ts",
+									"qualifiedName": "Promise"
+								},
+								"typeArguments": [
+									{
+										"type": "intrinsic",
+										"name": "void"
+									}
+								],
+								"name": "Promise",
+								"package": "typescript"
+							}
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Methods",
+					"children": [
+						487,
+						477,
+						484,
+						480
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "public/types.ts",
+					"line": 14,
+					"character": 17,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/types.ts#L14"
+				}
+			]
+		},
+		{
+			"id": 463,
+			"name": "KeyValueStorageSync",
+			"variant": "declaration",
+			"kind": 256,
+			"flags": {},
+			"children": [
+				{
+					"id": 474,
+					"name": "clear",
+					"variant": "declaration",
+					"kind": 2048,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "public/types.ts",
+							"line": 11,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/types.ts#L11"
+						}
+					],
+					"signatures": [
+						{
+							"id": 475,
+							"name": "clear",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "public/types.ts",
+									"line": 11,
+									"character": 2,
+									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/types.ts#L11"
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "void"
+							}
+						}
+					]
+				},
+				{
+					"id": 464,
+					"name": "get",
+					"variant": "declaration",
+					"kind": 2048,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "public/types.ts",
+							"line": 8,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/types.ts#L8"
+						}
+					],
+					"signatures": [
+						{
+							"id": 465,
+							"name": "get",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "public/types.ts",
+									"line": 8,
+									"character": 2,
+									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/types.ts#L8"
+								}
+							],
+							"parameters": [
+								{
+									"id": 466,
+									"name": "key",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						}
+					]
+				},
+				{
+					"id": 471,
+					"name": "remove",
+					"variant": "declaration",
+					"kind": 2048,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "public/types.ts",
+							"line": 10,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/types.ts#L10"
+						}
+					],
+					"signatures": [
+						{
+							"id": 472,
+							"name": "remove",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "public/types.ts",
+									"line": 10,
+									"character": 2,
+									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/types.ts#L10"
+								}
+							],
+							"parameters": [
+								{
+									"id": 473,
+									"name": "key",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "void"
+							}
+						}
+					]
+				},
+				{
+					"id": 467,
+					"name": "set",
+					"variant": "declaration",
+					"kind": 2048,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "public/types.ts",
+							"line": 9,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/types.ts#L9"
+						}
+					],
+					"signatures": [
+						{
+							"id": 468,
+							"name": "set",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "public/types.ts",
+									"line": 9,
+									"character": 2,
+									"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/types.ts#L9"
+								}
+							],
+							"parameters": [
+								{
+									"id": 469,
+									"name": "key",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								},
+								{
+									"id": 470,
+									"name": "value",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "void"
+							}
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Methods",
+					"children": [
+						474,
+						464,
+						471,
+						467
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "public/types.ts",
+					"line": 7,
+					"character": 17,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/types.ts#L7"
+				}
+			]
+		},
+		{
+			"id": 489,
+			"name": "StorageNamespace",
+			"variant": "declaration",
+			"kind": 2097152,
+			"flags": {},
+			"sources": [
+				{
+					"fileName": "public/types.ts",
+					"line": 21,
+					"character": 12,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/types.ts#L21"
+				}
+			],
+			"type": {
+				"type": "union",
+				"types": [
+					{
+						"type": "literal",
+						"value": "local"
+					},
+					{
+						"type": "literal",
+						"value": "session"
+					},
+					{
+						"type": "literal",
+						"value": "indexed"
+					}
+				]
+			}
+		},
+		{
+			"id": 462,
+			"name": "STORAGE_INDEXED",
+			"variant": "declaration",
+			"kind": 32,
+			"flags": {
+				"isConst": true
+			},
+			"sources": [
+				{
+					"fileName": "public/services.ts",
+					"line": 9,
+					"character": 13,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/services.ts#L9"
+				}
+			],
+			"type": {
+				"type": "literal",
+				"value": "storage:indexed"
+			},
+			"defaultValue": "'storage:indexed'"
+		},
+		{
+			"id": 460,
+			"name": "STORAGE_LOCAL",
+			"variant": "declaration",
+			"kind": 32,
+			"flags": {
+				"isConst": true
+			},
+			"sources": [
+				{
+					"fileName": "public/services.ts",
+					"line": 7,
+					"character": 13,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/services.ts#L7"
+				}
+			],
+			"type": {
+				"type": "literal",
+				"value": "storage:local"
+			},
+			"defaultValue": "'storage:local'"
+		},
+		{
+			"id": 461,
+			"name": "STORAGE_SESSION",
+			"variant": "declaration",
+			"kind": 32,
+			"flags": {
+				"isConst": true
+			},
+			"sources": [
+				{
+					"fileName": "public/services.ts",
+					"line": 8,
+					"character": 13,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/public/services.ts#L8"
+				}
+			],
+			"type": {
+				"type": "literal",
+				"value": "storage:session"
+			},
+			"defaultValue": "'storage:session'"
+		},
+		{
+			"id": 459,
+			"name": "WebStoragePlugin",
+			"variant": "declaration",
+			"kind": 32,
+			"flags": {
+				"isConst": true
+			},
+			"sources": [
+				{
+					"fileName": "plugin.ts",
+					"line": 13,
+					"character": 13,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/plugin.ts#L13"
+				}
+			],
+			"type": {
+				"type": "reference",
+				"target": {
+					"packageName": "@swissjs/core",
+					"packagePath": "dist/plugins/pluginInterface.d.ts",
+					"qualifiedName": "Plugin"
+				},
+				"name": "Plugin",
+				"package": "@swissjs/core"
+			},
+			"defaultValue": "..."
+		},
+		{
+			"id": 492,
+			"name": "createIndexedStorage",
+			"variant": "declaration",
+			"kind": 64,
+			"flags": {},
+			"sources": [
+				{
+					"fileName": "runtime/indexed.ts",
+					"line": 78,
+					"character": 16,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/runtime/indexed.ts#L78"
+				}
+			],
+			"signatures": [
+				{
+					"id": 493,
+					"name": "createIndexedStorage",
+					"variant": "signature",
+					"kind": 4096,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "runtime/indexed.ts",
+							"line": 78,
+							"character": 16,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/runtime/indexed.ts#L78"
+						}
+					],
+					"type": {
+						"type": "reference",
+						"target": 476,
+						"name": "KeyValueStorageAsync",
+						"package": "@swissjs/plugin-web-storage"
+					}
+				}
+			]
+		},
+		{
+			"id": 494,
+			"name": "createLocalStorage",
+			"variant": "declaration",
+			"kind": 64,
+			"flags": {},
+			"sources": [
+				{
+					"fileName": "runtime/local.ts",
+					"line": 10,
+					"character": 16,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/runtime/local.ts#L10"
+				}
+			],
+			"signatures": [
+				{
+					"id": 495,
+					"name": "createLocalStorage",
+					"variant": "signature",
+					"kind": 4096,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "runtime/local.ts",
+							"line": 10,
+							"character": 16,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/runtime/local.ts#L10"
+						}
+					],
+					"type": {
+						"type": "reference",
+						"target": 463,
+						"name": "KeyValueStorageSync",
+						"package": "@swissjs/plugin-web-storage"
+					}
+				}
+			]
+		},
+		{
+			"id": 496,
+			"name": "createSessionStorage",
+			"variant": "declaration",
+			"kind": 64,
+			"flags": {},
+			"sources": [
+				{
+					"fileName": "runtime/session.ts",
+					"line": 10,
+					"character": 16,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/runtime/session.ts#L10"
+				}
+			],
+			"signatures": [
+				{
+					"id": 497,
+					"name": "createSessionStorage",
+					"variant": "signature",
+					"kind": 4096,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "runtime/session.ts",
+							"line": 10,
+							"character": 16,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/runtime/session.ts#L10"
+						}
+					],
+					"type": {
+						"type": "reference",
+						"target": 463,
+						"name": "KeyValueStorageSync",
+						"package": "@swissjs/plugin-web-storage"
+					}
+				}
+			]
+		},
+		{
+			"id": 490,
+			"name": "isBrowser",
+			"variant": "declaration",
+			"kind": 64,
+			"flags": {},
+			"sources": [
+				{
+					"fileName": "runtime/env.ts",
+					"line": 7,
+					"character": 16,
+					"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/runtime/env.ts#L7"
+				}
+			],
+			"signatures": [
+				{
+					"id": 491,
+					"name": "isBrowser",
+					"variant": "signature",
+					"kind": 4096,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "runtime/env.ts",
+							"line": 7,
+							"character": 16,
+							"url": "https://github.com/kibologic/swiss-lib/blob/e5ee902575e6c65c04b2a6ee9151191760feb90b/plugins/web-storage/src/runtime/env.ts#L7"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "boolean"
+					}
+				}
+			]
+		}
+	],
+	"groups": [
+		{
+			"title": "Interfaces",
+			"children": [
+				476,
+				463
+			]
+		},
+		{
+			"title": "Type Aliases",
+			"children": [
+				489
+			]
+		},
+		{
+			"title": "Variables",
+			"children": [
+				462,
+				460,
+				461,
+				459
+			]
+		},
+		{
+			"title": "Functions",
+			"children": [
+				492,
+				494,
+				496,
+				490
+			]
+		}
+	],
+	"packageName": "@swissjs/plugin-web-storage",
+	"packageVersion": "1.2.8",
+	"symbolIdMap": {
+		"458": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/index.ts",
+			"qualifiedName": ""
+		},
+		"459": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/plugin.ts",
+			"qualifiedName": "WebStoragePlugin"
+		},
+		"460": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/public/services.ts",
+			"qualifiedName": "STORAGE_LOCAL"
+		},
+		"461": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/public/services.ts",
+			"qualifiedName": "STORAGE_SESSION"
+		},
+		"462": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/public/services.ts",
+			"qualifiedName": "STORAGE_INDEXED"
+		},
+		"463": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/public/types.ts",
+			"qualifiedName": "KeyValueStorageSync"
+		},
+		"464": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/public/types.ts",
+			"qualifiedName": "KeyValueStorageSync.get"
+		},
+		"465": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/public/types.ts",
+			"qualifiedName": "KeyValueStorageSync.get"
+		},
+		"466": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/public/types.ts",
+			"qualifiedName": "key"
+		},
+		"467": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/public/types.ts",
+			"qualifiedName": "KeyValueStorageSync.set"
+		},
+		"468": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/public/types.ts",
+			"qualifiedName": "KeyValueStorageSync.set"
+		},
+		"469": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/public/types.ts",
+			"qualifiedName": "key"
+		},
+		"470": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/public/types.ts",
+			"qualifiedName": "value"
+		},
+		"471": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/public/types.ts",
+			"qualifiedName": "KeyValueStorageSync.remove"
+		},
+		"472": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/public/types.ts",
+			"qualifiedName": "KeyValueStorageSync.remove"
+		},
+		"473": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/public/types.ts",
+			"qualifiedName": "key"
+		},
+		"474": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/public/types.ts",
+			"qualifiedName": "KeyValueStorageSync.clear"
+		},
+		"475": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/public/types.ts",
+			"qualifiedName": "KeyValueStorageSync.clear"
+		},
+		"476": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/public/types.ts",
+			"qualifiedName": "KeyValueStorageAsync"
+		},
+		"477": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/public/types.ts",
+			"qualifiedName": "KeyValueStorageAsync.get"
+		},
+		"478": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/public/types.ts",
+			"qualifiedName": "KeyValueStorageAsync.get"
+		},
+		"479": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/public/types.ts",
+			"qualifiedName": "key"
+		},
+		"480": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/public/types.ts",
+			"qualifiedName": "KeyValueStorageAsync.set"
+		},
+		"481": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/public/types.ts",
+			"qualifiedName": "KeyValueStorageAsync.set"
+		},
+		"482": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/public/types.ts",
+			"qualifiedName": "key"
+		},
+		"483": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/public/types.ts",
+			"qualifiedName": "value"
+		},
+		"484": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/public/types.ts",
+			"qualifiedName": "KeyValueStorageAsync.remove"
+		},
+		"485": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/public/types.ts",
+			"qualifiedName": "KeyValueStorageAsync.remove"
+		},
+		"486": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/public/types.ts",
+			"qualifiedName": "key"
+		},
+		"487": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/public/types.ts",
+			"qualifiedName": "KeyValueStorageAsync.clear"
+		},
+		"488": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/public/types.ts",
+			"qualifiedName": "KeyValueStorageAsync.clear"
+		},
+		"489": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/public/types.ts",
+			"qualifiedName": "StorageNamespace"
+		},
+		"490": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/runtime/env.ts",
+			"qualifiedName": "isBrowser"
+		},
+		"491": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/runtime/env.ts",
+			"qualifiedName": "isBrowser"
+		},
+		"492": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/runtime/indexed.ts",
+			"qualifiedName": "createIndexedStorage"
+		},
+		"493": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/runtime/indexed.ts",
+			"qualifiedName": "createIndexedStorage"
+		},
+		"494": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/runtime/local.ts",
+			"qualifiedName": "createLocalStorage"
+		},
+		"495": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/runtime/local.ts",
+			"qualifiedName": "createLocalStorage"
+		},
+		"496": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/runtime/session.ts",
+			"qualifiedName": "createSessionStorage"
+		},
+		"497": {
+			"packageName": "@swissjs/plugin-web-storage",
+			"packagePath": "src/runtime/session.ts",
+			"qualifiedName": "createSessionStorage"
+		}
+	},
+	"files": {
+		"entries": {
+			"1": "plugins/web-storage/src/index.ts"
+		},
+		"reflections": {
+			"1": 458
+		}
+	}
+}
