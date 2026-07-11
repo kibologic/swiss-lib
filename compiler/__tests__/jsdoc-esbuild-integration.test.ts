@@ -65,14 +65,19 @@ import { something } from './other'`;
 
     const result = await compiler.compileAsync(input, "test.ui");
 
-    // The output should be valid JavaScript that can be executed
+    // The output should be valid, unmangled ESM with the JSDoc gone.
     expect(result).not.toContain("/**");
     expect(result).not.toContain("*/");
+    expect(result).toContain("import { something } from './other'");
 
-    // Should be parseable as JavaScript
+    // Should be parseable as a module -- new Function() can't evaluate
+    // top-level `import` (it always parses as a sloppy-mode script, not a
+    // module, regardless of content), so strip that one line before
+    // checking the rest of the output has no leftover JSDoc-induced syntax
+    // errors, which is what this test is actually about.
+    const withoutImportLine = result.replace(/^import[^\n]*\n?/m, "");
     expect(() => {
-      // Try to parse as JavaScript to ensure no syntax errors
-      new Function(result);
+      new Function(withoutImportLine);
     }).not.toThrow();
   });
 });

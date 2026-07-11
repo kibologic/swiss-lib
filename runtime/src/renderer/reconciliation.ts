@@ -60,7 +60,24 @@ export function reconcileChildren(
     const vnodeBase = typeof vnode === "object" && vnode !== null
       ? (vnode as unknown as VNodeBase)
       : null;
-    let dom = vnodeBase?.dom ?? oldChildNodes[index];
+    // A vnode's own .dom reference can go stale: when two independent commit
+    // pipelines for the same component instance (e.g. an explicit
+    // scheduleUpdate() and a signal-driven reactive commit) each build and
+    // commit their own vnode tree in close succession, a vnode object from
+    // one of those trees can end up with .dom pointing at a node that a
+    // LATER commit has already replaced or detached — the vnode was never
+    // told. Trusting that stale pointer here means updateDOMNodeFn below
+    // mutates a detached node (no error, since DOM ops on detached nodes
+    // succeed silently) while the *actual* live child at this position in
+    // `parent` never gets marked processed, and the final "remove leftover
+    // nodes" pass deletes it as if it were orphaned -- even though it's the
+    // exact element the new tree describes. Only trust vnodeBase.dom when
+    // it's still genuinely attached to this parent; otherwise the live DOM
+    // (oldChildNodes, captured directly from parent.childNodes above) is
+    // the one source of truth that can't be stale.
+    const vnodeDom = vnodeBase?.dom;
+    const vnodeDomIsLive = vnodeDom != null && vnodeDom.parentNode === parent;
+    let dom = (vnodeDomIsLive ? vnodeDom : undefined) ?? oldChildNodes[index];
 
     // Fallback: Try to match by id if direct match fails
     if (!dom && isElementVNode(vnode) && vnode.props?.id) {

@@ -11,7 +11,7 @@ import * as path from "path";
 import { UiCompiler } from "../src/index";
 
 describe("Compiler .ui import rewrite", () => {
-  it('rewrites from "./Card.ui" to "./Card"', async () => {
+  it('rewrites from "./Card.ui" to "./Card.tsx"', async () => {
     const tmp = await fs.mkdtemp(path.join(os.tmpdir(), "swiss-compiler-"));
     const file = path.join(tmp, "entry.ts");
     await fs.writeFile(
@@ -22,7 +22,10 @@ describe("Compiler .ui import rewrite", () => {
     const compiler = new UiCompiler();
     const out = await compiler.compileFile(file);
 
-    expect(out).toMatch(/from ['"]\.\/Card\.ui\.js['"]/);
-    expect(out).toMatch(/\.ui\.js['"]/);
+    // processImports (import-processor.ts) rewrites relative .ui/.uix
+    // imports to .tsx -- "for esbuild's JSX pipeline" per its own comment --
+    // not to a "<name>.ui.js" suffix. This test previously asserted the
+    // latter, which processImports has never actually done.
+    expect(out).toMatch(/from ['"]\.\/Card\.tsx['"]/);
   });
 });

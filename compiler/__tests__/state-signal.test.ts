@@ -117,6 +117,46 @@ component App {
     expect(result).toContain("private get loading(): boolean");
   });
 
+  it("transforms every let declaration inside a single multi-field state block", () => {
+    // Distinct from "transforms multiple state blocks in one component" above:
+    // this is ONE state{} block with TWO let declarations, the exact shape
+    // that previously silently dropped every field after the first.
+    const source = `
+import { SwissComponent } from '@swissjs/core';
+component SecurityPanel {
+  state { let password: string = ''; let sessionsLoading: boolean = false; }
+}
+`;
+    const result = preprocessSwissSyntax(source, "SecurityPanel.uix");
+
+    expect(result).toContain("private _password$: Signal<string> = new Signal<string>('')");
+    expect(result).toContain("private get password(): string { return this._password$.value; }");
+    expect(result).toContain("private set password(v: string) { this._password$.value = v; }");
+
+    expect(result).toContain("private _sessionsLoading$: Signal<boolean> = new Signal<boolean>(false)");
+    expect(result).toContain("private get sessionsLoading(): boolean { return this._sessionsLoading$.value; }");
+    expect(result).toContain("private set sessionsLoading(v: boolean) { this._sessionsLoading$.value = v; }");
+  });
+
+  it("transforms three let declarations inside a single state block, including one with no initializer", () => {
+    const source = `
+import { SwissComponent } from '@swissjs/core';
+component Form {
+  state { let a: number = 1; let b: string; let c: boolean = true; }
+}
+`;
+    const result = preprocessSwissSyntax(source, "Form.uix");
+
+    expect(result).toContain("Signal<number>(1)");
+    expect(result).toContain("private get a(): number");
+
+    expect(result).toContain("Signal<string>(undefined as unknown as string)");
+    expect(result).toContain("private get b(): string");
+
+    expect(result).toContain("Signal<boolean>(true)");
+    expect(result).toContain("private get c(): boolean");
+  });
+
   it("does not affect state-less components", () => {
     const source = `
 import { SwissComponent } from '@swissjs/core';
