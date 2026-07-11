@@ -53,14 +53,6 @@
         "./router/src/*",
         "./router/dist/*"
       ],
-      "@swissjs/css": [
-        "./css/src/index.ts",
-        "./css/dist/index"
-      ],
-      "@swissjs/css/*": [
-        "./css/src/*",
-        "./css/dist/*"
-      ],
       "@swissjs/components": [
         "./components/src/index.ts",
         "./components/dist/index"

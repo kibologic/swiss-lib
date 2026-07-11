@@ -1,0 +1,216 @@
+{
+	"schemaVersion": "2.0",
+	"id": 290,
+	"name": "@swissjs/vite-plugin",
+	"variant": "project",
+	"kind": 1,
+	"flags": {},
+	"children": [
+		{
+			"id": 294,
+			"name": "SwissJsPluginOptions",
+			"variant": "declaration",
+			"kind": 256,
+			"flags": {},
+			"children": [
+				{
+					"id": 295,
+					"name": "extensions",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "File extensions this plugin compiles. Defaults to .ui and .uix -- the\ntwo SwissJS source extensions @swissjs/compiler understands."
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 18,
+							"character": 2,
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/vite/src/index.ts#L18"
+						}
+					],
+					"type": {
+						"type": "array",
+						"elementType": {
+							"type": "intrinsic",
+							"name": "string"
+						}
+					}
+				}
+			],
+			"groups": [
+				{
+					"title": "Properties",
+					"children": [
+						295
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "index.ts",
+					"line": 13,
+					"character": 17,
+					"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/vite/src/index.ts#L13"
+				}
+			]
+		},
+		{
+			"id": 291,
+			"name": "swissjs",
+			"variant": "declaration",
+			"kind": 64,
+			"flags": {},
+			"sources": [
+				{
+					"fileName": "index.ts",
+					"line": 46,
+					"character": 16,
+					"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/vite/src/index.ts#L46"
+				}
+			],
+			"signatures": [
+				{
+					"id": 292,
+					"name": "swissjs",
+					"variant": "signature",
+					"kind": 4096,
+					"flags": {},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Vite plugin for SwissJS .ui/.uix files.\n\nThis is pure delegation to @swissjs/compiler's own UiCompiler.compileAsync(),\nthe same transform swite's dev-engine calls -- no compilation logic lives\nhere. It exists so standalone Vite-based tools (and external adopters who\ndon't use swite) can compile SwissJS source without swite's own dev-server\nmachinery. Alpine product apps stay on swite; this is not a second\ncompilation path for products, it's a foreign-bundler on-ramp.\n\nCSS handling and env-var inlining are intentionally NOT reimplemented\nhere -- those are Vite's own job via its native pipeline, unlike swite's\ndev-engine where they're bespoke dev-server concerns. Import *resolution*\nfor the standard TS-ESM \".js-suffix-means-.ts-file\" convention (used\nthroughout .ui/.uix source in this ecosystem) does need a resolveId hook\nbelow, since Vite's default resolver doesn't handle that convention on\nits own -- this mirrors swite's own resolveExtensionFix, not new logic."
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 46,
+							"character": 16,
+							"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/vite/src/index.ts#L46"
+						}
+					],
+					"parameters": [
+						{
+							"id": 293,
+							"name": "options",
+							"variant": "param",
+							"kind": 32768,
+							"flags": {},
+							"type": {
+								"type": "reference",
+								"target": 294,
+								"name": "SwissJsPluginOptions",
+								"package": "@swissjs/vite-plugin"
+							},
+							"defaultValue": "{}"
+						}
+					],
+					"type": {
+						"type": "reference",
+						"target": {
+							"packageName": "vite",
+							"packagePath": "dist/node/index.d.ts",
+							"qualifiedName": "Plugin"
+						},
+						"name": "Plugin",
+						"package": "vite"
+					}
+				}
+			]
+		},
+		{
+			"id": 296,
+			"name": "default",
+			"variant": "reference",
+			"kind": 4194304,
+			"flags": {},
+			"sources": [
+				{
+					"fileName": "index.ts",
+					"line": 88,
+					"character": 0,
+					"url": "https://github.com/kibologic/swiss-lib/blob/bc6e686f3defa761e805c70c62414d1b42ea8509/plugins/vite/src/index.ts#L88"
+				}
+			],
+			"target": 291
+		}
+	],
+	"groups": [
+		{
+			"title": "Interfaces",
+			"children": [
+				294
+			]
+		},
+		{
+			"title": "Functions",
+			"children": [
+				291
+			]
+		},
+		{
+			"title": "References",
+			"children": [
+				296
+			]
+		}
+	],
+	"packageName": "@swissjs/vite-plugin",
+	"packageVersion": "0.2.1",
+	"symbolIdMap": {
+		"290": {
+			"packageName": "@swissjs/vite-plugin",
+			"packagePath": "src/index.ts",
+			"qualifiedName": ""
+		},
+		"291": {
+			"packageName": "@swissjs/vite-plugin",
+			"packagePath": "src/index.ts",
+			"qualifiedName": "swissjs"
+		},
+		"292": {
+			"packageName": "@swissjs/vite-plugin",
+			"packagePath": "src/index.ts",
+			"qualifiedName": "swissjs"
+		},
+		"293": {
+			"packageName": "@swissjs/vite-plugin",
+			"packagePath": "src/index.ts",
+			"qualifiedName": "options"
+		},
+		"294": {
+			"packageName": "@swissjs/vite-plugin",
+			"packagePath": "src/index.ts",
+			"qualifiedName": "SwissJsPluginOptions"
+		},
+		"295": {
+			"packageName": "@swissjs/vite-plugin",
+			"packagePath": "src/index.ts",
+			"qualifiedName": "SwissJsPluginOptions.extensions"
+		},
+		"296": {
+			"packageName": "@swissjs/vite-plugin",
+			"packagePath": "src/index.ts",
+			"qualifiedName": "default"
+		}
+	},
+	"files": {
+		"entries": {
+			"1": "plugins/vite/src/index.ts"
+		},
+		"reflections": {
+			"1": 290
+		}
+	}
+}

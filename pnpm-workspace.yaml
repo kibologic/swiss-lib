@@ -3,7 +3,6 @@ packages:
   - "compiler"
   - "shared"
   - "router"
-  - "css"
   - "components"
   - "security"
   - "cli"
