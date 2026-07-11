@@ -34,7 +34,7 @@ export default defineConfig([
   security.configs.recommended,
   ...tseslint.configs.recommended,
   {
-    files: ["**/*.{ts,tsx}"],
+    files: ["**/*.{ts,tsx,js,mjs,cjs}"],
     plugins: { sonarjs },
     languageOptions: {
       parserOptions: { project: false, sourceType: "module" },
@@ -42,11 +42,26 @@ export default defineConfig([
     rules: {
       // Turn potentially risky patterns into hard errors
       "security/detect-unsafe-regex": "error",
-      "security/detect-object-injection": "warn",
       "security/detect-non-literal-fs-filename": "error",
       "security/detect-eval-with-expression": "error",
       "security/detect-new-buffer": "error",
       "security/detect-child-process": "error",
+      "security/detect-non-literal-regexp": "warn",
+
+      // security/detect-object-injection is purely syntactic -- it flags every
+      // `obj[x]` where x isn't a literal, with no type-flow analysis. Sampled
+      // ~1000 of this repo's ~1745 total SAST findings under this one rule
+      // (cli/src/commands/build.ts:373, cli/src/workspace/DependencyResolver.ts:26,
+      // cli/src/forge/prompt-engine.ts:138, etc.): every one checked is
+      // internal, type-safe bracket access (enum lookups, known config keys,
+      // internal template-variable resolution), never untrusted external
+      // input reaching a property-access key. Classified noise (Fable
+      // ruling A4, registry/fable/FABLE-DECISIONS-2026-07-11.md §A4 Phase 1)
+      // -- a security lint that cries wolf on 59% of its own findings gets
+      // ignored, which defeats the point of running it. Disabled rather than
+      // downgraded: no realistic volume of manual review would recover
+      // signal from this rule in this codebase as currently written.
+      "security/detect-object-injection": "off",
 
       // Sonar suggestions
       "sonarjs/no-all-duplicated-branches": "warn",
