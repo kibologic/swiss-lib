@@ -11,7 +11,7 @@ import * as path from "path";
 import { UiCompiler } from "../src/index";
 
 describe("Compiler .ui import rewrite", () => {
-  it('rewrites from "./Card.ui" to "./Card.tsx"', async () => {
+  it('leaves "./Card.ui" import specifiers untouched', async () => {
     const tmp = await fs.mkdtemp(path.join(os.tmpdir(), "swiss-compiler-"));
     const file = path.join(tmp, "entry.ts");
     await fs.writeFile(
@@ -22,10 +22,15 @@ describe("Compiler .ui import rewrite", () => {
     const compiler = new UiCompiler();
     const out = await compiler.compileFile(file);
 
-    // processImports (import-processor.ts) rewrites relative .ui/.uix
-    // imports to .tsx -- "for esbuild's JSX pipeline" per its own comment --
-    // not to a "<name>.ui.js" suffix. This test previously asserted the
-    // latter, which processImports has never actually done.
-    expect(out).toMatch(/from ['"]\.\/Card\.tsx['"]/);
+    // processImports (import-processor.ts) used to rewrite relative .ui/.uix
+    // import specifiers to .tsx, supposedly "for esbuild's JSX pipeline" --
+    // verified that esbuild's transform() doesn't resolve imports at all and
+    // is indifferent to their extensions, so the rewrite did nothing useful
+    // there while emitting specifiers pointing at files that don't exist on
+    // disk (no .tsx file is ever written). Real bundlers consuming compiled
+    // output (swite, @swissjs/vite-plugin) resolve .ui/.uix directly, since
+    // they already know that extension -- leaving the specifier untouched is
+    // the fix, not rewriting it to something else.
+    expect(out).toMatch(/from ['"]\.\/Card\.ui['"]/);
   });
 });

@@ -7,6 +7,8 @@
 import type { Plugin } from "vite";
 import { UiCompiler } from "@swissjs/compiler";
 import { transform as esbuildTransform } from "esbuild";
+import { existsSync } from "node:fs";
+import { dirname, resolve as resolvePath } from "node:path";
 
 export interface SwissJsPluginOptions {
   /**
@@ -15,6 +17,13 @@ export interface SwissJsPluginOptions {
    */
   extensions?: string[];
 }
+
+// Order matches swite's own resolveExtensionFix
+// (src/resolution/rewriting/import-rewriter.ts): a .js-suffixed relative
+// specifier (standard Node16/TS-ESM convention -- source imports
+// './Foo.js', the real file is './Foo.ts') should resolve to whichever of
+// these actually exists on disk.
+const SIBLING_EXTENSIONS = [".ts", ".tsx", ".ui", ".uix"];
 
 /**
  * Vite plugin for SwissJS .ui/.uix files.
@@ -26,10 +35,13 @@ export interface SwissJsPluginOptions {
  * machinery. Alpine product apps stay on swite; this is not a second
  * compilation path for products, it's a foreign-bundler on-ramp.
  *
- * Import resolution, CSS handling, and env-var inlining are intentionally
- * NOT reimplemented here -- those are Vite's own job via its native resolver
- * and plugin pipeline, unlike swite's dev-engine where they're bespoke
- * dev-server concerns.
+ * CSS handling and env-var inlining are intentionally NOT reimplemented
+ * here -- those are Vite's own job via its native pipeline, unlike swite's
+ * dev-engine where they're bespoke dev-server concerns. Import *resolution*
+ * for the standard TS-ESM ".js-suffix-means-.ts-file" convention (used
+ * throughout .ui/.uix source in this ecosystem) does need a resolveId hook
+ * below, since Vite's default resolver doesn't handle that convention on
+ * its own -- this mirrors swite's own resolveExtensionFix, not new logic.
  */
 export function swissjs(options: SwissJsPluginOptions = {}): Plugin {
   const extensions = options.extensions ?? [".ui", ".uix"];
@@ -37,6 +49,18 @@ export function swissjs(options: SwissJsPluginOptions = {}): Plugin {
 
   return {
     name: "swissjs",
+    resolveId(source, importer) {
+      if (!importer || !source.startsWith(".")) return null;
+      if (!source.endsWith(".js") && !source.endsWith(".jsx")) return null;
+
+      const base = source.replace(/\.jsx?$/, "");
+      const dir = dirname(importer);
+      for (const ext of SIBLING_EXTENSIONS) {
+        const candidate = resolvePath(dir, base + ext);
+        if (existsSync(candidate)) return candidate;
+      }
+      return null;
+    },
     async transform(code, id) {
       if (!extensions.some((ext) => id.endsWith(ext))) return null;
 
