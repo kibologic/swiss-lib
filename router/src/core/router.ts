@@ -150,10 +150,10 @@ export class Router {
               request: new Request("http://localhost" + path),
             };
             const result = await match.route.loader(ctx);
-            data[match.route.path] = result;
+            data[match.path] = result;
           } catch (err) {
-            console.error(`Loader failed for ${match.route.path}`, err);
-            data[match.route.path] = { error: err };
+            console.error(`Loader failed for ${match.path}`, err);
+            data[match.path] = { error: err };
           }
         }
       }),
