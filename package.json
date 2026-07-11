@@ -112,7 +112,6 @@
       "@swissjs/core": "workspace:*",
       "@swissjs/compiler": "workspace:*",
       "@swissjs/router": "workspace:*",
-      "@swissjs/css": "workspace:*",
       "@swissjs/cli": "workspace:*",
       "@swissjs/shared": "workspace:*",
       "@swissjs/security": "workspace:*",
