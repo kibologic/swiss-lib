@@ -49,7 +49,7 @@
     "@types/node": "^20.10.0"
   },
   "peerDependencies": {
-    "@swissjs/compiler": "^1.2.7"
+    "@swissjs/compiler": "^1.2.10"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
