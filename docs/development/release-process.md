@@ -139,15 +139,50 @@ This repo uses Changesets for versioning and publishing.
 
 ## Local Iteration Loop (Testing Only — Not a Substitute for Release)
 
-`alpine-erp` and `alpine-erp-core` don't live-link swiss-lib's monorepo source. Both resolve `@swissjs/core` to a vendored, pre-built copy at `node_modules/.pnpm/@swissjs+core@1.2.4/node_modules/@swissjs/core/dist/` — a real directory, not a symlink back to swiss-lib. All other `@swissjs/core` paths in either repo's `node_modules` are symlinks pointing at that one real directory, so a single sync target covers every consumer.
+`business-alpine` and `alpine-core` (formerly `alpine-erp` and `alpine-erp-core` -- renamed per ADR-016) don't live-link swiss-lib's monorepo source. Both resolve `@swissjs/core` to a vendored, pre-built copy at `node_modules/.pnpm/@swissjs+core@<version>/node_modules/@swissjs/core/dist/` — a real directory, not a symlink back to swiss-lib. All other `@swissjs/core` paths in either repo's `node_modules` are symlinks pointing at that one real directory, so a single sync target covers every consumer.
 
 For rapid local iteration while debugging swiss-lib:
 
 1. Edit TypeScript source in `swiss-lib/runtime/src/`.
 2. Run `pnpm exec tsc -b` inside `swiss-lib/runtime` to compile to `dist/`.
 3. `rsync -a --delete` that fresh `dist/` over the vendored copy at the pnpm-store path above.
-4. Reload the app in the browser — the swite dev servers (port 3000 for alpine-erp-core, port 4000 for alpine-erp's federated module service) serve the patched JS immediately.
+4. Reload the app in the browser — the swite dev servers serve the patched JS immediately.
 
 This is a **hand-patch for testing only**. It bypasses real npm package resolution entirely and gets wiped by any genuine `pnpm install`. It must never be treated as a shipped fix.
 
 **Explicit rule going forward**: only a stable, battle-tested swiss-lib change goes through the real release cycle described above — version bump in `swiss-lib/runtime/package.json`, full test suite green, `npm publish`, then bump the dependency version in alpine's `package.json` and run a real `pnpm install`. The rsync loop is exclusively for iterating toward that state, not a substitute for it.
+
+---
+
+## Cross-Repo Release Ordering (swiss-lib → swite → cli)
+
+Fable ruling A1 (`registry/fable/FABLE-DECISIONS-2026-07-11.md` §A1). `swiss-lib/cli`'s `dev`/`build`
+commands do `await import("@swissjs/swite")` to actually run swite's dev server/builder — this is
+the intended architecture (swite is the platform's canonical build tool; `cli` is not meant to
+support a second, swappable dev-engine — see the same ruling and FRAME-002/SW-001 for why
+extensibility belongs inside swite as a plugin host, not as an abstraction over which build tool
+`cli` invokes). That intentional coupling creates a real, load-bearing publish-ordering
+requirement across two repos:
+
+```
+1. @swissjs/core, @swissjs/compiler  (swiss-lib)  — publish first
+2. @swissjs/swite                    (swite)      — depends on (1), publish second
+3. @swissjs/cli                      (swiss-lib)  — depends on (2) at its own publish time
+```
+
+`cli` and `core`/`compiler` are versioned together in the same swiss-lib release, but `cli`'s
+dependency on `swite` crosses the repo boundary — swite must already have a published version
+that's compatible with whatever `core`/`compiler` version this swiss-lib release just shipped
+before `cli` can safely publish against it.
+
+**Cross-repo dependencies must be semver ranges, never exact pins.** This is not a style
+preference — an exact pin (`"@swissjs/swite": "0.4.2"` instead of `"^0.4.2"`) silently freezes a
+consumer against every future fix on the other side of the repo boundary, since nothing in either
+repo's own CI would ever notice the drift. This exact failure mode already happened once: swite's
+own `package.json` had `@swissjs/compiler`/`@swissjs/core`/`@swissjs/plugin-file-router` exact-pinned
+to versions several releases stale, silently missing real bug fixes shipped since (see the
+cross-repo dependency audit, `registry/docs/swiss-lib/architecture/20-cross-repo-dependency-audit.md`
+§2, for the specific incident and fix).
+
+Revisit this three-repo release chain only if a second, genuinely different dev-engine is ever
+built — do not pre-build a pluggable abstraction for a case that doesn't exist yet.
