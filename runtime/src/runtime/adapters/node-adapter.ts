@@ -84,6 +84,9 @@ export class NodeAdapter implements RuntimeAdapter {
     // Use SWITE builder instead of Vite
     // Dynamic import - types will be available at runtime
     // eslint-disable-next-line @typescript-eslint/no-var-requires
+    // nosemgrep: no-eval -- indirect-eval trick to obtain a genuine dynamic
+    // import() that TS/bundlers won't statically rewrite to require(); the
+    // argument is always a literal module specifier, never untrusted input.
     const switeModule = await (eval('import') as (m: string) => Promise<any>)('@swissjs/swite');
 
     const root = process.cwd();
