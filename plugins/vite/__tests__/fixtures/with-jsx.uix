@@ -1,0 +1,13 @@
+import { SwissComponent } from '@swissjs/core';
+
+interface Props {
+  title: string;
+}
+
+export class WithJsxFixture extends SwissComponent {
+  props: Props = { title: 'Hello' };
+
+  render() {
+    return <div class="card">{this.props.title}</div>;
+  }
+}
