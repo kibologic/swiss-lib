@@ -36,6 +36,25 @@ export function reconcileChildren(
 ) {
   const oldChildNodes = Array.from(parent.childNodes);
 
+  // Staleness guard (FRAME-001 / dual-commit-pipeline race): oldChildren is what THIS
+  // reconciliation pass believes parent's children currently are. In a healthy,
+  // non-racing commit that count always matches what's actually live, because the last
+  // commit to touch `parent` left exactly that many children behind. A mismatch means a
+  // DIFFERENT, more current commit has already changed parent's live children since this
+  // pass's oldVNode snapshot was captured -- e.g. an explicit scheduleUpdate() landed
+  // between a signal-driven commit being queued and it firing, or vice versa (see
+  // reactivity-setup.ts). Proceeding anyway can only misattribute identity by raw
+  // position (no key/class signal disambiguates same-tag siblings) or delete content the
+  // more current commit just added, silently -- see insertion-anchor-repro.test.ts.
+  // Bail out of this entire pass rather than partially applying it: both commit
+  // pipelines always re-render fresh immediately before committing, so whichever pass is
+  // actually current will re-run against an accurate, matching snapshot and correctly
+  // reconcile any real, pending change. Skip only applies to the diffing/mutation below --
+  // it leaves the live DOM exactly as the more current commit left it.
+  if (oldChildren.length !== oldChildNodes.length) {
+    return;
+  }
+
   // Build key maps for efficient lookups
   const oldKeyMap = new Map<
     string | number,
@@ -52,6 +71,15 @@ export function reconcileChildren(
       }
     }
   });
+
+  // FRAME-001: oldChildNodes[index] below is only a meaningful proxy for identity when
+  // oldChildren and the current live parent.childNodes are the same count -- otherwise
+  // index N in one has no relationship to index N in the other (e.g. a stale oldChildren
+  // tree captured by an independent commit pipeline that never tracked a sibling another
+  // pipeline already committed live). Gate the positional fallback on that parity so a
+  // count mismatch falls through to id matching / fresh creation instead of silently
+  // grabbing an unrelated live sibling.
+  const oldChildCountMatchesLiveDom = oldChildren.length === oldChildNodes.length;
 
   oldChildren.forEach((vnode, index) => {
     const key = getKey(vnode, index);
@@ -74,10 +102,12 @@ export function reconcileChildren(
     // exact element the new tree describes. Only trust vnodeBase.dom when
     // it's still genuinely attached to this parent; otherwise the live DOM
     // (oldChildNodes, captured directly from parent.childNodes above) is
-    // the one source of truth that can't be stale.
+    // the one source of truth that can't be stale -- but only once we've
+    // confirmed positional correspondence is even possible (see above).
     const vnodeDom = vnodeBase?.dom;
     const vnodeDomIsLive = vnodeDom != null && vnodeDom.parentNode === parent;
-    let dom = (vnodeDomIsLive ? vnodeDom : undefined) ?? oldChildNodes[index];
+    const positionalFallback = oldChildCountMatchesLiveDom ? oldChildNodes[index] : undefined;
+    let dom = (vnodeDomIsLive ? vnodeDom : undefined) ?? positionalFallback;
 
     // Fallback: Try to match by id if direct match fails
     if (!dom && isElementVNode(vnode) && vnode.props?.id) {
