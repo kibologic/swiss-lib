@@ -1,5 +1,12 @@
 # @kibologic/router
 
+## 1.2.11
+
+### Patch Changes
+
+- Updated dependencies [54af1c4]
+  - @swissjs/core@1.2.11
+
 ## 1.2.9
 
 ### Patch Changes
