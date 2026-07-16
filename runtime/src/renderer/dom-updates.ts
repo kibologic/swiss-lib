@@ -154,7 +154,21 @@ export function updateElementNode(
 
     // CRITICAL FIX: Restore DOM references on old children VNodes
     // Without this, reconcileChildren can't match old VNodes to existing DOM nodes
+    //
+    // FRAME-001 hazard: matching below is by raw array INDEX plus a bare tag-name (or
+    // constructor) check -- it has no key/class/attribute signal to disambiguate same-tag
+    // siblings. Position can only stand in for identity when the old (logical) children
+    // and the current live DOM children are the same count: that's the minimum necessary
+    // condition for index N in one array to plausibly correspond to index N in the other.
+    // When counts differ -- e.g. this oldVNode is a STALE tree captured by an independent
+    // commit pipeline that never individually tracked a sibling another pipeline already
+    // committed live -- position carries no information at all, and guessing anyway binds
+    // an unrelated live sibling's DOM node to this old child (see
+    // insertion-anchor-repro.test.ts). Leaving .dom unset here is safe: reconcileChildren's
+    // own key-based matching either finds the real match or falls back to creating a fresh
+    // DOM node, rather than misappropriating a live one.
     const domChildren = Array.from(dom.childNodes);
+    const oldChildCountMatchesLiveDom = oldChildren.length === domChildren.length;
     oldChildren.forEach((oldChild, index) => {
       if (oldChild == null || typeof oldChild === "boolean") return;
 
@@ -165,7 +179,7 @@ export function updateElementNode(
       if (oldChildBase?.dom) return;
 
       // Try to restore from metadata first
-      if (index < domChildren.length) {
+      if (oldChildCountMatchesLiveDom && index < domChildren.length) {
         const childDom = domChildren[index];
         const metadataVNode = vnodeMetadata.get(childDom);
         if (metadataVNode && oldChildBase) {
@@ -217,14 +231,20 @@ export function updateElementNode(
 
   // CRITICAL: Transfer DOM refs from existing DOM to new children when new child has no .dom
   // Fixes root update clearing content (e.g. App → div.erp-root → EventBusProvider)
+  //
+  // Same FRAME-001 hazard as the old-children restore loop above: index+tag-name matching
+  // is only meaningful when the new (logical) children count matches what's currently
+  // live. When it doesn't, skip the transfer and let reconcileChildren's key-based
+  // matching (or fresh creation) establish identity instead of guessing by position.
   const domChildren = Array.from(dom.childNodes);
+  const newChildCountMatchesLiveDom = newChildren.length === domChildren.length;
   newChildren.forEach((newChild, i) => {
     if (newChild == null || typeof newChild === "boolean") return;
     const newChildBase = typeof newChild === "object" && newChild !== null
       ? (newChild as unknown as VNodeBase)
       : null;
     if (newChildBase?.dom) return;
-    if (i >= domChildren.length) return;
+    if (!newChildCountMatchesLiveDom || i >= domChildren.length) return;
     const childDom = domChildren[i];
     if (isComponentVNode(newChild) && childDom instanceof HTMLElement) {
       const direct = componentInstances.get(childDom);
