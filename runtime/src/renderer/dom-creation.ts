@@ -33,6 +33,37 @@ import { DiffingError } from "./errors.js";
 import { reconcileProps } from "./props-updates.js";
 import { logger } from "../utils/logger.js";
 
+/**
+ * Arm the one-tick post-initialize update skip on a freshly created child component.
+ *
+ * dom-creation sets `_skipNextUpdate` right after a child's `initialize()` so the single
+ * redundant update that can immediately follow creation (the parent's synchronous
+ * post-create re-render of the just-mounted child) is a no-op instead of a double commit.
+ * That redundant update, when it happens, runs SYNCHRONOUSLY in this same tick — a child
+ * component's `scheduleUpdate()` calls `performUpdate()` synchronously — so it is still
+ * skipped.
+ *
+ * The bug this fixes: `_skipNextUpdate` is only ever consumed by the explicit
+ * `performUpdate()` path; the signal-driven `commitVNode()` path never clears it. When the
+ * redundant post-init update did not arrive (the common case), the flag lingered
+ * indefinitely and silently swallowed the NEXT real update to that child — e.g. the
+ * prop-driven re-render of an `AppStrip` icon after a navigation click — producing the
+ * "click does nothing, the same click again works, a reload fixes it" symptom. Because it
+ * lives here and in `update-manager`, not in `reconcileChildren`, it reproduced on every
+ * core version regardless of the insertion-anchor reconciliation fixes.
+ *
+ * Scoping the flag to this tick via a microtask clear preserves the intended synchronous
+ * skip while guaranteeing the flag cannot outlive the creation window to drop a later,
+ * genuine update. A stray extra commit is a safe no-op under the hardened reconciler; a
+ * dropped update is not.
+ */
+function armPostInitSkip(ci: ReturnType<typeof asInternal>): void {
+  ci._skipNextUpdate = true;
+  const clear = () => { ci._skipNextUpdate = false; };
+  if (typeof queueMicrotask === "function") queueMicrotask(clear);
+  else void Promise.resolve().then(clear);
+}
+
 // Forward declarations for functions passed as parameters
 type RenderComponentFn = (
   vnode: ComponentVNode,
@@ -288,7 +319,7 @@ export function createDOMNode(
             if (typeof ci.initialize === "function") {
               logger.lifecycle(`${existingInstance.constructor.name}: initialize (existing instance)`);
               ci.initialize();
-              ci._skipNextUpdate = true;
+              armPostInitSkip(ci);
               if (typeof ci.executeHookPhase === "function") {
                 logger.lifecycle(`${existingInstance.constructor.name}: mounted (existing instance)`);
                 void ci.executeHookPhase("mounted");
@@ -351,7 +382,7 @@ export function createDOMNode(
         if (!ci._initialized && !ci.__initialized) {
           if (typeof ci.initialize === "function") {
             ci.initialize();
-            ci._skipNextUpdate = true;
+            armPostInitSkip(ci);
             if (typeof ci.executeHookPhase === "function") {
               void ci.executeHookPhase("beforeMount");
               logger.lifecycle(`${instance.constructor.name}: mounted`);
