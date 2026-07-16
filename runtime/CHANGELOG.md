@@ -1,5 +1,11 @@
 # @swissjs/core
 
+## 1.2.13
+
+### Patch Changes
+
+- Republish: 1.2.12 was built without the `_skipNextUpdate` click-no-response fix due to a build-tooling error (the runtime dist was not regenerated before publish). 1.2.13 ships the correct build with the fix included. 1.2.12 is deprecated on npm.
+
 ## 1.2.12
 
 ### Patch Changes
