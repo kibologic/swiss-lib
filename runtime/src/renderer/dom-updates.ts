@@ -101,7 +101,16 @@ export function updateDOMNode(
       updateComponentNodeFn(dom as HTMLElement, vnode, oldVNode);
     }
 
-    if (vnode != null && typeof vnode !== "boolean") {
+    // Do NOT overwrite `dom`'s baseline with a component vnode. updateComponentNode /
+    // applyRenderedOutput already stored the component's RENDERED element output (the real
+    // child tree) as the baseline for `dom`. A component vnode's own `children` are its slot
+    // content — usually empty — so storing it here clobbers that baseline with a zero/mismatched
+    // child count. The next reconcile then reads that corrupted baseline, its live-vs-baseline
+    // child count disagrees, and reconcileChildren's dual-commit staleness guard bails and
+    // silently drops the update. That is the "click / nav produces no response" bug: a child
+    // component (e.g. the shell AppStrip) froze after its first commit because its baseline was
+    // overwritten with the parent's component vnode instead of its own rendered output.
+    if (vnode != null && typeof vnode !== "boolean" && !isComponentVNode(vnode)) {
       vnodeMetadata.set(dom, vnode);
     }
     if (typeof vnode === "object" && vnode !== null && "dom" in vnode) {
