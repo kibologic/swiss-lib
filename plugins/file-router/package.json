@@ -1,6 +1,6 @@
 {
   "name": "@swissjs/plugin-file-router",
-  "version": "1.2.11",
+  "version": "1.2.13",
   "description": "File-based routing plugin for SwissJS",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
