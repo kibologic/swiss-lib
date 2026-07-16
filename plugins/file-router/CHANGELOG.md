@@ -1,5 +1,11 @@
 <!--
 
+## 1.2.12
+### Patch Changes
+
+- Updated dependencies [457e785]
+  - @swissjs/core@1.2.12
+
 ## 1.2.11
 ### Patch Changes
 
