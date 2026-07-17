@@ -51,7 +51,23 @@ export function reconcileChildren(
   // actually current will re-run against an accurate, matching snapshot and correctly
   // reconcile any real, pending change. Skip only applies to the diffing/mutation below --
   // it leaves the live DOM exactly as the more current commit left it.
-  if (oldChildren.length !== oldChildNodes.length) {
+  //
+  // CLICK-NO-RESPONSE FIX (registry/fable/click-bug/, 2026-07-17): oldChildren is the RAW
+  // logical children array and can contain `null`/`false` entries for conditional children
+  // (`{cond && <X/>}`) that render nothing -- createDOMNode never gives those a DOM node, so
+  // oldChildNodes (captured directly from parent.childNodes, immediately above) never counts
+  // them either. Comparing the raw length against oldChildNodes.length therefore permanently
+  // mismatches for ANY element that has such a conditional among its direct children --
+  // starting with the very first commit after mount, since the initial baseline already
+  // carries the same unfiltered count -- and this guard bails out of reconciling that
+  // element's entire child list, every time, even though nothing is actually stale. Filter
+  // out the non-rendering placeholders before comparing so the guard only fires for genuine
+  // dual-commit-pipeline races (see comment above), not for ordinary conditional rendering.
+  const oldChildrenRenderedCount = oldChildren.reduce(
+    (n, c) => n + (c != null && typeof c !== "boolean" ? 1 : 0),
+    0,
+  );
+  if (oldChildrenRenderedCount !== oldChildNodes.length) {
     return;
   }
 
