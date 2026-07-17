@@ -27,6 +27,61 @@ import { logger } from "../utils/logger.js";
 declare function updateDOMNode(dom: Node, vnode: VNode): void;
 declare function createDOMNode(vnode: VNode | null | undefined | boolean): Node;
 
+// STUCK-LOADING FIX (dual-commit-pipeline bail has no retry, 2026-07-17): the staleness guard
+// below assumes a bailed pass is always superseded by some OTHER, already-in-flight commit that
+// will "re-run against an accurate, matching snapshot and correctly reconcile any real, pending
+// change" -- but that other commit only revisits the SAME parent if its own vnode tree still
+// includes that parent as a live position. If the two racing passes diverge upstream of `parent`
+// (e.g. an unrelated sibling subtree's count changed, tripping the guard one level up, while
+// `parent` itself belongs to a branch neither pass's surviving commit ever re-touches), the
+// change described by THIS pass is not "deferred" as the comment above assumes -- it is dropped
+// permanently. Live-confirmed (registry/fable/loading-state/): a DataTable child's `loading`
+// prop, recomputed correctly by every render() call, never reached the live instance because
+// every commit attempt bailed on a transient count mismatch and nothing else ever re-touched
+// that exact position -- the skeleton stayed on screen forever. A single microtask retry against
+// the owning component gives a merely-transient race (the common case) a real second chance
+// instead of silently losing the update: by the time the microtask fires, whichever pass one the
+// race has already committed, so the retry's own fresh render only has to correct positions that
+// were genuinely left behind.
+// A bail can also be PERSISTENT rather than transient -- some component's own render() shape
+// genuinely disagrees with its live DOM on every attempt (a real structural bug elsewhere, not a
+// race). Retrying that unboundedly would replace "update silently lost forever" with "update
+// silently spins forever" -- itself a real regression (confirmed while validating this fix: an
+// unrelated component's retry loop tripped UpdateManager's own 60/s throttle warning). Cap
+// retries per parent within a short rolling window; past the cap, stop and leave the guard's
+// original (silent-drop) behavior in place rather than spinning -- a persistent mismatch needs a
+// real fix at its source, not an indefinitely repeating band-aid.
+const MAX_RECONCILE_RETRIES = 3;
+const RECONCILE_RETRY_WINDOW_MS = 1000;
+const reconcileRetryScheduled = new WeakSet<HTMLElement>();
+const reconcileRetryAttempts = new WeakMap<HTMLElement, { count: number; windowStart: number }>();
+function scheduleReconcileRetry(parent: HTMLElement): void {
+  if (reconcileRetryScheduled.has(parent)) return;
+
+  const now = Date.now();
+  const attempts = reconcileRetryAttempts.get(parent);
+  if (attempts && now - attempts.windowStart < RECONCILE_RETRY_WINDOW_MS) {
+    if (attempts.count >= MAX_RECONCILE_RETRIES) return;
+    attempts.count++;
+  } else {
+    reconcileRetryAttempts.set(parent, { count: 1, windowStart: now });
+  }
+
+  reconcileRetryScheduled.add(parent);
+  queueMicrotask(() => {
+    reconcileRetryScheduled.delete(parent);
+    let node: Node | null = parent;
+    while (node) {
+      const owner = componentInstances.get(node) ?? domToHostComponent.get(node);
+      if (owner) {
+        owner.scheduleUpdate?.();
+        return;
+      }
+      node = node.parentNode;
+    }
+  });
+}
+
 // Key-based child diffing algorithm
 export function reconcileChildren(
   parent: HTMLElement,
@@ -67,6 +122,7 @@ export function reconcileChildren(
   // dual-commit-pipeline races (see comment above), not for ordinary conditional rendering.
   const oldChildrenRendered = filterValidVNodes(oldChildren);
   if (oldChildrenRendered.length !== oldChildNodes.length) {
+    scheduleReconcileRetry(parent);
     return;
   }
 
