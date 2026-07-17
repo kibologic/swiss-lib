@@ -467,15 +467,26 @@ export class SwissComponent<
     // Preserve input focus across reconciliation (replaceChild destroys focused DOM nodes)
     const focusState = saveFocusState();
 
-    if (existingDom) {
-      updateDOMNode(existingDom, newVNode);
-      if (newVNodeBase) newVNodeBase.dom = existingDom as HTMLElement | Text;
-    } else {
-      renderToDOM(newVNode, container!);
-      if (newVNodeBase && container!.firstChild) {
-        newVNodeBase.dom = container!.firstChild as HTMLElement | Text;
+    // STUCK-LOADING FIX (dual-commit-pipeline, 2026-07-18): every other commit strategy
+    // (update-strategies.ts's updateWithDomNode/updateChildComponent/handleNoUpdatePath/
+    // updateRootComponent) wraps its updateDOMNode()/renderToDOM() call in untrack() --
+    // this is the one path that didn't. commitVNode is invoked from inside the signal
+    // effect's queued microtask (reactivity-setup.ts), a context where the module-level
+    // _currentEffect ambient tracking pointer is not guaranteed clean (e.g. a nested
+    // component's forced render recursing back through an active effect elsewhere in the
+    // same microtask-drain). Wrap it to match the established pattern rather than being
+    // the sole exception to it.
+    untrack(() => {
+      if (existingDom) {
+        updateDOMNode(existingDom, newVNode);
+        if (newVNodeBase) newVNodeBase.dom = existingDom as HTMLElement | Text;
+      } else {
+        renderToDOM(newVNode, container!);
+        if (newVNodeBase && container!.firstChild) {
+          newVNodeBase.dom = container!.firstChild as HTMLElement | Text;
+        }
       }
-    }
+    });
 
     this._vnode = newVNode;
     this._domNode = (newVNodeBase?.dom as Node | null) ?? this._domNode;

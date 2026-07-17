@@ -346,9 +346,23 @@ export function updateComponentNode(
     const eci = asInternal(existingInstance);
     eci._initialized = true;
     eci.__initialized = true;
-    if (vnode.props) {
-      existingInstance.props = vnode.props;
-    }
+    // STUCK-LOADING FIX (dual-commit-pipeline, 2026-07-18): do NOT wholesale-replace
+    // existingInstance.props here. renderComponentFn (renderComponentImpl,
+    // component-rendering.ts) already does a per-key merge onto the EXISTING reactive
+    // proxy when given an existingInstance -- by design, per its own comment: "Replacing
+    // the whole object would lose Signal tracking established by the render effect...
+    // Mutating individual keys fires their setters, which notifies the render effect and
+    // triggers a re-render." Assigning `existingInstance.props = vnode.props` HERE, before
+    // that merge runs, discards the reactive proxy the child's OWN setupReactivity()
+    // effect is subscribed to and replaces it with a plain object -- renderComponentFn's
+    // own merge then sees existingProps already === incomingProps (no per-key diff left to
+    // apply) and its setters never fire. This forced render still commits correctly via its
+    // own untrack(() => instance.render()) call, but the child's independent reactive
+    // effect is left permanently subscribed to an orphaned, discarded props object --
+    // any FUTURE update reaching this component through its OWN signal effect (rather
+    // than through another parent-driven push like this one) silently no-ops. Live-
+    // confirmed as a contributing mechanism to the platform-wide "stuck loading" bug
+    // (registry/fable/loading-state/INVESTIGATION-LOG.md).
     clearRenderCache(existingInstance);
 
     vnode.__componentInstance = existingInstance;
@@ -392,9 +406,9 @@ export function updateComponentNode(
       : dom;
 
     if (existingInstance) {
-      if (vnode.props) {
-        existingInstance.props = vnode.props;
-      }
+      // STUCK-LOADING FIX: same wholesale-replace hazard as the branch above -- let
+      // renderComponentFn's own per-key merge (component-rendering.ts) update the
+      // existing reactive proxy in place instead of discarding it here.
       clearRenderCache(existingInstance);
     }
     const newRendered = renderComponentFn(vnode, existingInstance);
