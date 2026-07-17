@@ -28,6 +28,7 @@ import {
   isElementVNode,
   isComponentVNode,
   cleanupNode,
+  filterValidVNodes,
 } from "./types.js";
 import { DiffingError } from "./errors.js";
 import { clearRenderCache } from "./render-cache.js";
@@ -176,11 +177,17 @@ export function updateElementNode(
     // insertion-anchor-repro.test.ts). Leaving .dom unset here is safe: reconcileChildren's
     // own key-based matching either finds the real match or falls back to creating a fresh
     // DOM node, rather than misappropriating a live one.
+    //
+    // CLICK-NO-RESPONSE FIX (registry/fable/click-bug/, 2026-07-17): oldChildren is the RAW
+    // logical array and can contain `null`/`false` conditional-child placeholders that never
+    // got a DOM node at creation (see filterValidVNodes, used by createDOMNode) -- comparing
+    // its raw length against domChildren.length, and indexing domChildren by oldChildren's raw
+    // index, therefore never lines up for an element with such a conditional among its direct
+    // children. Restore against the same filtered view createDOMNode used.
     const domChildren = Array.from(dom.childNodes);
-    const oldChildCountMatchesLiveDom = oldChildren.length === domChildren.length;
-    oldChildren.forEach((oldChild, index) => {
-      if (oldChild == null || typeof oldChild === "boolean") return;
-
+    const oldChildrenRendered = filterValidVNodes(oldChildren);
+    const oldChildCountMatchesLiveDom = oldChildrenRendered.length === domChildren.length;
+    oldChildrenRendered.forEach((oldChild, index) => {
       // If old child already has DOM reference, keep it
       const oldChildBase = typeof oldChild === "object" && oldChild !== null
         ? (oldChild as unknown as VNodeBase)
@@ -245,10 +252,14 @@ export function updateElementNode(
   // is only meaningful when the new (logical) children count matches what's currently
   // live. When it doesn't, skip the transfer and let reconcileChildren's key-based
   // matching (or fresh creation) establish identity instead of guessing by position.
+  //
+  // CLICK-NO-RESPONSE FIX (registry/fable/click-bug/, 2026-07-17): same raw-vs-filtered
+  // mismatch as the old-children loop above -- newChildren can contain `null`/`false`
+  // conditional placeholders too, so compare/index against the filtered view.
   const domChildren = Array.from(dom.childNodes);
-  const newChildCountMatchesLiveDom = newChildren.length === domChildren.length;
-  newChildren.forEach((newChild, i) => {
-    if (newChild == null || typeof newChild === "boolean") return;
+  const newChildrenRendered = filterValidVNodes(newChildren);
+  const newChildCountMatchesLiveDom = newChildrenRendered.length === domChildren.length;
+  newChildrenRendered.forEach((newChild, i) => {
     const newChildBase = typeof newChild === "object" && newChild !== null
       ? (newChild as unknown as VNodeBase)
       : null;

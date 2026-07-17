@@ -18,6 +18,7 @@ import {
   isComponentVNode,
   isElementVNode,
   cleanupNode,
+  filterValidVNodes,
 } from "./types.js";
 import { logger } from "../utils/logger.js";
 
@@ -54,20 +55,18 @@ export function reconcileChildren(
   //
   // CLICK-NO-RESPONSE FIX (registry/fable/click-bug/, 2026-07-17): oldChildren is the RAW
   // logical children array and can contain `null`/`false` entries for conditional children
-  // (`{cond && <X/>}`) that render nothing -- createDOMNode never gives those a DOM node, so
-  // oldChildNodes (captured directly from parent.childNodes, immediately above) never counts
-  // them either. Comparing the raw length against oldChildNodes.length therefore permanently
-  // mismatches for ANY element that has such a conditional among its direct children --
-  // starting with the very first commit after mount, since the initial baseline already
-  // carries the same unfiltered count -- and this guard bails out of reconciling that
-  // element's entire child list, every time, even though nothing is actually stale. Filter
-  // out the non-rendering placeholders before comparing so the guard only fires for genuine
+  // (`{cond && <X/>}`) that render nothing -- createDOMNode never gives those a DOM node (see
+  // filterValidVNodes, used at creation time), so oldChildNodes (captured directly from
+  // parent.childNodes, immediately above) never counts them either. Comparing the raw length
+  // against oldChildNodes.length therefore permanently mismatches for ANY element that has
+  // such a conditional among its direct children -- starting with the very first commit after
+  // mount, since the initial baseline already carries the same unfiltered count -- and this
+  // guard bails out of reconciling that element's entire child list, every time, even though
+  // nothing is actually stale. Apply the same filtering used at creation time before comparing
+  // (and before any positional matching below) so the guard only fires for genuine
   // dual-commit-pipeline races (see comment above), not for ordinary conditional rendering.
-  const oldChildrenRenderedCount = oldChildren.reduce(
-    (n, c) => n + (c != null && typeof c !== "boolean" ? 1 : 0),
-    0,
-  );
-  if (oldChildrenRenderedCount !== oldChildNodes.length) {
+  const oldChildrenRendered = filterValidVNodes(oldChildren);
+  if (oldChildrenRendered.length !== oldChildNodes.length) {
     return;
   }
 
@@ -89,15 +88,15 @@ export function reconcileChildren(
   });
 
   // FRAME-001: oldChildNodes[index] below is only a meaningful proxy for identity when
-  // oldChildren and the current live parent.childNodes are the same count -- otherwise
-  // index N in one has no relationship to index N in the other (e.g. a stale oldChildren
-  // tree captured by an independent commit pipeline that never tracked a sibling another
-  // pipeline already committed live). Gate the positional fallback on that parity so a
-  // count mismatch falls through to id matching / fresh creation instead of silently
-  // grabbing an unrelated live sibling.
-  const oldChildCountMatchesLiveDom = oldChildren.length === oldChildNodes.length;
+  // oldChildrenRendered and the current live parent.childNodes are the same count --
+  // otherwise index N in one has no relationship to index N in the other (e.g. a stale
+  // oldChildren tree captured by an independent commit pipeline that never tracked a sibling
+  // another pipeline already committed live). The guard above already proved that parity for
+  // oldChildrenRendered specifically (raw oldChildren can't be used here for the same reason
+  // it can't be used in the guard -- see CLICK-NO-RESPONSE FIX above).
+  const oldChildCountMatchesLiveDom = oldChildrenRendered.length === oldChildNodes.length;
 
-  oldChildren.forEach((vnode, index) => {
+  oldChildrenRendered.forEach((vnode, index) => {
     const key = getKey(vnode, index);
     // CRITICAL: Use vnode.dom directly instead of looking up by index
     // This ensures we correctly match old VNodes with their DOM nodes
