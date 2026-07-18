@@ -28,6 +28,7 @@ import {
   isElementVNode,
   isComponentVNode,
   cleanupNode,
+  filterValidVNodes,
 } from "./types.js";
 import { DiffingError } from "./errors.js";
 import { clearRenderCache } from "./render-cache.js";
@@ -101,7 +102,16 @@ export function updateDOMNode(
       updateComponentNodeFn(dom as HTMLElement, vnode, oldVNode);
     }
 
-    if (vnode != null && typeof vnode !== "boolean") {
+    // Do NOT overwrite `dom`'s baseline with a component vnode. updateComponentNode /
+    // applyRenderedOutput already stored the component's RENDERED element output (the real
+    // child tree) as the baseline for `dom`. A component vnode's own `children` are its slot
+    // content — usually empty — so storing it here clobbers that baseline with a zero/mismatched
+    // child count. The next reconcile then reads that corrupted baseline, its live-vs-baseline
+    // child count disagrees, and reconcileChildren's dual-commit staleness guard bails and
+    // silently drops the update. That is the "click / nav produces no response" bug: a child
+    // component (e.g. the shell AppStrip) froze after its first commit because its baseline was
+    // overwritten with the parent's component vnode instead of its own rendered output.
+    if (vnode != null && typeof vnode !== "boolean" && !isComponentVNode(vnode)) {
       vnodeMetadata.set(dom, vnode);
     }
     if (typeof vnode === "object" && vnode !== null && "dom" in vnode) {
@@ -167,11 +177,17 @@ export function updateElementNode(
     // insertion-anchor-repro.test.ts). Leaving .dom unset here is safe: reconcileChildren's
     // own key-based matching either finds the real match or falls back to creating a fresh
     // DOM node, rather than misappropriating a live one.
+    //
+    // CLICK-NO-RESPONSE FIX (registry/fable/click-bug/, 2026-07-17): oldChildren is the RAW
+    // logical array and can contain `null`/`false` conditional-child placeholders that never
+    // got a DOM node at creation (see filterValidVNodes, used by createDOMNode) -- comparing
+    // its raw length against domChildren.length, and indexing domChildren by oldChildren's raw
+    // index, therefore never lines up for an element with such a conditional among its direct
+    // children. Restore against the same filtered view createDOMNode used.
     const domChildren = Array.from(dom.childNodes);
-    const oldChildCountMatchesLiveDom = oldChildren.length === domChildren.length;
-    oldChildren.forEach((oldChild, index) => {
-      if (oldChild == null || typeof oldChild === "boolean") return;
-
+    const oldChildrenRendered = filterValidVNodes(oldChildren);
+    const oldChildCountMatchesLiveDom = oldChildrenRendered.length === domChildren.length;
+    oldChildrenRendered.forEach((oldChild, index) => {
       // If old child already has DOM reference, keep it
       const oldChildBase = typeof oldChild === "object" && oldChild !== null
         ? (oldChild as unknown as VNodeBase)
@@ -236,10 +252,14 @@ export function updateElementNode(
   // is only meaningful when the new (logical) children count matches what's currently
   // live. When it doesn't, skip the transfer and let reconcileChildren's key-based
   // matching (or fresh creation) establish identity instead of guessing by position.
+  //
+  // CLICK-NO-RESPONSE FIX (registry/fable/click-bug/, 2026-07-17): same raw-vs-filtered
+  // mismatch as the old-children loop above -- newChildren can contain `null`/`false`
+  // conditional placeholders too, so compare/index against the filtered view.
   const domChildren = Array.from(dom.childNodes);
-  const newChildCountMatchesLiveDom = newChildren.length === domChildren.length;
-  newChildren.forEach((newChild, i) => {
-    if (newChild == null || typeof newChild === "boolean") return;
+  const newChildrenRendered = filterValidVNodes(newChildren);
+  const newChildCountMatchesLiveDom = newChildrenRendered.length === domChildren.length;
+  newChildrenRendered.forEach((newChild, i) => {
     const newChildBase = typeof newChild === "object" && newChild !== null
       ? (newChild as unknown as VNodeBase)
       : null;
@@ -326,9 +346,23 @@ export function updateComponentNode(
     const eci = asInternal(existingInstance);
     eci._initialized = true;
     eci.__initialized = true;
-    if (vnode.props) {
-      existingInstance.props = vnode.props;
-    }
+    // STUCK-LOADING FIX (dual-commit-pipeline, 2026-07-18): do NOT wholesale-replace
+    // existingInstance.props here. renderComponentFn (renderComponentImpl,
+    // component-rendering.ts) already does a per-key merge onto the EXISTING reactive
+    // proxy when given an existingInstance -- by design, per its own comment: "Replacing
+    // the whole object would lose Signal tracking established by the render effect...
+    // Mutating individual keys fires their setters, which notifies the render effect and
+    // triggers a re-render." Assigning `existingInstance.props = vnode.props` HERE, before
+    // that merge runs, discards the reactive proxy the child's OWN setupReactivity()
+    // effect is subscribed to and replaces it with a plain object -- renderComponentFn's
+    // own merge then sees existingProps already === incomingProps (no per-key diff left to
+    // apply) and its setters never fire. This forced render still commits correctly via its
+    // own untrack(() => instance.render()) call, but the child's independent reactive
+    // effect is left permanently subscribed to an orphaned, discarded props object --
+    // any FUTURE update reaching this component through its OWN signal effect (rather
+    // than through another parent-driven push like this one) silently no-ops. Live-
+    // confirmed as a contributing mechanism to the platform-wide "stuck loading" bug
+    // (registry/fable/loading-state/INVESTIGATION-LOG.md).
     clearRenderCache(existingInstance);
 
     vnode.__componentInstance = existingInstance;
@@ -372,9 +406,9 @@ export function updateComponentNode(
       : dom;
 
     if (existingInstance) {
-      if (vnode.props) {
-        existingInstance.props = vnode.props;
-      }
+      // STUCK-LOADING FIX: same wholesale-replace hazard as the branch above -- let
+      // renderComponentFn's own per-key merge (component-rendering.ts) update the
+      // existing reactive proxy in place instead of discarding it here.
       clearRenderCache(existingInstance);
     }
     const newRendered = renderComponentFn(vnode, existingInstance);
