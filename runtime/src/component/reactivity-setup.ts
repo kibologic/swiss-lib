@@ -102,6 +102,20 @@ export class ReactivityManager<
     this.trackEffect(renderEffect);
   }
 
+  // NOTE: a universal post-commit "verification retry" (unconditionally re-invoking
+  // scheduleUpdate() after every signal-driven commit, to self-heal the stuck-loading
+  // class of bug the same way ReportsHub's component-level _forceCommit() does) was
+  // tried and reverted here (2026-07-18) -- live-confirmed to trip a REAL component
+  // (business.alpine's Stock Levels DataTable) into UpdateManager's 60-updates/sec
+  // throttle guard ("Possible infinite loop"), i.e. a genuine regression, not just a
+  // performance concern. The retry's own scheduleUpdate() call evidently re-triggers
+  // this exact effect for some components in a way that doesn't converge. Do not
+  // reintroduce this pattern at the framework level without first understanding why it
+  // resonates for DataTable specifically -- see registry/fable/loading-state/
+  // INVESTIGATION-LOG.md. The props-linkage fix (dom-updates.ts's updateComponentNode)
+  // and the untrack() fix (component.ts's commitVNode) above are unaffected by this
+  // revert and remain in place.
+
   /**
    * Ensure state is reactive
    */

@@ -18,6 +18,7 @@ import {
   isComponentVNode,
   isElementVNode,
   cleanupNode,
+  filterValidVNodes,
 } from "./types.js";
 import { logger } from "../utils/logger.js";
 
@@ -25,6 +26,61 @@ import { logger } from "../utils/logger.js";
 // We use function declarations to allow hoisting and avoid circular dependency issues
 declare function updateDOMNode(dom: Node, vnode: VNode): void;
 declare function createDOMNode(vnode: VNode | null | undefined | boolean): Node;
+
+// STUCK-LOADING FIX (dual-commit-pipeline bail has no retry, 2026-07-17): the staleness guard
+// below assumes a bailed pass is always superseded by some OTHER, already-in-flight commit that
+// will "re-run against an accurate, matching snapshot and correctly reconcile any real, pending
+// change" -- but that other commit only revisits the SAME parent if its own vnode tree still
+// includes that parent as a live position. If the two racing passes diverge upstream of `parent`
+// (e.g. an unrelated sibling subtree's count changed, tripping the guard one level up, while
+// `parent` itself belongs to a branch neither pass's surviving commit ever re-touches), the
+// change described by THIS pass is not "deferred" as the comment above assumes -- it is dropped
+// permanently. Live-confirmed (registry/fable/loading-state/): a DataTable child's `loading`
+// prop, recomputed correctly by every render() call, never reached the live instance because
+// every commit attempt bailed on a transient count mismatch and nothing else ever re-touched
+// that exact position -- the skeleton stayed on screen forever. A single microtask retry against
+// the owning component gives a merely-transient race (the common case) a real second chance
+// instead of silently losing the update: by the time the microtask fires, whichever pass one the
+// race has already committed, so the retry's own fresh render only has to correct positions that
+// were genuinely left behind.
+// A bail can also be PERSISTENT rather than transient -- some component's own render() shape
+// genuinely disagrees with its live DOM on every attempt (a real structural bug elsewhere, not a
+// race). Retrying that unboundedly would replace "update silently lost forever" with "update
+// silently spins forever" -- itself a real regression (confirmed while validating this fix: an
+// unrelated component's retry loop tripped UpdateManager's own 60/s throttle warning). Cap
+// retries per parent within a short rolling window; past the cap, stop and leave the guard's
+// original (silent-drop) behavior in place rather than spinning -- a persistent mismatch needs a
+// real fix at its source, not an indefinitely repeating band-aid.
+const MAX_RECONCILE_RETRIES = 3;
+const RECONCILE_RETRY_WINDOW_MS = 1000;
+const reconcileRetryScheduled = new WeakSet<HTMLElement>();
+const reconcileRetryAttempts = new WeakMap<HTMLElement, { count: number; windowStart: number }>();
+function scheduleReconcileRetry(parent: HTMLElement): void {
+  if (reconcileRetryScheduled.has(parent)) return;
+
+  const now = Date.now();
+  const attempts = reconcileRetryAttempts.get(parent);
+  if (attempts && now - attempts.windowStart < RECONCILE_RETRY_WINDOW_MS) {
+    if (attempts.count >= MAX_RECONCILE_RETRIES) return;
+    attempts.count++;
+  } else {
+    reconcileRetryAttempts.set(parent, { count: 1, windowStart: now });
+  }
+
+  reconcileRetryScheduled.add(parent);
+  queueMicrotask(() => {
+    reconcileRetryScheduled.delete(parent);
+    let node: Node | null = parent;
+    while (node) {
+      const owner = componentInstances.get(node) ?? domToHostComponent.get(node);
+      if (owner) {
+        owner.scheduleUpdate?.();
+        return;
+      }
+      node = node.parentNode;
+    }
+  });
+}
 
 // Key-based child diffing algorithm
 export function reconcileChildren(
@@ -51,7 +107,22 @@ export function reconcileChildren(
   // actually current will re-run against an accurate, matching snapshot and correctly
   // reconcile any real, pending change. Skip only applies to the diffing/mutation below --
   // it leaves the live DOM exactly as the more current commit left it.
-  if (oldChildren.length !== oldChildNodes.length) {
+  //
+  // CLICK-NO-RESPONSE FIX (registry/fable/click-bug/, 2026-07-17): oldChildren is the RAW
+  // logical children array and can contain `null`/`false` entries for conditional children
+  // (`{cond && <X/>}`) that render nothing -- createDOMNode never gives those a DOM node (see
+  // filterValidVNodes, used at creation time), so oldChildNodes (captured directly from
+  // parent.childNodes, immediately above) never counts them either. Comparing the raw length
+  // against oldChildNodes.length therefore permanently mismatches for ANY element that has
+  // such a conditional among its direct children -- starting with the very first commit after
+  // mount, since the initial baseline already carries the same unfiltered count -- and this
+  // guard bails out of reconciling that element's entire child list, every time, even though
+  // nothing is actually stale. Apply the same filtering used at creation time before comparing
+  // (and before any positional matching below) so the guard only fires for genuine
+  // dual-commit-pipeline races (see comment above), not for ordinary conditional rendering.
+  const oldChildrenRendered = filterValidVNodes(oldChildren);
+  if (oldChildrenRendered.length !== oldChildNodes.length) {
+    scheduleReconcileRetry(parent);
     return;
   }
 
@@ -73,15 +144,15 @@ export function reconcileChildren(
   });
 
   // FRAME-001: oldChildNodes[index] below is only a meaningful proxy for identity when
-  // oldChildren and the current live parent.childNodes are the same count -- otherwise
-  // index N in one has no relationship to index N in the other (e.g. a stale oldChildren
-  // tree captured by an independent commit pipeline that never tracked a sibling another
-  // pipeline already committed live). Gate the positional fallback on that parity so a
-  // count mismatch falls through to id matching / fresh creation instead of silently
-  // grabbing an unrelated live sibling.
-  const oldChildCountMatchesLiveDom = oldChildren.length === oldChildNodes.length;
+  // oldChildrenRendered and the current live parent.childNodes are the same count --
+  // otherwise index N in one has no relationship to index N in the other (e.g. a stale
+  // oldChildren tree captured by an independent commit pipeline that never tracked a sibling
+  // another pipeline already committed live). The guard above already proved that parity for
+  // oldChildrenRendered specifically (raw oldChildren can't be used here for the same reason
+  // it can't be used in the guard -- see CLICK-NO-RESPONSE FIX above).
+  const oldChildCountMatchesLiveDom = oldChildrenRendered.length === oldChildNodes.length;
 
-  oldChildren.forEach((vnode, index) => {
+  oldChildrenRendered.forEach((vnode, index) => {
     const key = getKey(vnode, index);
     // CRITICAL: Use vnode.dom directly instead of looking up by index
     // This ensures we correctly match old VNodes with their DOM nodes
