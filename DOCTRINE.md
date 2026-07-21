@@ -1,5 +1,14 @@
 # DOCTRINE — standing law for every agent working in this repository
 
+> 🧭 **Article 18 — SwissJS evolves from its own architecture, never by imitation.** Design
+> decisions originate from the SwissJS architecture and concrete Alpine requirements. **Never
+> introduce an API, abstraction or capability because another framework has it. Feature parity with
+> any external ecosystem is explicitly not a goal**, and resemblance to one is not evidence of
+> correctness. Reason from this ecosystem's own primitives — the compiler, `.ui`/`.uix` files, the
+> integrated runtime, the Alpine-first architecture. Those are the differentiator; imitation would
+> discard the reason SwissJS exists. If a capability is required, we build it; if not, we don't.
+
+
 > This file is the **tracked** home of the law, because `CLAUDE.md` is gitignored in this repo and
 > therefore never reaches a fresh clone. Agents: read this before diagnosing or fixing anything.
 > Canonical text and the full attribution procedure live in the registry at
