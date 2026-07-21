@@ -204,8 +204,36 @@ export function reconcileChildren(
     }
   });
 
+  // FABLE-RENDER-001 D2: oldKeyMap above is built from oldChildrenRendered -- the
+  // FILTERED array (null/undefined/boolean conditional children dropped), keyed by
+  // position WITHIN that filtered array. newChildren here is the RAW array. Computing
+  // getKey(vnode, index) against newChildren's raw index, as this used to, produces a
+  // key space that is disjoint from oldKeyMap's by construction for any parent with a
+  // falsy conditional child: old {div_0, button_1} vs new {div_1, button_2} for the
+  // same two elements, zero keys ever match. Every child then falls through to the
+  // tag-name-only fallbacks below ("first unprocessed old entry with the same tag"),
+  // which is how OnboardingShell's Back button ends up bound to the old Continue
+  // button's DOM node when the Back condition flips (repro:
+  // reconcile-index-base-asymmetry-repro.test.ts). Fix: give newChildren the same
+  // filtered index base oldChildrenRendered already has, so the two key spaces agree.
+  // This intentionally does NOT touch newIndex anywhere else in this function (DOM
+  // insertion anchoring, newDoms ordering) -- those already operate on the raw forEach
+  // position for an unrelated, already-correct reason (early-return skips null/boolean
+  // entries before ever pushing to newDoms, so newDoms itself is already filtered).
+  let filteredCounter = 0;
+  const newFilteredIndices: number[] = [];
+  newChildren.forEach((vnode) => {
+    if (vnode == null || typeof vnode === "boolean") {
+      newFilteredIndices.push(-1);
+      return;
+    }
+    newFilteredIndices.push(filteredCounter);
+    filteredCounter++;
+  });
+
   newChildren.forEach((vnode, index) => {
-    const key = getKey(vnode, index);
+    if (newFilteredIndices[index] === -1) return;
+    const key = getKey(vnode, newFilteredIndices[index]);
     newKeyMap.set(key, { vnode, index });
   });
 
@@ -219,7 +247,7 @@ export function reconcileChildren(
       return;
     }
 
-    const key = getKey(newVNode, newIndex);
+    const key = getKey(newVNode, newFilteredIndices[newIndex]);
     let oldEntry = oldKeyMap.get(key);
 
     // Type-based fallback for unkeyed component VNodes.
