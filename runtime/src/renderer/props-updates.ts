@@ -136,6 +136,17 @@ export function updateStyle(
         (element.style as unknown as Record<string, string>)[prop] = "";
       }
     });
+  } else if (typeof oldValue === "string" && oldValue) {
+    // FABLE-RENDER-001 D1: a string-valued old style must be cleared before anything new
+    // is applied below. Previously this branch didn't exist, so string->absent (nothing
+    // below touches the element either) and string->object (Object.assign only ever ADDS
+    // properties, never removes leftover cssText) both left a reused DOM node's previous
+    // vnode's inline style on indefinitely. Every other prop handler in this file clears
+    // on the absent case (updateAttribute removes on nullish, updateClassName assigns "");
+    // style uniquely didn't, because both its clearing branches were guarded on
+    // `typeof === "object"`, which a string old value with a non-object new value never
+    // satisfies. See __tests__/stale-inline-style-leak-repro.test.ts.
+    element.style.cssText = "";
   }
 
   // Apply new styles
