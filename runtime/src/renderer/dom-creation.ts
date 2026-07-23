@@ -322,6 +322,13 @@ export function createDOMNode(
               armPostInitSkip(ci);
               if (typeof ci.executeHookPhase === "function") {
                 logger.lifecycle(`${existingInstance.constructor.name}: mounted (existing instance)`);
+                // DISC-2026-07-21-001: mark the child mounted BEFORE firing its mounted hook,
+                // mirroring mountComponent()'s ordering. Only the top-level mount path set
+                // _isMounted; child components created during a parent's render fired mounted()
+                // but never flipped this flag, so unmountComponent()'s `if (!_isMounted) return`
+                // guard silently swallowed their unmounted() forever -- every child leaked its
+                // listeners/timers/subscriptions. Symmetry fix, not a new heuristic.
+                ci._isMounted = true;
                 void ci.executeHookPhase("mounted");
               }
             }
@@ -386,6 +393,10 @@ export function createDOMNode(
             if (typeof ci.executeHookPhase === "function") {
               void ci.executeHookPhase("beforeMount");
               logger.lifecycle(`${instance.constructor.name}: mounted`);
+              // DISC-2026-07-21-001: see the sibling site above. Flip _isMounted for child
+              // components so unmountComponent()'s guard lets their unmounted() run. Without
+              // this, no child component ever unmounts -- a platform-wide lifecycle leak.
+              ci._isMounted = true;
               void ci.executeHookPhase("mounted");
             }
           }
