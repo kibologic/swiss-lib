@@ -31,7 +31,6 @@ import {
 import { LifecycleManager } from "./lifecycle.js";
 import { saveFocusState, restoreFocusState } from "./focus-guard.js";
 import { SwissContext, cleanupContextSubscriptions } from "./context.js";
-import { createPortal, useSlot } from "./portals.js";
 import { serverInit, hydrateSSR } from "./ssr.js";
 import {
   getLifecycleMetadata,
@@ -609,11 +608,21 @@ export function useSwissComponent<
 }
 
 // Export helpers for use in other files
+// FRAME-006-A: createPortal/useSlot deliberately NOT re-exported here. component/index.ts
+// already does BOTH `export * from './component.js'` (which used to include this file's own
+// re-export of them) AND `export * from './portals.js'` (their original declaration). At
+// runtime this resolves fine (both paths alias the same underlying binding) -- but TypeScript's
+// declaration (.d.ts) emitter drops a name entirely when it sees it re-exported via two
+// different `export *` sources in the same aggregating barrel, even when they're the same
+// binding. That's why createPortal/useSlot were present and working in the compiled JS
+// (verified: `import { createPortal } from '.../dist/index.js'` returns a real function, even
+// on the currently-published @swissjs/core@1.2.14) but ABSENT from dist/index.d.ts -- silently
+// untypeable, which is exactly the pressure that pushed alpine-shell toward building its own
+// portal instead of importing this one (FABLE-BOUNDARY-001). The single, correct export path is
+// portals.ts's own -- don't re-add a second one here.
 export {
   LifecycleManager,
   SwissContext,
-  createPortal,
-  useSlot,
   serverInit,
   hydrateSSR as hydrate,
   renderToString,
