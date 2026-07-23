@@ -273,11 +273,37 @@ export function renderComponent(
             console.debug(
               `[Renderer] Component ${instance.constructor.name} returned null/undefined from render(), returning placeholder to maintain instance tracking`,
             );
-            return {
+            const placeholder = {
               type: "span",
               props: { style: "display: none;", "data-swiss-null": "true" },
               children: []
             } as unknown as VNode;
+            // FABLE-RENDER-001 D3: this branch's own comment says "to maintain instance
+            // tracking", but never actually set __componentInstance on the placeholder --
+            // only the non-null path below (renderedBase.__componentInstance = instance) did.
+            // dom-creation.ts's initial-creation path reads `vb(rendered)?.__componentInstance`
+            // to decide which SwissComponent instance owns the DOM node it's about to create,
+            // and only THEN wires ci._domNode (and, via other call sites, ci._vnode) back onto
+            // the instance. Without this tag, a component whose first render is null never gets
+            // that linkage at all -- so once render() later returns real content, performUpdate()
+            // finds _container, _domNode AND _vnode all unset, falls through every branch to
+            // handleNoUpdatePath(), which itself requires one of those to already point at an
+            // HTMLElement to do anything -- and silently no-ops. The placeholder DOM node is
+            // physically in the page the whole time; the component just never learned where it
+            // is. Tagging it here, like the non-null path already does, is what "maintain
+            // instance tracking" was always supposed to mean.
+            const placeholderBase = vb(placeholder);
+            if (placeholderBase) {
+              try {
+                placeholderBase.__componentInstance = instance;
+              } catch (error) {
+                console.error(
+                  `[Renderer] Failed to set __componentInstance on null-render placeholder for ${instance.constructor.name}:`,
+                  error,
+                );
+              }
+            }
+            return placeholder;
           }
           return rendered;
         }
