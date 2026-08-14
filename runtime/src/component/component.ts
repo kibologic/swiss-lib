@@ -115,7 +115,20 @@ export class SwissComponent<
     super(props);
     // Ensure props are properly set (fix for props inheritance bug)
     if (!this.props) this.props = props;
-    this.element = document.createElement("div");
+    // FRAME-006: this line unconditionally called document.createElement("div"), which
+    // means EVERY SwissComponent -- not just ones that touch the DOM in render() --
+    // required a global `document` just to be constructed. renderToString()/serverInit()
+    // are the framework's own SSR entry points and construct real component instances;
+    // in an actual Node server process (no jsdom), that construction threw
+    // "document is not defined", and renderToString's own try/catch (renderer.ts)
+    // silently swallowed it and returned "" for that component -- the exact "renders as
+    // empty" symptom this task exists to close, but from environment, not identity.
+    // `this.element` has no other reader anywhere in this package (verified by grep) --
+    // it exists but nothing downstream depends on it being a real DOM node when there is
+    // no DOM to build one from.
+    this.element = typeof document !== "undefined"
+      ? document.createElement("div")
+      : ({} as HTMLElement);
     // Create a stable devtools ID for this instance (dev-only usage)
     this._devtoolsId = `cmp-${Math.random().toString(36).slice(2)}-${Date.now()}`;
 

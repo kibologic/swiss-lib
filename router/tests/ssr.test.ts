@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { createRouter, createServerRenderer } from '../src/index';
+import { SwissComponent, createElement } from '@swissjs/core';
+import type { VNode } from '@swissjs/core';
 
 describe('SSR - Comprehensive Tests', () => {
     describe('Server Renderer', () => {
@@ -151,6 +153,69 @@ describe('SSR - Comprehensive Tests', () => {
 
             // Should properly escape data
             expect(result.html).toBeDefined();
+        });
+    });
+
+    describe('Server Renderer with real components (not stub objects)', () => {
+        // Every test above this point registers `component: { name: 'X' }` -- a plain
+        // object, not a class. renderToString's isComponentVNode check requires
+        // `typeof vnode.type === "function"` (runtime/src/renderer/types.ts); a plain
+        // object fails that check, so renderToString's component branch never actually
+        // ran for any test in this file until now -- it silently fell through to
+        // `return ""` for the component's own markup, and every assertion above only
+        // checked the OUTER html skeleton (`<!DOCTYPE html>`, `data-swiss-route`, status
+        // code), never that a route's own component actually rendered anything. These
+        // tests use real SwissComponent classes, matching what a real app registers.
+        // createElement is createVNode (vdom.ts): its real signature is
+        // `(type, props, ...children)` -- children are rest arguments, never a `children`
+        // props key (that convention is `jsx()`'s job, which destructures it back out
+        // before calling createVNode). Passing text/nodes as a REST ARG here, matching
+        // what buildRouteTree itself now does.
+        class Greeting extends SwissComponent {
+            render(): VNode {
+                return createElement('p', {}, `hello, ${(this.props as { name?: string }).name}`) as VNode;
+            }
+        }
+
+        it('renders the real component output inside the #app div, not an empty string', async () => {
+            const router = createRouter({
+                routes: [
+                    {
+                        path: '/hello/:name',
+                        component: Greeting,
+                        loader: async ({ params }) => ({ name: params.name }),
+                    },
+                ],
+            });
+            const renderer = createServerRenderer(router);
+            const result = await renderer.render('/hello/world');
+
+            expect(result.statusCode).toBe(200);
+            expect(result.html).toContain('<p>hello, world</p>');
+        });
+
+        it('renders a leaf wrapped in its route layout (the exact nested-component shape buildRouteTree builds)', async () => {
+            class Layout extends SwissComponent {
+                render(): VNode {
+                    // this.props.children is populated by renderComponentImpl from the
+                    // LAYOUT VNODE'S OWN `.children` field (component-rendering.ts) --
+                    // which is exactly what buildRouteTree's `createElement(layout, props,
+                    // tree)` rest-arg call now sets correctly.
+                    return createElement('div', { class: 'layout' }, this.props.children as VNode) as VNode;
+                }
+            }
+            class Leaf extends SwissComponent {
+                render(): VNode {
+                    return createElement('span', {}, 'leaf content') as VNode;
+                }
+            }
+            const router = createRouter({
+                routes: [{ path: '/page', component: Leaf, layout: Layout }],
+            });
+            const renderer = createServerRenderer(router);
+            const result = await renderer.render('/page');
+
+            expect(result.html).toContain('<div class="layout"><span>leaf content</span></div>');
         });
     });
 });

@@ -615,6 +615,24 @@ export function renderToString(vnode: VNode): string {
         vnode,
         vnode.__componentInstance,
       );
+      // FRAME-006: renderComponentImpl (component-rendering.ts) unconditionally stamps
+      // `renderedBase.__componentInstance = instance` on whatever a component's render()
+      // returns -- correct when that's a leaf element (client-side DOM creation reads the
+      // tag to learn which instance owns the new node), but wrong when render() returns
+      // ANOTHER component vnode (an ordinary pass-through/wrapper pattern: "this component
+      // just renders that component"). The nested vnode ends up tagged with its PARENT's
+      // instance. The recursive call below used to trust that tag as `existingInstance`
+      // for the child, so `renderComponentImpl` reused the PARENT instance to "render" the
+      // child -- which just returns the parent's own output again. Every SSR call on any
+      // wrapper/layout component (router's own ServerRenderer wraps route leaves in layout
+      // components this exact way) recursed forever until the call stack overflowed, and
+      // renderToString's catch below silently returned "" for the whole subtree. SSR has
+      // no notion of instance reuse across a single render pass in the first place --
+      // every renderToString call is one-shot -- so always render a nested component vnode
+      // fresh rather than trusting a tag that was never meant to describe this case.
+      if (rendered && typeof rendered === "object" && "__componentInstance" in rendered) {
+        (rendered as VNodeBase).__componentInstance = undefined;
+      }
       return renderToString(rendered);
     } catch (e) {
       devTools.error("[Renderer] renderToString: component render failed", e);

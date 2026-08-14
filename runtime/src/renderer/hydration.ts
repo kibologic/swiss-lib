@@ -12,6 +12,7 @@ import { vnodeMetadata, componentInstances } from "./storage.js";
 import { isTextVNode, isElementVNode, isComponentVNode } from "./types.js";
 import { DiffingError } from "./errors.js";
 import { reconcileProps } from "./props-updates.js";
+import { armPostInitSkip } from "./dom-creation.js";
 
 // Forward declarations for functions passed as parameters
 type RenderToDOMFn = (vnode: VNode, container: HTMLElement) => void;
@@ -248,14 +249,58 @@ function hydrateComponentNode(
     // Ensure the instance tracks its host DOM node.
     const fci = asInternal(finalInstance);
     fci._domNode = fci._domNode || domNode;
+
+    // dom-creation.ts's createComponentNode calls renderComponentFn to get the FIRST,
+    // untracked render (see component-rendering.ts: instantiation renders via
+    // `untrack(() => instance.render())`, deliberately not yet subscribed to anything),
+    // then explicitly calls initialize() afterward -- which is what wires the reactive
+    // effect (reactivity-setup.ts's setupReactivity()) that makes future state/signal
+    // writes trigger a re-render at all. hydrateComponentNode calls the exact same
+    // renderComponentFn but, before this fix, never took that second step: a hydrated
+    // component's constructor ran, its first render was used to satisfy hydration, and
+    // then nothing ever subscribed it to its own state again. The component looked
+    // hydrated (DOM reused, event listeners attached) but was permanently inert to any
+    // state change from that point on. Mirror dom-creation.ts's sequencing exactly.
+    if (!fci._initialized && !fci.__initialized && typeof finalInstance.initialize === "function") {
+      finalInstance.initialize();
+      armPostInitSkip(fci);
+      if (typeof finalInstance.executeHookPhase === "function") {
+        void finalInstance.executeHookPhase("beforeMount");
+        fci._isMounted = true;
+        void finalInstance.executeHookPhase("mounted");
+      }
+    }
   }
 
   // Hydrate the rendered VNode tree against existing DOM.
-  hydrateDOM(
-    rendered,
-    domNode,
-    createDOMNodeFn,
-    renderComponentFn,
-    updateDOMNodeFn,
-  );
+  try {
+    hydrateDOM(
+      rendered,
+      domNode,
+      createDOMNodeFn,
+      renderComponentFn,
+      updateDOMNodeFn,
+    );
+  } catch (e) {
+    // A mismatch here (thrown by hydrateElementNode -- see its DiffingError) is caught by
+    // the top-level hydrate()'s try/catch, which discards this subtree and does a full
+    // client render in its place. That recovery calls renderComponent() again for
+    // `finalInstance` and trusts ci._domNode as "the instance's existing DOM node" -- but
+    // this function bound ci._domNode = domNode ABOVE, before hydrateDOM ever confirmed
+    // domNode's tag actually matches what this component renders. Left in place, the
+    // fallback's own update path (dom-updates.ts's updateElementNode, unlike
+    // hydrateElementNode, does NOT check tagName) would silently patch the WRONG-tagged
+    // node's text/props in place instead of the top-level catch's intended full
+    // recreation -- e.g. hydrating a <button> component onto a stale server <span>
+    // produces a surviving <span> carrying the button's content. Roll back the poisoned
+    // binding so the fallback actually gets the clean slate its own code assumes.
+    if (finalInstance) {
+      const fci = asInternal(finalInstance);
+      if (fci._domNode === domNode) fci._domNode = null;
+      if (componentInstances.get(domNode) === finalInstance) {
+        componentInstances.delete(domNode);
+      }
+    }
+    throw e;
+  }
 }
