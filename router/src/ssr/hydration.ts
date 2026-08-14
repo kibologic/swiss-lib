@@ -1,6 +1,9 @@
 /**
- * EXPERIMENTAL / UNSUPPORTED (FABLE-SL-001) -- see server-renderer.ts's
- * top-of-file note. Gated on FABLE-FRAME-001's stable node-identity fix.
+ * FIRST-CLASS CAPABILITY (FRAME-006, ratified 2026-07-21) -- see server-renderer.ts's
+ * top-of-file note for what's built, what's tested, and what hydration correctness still
+ * means pending FRAME-001. This wraps @swissjs/core's hydrate(), which is where the actual
+ * DOM-reuse/reactivity-restoration/mismatch-recovery mechanics live and are tested
+ * (runtime/src/renderer/hydration.ts, runtime/src/__tests__/ssr-hydration-round-trip.test.ts).
  */
 import { renderToDOM, hydrate as coreHydrate, createElement } from '@swissjs/core';
 import type { VNode } from '@swissjs/core';
