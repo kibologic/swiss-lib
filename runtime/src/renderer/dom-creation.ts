@@ -57,7 +57,7 @@ import { logger } from "../utils/logger.js";
  * genuine update. A stray extra commit is a safe no-op under the hardened reconciler; a
  * dropped update is not.
  */
-function armPostInitSkip(ci: ReturnType<typeof asInternal>): void {
+export function armPostInitSkip(ci: ReturnType<typeof asInternal>): void {
   ci._skipNextUpdate = true;
   const clear = () => { ci._skipNextUpdate = false; };
   if (typeof queueMicrotask === "function") queueMicrotask(clear);

@@ -1,13 +1,23 @@
 /**
- * EXPERIMENTAL / UNSUPPORTED (FABLE-SL-001): no shipped product exercises this
- * path (all current products render client-side). Hydration matches
+ * FIRST-CLASS CAPABILITY (FRAME-006, ratified 2026-07-21): SSR/hydration is BUILT and
+ * TESTED, not experimental holding. Ratified consumers are PUBLIC surfaces -- the ASG
+ * storefront, documentation, marketing, public commerce pages -- where SEO and first paint
+ * genuinely matter. See router/tests/ssr.test.ts (server-renderer, incl. real-component and
+ * layout-nesting coverage) and runtime/src/__tests__/ssr-*.test.ts (round-trip hydration,
+ * no-DOM-environment construction).
+ *
+ * HYDRATION CORRECTNESS VALIDATION IS GATED ON FRAME-001, still. Hydration matches
  * server-rendered HTML to client vnodes by node identity, which today is
- * runtime-index-derived (see FABLE-FRAME-001) rather than stable across
- * conditional/list-length differences between server and client renders --
- * a real hydration mismatch risk that hasn't been validated because nothing
- * uses this path yet. Do not rely on SSR/hydration for a real product until
- * FRAME-001's stable-key/node-range work lands and this has a hydration-
- * mismatch test suite exercising it.
+ * runtime-index-derived rather than stable across conditional/list-length differences
+ * between server and client renders. This is BUILT and PARTIALLY TESTED -- the happy path
+ * (matching server/client render) round-trips correctly and restores reactivity/event
+ * handlers; a genuine tag mismatch is caught and recovered without leaking stale instance
+ * state (runtime/src/renderer/hydration.ts). What is NOT validated: silent
+ * position-based misbinding when server and client structurally agree in shape (same tags)
+ * but disagree in identity (e.g. a list item removed from the front) -- demonstrated,
+ * reproducible, and deliberately left unfixed pending FRAME-001's stable-key/node-range
+ * work (see runtime/src/__tests__/ssr-hydration-round-trip.test.ts's third test). Do not
+ * claim general hydration correctness for arbitrary conditional/list content until then.
  */
 import { Router, type Route, type RouteMatch } from "../core/router.js";
 import { createElement, renderToString } from "@swissjs/core";
@@ -79,36 +89,39 @@ export class ServerRenderer {
  * Each component receives its matched params merged with loader data as props.
  */
 function buildRouteTree(matches: RouteMatch[], data: Record<string, unknown>): VNode {
-  // Innermost first: start with the leaf component
+  // Innermost first: start with the leaf component, then walk inward → outward wrapping
+  // each layer's layout (including the leaf's own) around whatever has been built so far.
+  //
+  // FRAME-006: this used to pass the wrapped subtree as `{ ...props, children: [tree] }`
+  // -- a props KEY -- to createElement(). createElement is createVNode (vdom.ts), whose
+  // real signature is `(type, props, ...children)`: it only ever reads children from its
+  // OWN rest arguments, never from props.children, and populates the vnode's `.children`
+  // array field from those rest args alone. A layout wrapped this way got a vnode whose
+  // `.children` field was permanently empty. Worse, renderComponentImpl
+  // (component-rendering.ts) then OVERWRITES `props.children` on the instance from that
+  // same empty `.children` field (`defaultChildren`) regardless of what the caller stuffed
+  // into the original props object -- so the layout instance's `this.props.children` was
+  // always `[]`, no matter what. Every layout-wrapped SSR route rendered its layout with
+  // no content at all; router's own ssr.test.ts never caught this because its pre-existing
+  // tests all registered `component: { name: 'X' }` plain objects, which fail
+  // isComponentVNode's `typeof vnode.type === "function"` check and never actually
+  // rendered through this path. Passing `tree` as a REST ARG (matching createVNode's real
+  // signature) is the fix -- this also drops the function's old second pass, which existed
+  // only to special-case "does the leaf have its own layout" and rebuilt the entire tree
+  // from scratch to work around the same children-passing mistake once more.
   let tree: VNode = buildComponentVNode(matches[matches.length - 1], data);
 
-  // Walk inward → outward, wrapping each layer's layout if present
+  const leafMatch = matches[matches.length - 1];
+  if (leafMatch.route.layout) {
+    const leafProps = mergeProps(leafMatch, data);
+    tree = createElement(leafMatch.route.layout, leafProps, tree) as VNode;
+  }
+
   for (let i = matches.length - 2; i >= 0; i--) {
     const match = matches[i];
     if (match.route.layout) {
       const props = mergeProps(match, data);
-      tree = createElement(match.route.layout, { ...props, children: [tree] }) as VNode;
-    }
-  }
-
-  // Wrap the entire tree in the leaf route's layout if it has one
-  // (leaf layout wraps only the leaf, already handled above for parents)
-  // Note: leaf layout was NOT applied above — apply it now as the immediate wrapper
-  const leafMatch = matches[matches.length - 1];
-  if (leafMatch.route.layout && matches.length >= 1) {
-    // Leaf layout is the tightest wrapper around the leaf content (already in tree)
-    // We rebuild: leaf layout wraps just the leaf component
-    const leafProps = mergeProps(leafMatch, data);
-    const leafComponent = buildComponentVNode(leafMatch, data);
-    tree = createElement(leafMatch.route.layout, { ...leafProps, children: [leafComponent] }) as VNode;
-
-    // Then outer layouts wrap that
-    for (let i = matches.length - 2; i >= 0; i--) {
-      const match = matches[i];
-      if (match.route.layout) {
-        const props = mergeProps(match, data);
-        tree = createElement(match.route.layout, { ...props, children: [tree] }) as VNode;
-      }
+      tree = createElement(match.route.layout, props, tree) as VNode;
     }
   }
 
