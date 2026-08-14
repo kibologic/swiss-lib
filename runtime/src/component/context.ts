@@ -64,30 +64,19 @@ export const SwissContext = {
   create: <T>(defaultValue?: T): SwissContextObject<T> => {
     const key = Symbol();
 
-    const subscribeEnabled = (() => {
-      const env =
-        typeof process !== "undefined" && process.env
-          ? process.env.SWISS_CONTEXT_SUBSCRIBE
-          : undefined;
-      if (env === "0") return false;
-      if (env === "1") return true;
-      const globalFlag =
-        typeof globalThis !== "undefined"
-          ? (globalThis as unknown as { __SWISS_CONTEXT_SUBSCRIBE__?: boolean })
-              .__SWISS_CONTEXT_SUBSCRIBE__
-          : undefined;
-      if (globalFlag === false) return false;
-      if (globalFlag === true) return true;
-      const winFlag =
-        typeof window !== "undefined"
-          ? (window as unknown as { __SWISS_CONTEXT_SUBSCRIBE__?: boolean })
-              .__SWISS_CONTEXT_SUBSCRIBE__
-          : undefined;
-      if (winFlag === false) return false;
-      if (winFlag === true) return true;
-      return true;
-    })();
-
+    // FRAME-006-capability-build-context: this used to be gated behind an undocumented
+    // SWISS_CONTEXT_SUBSCRIBE env/global/window flag that could disable push-notification
+    // (a Provider proactively calling scheduleUpdate() on its subscribers) in favour of a
+    // silent pull model where a Consumer only sees a new value on ITS OWN next unrelated
+    // re-render. Grepped the whole platform (swiss-lib, swite, and all six Alpine repos): no
+    // code anywhere ever sets the flag, in either direction, and no test exercised the
+    // disabled state. Every one of the 29+ existing tests, and every real (currently
+    // nonexistent) consumer this task documents, already relies on the default (enabled)
+    // behaviour. An optional code path with zero callers and zero coverage is not a
+    // documented capability of the contract -- it is an unrecorded way for the reactive
+    // notification this API promises to silently stop working. Removed rather than tested:
+    // there is no real second behaviour to prove correct, only a flag that could have broken
+    // one that was never meant to be optional.
     let version = 0;
     const subscribers = new Set<SwissComponent>();
     const selections = new Map<SwissComponent, { sel: unknown; ver: number }>();
@@ -102,31 +91,29 @@ export const SwissContext = {
 
     const Provider = (value: T) => (component: SwissComponent): SwissComponent => {
       component.provideContext(key, value);
-      if (subscribeEnabled) {
-        version++;
-        if (version > 1) {
-          subscribers.forEach((sub: SwissComponent) => {
-            try {
-              const selInfo = selections.get(sub);
-              if (!selInfo) {
-                if (typeof sub.scheduleUpdate === "function") sub.scheduleUpdate();
-                return;
-              }
-              const entry = selectors.get(sub)?.get(key) ?? {};
-              const selector = entry.selector as ((v: T | undefined) => unknown) | undefined;
-              const equals = entry.equals as ((a: unknown, b: unknown) => boolean) | undefined;
-              const next = Consumer(selector, equals)(sub) as unknown;
-              const prev = selInfo.sel;
-              const isEqual = typeof equals === "function" ? !!equals(prev, next) : prev === next;
-              if (!isEqual) {
-                selections.set(sub, { sel: next, ver: version });
-                if (typeof sub.scheduleUpdate === "function") sub.scheduleUpdate();
-              } else {
-                selections.set(sub, { sel: prev, ver: version });
-              }
-            } catch { /* best-effort */ }
-          });
-        }
+      version++;
+      if (version > 1) {
+        subscribers.forEach((sub: SwissComponent) => {
+          try {
+            const selInfo = selections.get(sub);
+            if (!selInfo) {
+              if (typeof sub.scheduleUpdate === "function") sub.scheduleUpdate();
+              return;
+            }
+            const entry = selectors.get(sub)?.get(key) ?? {};
+            const selector = entry.selector as ((v: T | undefined) => unknown) | undefined;
+            const equals = entry.equals as ((a: unknown, b: unknown) => boolean) | undefined;
+            const next = Consumer(selector, equals)(sub) as unknown;
+            const prev = selInfo.sel;
+            const isEqual = typeof equals === "function" ? !!equals(prev, next) : prev === next;
+            if (!isEqual) {
+              selections.set(sub, { sel: next, ver: version });
+              if (typeof sub.scheduleUpdate === "function") sub.scheduleUpdate();
+            } else {
+              selections.set(sub, { sel: prev, ver: version });
+            }
+          } catch { /* best-effort */ }
+        });
       }
       return component;
     };
@@ -156,40 +143,38 @@ export const SwissContext = {
           : (defaultValue as unknown as S | T | undefined);
       }
 
-      if (subscribeEnabled) {
-        // Only register one unsubscribe closure per (component, context) pair.
-        // Calling Consumer() on every render would otherwise accumulate N closures.
-        const wasSubscribed = subscribers.has(component);
-        subscribers.add(component);
-        if (!selectors.get(component)) {
-          selectors.set(component, new Map());
-        }
-        selectors.get(component)!.set(key, {
-          selector: select as ((v: T | undefined) => unknown) | undefined,
-          equals: equals as ((a: unknown, b: unknown) => boolean) | undefined,
-        });
-        const prev = selections.get(component);
-        if (!prev || prev.ver !== version) {
-          selections.set(component, { sel: value as unknown, ver: version });
-        }
+      // Only register one unsubscribe closure per (component, context) pair. Calling
+      // Consumer() on every render would otherwise accumulate N closures.
+      const wasSubscribed = subscribers.has(component);
+      subscribers.add(component);
+      if (!selectors.get(component)) {
+        selectors.set(component, new Map());
+      }
+      selectors.get(component)!.set(key, {
+        selector: select as ((v: T | undefined) => unknown) | undefined,
+        equals: equals as ((a: unknown, b: unknown) => boolean) | undefined,
+      });
+      const prev = selections.get(component);
+      if (!prev || prev.ver !== version) {
+        selections.set(component, { sel: value as unknown, ver: version });
+      }
 
-        if (!wasSubscribed) {
-          let set = __ctxRegistrations.get(component);
-          if (!set) {
-            set = new Set();
-            __ctxRegistrations.set(component, set);
-          }
-          const unsubscribe = () => {
-            subscribers.delete(component);
-            const m = selectors.get(component);
-            if (m) {
-              m.delete(key);
-              if (m.size === 0) selectors.delete(component);
-            }
-            selections.delete(component);
-          };
-          set.add(unsubscribe);
+      if (!wasSubscribed) {
+        let set = __ctxRegistrations.get(component);
+        if (!set) {
+          set = new Set();
+          __ctxRegistrations.set(component, set);
         }
+        const unsubscribe = () => {
+          subscribers.delete(component);
+          const m = selectors.get(component);
+          if (m) {
+            m.delete(key);
+            if (m.size === 0) selectors.delete(component);
+          }
+          selections.delete(component);
+        };
+        set.add(unsubscribe);
       }
 
       return value;

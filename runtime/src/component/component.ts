@@ -6,6 +6,7 @@
 
 // Renderer imports
 import { renderToDOM, updateDOMNode } from "../renderer/renderer.js";
+import { getCurrentComponentInstance, setCurrentComponentInstance } from "../renderer/storage.js";
 import {
   type VNode,
   createElement,
@@ -488,17 +489,36 @@ export class SwissComponent<
     // component's forced render recursing back through an active effect elsewhere in the
     // same microtask-drain). Wrap it to match the established pattern rather than being
     // the sole exception to it.
-    untrack(() => {
-      if (existingDom) {
-        updateDOMNode(existingDom, newVNode);
-        if (newVNodeBase) newVNodeBase.dom = existingDom as HTMLElement | Text;
-      } else {
-        renderToDOM(newVNode, container!);
-        if (newVNodeBase && container!.firstChild) {
-          newVNodeBase.dom = container!.firstChild as HTMLElement | Text;
+    // FRAME-006-capability-build-context: a component discovered by createDOMNode during this
+    // reconciliation pass (e.g. `{cond && <Child/>}` newly true, or a type change at a child
+    // position -- reconcileChildren's insertion path, dom-creation.ts) reads
+    // getCurrentComponentInstance() to set its own _parent (component-rendering.ts's "new
+    // instance" branch). That linkage is how useContext()/findErrorBoundary() walk up the
+    // component tree. It was only ever set around the INITIAL tree-walk (renderComponentImpl,
+    // createDOMNode's own component branch) -- this signal-effect-driven re-render commit path
+    // never set it, so a component that first appears via ITS PARENT's re-render (not present
+    // at the parent's initial mount) got _parent === undefined permanently: useContext()
+    // silently resolved to the default/undefined instead of walking up to a real Provider, and
+    // an error thrown inside it could never find an ancestor ErrorBoundary either, since both
+    // walk the same _parent chain. Reproduced directly: a Context consumer mounted one tick
+    // after its provider read "undefined" instead of the provided value.
+    const prevInstance = getCurrentComponentInstance();
+    setCurrentComponentInstance(this);
+    try {
+      untrack(() => {
+        if (existingDom) {
+          updateDOMNode(existingDom, newVNode);
+          if (newVNodeBase) newVNodeBase.dom = existingDom as HTMLElement | Text;
+        } else {
+          renderToDOM(newVNode, container!);
+          if (newVNodeBase && container!.firstChild) {
+            newVNodeBase.dom = container!.firstChild as HTMLElement | Text;
+          }
         }
-      }
-    });
+      });
+    } finally {
+      setCurrentComponentInstance(prevInstance);
+    }
 
     this._vnode = newVNode;
     this._domNode = (newVNodeBase?.dom as Node | null) ?? this._domNode;
