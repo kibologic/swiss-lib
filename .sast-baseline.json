@@ -93,12 +93,6 @@
     "@typescript-eslint/no-explicit-any": 1,
     "@typescript-eslint/no-unused-vars": 1
   },
-  "css/src/compiler/index.ts": {
-    "security/detect-unsafe-regex": 1
-  },
-  "css/src/modules/transformer.ts": {
-    "security/detect-non-literal-regexp": 1
-  },
   "docs/.vitepress/cache/deps/@theme_index.js": {
     "@typescript-eslint/no-unused-vars": 2,
     "@typescript-eslint/no-unused-expressions": 1
@@ -130,6 +124,12 @@
   "plugins/file-router/src/core/transformer.ts": {
     "security/detect-non-literal-regexp": 2
   },
+  "plugins/vite/__tests__/parity.test.ts": {
+    "security/detect-non-literal-fs-filename": 1
+  },
+  "plugins/vite/src/index.ts": {
+    "security/detect-non-literal-fs-filename": 1
+  },
   "plugins/web-storage/docs/assets/main.js": {
     "@typescript-eslint/no-unused-expressions": 171,
     "@typescript-eslint/no-this-alias": 2,
@@ -154,6 +154,9 @@
     "@typescript-eslint/no-explicit-any": 1,
     "prefer-const": 1
   },
+  "router/tests/scanner.test.ts": {
+    "security/detect-non-literal-fs-filename": 8
+  },
   "runtime/__benchmarks__/render.bench.ts": {
     "@typescript-eslint/no-explicit-any": 1
   },
@@ -170,12 +173,24 @@
   "runtime/scripts/inject-version.js": {
     "security/detect-non-literal-fs-filename": 3
   },
+  "runtime/src/__tests__/child-prop-update-repro.test.ts": {
+    "@typescript-eslint/no-this-alias": 1
+  },
   "runtime/src/__tests__/core.test.ts": {
     "@typescript-eslint/no-explicit-any": 6
+  },
+  "runtime/src/__tests__/create-portal-export-and-cleanup.test.ts": {
+    "@typescript-eslint/no-this-alias": 1
+  },
+  "runtime/src/__tests__/null-render-slot-collapse-repro.test.ts": {
+    "@typescript-eslint/no-this-alias": 1
   },
   "runtime/src/__tests__/reactivity-coalescing.test.ts": {
     "@typescript-eslint/no-unused-vars": 2,
     "@typescript-eslint/no-explicit-any": 24
+  },
+  "runtime/src/__tests__/reconcile-bail-retry-repro.test.ts": {
+    "@typescript-eslint/no-this-alias": 1
   },
   "runtime/src/__tests__/reconcile-index-base-asymmetry-repro.test.ts": {
     "@typescript-eslint/no-unused-vars": 2
@@ -183,8 +198,17 @@
   "runtime/src/__tests__/record-header-repro.test.ts": {
     "@typescript-eslint/no-unused-vars": 2
   },
+  "runtime/src/__tests__/skip-next-update-repro.test.ts": {
+    "@typescript-eslint/no-this-alias": 1
+  },
+  "runtime/src/__tests__/stuck-loading-child-prop-repro.test.ts": {
+    "@typescript-eslint/no-this-alias": 1
+  },
+  "runtime/src/__tests__/unmount-on-child-type-swap-repro.test.ts": {
+    "@typescript-eslint/no-this-alias": 2
+  },
   "runtime/src/component/component.ts": {
-    "@typescript-eslint/no-unused-vars": 12
+    "@typescript-eslint/no-unused-vars": 11
   },
   "runtime/src/component/decorators/capability-decorator.ts": {
     "@typescript-eslint/no-explicit-any": 4

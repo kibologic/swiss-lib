@@ -1,5 +1,15 @@
 title = "SwissJS Gitleaks Config"
 
+# SEC-001, 2026-08-14: a gitleaks config file with no [[rules]] of its own REPLACES the
+# built-in ruleset entirely unless it explicitly extends it -- this file had no [extend]
+# block, so it detected NOTHING, verified live: an obvious planted RSA private key block
+# produced "no leaks found" with this config, and "leaks found: 1, RuleID: private-key"
+# once useDefault was added below, config unchanged otherwise. This was true independent
+# of the gitleaks-action licensing gate (SEC-001's other finding) -- the config itself was
+# a no-op detector even before considering whether the Action could run at all.
+[extend]
+  useDefault = true
+
 [allowlist]
   description = "Global allowlist"
   paths = [
