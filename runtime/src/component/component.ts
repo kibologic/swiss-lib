@@ -532,6 +532,31 @@ export class SwissComponent<
   }
 
   public renderWithBoundary(children: VNode[]): VNode {
+    // FRAME-005: a bare Fragment returned as a component's OWN render() output cannot be
+    // re-rendered. createDOMNode (dom-creation.ts) builds a Fragment as a real
+    // DocumentFragment, but a DocumentFragment's children move into the real parent the
+    // instant it's inserted -- the fragment node itself is left permanently empty and,
+    // critically, its .parentNode stays null forever (it was never itself attached to
+    // anything; only its former children were). applyRenderedOutput
+    // (dom-update-refs.ts), the function every component re-render goes through, needs
+    // `hostDom.parentNode` to either replace or append the freshly rendered content --
+    // for a Fragment-rooted component that is always null, so on re-render the new DOM
+    // gets built and then silently discarded, never inserted anywhere. This is a general
+    // reconciler limitation (any component whose render() returns a bare Fragment as its
+    // sole output hits it, not just ErrorBoundary/renderWithBoundary specifically -- filed
+    // as its own finding, not fixed here, since fixing it generally means giving every
+    // Fragment-rooted component a stable real anchor node to reconcile against, a
+    // reconciler-wide change well beyond this task's bounded scope).
+    //
+    // For exactly one child, a Fragment adds no semantic value anyway -- the child IS the
+    // content -- so returning it directly avoids the broken path entirely rather than
+    // working around it. Zero or 2+ children still route through the Fragment wrapper and
+    // still carry this limitation; that shape happens to be unused by every current
+    // consumer of renderWithBoundary (ErrorBoundary passes exactly one child at every real
+    // call site in this codebase).
+    if (children.length === 1) {
+      return children[0];
+    }
     return createElement(Fragment, {}, ...children);
   }
 
