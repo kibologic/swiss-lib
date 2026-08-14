@@ -176,6 +176,28 @@ export function cleanupNode(node: Node) {
       eventListeners.delete(element);
     }
 
+    // FRAME-006-capability-build-portals-refs: a ref's `.current` is set once, in
+    // dom-creation.ts's createElementNode, when the element is first created. Nothing on
+    // the removal path ever cleared it -- a Ref object outlived by nothing else in the
+    // component would keep `.current` pointing at a detached DOM node indefinitely after
+    // its element unmounts, with no way for the app to detect this beyond re-checking
+    // `.isConnected` itself, which defeats the point of a ref telling you the element is
+    // live. Clear it here, symmetric with where it's set. Read the vnode from
+    // vnodeMetadata (still populated at this point, this function deletes it below) rather
+    // than from the DOM, since props are a vnode-level concept.
+    const vnode = vnodeMetadata.get(node);
+    const refProp = vnode && typeof vnode === "object" && "props" in vnode
+      ? (vnode as { props?: Record<string, unknown> }).props?.ref
+      : undefined;
+    if (refProp !== null && typeof refProp === "object" && "current" in refProp) {
+      const ref = refProp as { current: unknown };
+      // Only clear if it's still pointing at THIS element -- a ref reassigned to a newer
+      // element by the time this cleanup runs (e.g. rapid remount) must not be clobbered.
+      if (ref.current === element) {
+        ref.current = null;
+      }
+    }
+
     // Invoke unmount lifecycle before removing the instance from the registry
     const instance = componentInstances.get(element);
     if (instance) {
