@@ -33,7 +33,20 @@ export interface SSRResult {
   data: Record<string, unknown>;
   statusCode: number;
   redirect?: string;
+  /** SSR-002: true when at least one component in this render threw and fell back to an
+   *  error-boundary placeholder (runtime/src/renderer/errors.ts's createErrorBoundary).
+   *  Absent (not `false`) on a render with no failures, so existing callers checking only
+   *  `html`/`statusCode`/`data` see no shape change. */
+  hadRenderErrors?: boolean;
 }
+
+/** SSR-002: the marker createErrorBoundary's fallback vnode always carries (runtime/src/
+ *  renderer/errors.ts). renderToString's own catch and renderComponentImpl's internal catch
+ *  both route through this same fallback (see renderer.ts's comment at its SSR catch site),
+ *  so checking for this one string is sufficient regardless of which of the two caught the
+ *  failure -- no structured-error channel needs threading through the shared client/server
+ *  rendering path to answer "did anything fail" from the final HTML string alone. */
+const ERROR_BOUNDARY_MARKER = 'data-swiss-error-boundary="true"';
 
 export class ServerRenderer {
   constructor(private router: Router) {}
@@ -56,6 +69,7 @@ export class ServerRenderer {
     //   matches = [root, parent, leaf]
     //   tree = <RootLayout><ParentLayout><Leaf /></ParentLayout></RootLayout>
     const componentHtml = renderToString(buildRouteTree(matches, data));
+    const hadRenderErrors = componentHtml.includes(ERROR_BOUNDARY_MARKER);
 
     const safeData = JSON.stringify(data)
       .replace(/</g, '\\u003c')
@@ -74,7 +88,14 @@ export class ServerRenderer {
   </body>
 </html>`;
 
-    return { html, data, statusCode: 200 };
+    // SSR-002: never_touch forbids a failing widget taking the whole page down by default --
+    // the requirement is that the failure becomes VISIBLE to the caller, not fatal. The HTML
+    // still ships (the working parts of the page still render); the caller now has
+    // statusCode + hadRenderErrors to decide what to do with a partially-failed render,
+    // instead of an indistinguishable cheerful 200.
+    return hadRenderErrors
+      ? { html, data, statusCode: 500, hadRenderErrors: true }
+      : { html, data, statusCode: 200 };
   }
 }
 
