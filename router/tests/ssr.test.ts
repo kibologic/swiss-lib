@@ -217,5 +217,47 @@ describe('SSR - Comprehensive Tests', () => {
 
             expect(result.html).toContain('<div class="layout"><span>leaf content</span></div>');
         });
+
+        it('SSR-002: the caller can tell a component that threw from one that rendered empty', async () => {
+            // Before the fix: renderToString's own catch (renderer.ts) returned "" for a
+            // failure severe enough to escape renderComponentImpl's own internal catch, and
+            // ServerRenderer hardcoded statusCode: 200 regardless. A crashed page and an
+            // intentionally empty page were the same HTTP response. This test goes through
+            // the FULL ServerRenderer.render() path, not renderToString in isolation, per
+            // this task's own Article 17 instruction.
+            class Boom extends SwissComponent {
+                render(): VNode {
+                    throw new Error('boom from render()');
+                }
+            }
+            const router = createRouter({
+                routes: [{ path: '/broken', component: Boom }],
+            });
+            const renderer = createServerRenderer(router);
+            const result = await renderer.render('/broken');
+
+            expect(result.statusCode).toBe(500);
+            expect(result.hadRenderErrors).toBe(true);
+            // The failure is VISIBLE, not fatal to the whole page (never_touch forbids
+            // letting the exception escape unshaped) -- the response still ships real HTML,
+            // including the error message, just correctly flagged as a failed render.
+            expect(result.html).toContain('boom from render()');
+        });
+
+        it('SSR-002: a component that renders nothing intentionally still reports 200', async () => {
+            // The other half of "the caller can tell" -- an empty render must NOT be
+            // mistaken for a failed one just because both produce sparse HTML.
+            class Empty extends SwissComponent {
+                render(): VNode {
+                    return null as unknown as VNode;
+                }
+            }
+            const router = createRouter({ routes: [{ path: '/empty', component: Empty }] });
+            const renderer = createServerRenderer(router);
+            const result = await renderer.render('/empty');
+
+            expect(result.statusCode).toBe(200);
+            expect(result.hadRenderErrors).toBeUndefined();
+        });
     });
 });
