@@ -20,7 +20,7 @@
  * claim general hydration correctness for arbitrary conditional/list content until then.
  */
 import { Router, type Route, type RouteMatch } from "../core/router.js";
-import { createElement, renderToString } from "@swissjs/core";
+import { createElement, renderToString, renderToStringChunks } from "@swissjs/core";
 import type { VNode } from "@swissjs/core";
 
 export interface SSRContext {
@@ -96,6 +96,63 @@ export class ServerRenderer {
     return hadRenderErrors
       ? { html, data, statusCode: 500, hadRenderErrors: true }
       : { html, data, statusCode: 200 };
+  }
+
+  /**
+   * Streaming counterpart to render(): same document, same route matching/data loading,
+   * same buildRouteTree() component tree -- the only difference is the component markup
+   * portion is produced by @swissjs/core's renderToStringChunks generator (chunked SSR,
+   * runtime/src/renderer/ssr-stream.ts) instead of renderToString, and the whole document
+   * is handed back as an async generator of string chunks instead of one buffered string.
+   *
+   * Parity contract: joining every chunk this yields for a given url produces EXACTLY the
+   * same string render(url) would return as `.html` -- shell markup (doctype/head/body open
+   * tag/app-div open tag), then the identical per-vnode chunks renderToStringChunks would
+   * produce for buildRouteTree(matches, data), then the identical suffix (app-div close,
+   * data script, body/html close) render() appends. No route-level markup is invented here;
+   * this only changes accumulation into yields instead of `+=`, exactly as core's
+   * renderToStream does for a bare component tree (see ssr-stream.ts's header comment).
+   *
+   * The 404 and route-data-loading steps happen before any chunk is yielded (matching
+   * render()'s `await this.router.loadRouteData(url)` position), so -- unlike the component
+   * markup itself -- routing/loader failures surface as a thrown error or an early
+   * single-chunk 404 document, not a truncated stream.
+   */
+  async *renderStream(url: string): AsyncGenerator<string, void, void> {
+    const matches = this.router.match(url);
+
+    if (!matches || matches.length === 0) {
+      yield "<!DOCTYPE html><html><body><h1>404 - Not Found</h1></body></html>";
+      return;
+    }
+
+    const data = await this.router.loadRouteData(url);
+    const tree = buildRouteTree(matches, data);
+
+    const safeData = JSON.stringify(data)
+      .replace(/</g, '\\u003c')
+      .replace(/>/g, '\\u003e')
+      .replace(/&/g, '\\u0026');
+
+    // Shell prefix: flushed before any component markup is rendered, same as core's
+    // renderToStream flushing a root element's open tag before its children.
+    yield `<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Swiss App</title>
+  </head>
+  <body>
+    <div id="app" data-swiss-route="${escapeAttr(url)}">`;
+
+    for (const chunk of renderToStringChunks(tree)) {
+      yield chunk;
+    }
+
+    yield `</div>
+    <script>window.__SWISS_DATA__ = ${safeData};</script>
+  </body>
+</html>`;
   }
 }
 
