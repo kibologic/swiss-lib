@@ -427,6 +427,27 @@ export function reconcileChildren(
         newDoms.push(newDom);
       }
     } else {
+      // FRAME-WA-004: no keyed/typed match was found for newVNode at this position -- its
+      // parent-relative identity changed (e.g. this position's own key changed, or the
+      // surrounding key space shifted). The old node that WAS here, if any and not already
+      // claimed by another new child this pass, is about to become an orphan removed by the
+      // "remove leftover nodes" pass below -- but that pass runs AFTER createDOMNodeFn, so at
+      // this point the outgoing subtree (and any component instances it hosts, e.g. an unkeyed
+      // child inside a keyed wrapper whose key just changed) is still fully live in the DOM.
+      // dom-creation.ts's aggressive same-type instance search walks the live DOM upward from
+      // the nearest component root and will happily find and reuse that still-attached, still-
+      // registered instance, silently skipping its initialize()/mounted() -- DISC-2026-07-22-004.
+      // Narrow fix: unmount and de-register the positionally-corresponding outgoing node's
+      // subtree BEFORE building the replacement, so the aggressive search has nothing stale left
+      // to find. Only the position's own old node is touched (not the whole aggressive-search
+      // mechanism, which other unkeyed-sibling cases still rely on) -- this does not run when an
+      // oldEntry WAS found (canUpdateInPlace / same-type component paths above), so ordinary
+      // unkeyed reuse under an unchanged parent is untouched.
+      const staleNode = oldChildCountMatchesLiveDom ? oldChildNodes[newIndex] : undefined;
+      if (staleNode && !processedNodes.has(staleNode) && staleNode.parentNode === parent) {
+        cleanupNode(staleNode);
+      }
+
       const newDom = createDOMNodeFn(newVNode);
       const elseBase = typeof newVNode === "object" && newVNode !== null
         ? (newVNode as unknown as VNodeBase)
