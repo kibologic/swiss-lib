@@ -69,6 +69,14 @@
         "./cli/src/*",
         "./cli/dist/*"
       ],
+      "@swissjs/testing": [
+        "./testing/src/index.ts",
+        "./testing/dist/index"
+      ],
+      "@swissjs/testing/*": [
+        "./testing/src/*",
+        "./testing/dist/*"
+      ],
       "@swissjs/plugin-*": [
         "./plugins/*/src/index.ts",
         "./plugins/*/dist/index"
