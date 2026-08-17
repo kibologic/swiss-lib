@@ -440,6 +440,37 @@ export function preprocessSwissSyntax(
       .join("\n");
 
     result = importLines.join("\n") + "\n\nexport default class extends SwissComponent {\n" + indentedBody + "\n}\n";
+  } else if (
+    /\bextends\s+SwissComponent\b/.test(result) &&
+    filePath &&
+    (filePath.endsWith(".uix") || filePath.endsWith(".ui"))
+  ) {
+    // COMP-001: `component X {}` is rewritten to `class X extends
+    // SwissComponent {}` earlier in this function (see the very first
+    // `result.replace` above), so hasClassWrapper is true here and the
+    // bare-.uix branch above is (correctly) skipped -- but nothing else in
+    // this lexical pass ever adds the SwissComponent import for that case.
+    // Only patch/add the import when it's actually missing, so files that
+    // already import SwissComponent are left untouched.
+    const hasSwissImport =
+      /\bimport\s*\{[^}]*\bSwissComponent\b[^}]*\}\s*from\s*['"][^'"]+['"]/m.test(
+        result,
+      );
+    if (!hasSwissImport) {
+      const escapedSrc = jsxImportSource.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const srcImportRegex = new RegExp(
+        `import\\s*\\{([^}]+)\\}\\s*from\\s*['"]${escapedSrc}['"]`,
+      );
+      const importMatch = result.match(srcImportRegex);
+      if (importMatch) {
+        result = result.replace(
+          srcImportRegex,
+          `import { ${importMatch[1].trim()}, SwissComponent } from '${jsxImportSource}'`,
+        );
+      } else {
+        result = `import { SwissComponent } from '${jsxImportSource}';\n` + result;
+      }
+    }
   }
 
   return result;
