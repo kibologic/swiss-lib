@@ -81,9 +81,6 @@ export type {
   DevtoolsEventCategory,
 } from "./devtools/bridge.js";
 
-// Fenestration
-export * from "./fenestration/registry.js";
-
 // Refs
 export { ref, type Ref } from "./component/refs.js";
 

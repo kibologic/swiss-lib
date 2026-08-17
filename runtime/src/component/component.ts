@@ -44,10 +44,6 @@ import { logger } from "../utils/logger.js";
 // Plugin & security imports
 import type { Plugin, PluginContext } from "../plugins/pluginInterface.js";
 import { CapabilityManager } from "../security/capability-manager.js";
-import {
-  FenestrationRegistry,
-  type FenestrationContext,
-} from "../fenestration/registry.js";
 
 // Devtools imports
 import {
@@ -60,7 +56,6 @@ import { getRemediationMessage } from "../error/remediation.js";
 // Manager imports
 import { UpdateManager } from "./update-manager.js";
 import { ReactivityManager } from "./reactivity-setup.js";
-import { CapabilityManagerComponent } from "./capability-manager-component.js";
 import { PluginManagerComponent } from "./plugin-manager-component.js";
 
 // Lifecycle helpers (split from this file to stay within 700-line limit)
@@ -84,7 +79,6 @@ export class SwissComponent<
   // Manager instances
   private updateManager: UpdateManager;
   private reactivityManager: ReactivityManager<S>;
-  private capabilityManager: CapabilityManagerComponent;
   private pluginManager: PluginManagerComponent;
 
   // Core component state
@@ -136,7 +130,6 @@ export class SwissComponent<
     // Initialize managers
     this.updateManager = new UpdateManager(this);
     this.reactivityManager = new ReactivityManager<S>(this);
-    this.capabilityManager = new CapabilityManagerComponent(this);
     this.pluginManager = new PluginManagerComponent(this, this._lifecycle);
 
     // Apply options
@@ -364,23 +357,16 @@ export class SwissComponent<
   }
 
   public validateCapabilities(): Promise<void> {
-    return this.capabilityManager.validateCapabilities();
+    // FRAME-004: was delegated to CapabilityManagerComponent (fenestration-backed), removed.
+    // Retained as a no-op lifecycle hook -- ssr.ts and component-lifecycle.ts call this
+    // unconditionally as part of the mount lifecycle and are outside this task's scope.
+    return Promise.resolve();
   }
 
   public clearCapabilityCache(): void {
-    this.capabilityManager.clearCache();
-  }
-
-  // ===== Capabilities (Fenestration) - Delegated =====
-  public fenestrate<T>(capabilityId: string, ...params: unknown[]): T | null {
-    return this.capabilityManager.fenestrate<T>(capabilityId, ...params);
-  }
-
-  public async fenestrateAsync<T>(
-    capabilityId: string,
-    ...params: unknown[]
-  ): Promise<T | null> {
-    return this.capabilityManager.fenestrateAsync<T>(capabilityId, ...params);
+    // FRAME-004: was delegated to CapabilityManagerComponent (fenestration-backed), removed.
+    // Retained as a no-op lifecycle hook -- component-lifecycle.ts calls this unconditionally
+    // and is outside this task's scope.
   }
 
   // ===== Plugin Management - Delegated =====
