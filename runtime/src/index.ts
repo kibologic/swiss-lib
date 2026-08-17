@@ -39,6 +39,13 @@ export { DevServerService } from "./runtime/dev-server.js";
 // Renderer
 export { hydrate, renderToString, renderToDOM } from "./renderer/index.js";
 
+// SSR streaming
+export {
+  renderToStream,
+  renderToStreamWeb,
+  renderToStringChunks,
+} from "./renderer/ssr-stream.js";
+
 // Reactivity
 export * from "./reactivity/index.js";
 
