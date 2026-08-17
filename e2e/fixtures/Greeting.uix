@@ -1,0 +1,31 @@
+/*
+ * CROSS-001-B fixture: compiled-output execution parity. Compiled ONCE (see
+ * e2e/server/compile-fixtures.mjs) via the real UiCompiler (compiler/src/compiler.ts),
+ * then the SAME emitted JS is loaded and executed in Blink, WebKit and Gecko. This
+ * proves the compiler's output (plain document.createElement/addEventListener per
+ * FABLE-CROSS-001 s6 -- no prefixed properties, no engine sniffing) actually behaves
+ * identically post-compilation, not just by source inspection.
+ */
+import { SwissComponent } from '@swissjs/core';
+
+interface Props {
+  name: string;
+}
+
+// Deliberately no `props: Props = {...}` class-field default here: SwissComponent's
+// own constructor (runtime/src/component/component.ts) sets `this.props = props`
+// from the constructor argument via `super(props)`; a subclass class-field default
+// initializer for `props` runs AFTER super() and would clobber whatever the caller
+// passed in (verified while building this fixture -- with-jsx.uix's pattern of
+// `props: Props = {...}` produced "Hello, World!" even when the caller passed
+// `{ name: 'Engine' }`). Reading via the constructor argument directly is the
+// correct pattern for a component that must honour caller-supplied props.
+export class Greeting extends SwissComponent {
+  constructor(props: Props) {
+    super(props);
+  }
+
+  render() {
+    return <div class="greeting">Hello, {this.props.name}!</div>;
+  }
+}
