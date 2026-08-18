@@ -42,6 +42,9 @@ export { hydrate, renderToString, renderToDOM } from "./renderer/index.js";
 // Reactivity
 export * from "./reactivity/index.js";
 
+// Forms — headless, reactive form state + validation (built on Reactivity above)
+export * from "./forms/index.js";
+
 // Security
 export * from "./security/index.js";
 export {
