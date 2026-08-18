@@ -84,6 +84,9 @@ export type {
 // Refs
 export { ref, type Ref } from "./component/refs.js";
 
+// Transitions & animation
+export type { TransitionSpec, TransitionHooks } from "./transitions/transition-types.js";
+
 // Utils
 export { html, escapeHTML, unsafe, css, classNames } from "./utils/html.js";
 export {
