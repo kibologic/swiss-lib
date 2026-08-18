@@ -41,6 +41,7 @@ import {
   applyRenderedOutput,
   transferDOMReferencesFromOldTree,
 } from "./dom-update-refs.js";
+import { removeWithTransition } from "../transitions/transition-runtime.js";
 
 // ─── Type aliases ─────────────────────────────────────────────────────────────
 
@@ -75,8 +76,15 @@ export function updateDOMNode(
     if (vnode == null || typeof vnode === "boolean") {
       const parent = dom.parentNode;
       if (parent) {
-        parent.removeChild(dom);
-        cleanupNode(dom);
+        // FRAME-transition-api: same deferral as reconciliation.ts's leftover-node pass --
+        // a registered `transition` prop defers removal until the leave sequence settles;
+        // untransitioned nodes take the exact synchronous path this replaced.
+        removeWithTransition(dom, () => {
+          if (dom.parentNode === parent) {
+            parent.removeChild(dom);
+          }
+          cleanupNode(dom);
+        });
       }
       return;
     }
