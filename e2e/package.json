@@ -1,0 +1,25 @@
+{
+  "name": "@swissjs/e2e-engine-conformance",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "CROSS-001-B: browser-engine conformance harness. Runs the framework's SSR/hydration/reconciliation/focus/microtask contracts in real Blink, WebKit and Gecko via Playwright -- jsdom is not an engine any user ships to.",
+  "scripts": {
+    "test:engines": "playwright test",
+    "test:engines:chromium": "playwright test --project=chromium",
+    "test:engines:webkit": "playwright test --project=webkit",
+    "test:engines:firefox": "playwright test --project=firefox",
+    "install:browsers": "playwright install chromium webkit firefox"
+  },
+  "dependencies": {
+    "@swissjs/core": "workspace:*",
+    "@swissjs/compiler": "workspace:*"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.61.1",
+    "esbuild": "^0.25.0"
+  },
+  "engines": {
+    "node": ">=18.19.0 <19"
+  }
+}

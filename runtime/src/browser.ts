@@ -49,7 +49,6 @@ export type {
   DevtoolsEvent,
   DevtoolsEventCategory,
 } from "./devtools/bridge.js";
-export * from "./fenestration/registry.js";
 export { html, escapeHTML, unsafe, css, classNames } from "./utils/html.js";
 export type {
   ComponentConstructor,

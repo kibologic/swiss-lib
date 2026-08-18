@@ -21,7 +21,7 @@ import {
   cleanupNode,
   canUpdateInPlace,
 } from "./types.js";
-import { DiffingError } from "./errors.js";
+import { DiffingError, createErrorBoundary } from "./errors.js";
 import { devTools, performanceMonitor } from "./dev-tools.js";
 import { reconcileProps } from "./props-updates.js";
 import { reconcileChildren } from "./reconciliation.js";
@@ -50,7 +50,7 @@ let renderComponentBound: (
   vnode: ComponentVNode,
   existingInstance?: SwissComponent,
 ) => VNode;
-let updateDOMNodeBound: (dom: Node, vnode: VNode) => void;
+let updateDOMNodeBound: (dom: Node, vnode: VNode) => Node;
 let createDOMNodeBound: (vnode: VNode | null | undefined | boolean) => Node;
 let updateElementNodeBound: (
   dom: HTMLElement,
@@ -125,13 +125,17 @@ updateComponentNodeBound = (
 };
 
 // Create bound updateDOMNode that includes all update functions
-updateDOMNodeBound = (dom: Node, vnode: VNode): void => {
+updateDOMNodeBound = (dom: Node, vnode: VNode): Node => {
   return updateDOMNodeImpl(
     dom,
     vnode,
     updateTextNode,
     updateElementNodeBound,
     updateComponentNodeBound,
+    // FRAME-WA-005: lets updateDOMNode replace `dom` outright when its actual node type
+    // (Text vs Element) doesn't match the new vnode's kind, instead of miscasting it into
+    // updateTextNodeFn/updateElementNodeFn -- see the comment in dom-updates.ts.
+    createDOMNodeBound,
   );
 };
 
@@ -635,8 +639,22 @@ export function renderToString(vnode: VNode): string {
       }
       return renderToString(rendered);
     } catch (e) {
+      // SSR-002: this used to `return ""`. A crashed component and an empty component were
+      // then indistinguishable in the actual HTTP response -- a caller (ServerRenderer) had
+      // no way to tell a broken page from an intentionally empty one, and this silently hid
+      // two real defects during FRAME-006's own build. renderComponentImpl
+      // (component-rendering.ts) already renders a `createErrorBoundary(...)` fallback for
+      // failures it catches internally (construction throws, render() throws) -- this catch
+      // only fires for failures severe enough to escape that (verified empirically: a
+      // stack-overflow-class failure can still unwind past it). Route both through the SAME
+      // fallback shape rather than leaving two different "empty vs verbose" behaviors
+      // depending on which catch happens to fire, so there is exactly one detectable marker
+      // (`data-swiss-error-boundary`) a caller needs to check, not two.
       devTools.error("[Renderer] renderToString: component render failed", e);
-      return "";
+      const err = e instanceof Error ? e : new Error(String(e));
+      return renderToString(
+        createErrorBoundary(`Component error: ${err.message}`, err),
+      );
     }
   }
 

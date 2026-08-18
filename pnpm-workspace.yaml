@@ -8,6 +8,7 @@ packages:
   - "cli"
   - "plugins/*"
   - "apps/*"
+  - "e2e"
 
 onlyBuiltDependencies:
   - esbuild

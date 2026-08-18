@@ -41,6 +41,7 @@ import {
   applyRenderedOutput,
   transferDOMReferencesFromOldTree,
 } from "./dom-update-refs.js";
+import { removeWithTransition } from "../transitions/transition-runtime.js";
 
 // ─── Type aliases ─────────────────────────────────────────────────────────────
 
@@ -70,29 +71,89 @@ export function updateDOMNode(
   updateTextNodeFn: UpdateTextNodeFn,
   updateElementNodeFn: UpdateElementNodeFn,
   updateComponentNodeFn: UpdateComponentNodeFn,
-): void {
+  createDOMNodeFn?: CreateDOMNodeFn,
+): Node {
   try {
     if (vnode == null || typeof vnode === "boolean") {
       const parent = dom.parentNode;
       if (parent) {
-        parent.removeChild(dom);
-        cleanupNode(dom);
+        // FRAME-transition-api: same deferral as reconciliation.ts's leftover-node pass --
+        // a registered `transition` prop defers removal until the leave sequence settles;
+        // untransitioned nodes take the exact synchronous path this replaced.
+        removeWithTransition(dom, () => {
+          if (dom.parentNode === parent) {
+            parent.removeChild(dom);
+          }
+          cleanupNode(dom);
+        });
       }
-      return;
+      return dom;
     }
 
     if (isSignal(vnode)) {
-      updateDOMNode(
+      return updateDOMNode(
         dom,
         vnode.value as VNode,
         updateTextNodeFn,
         updateElementNodeFn,
         updateComponentNodeFn,
+        createDOMNodeFn,
       );
-      return;
     }
 
     const oldVNode = vnodeMetadata.get(dom);
+
+    // FRAME-WA-005 (ternary text-to-subtree swap never patches): this dispatcher used to
+    // route purely on the NEW vnode's kind -- `isElementVNode(vnode)` -> always call
+    // updateElementNodeFn(dom as HTMLElement, ...), `isTextVNode(vnode)` -> always call
+    // updateTextNodeFn(dom as Text, ...) -- with no check that `dom`'s ACTUAL runtime node
+    // type is the kind those functions assume. Every direct caller that reaches this
+    // function without its own prior canUpdateInPlace() gate (commitVNode in
+    // component.ts is the one that matters here: it's the signal-effect-driven self-commit
+    // path a component takes to apply its OWN new render output to its OWN existing DOM
+    // node) hit this blindly. Concretely: a component whose render() flips from a bare
+    // text vnode (dom = a Text node) to an element vnode (e.g. `cond ? "text" : <div>...
+    // </div>`) got updateElementNodeFn(TextNode, divVNode, ...) -- which reconciles props
+    // and children onto the Text node as if it already were the target <div>. Text nodes
+    // have no attributes and, per the DOM spec, reject child insertion entirely
+    // (Node.appendChild/insertBefore throw HierarchyRequestError for a CharacterData
+    // parent) -- reconcileChildren's own reorder pass throws the moment it tries to give
+    // the Text node its first child, updateDOMNode's catch below turns that into a
+    // DiffingError, and the component's DOM is left exactly as before: permanently stuck
+    // on the old text, since nothing about this call was applied. (The inverse, text
+    // vnode onto an Element dom, doesn't throw -- `updateTextNode` just sets
+    // `dom.textContent`, which Elements also have -- but it silently overwrites the
+    // element's real children with a plain string instead of ever becoming a text node,
+    // an equally wrong outcome.)
+    //
+    // The reconciler already has the right primitive for this: canUpdateInPlace() (used by
+    // reconcileChildren and applyRenderedOutput/dom-update-refs.ts to decide, before ever
+    // calling this function, whether an existing DOM node can be reused for a new vnode or
+    // must be replaced). Apply the same check here so updateDOMNode is safe to call
+    // directly against ANY existing DOM node, not just ones a caller has already verified.
+    // Component vnodes are excluded: a component's own DOM node can legitimately be
+    // anything (whatever ITS render() produces), and updateComponentNodeFn / its
+    // applyRenderedOutput already carries its own canUpdateInPlace-guarded replace path.
+    const domKindMismatch =
+      createDOMNodeFn != null &&
+      ((isTextVNode(vnode) && dom.nodeType !== Node.TEXT_NODE) ||
+        (isElementVNode(vnode) && dom.nodeType !== Node.ELEMENT_NODE));
+
+    if (domKindMismatch) {
+      const parent = dom.parentNode;
+      const newDom = createDOMNodeFn(vnode);
+      if (parent) {
+        parent.replaceChild(newDom, dom);
+        cleanupNode(dom);
+      }
+      if (vnode != null && typeof vnode !== "boolean") {
+        vnodeMetadata.set(newDom, vnode);
+      }
+      if (typeof vnode === "object" && vnode !== null && "dom" in vnode) {
+        (vnode as { dom: Node }).dom = newDom;
+      }
+      return newDom;
+    }
 
     if (isTextVNode(vnode)) {
       updateTextNodeFn(dom as Text, vnode);
@@ -117,6 +178,7 @@ export function updateDOMNode(
     if (typeof vnode === "object" && vnode !== null && "dom" in vnode) {
       (vnode as { dom: Node }).dom = dom;
     }
+    return dom;
   } catch (error) {
     console.error("DOM update error:", error);
     const updateErrorMessage =

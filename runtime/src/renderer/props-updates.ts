@@ -16,7 +16,7 @@ export function reconcileProps(
   const allKeys = new Set([...Object.keys(oldProps), ...Object.keys(newProps)]);
 
   allKeys.forEach((key) => {
-    if (key === "children" || key === "key") return;
+    if (key === "children" || key === "key" || key === "transition") return;
 
     const oldValue = oldProps[key];
     const newValue = newProps[key];

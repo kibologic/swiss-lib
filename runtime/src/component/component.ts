@@ -6,6 +6,7 @@
 
 // Renderer imports
 import { renderToDOM, updateDOMNode } from "../renderer/renderer.js";
+import { getCurrentComponentInstance, setCurrentComponentInstance } from "../renderer/storage.js";
 import {
   type VNode,
   createElement,
@@ -43,10 +44,6 @@ import { logger } from "../utils/logger.js";
 // Plugin & security imports
 import type { Plugin, PluginContext } from "../plugins/pluginInterface.js";
 import { CapabilityManager } from "../security/capability-manager.js";
-import {
-  FenestrationRegistry,
-  type FenestrationContext,
-} from "../fenestration/registry.js";
 
 // Devtools imports
 import {
@@ -59,7 +56,6 @@ import { getRemediationMessage } from "../error/remediation.js";
 // Manager imports
 import { UpdateManager } from "./update-manager.js";
 import { ReactivityManager } from "./reactivity-setup.js";
-import { CapabilityManagerComponent } from "./capability-manager-component.js";
 import { PluginManagerComponent } from "./plugin-manager-component.js";
 
 // Lifecycle helpers (split from this file to stay within 700-line limit)
@@ -83,7 +79,6 @@ export class SwissComponent<
   // Manager instances
   private updateManager: UpdateManager;
   private reactivityManager: ReactivityManager<S>;
-  private capabilityManager: CapabilityManagerComponent;
   private pluginManager: PluginManagerComponent;
 
   // Core component state
@@ -135,7 +130,6 @@ export class SwissComponent<
     // Initialize managers
     this.updateManager = new UpdateManager(this);
     this.reactivityManager = new ReactivityManager<S>(this);
-    this.capabilityManager = new CapabilityManagerComponent(this);
     this.pluginManager = new PluginManagerComponent(this, this._lifecycle);
 
     // Apply options
@@ -363,23 +357,16 @@ export class SwissComponent<
   }
 
   public validateCapabilities(): Promise<void> {
-    return this.capabilityManager.validateCapabilities();
+    // FRAME-004: was delegated to CapabilityManagerComponent (fenestration-backed), removed.
+    // Retained as a no-op lifecycle hook -- ssr.ts and component-lifecycle.ts call this
+    // unconditionally as part of the mount lifecycle and are outside this task's scope.
+    return Promise.resolve();
   }
 
   public clearCapabilityCache(): void {
-    this.capabilityManager.clearCache();
-  }
-
-  // ===== Capabilities (Fenestration) - Delegated =====
-  public fenestrate<T>(capabilityId: string, ...params: unknown[]): T | null {
-    return this.capabilityManager.fenestrate<T>(capabilityId, ...params);
-  }
-
-  public async fenestrateAsync<T>(
-    capabilityId: string,
-    ...params: unknown[]
-  ): Promise<T | null> {
-    return this.capabilityManager.fenestrateAsync<T>(capabilityId, ...params);
+    // FRAME-004: was delegated to CapabilityManagerComponent (fenestration-backed), removed.
+    // Retained as a no-op lifecycle hook -- component-lifecycle.ts calls this unconditionally
+    // and is outside this task's scope.
   }
 
   // ===== Plugin Management - Delegated =====
@@ -488,20 +475,59 @@ export class SwissComponent<
     // component's forced render recursing back through an active effect elsewhere in the
     // same microtask-drain). Wrap it to match the established pattern rather than being
     // the sole exception to it.
-    untrack(() => {
-      if (existingDom) {
-        updateDOMNode(existingDom, newVNode);
-        if (newVNodeBase) newVNodeBase.dom = existingDom as HTMLElement | Text;
-      } else {
-        renderToDOM(newVNode, container!);
-        if (newVNodeBase && container!.firstChild) {
-          newVNodeBase.dom = container!.firstChild as HTMLElement | Text;
+    // FRAME-006-capability-build-context: a component discovered by createDOMNode during this
+    // reconciliation pass (e.g. `{cond && <Child/>}` newly true, or a type change at a child
+    // position -- reconcileChildren's insertion path, dom-creation.ts) reads
+    // getCurrentComponentInstance() to set its own _parent (component-rendering.ts's "new
+    // instance" branch). That linkage is how useContext()/findErrorBoundary() walk up the
+    // component tree. It was only ever set around the INITIAL tree-walk (renderComponentImpl,
+    // createDOMNode's own component branch) -- this signal-effect-driven re-render commit path
+    // never set it, so a component that first appears via ITS PARENT's re-render (not present
+    // at the parent's initial mount) got _parent === undefined permanently: useContext()
+    // silently resolved to the default/undefined instead of walking up to a real Provider, and
+    // an error thrown inside it could never find an ancestor ErrorBoundary either, since both
+    // walk the same _parent chain. Reproduced directly: a Context consumer mounted one tick
+    // after its provider read "undefined" instead of the provided value.
+    //
+    // FRAME-WA-005: `resultDom` captures whatever updateDOMNode() (dom-updates.ts)
+    // actually ended up using for this commit -- normally `existingDom` itself (in-place
+    // update), but now sometimes a BRAND NEW node when the new vnode's kind doesn't match
+    // the old DOM node's actual type (e.g. a component's render() flips from a bare text
+    // vnode to an element vnode, or back) and updateDOMNode replaces it instead of
+    // miscasting it. Previously this block unconditionally forced `newVNodeBase.dom` (and
+    // therefore `this._domNode` below) back to the PRE-update `existingDom` reference,
+    // trusting that updateDOMNode always mutated in place. Once updateDOMNode can replace
+    // the node, that overwrite clobbers updateDOMNode's own correct `.dom` assignment with
+    // a now-DETACHED node -- `this._domNode` for the next commit then points at an
+    // orphaned node no longer in the document, so the NEXT update silently mutates
+    // something invisible instead of the live DOM (the live content just never changes
+    // again, with no error). And when the new vnode is a bare string/number, `newVNodeBase`
+    // is null (primitives can't carry `.dom`) -- there was no channel back to `this
+    // ._domNode` at all in that direction, so it silently stayed on the OLD (also
+    // now-replaced) dom forever. Use updateDOMNode's own return value -- the actual live
+    // node for this vnode, object or primitive alike -- as the single source of truth.
+    const prevInstance = getCurrentComponentInstance();
+    setCurrentComponentInstance(this);
+    let resultDom: Node | null = null;
+    try {
+      untrack(() => {
+        if (existingDom) {
+          resultDom = updateDOMNode(existingDom, newVNode);
+          if (newVNodeBase) newVNodeBase.dom = resultDom as HTMLElement | Text;
+        } else {
+          renderToDOM(newVNode, container!);
+          resultDom = container!.firstChild;
+          if (newVNodeBase && container!.firstChild) {
+            newVNodeBase.dom = container!.firstChild as HTMLElement | Text;
+          }
         }
-      }
-    });
+      });
+    } finally {
+      setCurrentComponentInstance(prevInstance);
+    }
 
     this._vnode = newVNode;
-    this._domNode = (newVNodeBase?.dom as Node | null) ?? this._domNode;
+    this._domNode = resultDom ?? (newVNodeBase?.dom as Node | null) ?? this._domNode;
 
     restoreFocusState(focusState);
   }
@@ -532,6 +558,31 @@ export class SwissComponent<
   }
 
   public renderWithBoundary(children: VNode[]): VNode {
+    // FRAME-005: a bare Fragment returned as a component's OWN render() output cannot be
+    // re-rendered. createDOMNode (dom-creation.ts) builds a Fragment as a real
+    // DocumentFragment, but a DocumentFragment's children move into the real parent the
+    // instant it's inserted -- the fragment node itself is left permanently empty and,
+    // critically, its .parentNode stays null forever (it was never itself attached to
+    // anything; only its former children were). applyRenderedOutput
+    // (dom-update-refs.ts), the function every component re-render goes through, needs
+    // `hostDom.parentNode` to either replace or append the freshly rendered content --
+    // for a Fragment-rooted component that is always null, so on re-render the new DOM
+    // gets built and then silently discarded, never inserted anywhere. This is a general
+    // reconciler limitation (any component whose render() returns a bare Fragment as its
+    // sole output hits it, not just ErrorBoundary/renderWithBoundary specifically -- filed
+    // as its own finding, not fixed here, since fixing it generally means giving every
+    // Fragment-rooted component a stable real anchor node to reconcile against, a
+    // reconciler-wide change well beyond this task's bounded scope).
+    //
+    // For exactly one child, a Fragment adds no semantic value anyway -- the child IS the
+    // content -- so returning it directly avoids the broken path entirely rather than
+    // working around it. Zero or 2+ children still route through the Fragment wrapper and
+    // still carry this limitation; that shape happens to be unused by every current
+    // consumer of renderWithBoundary (ErrorBoundary passes exactly one child at every real
+    // call site in this codebase).
+    if (children.length === 1) {
+      return children[0];
+    }
     return createElement(Fragment, {}, ...children);
   }
 
