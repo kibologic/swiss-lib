@@ -1,6 +1,6 @@
 {
   "name": "@swissjs/e2e-engine-conformance",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "type": "module",
   "description": "CROSS-001-B: browser-engine conformance harness. Runs the framework's SSR/hydration/reconciliation/focus/microtask contracts in real Blink, WebKit and Gecko via Playwright -- jsdom is not an engine any user ships to.",
