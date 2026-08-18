@@ -488,15 +488,35 @@ export class SwissComponent<
     // an error thrown inside it could never find an ancestor ErrorBoundary either, since both
     // walk the same _parent chain. Reproduced directly: a Context consumer mounted one tick
     // after its provider read "undefined" instead of the provided value.
+    //
+    // FRAME-WA-005: `resultDom` captures whatever updateDOMNode() (dom-updates.ts)
+    // actually ended up using for this commit -- normally `existingDom` itself (in-place
+    // update), but now sometimes a BRAND NEW node when the new vnode's kind doesn't match
+    // the old DOM node's actual type (e.g. a component's render() flips from a bare text
+    // vnode to an element vnode, or back) and updateDOMNode replaces it instead of
+    // miscasting it. Previously this block unconditionally forced `newVNodeBase.dom` (and
+    // therefore `this._domNode` below) back to the PRE-update `existingDom` reference,
+    // trusting that updateDOMNode always mutated in place. Once updateDOMNode can replace
+    // the node, that overwrite clobbers updateDOMNode's own correct `.dom` assignment with
+    // a now-DETACHED node -- `this._domNode` for the next commit then points at an
+    // orphaned node no longer in the document, so the NEXT update silently mutates
+    // something invisible instead of the live DOM (the live content just never changes
+    // again, with no error). And when the new vnode is a bare string/number, `newVNodeBase`
+    // is null (primitives can't carry `.dom`) -- there was no channel back to `this
+    // ._domNode` at all in that direction, so it silently stayed on the OLD (also
+    // now-replaced) dom forever. Use updateDOMNode's own return value -- the actual live
+    // node for this vnode, object or primitive alike -- as the single source of truth.
     const prevInstance = getCurrentComponentInstance();
     setCurrentComponentInstance(this);
+    let resultDom: Node | null = null;
     try {
       untrack(() => {
         if (existingDom) {
-          updateDOMNode(existingDom, newVNode);
-          if (newVNodeBase) newVNodeBase.dom = existingDom as HTMLElement | Text;
+          resultDom = updateDOMNode(existingDom, newVNode);
+          if (newVNodeBase) newVNodeBase.dom = resultDom as HTMLElement | Text;
         } else {
           renderToDOM(newVNode, container!);
+          resultDom = container!.firstChild;
           if (newVNodeBase && container!.firstChild) {
             newVNodeBase.dom = container!.firstChild as HTMLElement | Text;
           }
@@ -507,7 +527,7 @@ export class SwissComponent<
     }
 
     this._vnode = newVNode;
-    this._domNode = (newVNodeBase?.dom as Node | null) ?? this._domNode;
+    this._domNode = resultDom ?? (newVNodeBase?.dom as Node | null) ?? this._domNode;
 
     restoreFocusState(focusState);
   }

@@ -184,6 +184,25 @@ export function renderComponent(
           }
         }
 
+        // FRAME-WA-005: tag the INCOMING ComponentVNode (always an object -- it's the
+        // `jsx(Component, props)` wrapper, never the render() output) with the resolved
+        // instance, in addition to the `rendered`-output tagging below. dom-creation.ts's
+        // initial-creation path recovers the instance via `vb(rendered)?.__componentInstance`
+        // to decide which SwissComponent owns the DOM node it's about to create, and only
+        // THEN calls ci.initialize() (which wires up the reactive render effect via
+        // setupReactivity()). `vb()` returns null for any primitive, so when a component's
+        // FIRST render() returns a raw string/number (`render() { return cond ? "text" : ...
+        // }`, no wrapping element) or a boolean, that recovery silently fails, instance stays
+        // undefined, initialize() is never called, and the component never gets a render
+        // effect at all -- state changes afterward flip signals with zero subscribers, and
+        // the DOM is stuck on that first render forever. This mirrors the FABLE-RENDER-001 D3
+        // fix a few lines below for null/undefined renders (which wraps them in a placeholder
+        // specifically so __componentInstance survives) -- strings/numbers/booleans can't be
+        // wrapped that way without changing what actually renders, so tag the vnode wrapper
+        // instead; it is always an object regardless of what render() returns.
+        const vnodeBase = vnode as unknown as VNodeBase;
+        vnodeBase.__componentInstance = instance;
+
         const prevInstance = getCurrentComponentInstance();
         setCurrentComponentInstance(instance);
 
