@@ -89,3 +89,36 @@ describe("renderToString in a genuinely DOM-less environment", () => {
     expect(html).toBe("<span>leaf</span>");
   });
 });
+
+describe("SSR-002: renderToString component failures are visible, not silently empty", () => {
+  it("a component that throws renders a detectable error-boundary marker, not an empty string", () => {
+    class Boom extends SwissComponent {
+      render() {
+        throw new Error("kaboom");
+      }
+    }
+    const html = renderToString(jsx(Boom, {}));
+    expect(html).not.toBe("");
+    expect(html).toContain('data-swiss-error-boundary="true"');
+    expect(html).toContain("kaboom");
+  });
+
+  it("does not leak the raw stack trace outside NODE_ENV=development", () => {
+    const original = process.env.NODE_ENV;
+    process.env.NODE_ENV = "production";
+    try {
+      class Boom extends SwissComponent {
+        render() {
+          throw new Error("kaboom");
+        }
+      }
+      const html = renderToString(jsx(Boom, {}));
+      expect(html).toContain("kaboom");
+      // The stack trace names this test file's own path -- if that leaked, it would be in the
+      // response body of a real production SSR page.
+      expect(html).not.toContain("ssr-no-dom-environment.test.ts");
+    } finally {
+      process.env.NODE_ENV = original;
+    }
+  });
+});

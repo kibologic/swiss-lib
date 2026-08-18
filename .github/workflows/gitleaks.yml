@@ -15,8 +15,25 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          config-path: .gitleaks.toml
+      # gitleaks/gitleaks-action@v2 requires a paid GITLEAKS_LICENSE secret for any
+      # organization-owned repo (kibologic is an org) -- confirmed live 2026-08-14
+      # (SEC-001): "[kibologic] is an organization. License key is required." with no
+      # secret configured, so the action has never actually scanned anything, ever, while
+      # showing a red X everyone learned to read as normal. It also silently ignored this
+      # repo's `config-path: .gitleaks.toml` input -- the action warns
+      # "Unexpected input(s) 'config-path', valid inputs are ['']" -- so even once
+      # licensed, the custom allowlist config would never have been applied.
+      #
+      # gitleaks itself (the underlying scan engine) is MIT-licensed and free; the paid
+      # gate is specific to the v2 wrapper Action's org-repo monetization, not the tool.
+      # Run the OSS CLI binary directly -- same engine, same config file, actually
+      # enforced, no license dependency, no spend decision required to have a working
+      # secret scanner. Pinned to a specific release (not `latest`) for reproducibility.
+      - name: Install gitleaks
+        run: |
+          curl -sSL https://github.com/gitleaks/gitleaks/releases/download/v8.21.2/gitleaks_8.21.2_linux_x64.tar.gz \
+            | tar -xz -C /usr/local/bin gitleaks
+          gitleaks version
+
+      - name: Run gitleaks
+        run: gitleaks detect --source . --config .gitleaks.toml --redact -v

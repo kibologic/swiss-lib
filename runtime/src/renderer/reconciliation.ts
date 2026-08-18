@@ -21,6 +21,7 @@ import {
   filterValidVNodes,
 } from "./types.js";
 import { logger } from "../utils/logger.js";
+import { removeWithTransition } from "../transitions/transition-runtime.js";
 
 // Forward declarations - these will be imported from other modules
 // We use function declarations to allow hoisting and avoid circular dependency issues
@@ -427,6 +428,27 @@ export function reconcileChildren(
         newDoms.push(newDom);
       }
     } else {
+      // FRAME-WA-004: no keyed/typed match was found for newVNode at this position -- its
+      // parent-relative identity changed (e.g. this position's own key changed, or the
+      // surrounding key space shifted). The old node that WAS here, if any and not already
+      // claimed by another new child this pass, is about to become an orphan removed by the
+      // "remove leftover nodes" pass below -- but that pass runs AFTER createDOMNodeFn, so at
+      // this point the outgoing subtree (and any component instances it hosts, e.g. an unkeyed
+      // child inside a keyed wrapper whose key just changed) is still fully live in the DOM.
+      // dom-creation.ts's aggressive same-type instance search walks the live DOM upward from
+      // the nearest component root and will happily find and reuse that still-attached, still-
+      // registered instance, silently skipping its initialize()/mounted() -- DISC-2026-07-22-004.
+      // Narrow fix: unmount and de-register the positionally-corresponding outgoing node's
+      // subtree BEFORE building the replacement, so the aggressive search has nothing stale left
+      // to find. Only the position's own old node is touched (not the whole aggressive-search
+      // mechanism, which other unkeyed-sibling cases still rely on) -- this does not run when an
+      // oldEntry WAS found (canUpdateInPlace / same-type component paths above), so ordinary
+      // unkeyed reuse under an unchanged parent is untouched.
+      const staleNode = oldChildCountMatchesLiveDom ? oldChildNodes[newIndex] : undefined;
+      if (staleNode && !processedNodes.has(staleNode) && staleNode.parentNode === parent) {
+        cleanupNode(staleNode);
+      }
+
       const newDom = createDOMNodeFn(newVNode);
       const elseBase = typeof newVNode === "object" && newVNode !== null
         ? (newVNode as unknown as VNodeBase)
@@ -457,11 +479,21 @@ export function reconcileChildren(
   }
   oldChildNodes.forEach((node) => {
     if (!processedNodes.has(node)) {
-      cleanupNode(node);
-      // Check if node is still a child before removing (it might have been moved/removed during reordering)
-      if (node.parentNode === parent) {
-        parent.removeChild(node);
-      }
+      // FRAME-transition-api: a node with a registered `transition` prop defers its
+      // cleanupNode()+removeChild() until the leave transition settles (CSS classes +
+      // JS hooks run first) -- see transition-runtime.ts's removeWithTransition. Nodes
+      // with no registered transition take the exact synchronous path this replaced;
+      // removeWithTransition's own no-spec branch is that same two-line body. This only
+      // changes WHEN a genuinely-removed leftover node's DOM leaves the tree, never
+      // WHICH node is identified as leftover -- the identity/matching logic above
+      // (FRAME-001 / FRAME-WA-004) is untouched.
+      removeWithTransition(node, () => {
+        cleanupNode(node);
+        // Check if node is still a child before removing (it might have been moved/removed during reordering)
+        if (node.parentNode === parent) {
+          parent.removeChild(node);
+        }
+      });
     }
   });
 }

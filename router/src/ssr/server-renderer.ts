@@ -20,7 +20,15 @@
  * claim general hydration correctness for arbitrary conditional/list content until then.
  */
 import { Router, type Route, type RouteMatch } from "../core/router.js";
-import { createElement, renderToString } from "@swissjs/core";
+import {
+  createElement,
+  renderToString,
+  pushHeadContext,
+  popHeadContext,
+  renderHeadToString,
+  htmlAttrsString,
+  bodyAttrsString,
+} from "@swissjs/core";
 import type { VNode } from "@swissjs/core";
 
 export interface SSRContext {
@@ -33,7 +41,20 @@ export interface SSRResult {
   data: Record<string, unknown>;
   statusCode: number;
   redirect?: string;
+  /** SSR-002: true when at least one component in this render threw and fell back to an
+   *  error-boundary placeholder (runtime/src/renderer/errors.ts's createErrorBoundary).
+   *  Absent (not `false`) on a render with no failures, so existing callers checking only
+   *  `html`/`statusCode`/`data` see no shape change. */
+  hadRenderErrors?: boolean;
 }
+
+/** SSR-002: the marker createErrorBoundary's fallback vnode always carries (runtime/src/
+ *  renderer/errors.ts). renderToString's own catch and renderComponentImpl's internal catch
+ *  both route through this same fallback (see renderer.ts's comment at its SSR catch site),
+ *  so checking for this one string is sufficient regardless of which of the two caught the
+ *  failure -- no structured-error channel needs threading through the shared client/server
+ *  rendering path to answer "did anything fail" from the final HTML string alone. */
+const ERROR_BOUNDARY_MARKER = 'data-swiss-error-boundary="true"';
 
 export class ServerRenderer {
   constructor(private router: Router) {}
@@ -55,26 +76,56 @@ export class ServerRenderer {
     // Each match may have a `layout` wrapper. We compose them inside-out:
     //   matches = [root, parent, leaf]
     //   tree = <RootLayout><ParentLayout><Leaf /></ParentLayout></RootLayout>
-    const componentHtml = renderToString(buildRouteTree(matches, data));
+    //
+    // HEAD-001: pushHeadContext()/popHeadContext() bracket the renderToString call so any
+    // useHead()/setTitle()/addMeta()/addLink() call made synchronously from a component's
+    // render() (which executes inside this same, fully synchronous renderToString call
+    // stack -- see renderer.ts's renderToString) lands in THIS request's HeadContext, not a
+    // module-global shared across requests. Because renderToString never awaits mid-render,
+    // no other request's push/pop can interleave between this push and its matching pop
+    // (pop runs in `finally`, so a throw from renderToString still leaves the stack clean).
+    const headCtx = pushHeadContext();
+    let componentHtml: string;
+    try {
+      componentHtml = renderToString(buildRouteTree(matches, data));
+    } finally {
+      popHeadContext();
+    }
+    const hadRenderErrors = componentHtml.includes(ERROR_BOUNDARY_MARKER);
 
     const safeData = JSON.stringify(data)
       .replace(/</g, '\\u003c')
       .replace(/>/g, '\\u003e')
       .replace(/&/g, '\\u0026');
 
+    // Default the title (renderHeadToString only emits a <title> tag when one was set) so
+    // the existing "Swiss App" default behavior is preserved for pages that never call
+    // useHead()/setTitle().
+    if (headCtx.title === undefined) headCtx.title = "Swiss App";
+    const headHtml = renderHeadToString(headCtx);
+    const htmlAttrs = htmlAttrsString(headCtx);
+    const bodyAttrs = bodyAttrsString(headCtx);
+
     const html = `<!DOCTYPE html>
-<html>
+<html${htmlAttrs ? ` ${htmlAttrs}` : ""}>
   <head>
     <meta charset="utf-8" />
-    <title>Swiss App</title>
+    ${headHtml}
   </head>
-  <body>
+  <body${bodyAttrs ? ` ${bodyAttrs}` : ""}>
     <div id="app" data-swiss-route="${escapeAttr(url)}">${componentHtml}</div>
     <script>window.__SWISS_DATA__ = ${safeData};</script>
   </body>
 </html>`;
 
-    return { html, data, statusCode: 200 };
+    // SSR-002: never_touch forbids a failing widget taking the whole page down by default --
+    // the requirement is that the failure becomes VISIBLE to the caller, not fatal. The HTML
+    // still ships (the working parts of the page still render); the caller now has
+    // statusCode + hadRenderErrors to decide what to do with a partially-failed render,
+    // instead of an indistinguishable cheerful 200.
+    return hadRenderErrors
+      ? { html, data, statusCode: 500, hadRenderErrors: true }
+      : { html, data, statusCode: 200 };
   }
 }
 

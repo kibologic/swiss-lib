@@ -440,6 +440,78 @@ export function preprocessSwissSyntax(
       .join("\n");
 
     result = importLines.join("\n") + "\n\nexport default class extends SwissComponent {\n" + indentedBody + "\n}\n";
+  } else if (
+    /\bextends\s+SwissComponent\b/.test(result) &&
+    filePath &&
+    (filePath.endsWith(".uix") || filePath.endsWith(".ui"))
+  ) {
+    // COMP-001: `component X {}` is rewritten to `class X extends
+    // SwissComponent {}` earlier in this function (see the very first
+    // `result.replace` above), so hasClassWrapper is true here and the
+    // bare-.uix branch above is (correctly) skipped -- but nothing else in
+    // this lexical pass ever adds the SwissComponent import for that case.
+    // Only patch/add the import when it's actually missing, so files that
+    // already import SwissComponent are left untouched.
+    const hasSwissImport =
+      /\bimport\s*\{[^}]*\bSwissComponent\b[^}]*\}\s*from\s*['"][^'"]+['"]/m.test(
+        result,
+      );
+    if (!hasSwissImport) {
+      const escapedSrc = jsxImportSource.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const srcImportRegex = new RegExp(
+        `import\\s*\\{([^}]+)\\}\\s*from\\s*['"]${escapedSrc}['"]`,
+      );
+      const importMatch = result.match(srcImportRegex);
+      if (importMatch) {
+        result = result.replace(
+          srcImportRegex,
+          `import { ${importMatch[1].trim()}, SwissComponent } from '${jsxImportSource}'`,
+        );
+      } else {
+        result = `import { SwissComponent } from '${jsxImportSource}';\n` + result;
+      }
+    }
+  }
+
+  // COMP-001: Close the gap between the bare-.uix path handled above and the
+  // `component X {}` path.
+  //
+  // `component X {}` was rewritten to `class X extends SwissComponent {}`
+  // earlier in this function (the component-keyword replace, near the top).
+  // That means by the time the `hasClassWrapper` guard above runs,
+  // hasClassWrapper is already true for these files -- the guard's branch
+  // (the only place that injected the SwissComponent import) never fires for
+  // them, and the emitted module references `SwissComponent` as a free
+  // identifier with no import. This is why every `component X {}` .uix file
+  // in Alpine needed a hand-written `import { SwissComponent }` workaround.
+  //
+  // Fixed by checking for the actual need (does the result reference
+  // `extends SwissComponent`?) rather than reusing hasClassWrapper, and only
+  // injecting when no import already provides SwissComponent -- package
+  // agnostic, mirroring the Signal-injection check above. This does not
+  // double-import for the bare-.uix branch above: that branch already left
+  // `result` with both an `extends SwissComponent` class AND an import
+  // providing SwissComponent, so the "already imported" check below skips it.
+  if (/\bclass\s+\w*\s*extends\s+SwissComponent\b/.test(result)) {
+    const hasSwissComponentImport =
+      /\bimport\s+\{[^}]*\bSwissComponent\b[^}]*\}\s+from\s+['"][^'"]+['"]/m.test(
+        result,
+      );
+    if (!hasSwissComponentImport) {
+      const escapedSrc = jsxImportSource.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const srcImportRegex = new RegExp(
+        `import\\s*\\{([^}]+)\\}\\s*from\\s*['"]${escapedSrc}['"]`,
+      );
+      const importMatch = result.match(srcImportRegex);
+      if (importMatch) {
+        result = result.replace(
+          srcImportRegex,
+          `import { ${importMatch[1].trim()}, SwissComponent } from '${jsxImportSource}'`,
+        );
+      } else {
+        result = `import { SwissComponent } from '${jsxImportSource}';\n` + result;
+      }
+    }
   }
 
   return result;

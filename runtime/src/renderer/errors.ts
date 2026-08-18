@@ -43,11 +43,24 @@ export function createErrorBoundary(message: string, error?: Error): VElement {
       message,
     });
   }
-  
+
+  // SSR-002: error.stack was embedded into this fallback's HTML unconditionally, in every
+  // environment -- a component throwing during a real production SSR render put full server
+  // file paths and call-stack internals into the response body sent to any client. Gate it
+  // the same way devTools.error already gates its own console output elsewhere in this
+  // package (renderer/dev-tools.ts), rather than inventing a new convention.
+  const includeStackDetails =
+    (globalThis as { process?: { env?: { NODE_ENV?: string } } }).process?.env
+      ?.NODE_ENV === "development";
+
   return {
     type: "div",
-    props: { 
+    props: {
       className: "error-boundary",
+      // SSR-002: a stable, greppable marker a caller (e.g. ServerRenderer) can detect in the
+      // final HTML string without needing renderToString's return type to change or a
+      // structured-error channel threaded through the shared client/server rendering path.
+      "data-swiss-error-boundary": "true",
       style: {
         padding: '1rem',
         border: '1px solid #f00',
@@ -66,7 +79,7 @@ export function createErrorBoundary(message: string, error?: Error): VElement {
         props: {},
         children: [message],
       },
-      error && error.stack
+      error && error.stack && includeStackDetails
         ? {
             type: "details",
             props: {},

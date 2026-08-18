@@ -12,7 +12,8 @@
     "components",
     "security",
     "plugins/*",
-    "apps/*"
+    "apps/*",
+    "e2e"
   ],
   "scripts": {
     "build": "turbo run build",
