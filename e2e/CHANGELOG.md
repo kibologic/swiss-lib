@@ -1,5 +1,12 @@
 # @swissjs/e2e-engine-conformance
 
+## 0.0.2
+
+### Patch Changes
+
+- Updated dependencies [ff8cbb0]
+  - @swissjs/compiler@1.3.1
+
 ## 0.0.1
 
 ### Patch Changes
