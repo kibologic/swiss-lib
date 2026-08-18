@@ -29,6 +29,7 @@ import { createErrorBoundary } from "./errors.js";
 import { untrack } from "../reactivity/effect.js";
 import { getCachedRender, cacheRender, clearRenderCache } from "./render-cache.js";
 import { logger } from "../utils/logger.js";
+import { SuspensionSignal } from "../reactivity/resource.js";
 
 function vb(vnode: VNode | null | undefined): VNodeBase | null {
   if (vnode == null || typeof vnode !== "object") return null;
@@ -42,6 +43,24 @@ function findErrorBoundary(instance: SwissComponent): SwissComponent | null {
   let current: SwissComponent | null = instance._parent;
   while (current) {
     if ((current.constructor as typeof SwissComponent).isErrorBoundary) return current;
+    current = current._parent;
+  }
+  return null;
+}
+
+/**
+ * ASYNC-001: walk the _parent chain looking for a <Suspense> boundary. Same shape as
+ * findErrorBoundary() above, kept as its own function (not a shared generic) because it checks
+ * a different static flag and the two boundary kinds intentionally never interoperate --
+ * a real Error must keep walking past a Suspense to reach an ErrorBoundary, and a
+ * SuspensionSignal must never be claimed by an ErrorBoundary.
+ */
+function findSuspenseBoundary(instance: SwissComponent): SwissComponent | null {
+  let current: SwissComponent | null = instance._parent;
+  while (current) {
+    if ((current.constructor as typeof SwissComponent & { isSuspenseBoundary?: boolean }).isSuspenseBoundary) {
+      return current;
+    }
     current = current._parent;
   }
   return null;
@@ -218,16 +237,34 @@ export function renderComponent(
           try {
             rendered = untrack(() => instance.render());
           } catch (renderError) {
-            const boundary = findErrorBoundary(instance);
-            if (boundary) {
-              asInternal(boundary).captureChildError(instance, { error: renderError });
-              rendered = null;
+            if (renderError instanceof SuspensionSignal) {
+              // ASYNC-001: not a component error -- route to the nearest ancestor <Suspense>
+              // exactly as a thrown Error routes to the nearest ErrorBoundary just below. This
+              // component contributes nothing to the tree this pass (null, same as any other
+              // component that legitimately renders nothing).
+              const suspenseBoundary = findSuspenseBoundary(instance);
+              if (suspenseBoundary) {
+                (suspenseBoundary as unknown as { receiveSuspension(promise: Promise<unknown>): void })
+                  .receiveSuspension(renderError.promise);
+                rendered = null;
+              } else {
+                logger.error(
+                  `[SwissJS] Component ${instance.constructor.name} suspended on a pending resource but no ancestor <Suspense> boundary was found.`,
+                );
+                throw renderError;
+              }
             } else {
-              logger.error(
-                `[SwissJS] Uncaught render error in ${instance.constructor.name}:`,
-                renderError,
-              );
-              throw renderError;
+              const boundary = findErrorBoundary(instance);
+              if (boundary) {
+                asInternal(boundary).captureChildError(instance, { error: renderError });
+                rendered = null;
+              } else {
+                logger.error(
+                  `[SwissJS] Uncaught render error in ${instance.constructor.name}:`,
+                  renderError,
+                );
+                throw renderError;
+              }
             }
           }
           // CRITICAL: Expand slots into their actual content before reconciliation

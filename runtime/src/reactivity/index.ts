@@ -29,3 +29,6 @@ export { reactive, watch, watchAll } from './reactive.js';
 export { computed as computedLegacy, effect as reactiveEffect } from './reactive.js';
 
 export * from './types/index.js';
+
+export { resource, Resource, SuspensionSignal } from './resource.js';
+export type { ResourceOptions, ResourceRefetchOptions } from './resource.js';
