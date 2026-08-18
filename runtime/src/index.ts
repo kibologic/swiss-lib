@@ -39,6 +39,25 @@ export { DevServerService } from "./runtime/dev-server.js";
 // Renderer
 export { hydrate, renderToString, renderToDOM } from "./renderer/index.js";
 
+// Document-head management (HEAD-001)
+export {
+  useHead,
+  setTitle,
+  addMeta,
+  addLink,
+  collectHead,
+  pushHeadContext,
+  popHeadContext,
+  currentHeadContext,
+  renderHeadToString,
+  htmlAttrsString,
+  bodyAttrsString,
+  type HeadConfig,
+  type HeadInput,
+  type HeadMeta,
+  type HeadLink,
+} from "./head/index.js";
+
 // Reactivity
 export * from "./reactivity/index.js";
 
