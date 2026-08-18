@@ -1,5 +1,30 @@
 # @kibologic/router
 
+## 1.3.0
+
+### Minor Changes
+
+- Add document-head management (HEAD-001). Components declare `<title>`/`<meta>`/
+  `<link>` and `<html>`/`<body>` attributes from `render()` via `useHead()` (and
+  `setTitle`/`addMeta`/`addLink`); the server renderer collects them into the SSR
+  `<head>`, and on the client they apply to `document.head`.
+  - `@swissjs/core`: the `useHead` API and a per-render `HeadContext` with
+    title/meta/link de-duplication and HTML escaping.
+  - `@swissjs/router`: `ServerRenderer` brackets `renderToString` with the head
+    context (push/pop around the synchronous render), so concurrent SSR requests
+    never leak head state into each other.
+
+  Ships with head unit tests and router SSR-injection tests (incl. a `Promise.all`
+  concurrency test). See swiss-lib PR #111.
+
+### Patch Changes
+
+- Updated dependencies
+- Updated dependencies [565e472]
+- Updated dependencies
+- Updated dependencies
+  - @swissjs/core@1.3.0
+
 ## 1.2.13
 
 ### Patch Changes
