@@ -33,6 +33,7 @@ import { LifecycleManager } from "./lifecycle.js";
 import { saveFocusState, restoreFocusState } from "./focus-guard.js";
 import { SwissContext, cleanupContextSubscriptions } from "./context.js";
 import { serverInit, hydrateSSR } from "./ssr.js";
+import { SuspensionSignal } from "../reactivity/resource.js";
 import {
   getLifecycleMetadata,
   OnMount,
@@ -71,6 +72,7 @@ export class SwissComponent<
   public static requires: string[] = [];
   public static contextType?: symbol;
   public static isErrorBoundary: boolean = false;
+  public static isSuspenseBoundary: boolean = false;
 
   public error: SwissErrorInfo | null = null;
   public element: HTMLElement;
@@ -425,9 +427,38 @@ export class SwissComponent<
       void this.executeHookPhase("afterRender");
       return vnode;
     } catch (error) {
+      if (error instanceof SuspensionSignal) {
+        // ASYNC-001: a resource read while pending. This is not a component error -- route it
+        // to the nearest ancestor <Suspense> exactly the way a thrown Error routes to the
+        // nearest ErrorBoundary below, via the same _parent walk. Suspense.receiveSuspension()
+        // flips that ancestor's own state to show its fallback and re-renders once the promise
+        // settles. This component itself renders nothing this pass (null is a supported "don't
+        // commit" result throughout the renderer, same as a component returning null/false).
+        if (!this.routeSuspension(error)) {
+          // No ancestor <Suspense>: surface it like any other uncaught async rejection rather
+          // than silently rendering nothing forever.
+          console.error(
+            `[SwissJS] Component ${this.constructor.name} suspended on a pending resource but no ancestor <Suspense> boundary was found.`,
+          );
+        }
+        return null;
+      }
       this.captureError(error, "render");
       return this.renderErrorFallback();
     }
+  }
+
+  /** Walk _parent looking for the nearest <Suspense> boundary; hand it the pending promise. */
+  private routeSuspension(signal: SuspensionSignal): boolean {
+    let current = this._parent;
+    while (current) {
+      if ((current.constructor as typeof SwissComponent & { isSuspenseBoundary?: boolean }).isSuspenseBoundary) {
+        (current as unknown as { receiveSuspension(promise: Promise<unknown>): void }).receiveSuspension(signal.promise);
+        return true;
+      }
+      current = current._parent;
+    }
+    return false;
   }
 
   public commitVNode(newVNode: VNode): void {
