@@ -346,7 +346,16 @@ export function createDOMNode(
       const Component = vnode.type;
       let instance: SwissComponent | undefined = undefined;
       if (isClassComponent(Component)) {
-        instance = vb(rendered)?.__componentInstance;
+        // FRAME-WA-005: `rendered` carries `__componentInstance` only when it's an object
+        // (vb() returns null for primitives) -- a component whose render() returns a raw
+        // string/number/boolean (no wrapping element) would otherwise never be found here,
+        // so ci.initialize()/setupReactivity() below never runs and the component gets no
+        // render effect at all. Fall back to the tag renderComponent() (component-rendering.ts)
+        // now also sets on the INCOMING vnode, which is always an object regardless of what
+        // render() returns.
+        instance =
+          vb(rendered)?.__componentInstance ??
+          (vnode as unknown as VNodeBase).__componentInstance;
       }
 
       const prevInstance = getCurrentComponentInstance();
