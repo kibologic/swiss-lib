@@ -32,6 +32,9 @@
 import { describe, it, expect } from 'vitest';
 import { createElement as h, Fragment } from '../../src/vdom/vdom.js';
 import { renderToDOM } from '../../src/renderer/renderer.js';
+import 'reflect-metadata';
+import { SwissComponent } from '../../src/component/component.js';
+import type { BaseComponentProps } from '../../src/component/types/index.js';
 
 function getContainer(): HTMLElement {
   let el = document.getElementById('test-root-2');
@@ -226,4 +229,111 @@ describe('fragment child reorder', () => {
     const after = Array.from(container.querySelectorAll('span')).map((n) => n.id);
     expect(after).toEqual(['x', 'y']);
   });
+});
+
+
+describe('nested fragment reorder', () => {
+  it("preserves a focused input in a fragment nested inside another fragment when a preceding sibling fragment's contents reorder", () => {
+    const container = getContainer();
+
+    // Outer fragment's first child is itself a fragment (inner) whose own
+    // children are static, unkeyed siblings -- rotated between renders, the
+    // same shape as the top-level unkeyed-reorder red case but one level
+    // deeper (fragment-within-fragment), per design doc \u00a72.3's flag that
+    // fragment children are flattened by __normalizedChildren but a NESTED
+    // fragment's own nested children are not yet covered by any existing
+    // regression case.
+    renderToDOM(
+      h('div', {},
+        h(Fragment, {},
+          h(Fragment, {},
+            h('span', {}, 'inner-A'),
+            h('span', {}, h('input', { type: 'text', name: 'nested-input', value: '' })),
+            h('span', {}, 'inner-C'),
+          ),
+        ),
+        h('span', {}, 'outer-trailing'),
+      ),
+      container,
+    );
+    const input = container.querySelector('input') as HTMLInputElement;
+    input.focus();
+    expect(document.activeElement).toBe(input);
+
+    // Rotate the inner fragment's children (A, input, C) -> (A, C, input).
+    renderToDOM(
+      h('div', {},
+        h(Fragment, {},
+          h(Fragment, {},
+            h('span', {}, 'inner-A'),
+            h('span', {}, 'inner-C'),
+            h('span', {}, h('input', { type: 'text', name: 'nested-input', value: '' })),
+          ),
+        ),
+        h('span', {}, 'outer-trailing'),
+      ),
+      container,
+    );
+
+    expect(document.contains(input)).toBe(true);
+    expect(document.activeElement).toBe(input);
+  });
+});
+
+describe('component-VNode unkeyed reorder', () => {
+  // Component version of the div-wrapping-input class instead of a raw DOM
+  // element: each sibling is an INSTANCE of the same component type
+  // (ReorderItem), not a plain <div>. This confirms the identity gap named
+  // by the existing it.fails() case above (three same-type unkeyed siblings,
+  // the middle one holding a focused input, reordered) is the same gap for
+  // component vnodes as it is for element vnodes -- both go through the
+  // same type-based reconciliation fallback (reconciliation.ts \u00a71.2),
+  // so both should currently fail identically. Stage 1 claims to fix
+  // identity for compiled output regardless of vnode kind; this is the
+  // pre-fix baseline for the component-vnode half of that claim.
+  interface ReorderItemProps extends BaseComponentProps {
+    label?: string;
+  }
+
+  class ReorderItem extends SwissComponent<ReorderItemProps> {
+    render() {
+      if (this.props.label) {
+        return h('div', {}, this.props.label);
+      }
+      return h('div', {}, h('input', { type: 'text', name: 'component-input', value: '' }));
+    }
+  }
+
+  it.fails(
+    'preserves a focused input inside a reordered UNKEYED list item when the item is a component instance (not a raw element)',
+    () => {
+      const container = getContainer();
+
+      renderToDOM(
+        h('div', {},
+          h(ReorderItem, { label: 'Item A' }),
+          h(ReorderItem, {}),
+          h(ReorderItem, { label: 'Item C' }),
+        ),
+        container,
+      );
+      const input = container.querySelector('input') as HTMLInputElement;
+      input.focus();
+      expect(document.activeElement).toBe(input);
+
+      // Same rotation as the element-vnode red case: the component instance
+      // wrapping the input moves from index 1 to index 2.
+      renderToDOM(
+        h('div', {},
+          h(ReorderItem, { label: 'Item A' }),
+          h(ReorderItem, { label: 'Item C' }),
+          h(ReorderItem, {}),
+        ),
+        container,
+      );
+
+      expect(document.contains(input)).toBe(true);
+      expect(document.activeElement).toBe(input);
+    },
+  );
 });
