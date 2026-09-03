@@ -435,7 +435,17 @@ export function updateComponentNode(
     const newInstance = (newRendered as unknown as VNodeBase | null)?.__componentInstance;
     if (newInstance) {
       const nci = asInternal(newInstance);
-      componentInstances.set(dom, newInstance);
+      // FRAME-002: when this component's render output is itself a component vnode
+      // (component-renders-component), newInstance is the OUTER instance (renderComponent
+      // tags its rendered child vnode with the rendering instance). The shared node's
+      // componentInstances slot belongs to the INNER mounted instance; registering the outer
+      // here would clobber it and force the inner reconcile below to build a never-mounted
+      // phantom. Keep the outer in the host slot instead.
+      if (isComponentVNode(newRendered as VNode)) {
+        domToHostComponent.set(dom, newInstance);
+      } else {
+        componentInstances.set(dom, newInstance);
+      }
       vnode.__componentInstance = newInstance;
       const oldVNodeBase = nci._vnode as unknown as VNodeBase | null;
       if (oldVNodeBase) oldVNodeBase.dom = dom;
@@ -478,7 +488,17 @@ export function updateComponentNode(
     const newInstance = (newRendered as unknown as VNodeBase | null)?.__componentInstance;
     if (newInstance) {
       const nci = asInternal(newInstance);
-      componentInstances.set(dom, newInstance);
+      // FRAME-002: when this component's render output is itself a component vnode
+      // (component-renders-component), newInstance is the OUTER instance (renderComponent
+      // tags its rendered child vnode with the rendering instance). The shared node's
+      // componentInstances slot belongs to the INNER mounted instance; registering the outer
+      // here would clobber it and force the inner reconcile below to build a never-mounted
+      // phantom. Keep the outer in the host slot instead.
+      if (isComponentVNode(newRendered as VNode)) {
+        domToHostComponent.set(dom, newInstance);
+      } else {
+        componentInstances.set(dom, newInstance);
+      }
       vnode.__componentInstance = newInstance;
       const oldVNodeBase = nci._vnode as unknown as VNodeBase | null;
       if (oldVNodeBase) oldVNodeBase.dom = dom;
