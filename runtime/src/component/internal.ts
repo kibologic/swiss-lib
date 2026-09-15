@@ -48,6 +48,15 @@ export interface ComponentInternals {
   safeRender(): VNode | null;
   clearEffects(): void;
   scheduleUpdate(): void;
+  /**
+   * FRAME-updated-hook-child-components: narrow view onto the private UpdateManager
+   * instance, exposing only its "updated"-hook throttle guard. dom-updates.ts's
+   * updateComponentNode (the commit path a PARENT's reconciliation takes when it
+   * revisits an already-mounted CHILD component's vnode position) is a legitimate
+   * external caller that needs the same per-second budget commitVNode's own post-commit
+   * hook fire uses, without making the whole UpdateManager public.
+   */
+  updateManager: { guardCommitUpdatedHook(): boolean };
   [method: string]: unknown;
 }
 
