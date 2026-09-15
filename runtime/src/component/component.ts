@@ -530,6 +530,23 @@ export class SwissComponent<
     this._domNode = resultDom ?? (newVNodeBase?.dom as Node | null) ?? this._domNode;
 
     restoreFocusState(focusState);
+
+    // FRAME-commitvnode-updated-hook: this is the commit path for reactive state writes
+    // (reactivity-setup.ts queues a microtask that calls commitVNode directly on every
+    // state change after the first) -- performUpdate's own commit branches already run
+    // the "updated" hook phase after committing (update-manager.ts); this path silently
+    // never did, so `this.on('updated', cb)` never fired for components whose re-renders
+    // are driven by state writes rather than an explicit scheduleUpdate()/performUpdate()
+    // call. Skip on the component's OWN initial mount commit (component-lifecycle.ts's
+    // mountComponent calls commitVNode once before `_isMounted` is set -- that commit is
+    // the mount, not an update; "mounted" fires separately for it) -- fire only for
+    // genuine post-mount re-commits. Guarded against an `updated` hook that writes state
+    // (re-triggering this same path) looping unboundedly by the UpdateManager's own
+    // per-second budget, shared in spirit with performUpdate's MAX_UPDATES_PER_SECOND
+    // throttle but tracked separately since this path doesn't go through performUpdate.
+    if (this._isMounted && !this.updateManager.guardCommitUpdatedHook()) {
+      void this.executeHookPhase("updated");
+    }
   }
 
   public renderErrorFallback(): VNode {
