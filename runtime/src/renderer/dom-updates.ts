@@ -366,6 +366,30 @@ export function updateElementNode(
 
 // ─── updateComponentNode ──────────────────────────────────────────────────────
 
+/**
+ * FRAME-updated-hook-child-components: updateComponentNode is the commit path a PARENT's
+ * OWN reconciliation takes when it revisits an already-mounted CHILD component's vnode
+ * position (e.g. an ancestor's unrelated state change produces a fresh render tree that
+ * still has this child at the same position). It calls renderComponentFn() directly and
+ * patches the DOM via applyRenderedOutput -- a real, independent commit strategy, distinct
+ * from (and never routed through) either of the child's own two commit paths
+ * (component.ts's commitVNode, update-manager.ts's performUpdate), both of which
+ * PR #134 / FRAME-commitvnode-updated-hook made fire "updated" after every real commit.
+ * This path never did, so a child whose visible re-render is driven entirely by its
+ * parent's reconciliation (its own render effect never re-subscribes here -- renderComponentFn
+ * calls render() under `untrack()`) never got "updated" at all, live-confirmed on
+ * office's PdfViewerPage. Reuses UpdateManager's own per-instance throttle/guard (via
+ * asInternal -- see internal.ts's `updateManager` field) so a pathological `updated` hook
+ * that writes state shares the same budget as the other two commit-hook call sites instead
+ * of getting its own unbounded one.
+ */
+function fireUpdatedHookAfterParentCommit(instance: SwissComponent): void {
+  const ci = asInternal(instance);
+  if (!ci._isMounted) return;
+  if (ci.updateManager.guardCommitUpdatedHook()) return;
+  void ci.executeHookPhase("updated");
+}
+
 export function updateComponentNode(
   dom: HTMLElement,
   vnode: ComponentVNode,
@@ -463,6 +487,7 @@ export function updateComponentNode(
       canUpdateInPlaceFn,
       updateDOMNodeFn,
     );
+    fireUpdatedHookAfterParentCommit(existingInstance);
     return;
   }
 
@@ -516,6 +541,7 @@ export function updateComponentNode(
       canUpdateInPlaceFn,
       updateDOMNodeFn,
     );
+    if (existingInstance) fireUpdatedHookAfterParentCommit(existingInstance);
     return;
   } else {
     // Component types don't match (e.g., LoginPage → ForgotPasswordPage)
