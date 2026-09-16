@@ -57,6 +57,22 @@ export interface ComponentInternals {
    * hook fire uses, without making the whole UpdateManager public.
    */
   updateManager: { guardCommitUpdatedHook(): boolean };
+  /**
+   * FRAME-on-collision: narrow view onto the protected LifecycleManager instance, exposing
+   * only its registrar. event-system.ts's module-level `SwissComponent.prototype.on`
+   * override (a DOM-style custom-event emitter) is not itself a class method, so it can't
+   * reach a `protected` member the way a real subclass method could -- it needs this to
+   * delegate registrations for known lifecycle phase names (mounted/updated/...) back to
+   * the ORIGINAL lifecycle registrar it would otherwise silently shadow. See
+   * KNOWN_LIFECYCLE_HOOK_PHASES's doc comment (types/index.ts) for the full defect.
+   */
+  _lifecycle: {
+    on(
+      phase: string,
+      callback: (...args: unknown[]) => void,
+      options?: { once?: boolean; priority?: number; capability?: string },
+    ): void;
+  };
   [method: string]: unknown;
 }
 

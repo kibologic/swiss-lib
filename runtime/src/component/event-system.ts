@@ -6,6 +6,8 @@
 
 import { SwissComponent } from "./component.js";
 import { CapabilityManager } from "../security/capability-manager.js";
+import { KNOWN_LIFECYCLE_HOOK_PHASES } from "./types/index.js";
+import { asInternal } from "./internal.js";
 
 // Enhanced Event Types and Interfaces
 export type EventPhase = "capturing" | "bubbling" | "target";
@@ -145,6 +147,22 @@ SwissComponent.prototype.on = function (
   callback: EventCallback,
   options: ListenerOptions = {},
 ) {
+  // FRAME-on-collision: this module-level assignment overwrites component.ts's own
+  // `SwissComponent.prototype.on` (the lifecycle-hook registrar, delegating to
+  // `_lifecycle.on()`) at import time -- both attach to the identical property name. For
+  // the exact phase names `executeHookPhase()` fires, restore that original behavior
+  // instead of silently swallowing the registration into `_eventRegistry`, where
+  // `executeHookPhase()` never looks. See KNOWN_LIFECYCLE_HOOK_PHASES's own doc comment
+  // (types/index.ts) for the live-confirmed symptom this fixes.
+  if (KNOWN_LIFECYCLE_HOOK_PHASES.has(eventType)) {
+    asInternal(this)._lifecycle.on(
+      eventType,
+      callback as (...args: unknown[]) => void,
+      options,
+    );
+    return this;
+  }
+
   if (!this._eventRegistry.has(eventType)) {
     this._eventRegistry.set(eventType, {
       capture: new Map(),
