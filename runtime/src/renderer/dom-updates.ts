@@ -28,7 +28,7 @@ import {
   isElementVNode,
   isComponentVNode,
   cleanupNode,
-  filterValidVNodes,
+  flattenRenderedChildren,
 } from "./types.js";
 import { DiffingError } from "./errors.js";
 import { clearRenderCache } from "./render-cache.js";
@@ -246,8 +246,12 @@ export function updateElementNode(
     // its raw length against domChildren.length, and indexing domChildren by oldChildren's raw
     // index, therefore never lines up for an element with such a conditional among its direct
     // children. Restore against the same filtered view createDOMNode used.
+    //
+    // FRAME-fragment-sibling-count-mismatch: filterValidVNodes alone still undercounts a
+    // Fragment vnode (1 array entry, N real DOM nodes -- see flattenRenderedChildren's doc
+    // comment in types.ts), so use the flattened view for the same reason.
     const domChildren = Array.from(dom.childNodes);
-    const oldChildrenRendered = filterValidVNodes(oldChildren);
+    const oldChildrenRendered = flattenRenderedChildren(oldChildren);
     const oldChildCountMatchesLiveDom = oldChildrenRendered.length === domChildren.length;
     oldChildrenRendered.forEach((oldChild, index) => {
       // If old child already has DOM reference, keep it
@@ -318,8 +322,11 @@ export function updateElementNode(
   // CLICK-NO-RESPONSE FIX (registry/fable/click-bug/, 2026-07-17): same raw-vs-filtered
   // mismatch as the old-children loop above -- newChildren can contain `null`/`false`
   // conditional placeholders too, so compare/index against the filtered view.
+  //
+  // FRAME-fragment-sibling-count-mismatch: same Fragment undercount as above -- flatten here
+  // too so this loop's counts agree with the live DOM regardless of Fragment siblings.
   const domChildren = Array.from(dom.childNodes);
-  const newChildrenRendered = filterValidVNodes(newChildren);
+  const newChildrenRendered = flattenRenderedChildren(newChildren);
   const newChildCountMatchesLiveDom = newChildrenRendered.length === domChildren.length;
   newChildrenRendered.forEach((newChild, i) => {
     const newChildBase = typeof newChild === "object" && newChild !== null
