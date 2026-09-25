@@ -92,6 +92,39 @@ export class Counter extends SwissComponent<{}, State> {
 | `handleDestroy()` | Before the component is removed from the DOM |
 | `captureError(error, phase)` | When an error is thrown during any phase |
 
+### Reacting to prop changes: `onPropsChange(prevProps, nextProps)`
+
+A method literally named `onUpdate(prevProps)` is **not** a lifecycle hook and is never
+called by the framework — that name (and `componentDidUpdate`, `onPropsChanged`) will log a
+dev-mode warning if you define it, pointing you here. The real hook is `onPropsChange`:
+
+```typescript
+class Page extends SwissComponent<{ resourceId: string }> {
+  onPropsChange(prevProps: { resourceId: string }, nextProps: { resourceId: string }) {
+    if (prevProps.resourceId !== nextProps.resourceId) {
+      this.reload(nextProps.resourceId);
+    }
+  }
+  render() { /* ... */ }
+}
+```
+
+Guarantees:
+- Fires once per real prop change (a default **shallow**, key-by-key comparison — it does
+  not fire again for a re-render caused only by internal state).
+- Receives both `prevProps` and `nextProps` as plain object snapshots.
+- Fires for a parent-driven prop push into a reused component instance (e.g. a router
+  reusing the same page component across a route change, without remounting it) as well as
+  for an ordinary parent re-render.
+- Never fires on mount.
+- Runs alongside `this.on('updated', cb)` — `updated` still fires on *every* DOM commit
+  (state or props); `onPropsChange` is the narrower, props-only signal. Use `updated` if you
+  need "any commit happened", `onPropsChange` if you need "this specific input changed".
+
+To react to a single prop instead of any prop, compare that key yourself inside the hook
+(shown above) — both snapshots are plain objects, so any comparison (shallow, deep, or a
+single key) is your call, not the framework's.
+
 ### `setState()`
 
 Accepts either an updater function or a partial state object. Only changed keys trigger re-renders — unchanged keys are skipped.

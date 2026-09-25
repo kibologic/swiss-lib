@@ -34,6 +34,10 @@ export class LifecycleManager {
         }
       | unknown,
     error?: unknown,
+    // FRAME-PROPS-CHANGE-HOOK: extra positional args delivered to every hook callback for
+    // this phase, e.g. (prevProps, nextProps) for "propsChanged". Ignored for every other
+    // phase unless a caller passes it.
+    extraArgs: unknown[] = [],
   ): Promise<void> {
     const hooks = this.hooks[phase] || [];
     const hooksToExecute = hooks.filter((hook) => {
@@ -74,6 +78,8 @@ export class LifecycleManager {
       try {
         if (phase === "error" && error) {
           await hook.callback.call(context as unknown as object, error);
+        } else if (extraArgs.length > 0) {
+          await hook.callback.call(context as unknown as object, ...extraArgs);
         } else {
           await hook.callback.call(context as unknown as object);
         }

@@ -37,6 +37,11 @@ export const KNOWN_LIFECYCLE_HOOK_PHASES: ReadonlySet<string> = new Set([
   'beforeUnmount', 'unmounted',
   'beforeRender', 'afterRender',
   'updated',
+  // FRAME-PROPS-CHANGE-HOOK: fired by executeHookPhase("updated") when a shallow props diff
+  // finds a real change (props-change-lifecycle.ts). Must be in this set for the same
+  // reason "updated" is: this.on("propsChanged", cb) must reach the lifecycle registrar,
+  // not event-system.ts's custom-event emitter.
+  'propsChanged',
 ]);
 
 // Context storage used by components
