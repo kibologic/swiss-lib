@@ -42,6 +42,19 @@ export function matchRoute(
   return undefined;
 }
 
+/**
+ * Merge params across every level of a matched nested chain (ROUTER-PARAM-MERGE). Later
+ * (deeper) levels win on key collision. Made explicit here rather than left as a side
+ * effect of how each level's own `params` happens to be computed, so consumers (Outlet,
+ * loaders) have one documented way to get the full param set for a route.
+ */
+export function mergeParams(matches: RouteMatch[]): Record<string, string> {
+  return matches.reduce<Record<string, string>>(
+    (merged, m) => ({ ...merged, ...m.params }),
+    {},
+  );
+}
+
 function matchPath(
   routePath: string,
   currentPath: string,

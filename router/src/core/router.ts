@@ -61,6 +61,11 @@ export interface RouterOptions {
    * in-memory-only stack that does not survive a reload.
    */
   historyAdapter?: HistoryStateAdapter;
+  /**
+   * Rendered by `Outlet` when no route matches the current path (ROUTER-NOT-FOUND).
+   * Omit to keep the previous behavior (an empty `<div class="outlet-empty">`).
+   */
+  notFound?: ComponentLike;
 }
 
 /**
@@ -90,6 +95,9 @@ export class Router {
   private _index = 0;
   private historyAdapter?: HistoryStateAdapter;
 
+  /** Rendered by `Outlet` when no route matches (ROUTER-NOT-FOUND). */
+  public readonly notFoundComponent?: ComponentLike;
+
   /**
    * Resolves once construction-time history restoration (via `historyAdapter.load()`, if
    * configured) has settled. Await this before relying on a restored stack.
@@ -102,6 +110,7 @@ export class Router {
     this.base = options.base || "/";
     this._currentPath = this.getPath();
     this.historyAdapter = options.historyAdapter;
+    this.notFoundComponent = options.notFound;
 
     this._entries = [
       {

@@ -153,6 +153,30 @@ return html`
 `;
 ```
 
+### Not-found routes
+
+Configure `notFound` and `Outlet` renders it whenever no route matches the current path,
+instead of an empty `<div class="outlet-empty">`:
+
+```typescript
+const router = new Router({
+  routes: [
+    { path: '/', component: Home },
+    { path: '/about', component: About },
+  ],
+  notFound: NotFoundPage,
+});
+```
+
+### Nested-route params are merged
+
+`Outlet` passes the merged params from every level of the matched chain to the leaf
+component, not just the leaf's own params. `/teams/:teamId` with a `members/:memberId`
+child, navigated to `/teams/eng/members/42`, renders the child with
+`{ teamId: 'eng', memberId: '42' }`. The merge is also available directly via
+`mergeParams(matches)` (exported alongside `matchRoute`) for any other consumer of
+`router.match()`.
+
 ---
 
 ## File-based routing
