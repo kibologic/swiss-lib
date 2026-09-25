@@ -133,7 +133,15 @@ export function updateStyle(
         !newValue ||
         (newValue as Record<string, unknown>)[prop] === undefined
       ) {
-        (element.style as unknown as Record<string, string>)[prop] = "";
+        // CSS custom properties (`--x`) must be removed via removeProperty --
+        // assigning `element.style['--x'] = ''` is silently ignored by the CSSOM,
+        // same asymmetry as setProperty below. Without this a removed custom
+        // property leaks its previous value indefinitely.
+        if (prop.startsWith("--")) {
+          element.style.removeProperty(prop);
+        } else {
+          (element.style as unknown as Record<string, string>)[prop] = "";
+        }
       }
     });
   } else if (typeof oldValue === "string" && oldValue) {
@@ -151,7 +159,23 @@ export function updateStyle(
 
   // Apply new styles
   if (newValue && typeof newValue === "object") {
-    Object.assign(element.style, newValue);
+    // Object.assign(element.style, obj) silently drops CSS custom properties:
+    // the CSSOM ignores `element.style['--x'] = v` (bracket/assign), custom
+    // properties can only be set through setProperty(). A style object mixing
+    // both -- e.g. { '--reader-font-size': '1rem', width: '40rem' } -- had its
+    // width applied and its --vars dropped, so var()-driven styling (the reader's
+    // font-size/width/line-height settings) never rendered. Route each key to the
+    // right API: setProperty for custom properties, plain assignment (which keeps
+    // camelCase support like fontSize) for everything else.
+    const styleObj = newValue as Record<string, unknown>;
+    for (const key of Object.keys(styleObj)) {
+      const val = styleObj[key];
+      if (key.startsWith("--")) {
+        element.style.setProperty(key, val == null ? "" : String(val));
+      } else {
+        (element.style as unknown as Record<string, unknown>)[key] = val;
+      }
+    }
   } else if (typeof newValue === "string") {
     element.style.cssText = newValue;
   }
