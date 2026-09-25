@@ -381,7 +381,19 @@ export function createDOMNode(
           rendered != null &&
           typeof rendered === "object" &&
           isComponentVNode(rendered);
-        if (isRenderedComponent && vb(rendered)?.__componentInstance === instance) {
+        // FRAME-002: a component whose render() returns ANOTHER component vnode
+        // (component-renders-component, e.g. an ErrorBoundary returning its single child)
+        // shares this host DOM node with that child. The INNER child's own createDOMNode
+        // recursion has already registered the mounted inner instance in componentInstances
+        // for this node; the OUTER instance is only a host for parent-side reconciliation and
+        // belongs in domToHostComponent, so it never clobbers the inner mounted owner. The old
+        // guard also required vb(rendered)?.__componentInstance === instance, but
+        // renderComponent overwrites the rendered child vnode's __componentInstance with the
+        // INNER instance during that recursion, so it could never hold -- the outer always
+        // fell through to componentInstances.set, evicting the mounted inner instance and
+        // leaving domToHostComponent empty. Route purely on whether the render output is a
+        // component vnode.
+        if (isRenderedComponent) {
           domToHostComponent.set(dom, instance);
         } else {
           componentInstances.set(dom, instance);

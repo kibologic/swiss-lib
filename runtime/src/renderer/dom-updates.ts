@@ -28,7 +28,7 @@ import {
   isElementVNode,
   isComponentVNode,
   cleanupNode,
-  filterValidVNodes,
+  flattenRenderedChildren,
 } from "./types.js";
 import { DiffingError } from "./errors.js";
 import { clearRenderCache } from "./render-cache.js";
@@ -246,8 +246,12 @@ export function updateElementNode(
     // its raw length against domChildren.length, and indexing domChildren by oldChildren's raw
     // index, therefore never lines up for an element with such a conditional among its direct
     // children. Restore against the same filtered view createDOMNode used.
+    //
+    // FRAME-fragment-sibling-count-mismatch: filterValidVNodes alone still undercounts a
+    // Fragment vnode (1 array entry, N real DOM nodes -- see flattenRenderedChildren's doc
+    // comment in types.ts), so use the flattened view for the same reason.
     const domChildren = Array.from(dom.childNodes);
-    const oldChildrenRendered = filterValidVNodes(oldChildren);
+    const oldChildrenRendered = flattenRenderedChildren(oldChildren);
     const oldChildCountMatchesLiveDom = oldChildrenRendered.length === domChildren.length;
     oldChildrenRendered.forEach((oldChild, index) => {
       // If old child already has DOM reference, keep it
@@ -318,8 +322,11 @@ export function updateElementNode(
   // CLICK-NO-RESPONSE FIX (registry/fable/click-bug/, 2026-07-17): same raw-vs-filtered
   // mismatch as the old-children loop above -- newChildren can contain `null`/`false`
   // conditional placeholders too, so compare/index against the filtered view.
+  //
+  // FRAME-fragment-sibling-count-mismatch: same Fragment undercount as above -- flatten here
+  // too so this loop's counts agree with the live DOM regardless of Fragment siblings.
   const domChildren = Array.from(dom.childNodes);
-  const newChildrenRendered = filterValidVNodes(newChildren);
+  const newChildrenRendered = flattenRenderedChildren(newChildren);
   const newChildCountMatchesLiveDom = newChildrenRendered.length === domChildren.length;
   newChildrenRendered.forEach((newChild, i) => {
     const newChildBase = typeof newChild === "object" && newChild !== null
@@ -365,6 +372,30 @@ export function updateElementNode(
 }
 
 // ─── updateComponentNode ──────────────────────────────────────────────────────
+
+/**
+ * FRAME-updated-hook-child-components: updateComponentNode is the commit path a PARENT's
+ * OWN reconciliation takes when it revisits an already-mounted CHILD component's vnode
+ * position (e.g. an ancestor's unrelated state change produces a fresh render tree that
+ * still has this child at the same position). It calls renderComponentFn() directly and
+ * patches the DOM via applyRenderedOutput -- a real, independent commit strategy, distinct
+ * from (and never routed through) either of the child's own two commit paths
+ * (component.ts's commitVNode, update-manager.ts's performUpdate), both of which
+ * PR #134 / FRAME-commitvnode-updated-hook made fire "updated" after every real commit.
+ * This path never did, so a child whose visible re-render is driven entirely by its
+ * parent's reconciliation (its own render effect never re-subscribes here -- renderComponentFn
+ * calls render() under `untrack()`) never got "updated" at all, live-confirmed on
+ * office's PdfViewerPage. Reuses UpdateManager's own per-instance throttle/guard (via
+ * asInternal -- see internal.ts's `updateManager` field) so a pathological `updated` hook
+ * that writes state shares the same budget as the other two commit-hook call sites instead
+ * of getting its own unbounded one.
+ */
+function fireUpdatedHookAfterParentCommit(instance: SwissComponent): void {
+  const ci = asInternal(instance);
+  if (!ci._isMounted) return;
+  if (ci.updateManager.guardCommitUpdatedHook()) return;
+  void ci.executeHookPhase("updated");
+}
 
 export function updateComponentNode(
   dom: HTMLElement,
@@ -435,7 +466,17 @@ export function updateComponentNode(
     const newInstance = (newRendered as unknown as VNodeBase | null)?.__componentInstance;
     if (newInstance) {
       const nci = asInternal(newInstance);
-      componentInstances.set(dom, newInstance);
+      // FRAME-002: when this component's render output is itself a component vnode
+      // (component-renders-component), newInstance is the OUTER instance (renderComponent
+      // tags its rendered child vnode with the rendering instance). The shared node's
+      // componentInstances slot belongs to the INNER mounted instance; registering the outer
+      // here would clobber it and force the inner reconcile below to build a never-mounted
+      // phantom. Keep the outer in the host slot instead.
+      if (isComponentVNode(newRendered as VNode)) {
+        domToHostComponent.set(dom, newInstance);
+      } else {
+        componentInstances.set(dom, newInstance);
+      }
       vnode.__componentInstance = newInstance;
       const oldVNodeBase = nci._vnode as unknown as VNodeBase | null;
       if (oldVNodeBase) oldVNodeBase.dom = dom;
@@ -453,6 +494,7 @@ export function updateComponentNode(
       canUpdateInPlaceFn,
       updateDOMNodeFn,
     );
+    fireUpdatedHookAfterParentCommit(existingInstance);
     return;
   }
 
@@ -478,7 +520,17 @@ export function updateComponentNode(
     const newInstance = (newRendered as unknown as VNodeBase | null)?.__componentInstance;
     if (newInstance) {
       const nci = asInternal(newInstance);
-      componentInstances.set(dom, newInstance);
+      // FRAME-002: when this component's render output is itself a component vnode
+      // (component-renders-component), newInstance is the OUTER instance (renderComponent
+      // tags its rendered child vnode with the rendering instance). The shared node's
+      // componentInstances slot belongs to the INNER mounted instance; registering the outer
+      // here would clobber it and force the inner reconcile below to build a never-mounted
+      // phantom. Keep the outer in the host slot instead.
+      if (isComponentVNode(newRendered as VNode)) {
+        domToHostComponent.set(dom, newInstance);
+      } else {
+        componentInstances.set(dom, newInstance);
+      }
       vnode.__componentInstance = newInstance;
       const oldVNodeBase = nci._vnode as unknown as VNodeBase | null;
       if (oldVNodeBase) oldVNodeBase.dom = dom;
@@ -496,6 +548,7 @@ export function updateComponentNode(
       canUpdateInPlaceFn,
       updateDOMNodeFn,
     );
+    if (existingInstance) fireUpdatedHookAfterParentCommit(existingInstance);
     return;
   } else {
     // Component types don't match (e.g., LoginPage → ForgotPasswordPage)

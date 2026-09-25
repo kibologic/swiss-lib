@@ -121,7 +121,12 @@ export function updateChildComponent(component: SwissComponent, newVNode: VNode,
   });
 }
 
-export function handleNoUpdatePath(component: SwissComponent, newVNode: VNode): void {
+/**
+ * @returns true if a DOM commit actually happened, false if this call was a genuine
+ * no-op ("waiting for renderer" — no container, no DOM, nothing to update against).
+ * Callers use this to decide whether firing the "updated" lifecycle hook is warranted.
+ */
+export function handleNoUpdatePath(component: SwissComponent, newVNode: VNode): boolean {
   const c = asInternal(component);
   logger.updates(`${component.constructor.name}: no update path (no container/vnode/dom)`);
 
@@ -153,7 +158,7 @@ export function handleNoUpdatePath(component: SwissComponent, newVNode: VNode): 
     c._vnode = newVNode;
     if (newBase && domNode) newBase.dom = domNode as HTMLElement | Text;
     c._domNode = domNode;
-    return;
+    return true;
   }
 
   if (oldBase?.dom instanceof HTMLElement) {
@@ -165,7 +170,7 @@ export function handleNoUpdatePath(component: SwissComponent, newVNode: VNode): 
       if (newBase) newBase.dom = vnodeDom;
       c._domNode = vnodeDom;
     });
-    return;
+    return true;
   }
 
   if (typeof document !== "undefined") {
@@ -183,11 +188,12 @@ export function handleNoUpdatePath(component: SwissComponent, newVNode: VNode): 
         c._vnode = newVNode;
         c._domNode = firstChild;
       }
-      return;
+      return true;
     }
   }
 
   logger.updates(`${component.constructor.name}: no update path, waiting for renderer`);
+  return false;
 }
 
 export function updateRootComponent(component: SwissComponent, container: HTMLElement, newVNode: VNode): void {

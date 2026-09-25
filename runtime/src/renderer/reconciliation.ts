@@ -18,7 +18,7 @@ import {
   isComponentVNode,
   isElementVNode,
   cleanupNode,
-  filterValidVNodes,
+  flattenRenderedChildren,
 } from "./types.js";
 import { logger } from "../utils/logger.js";
 import { removeWithTransition } from "../transitions/transition-runtime.js";
@@ -121,7 +121,7 @@ export function reconcileChildren(
   // nothing is actually stale. Apply the same filtering used at creation time before comparing
   // (and before any positional matching below) so the guard only fires for genuine
   // dual-commit-pipeline races (see comment above), not for ordinary conditional rendering.
-  const oldChildrenRendered = filterValidVNodes(oldChildren);
+  const oldChildrenRendered = flattenRenderedChildren(oldChildren);
   if (oldChildrenRendered.length !== oldChildNodes.length) {
     scheduleReconcileRetry(parent);
     return;
@@ -207,34 +207,28 @@ export function reconcileChildren(
 
   // FABLE-RENDER-001 D2: oldKeyMap above is built from oldChildrenRendered -- the
   // FILTERED array (null/undefined/boolean conditional children dropped), keyed by
-  // position WITHIN that filtered array. newChildren here is the RAW array. Computing
-  // getKey(vnode, index) against newChildren's raw index, as this used to, produces a
-  // key space that is disjoint from oldKeyMap's by construction for any parent with a
-  // falsy conditional child: old {div_0, button_1} vs new {div_1, button_2} for the
-  // same two elements, zero keys ever match. Every child then falls through to the
-  // tag-name-only fallbacks below ("first unprocessed old entry with the same tag"),
-  // which is how OnboardingShell's Back button ends up bound to the old Continue
-  // button's DOM node when the Back condition flips (repro:
-  // reconcile-index-base-asymmetry-repro.test.ts). Fix: give newChildren the same
-  // filtered index base oldChildrenRendered already has, so the two key spaces agree.
-  // This intentionally does NOT touch newIndex anywhere else in this function (DOM
-  // insertion anchoring, newDoms ordering) -- those already operate on the raw forEach
-  // position for an unrelated, already-correct reason (early-return skips null/boolean
-  // entries before ever pushing to newDoms, so newDoms itself is already filtered).
-  let filteredCounter = 0;
-  const newFilteredIndices: number[] = [];
-  newChildren.forEach((vnode) => {
-    if (vnode == null || typeof vnode === "boolean") {
-      newFilteredIndices.push(-1);
-      return;
-    }
-    newFilteredIndices.push(filteredCounter);
-    filteredCounter++;
-  });
+  // position WITHIN that filtered array. newChildren here used to be the RAW array;
+  // computing getKey(vnode, index) against its raw index produced a key space disjoint
+  // from oldKeyMap's by construction for any parent with a falsy conditional child (old
+  // {div_0, button_1} vs new {div_1, button_2} for the same two elements, zero keys ever
+  // match -- see reconcile-index-base-asymmetry-repro.test.ts).
+  //
+  // FRAME-fragment-sibling-count-mismatch: the same disagreement also existed one level
+  // up whenever a Fragment vnode sat among the children -- a Fragment is ONE raw array
+  // entry but contributes N real DOM nodes/logical children (see flattenRenderedChildren's
+  // own doc comment in types.ts). Working directly off `newChildren` (raw, Fragment-opaque)
+  // here would keep that mismatch alive even after fixing the staleness guard above.
+  //
+  // Fix (covers both): reconcile against `newChildrenFlat`, built with the exact same
+  // flattenRenderedChildren() used for oldChildrenRendered, so both sides are filtered AND
+  // Fragment-expanded identically -- their positions agree by construction, and every index
+  // used below (getKey, DOM insertion anchoring, staleNode lookup, newDoms ordering) is now
+  // consistently the position in the space that actually corresponds 1:1 with
+  // `parent.childNodes`.
+  const newChildrenFlat = flattenRenderedChildren(newChildren);
 
-  newChildren.forEach((vnode, index) => {
-    if (newFilteredIndices[index] === -1) return;
-    const key = getKey(vnode, newFilteredIndices[index]);
+  newChildrenFlat.forEach((vnode, index) => {
+    const key = getKey(vnode, index);
     newKeyMap.set(key, { vnode, index });
   });
 
@@ -242,13 +236,8 @@ export function reconcileChildren(
   const newDoms: Node[] = [];
 
   // First pass: update existing nodes
-  newChildren.forEach((newVNode, newIndex) => {
-    // Skip null/undefined/boolean children (React/SWISS allows these to skip rendering)
-    if (newVNode == null || typeof newVNode === "boolean") {
-      return;
-    }
-
-    const key = getKey(newVNode, newFilteredIndices[newIndex]);
+  newChildrenFlat.forEach((newVNode, newIndex) => {
+    const key = getKey(newVNode, newIndex);
     let oldEntry = oldKeyMap.get(key);
 
     // Type-based fallback for unkeyed component VNodes.

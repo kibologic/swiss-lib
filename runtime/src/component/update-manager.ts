@@ -36,7 +36,38 @@ export class UpdateManager {
   private readonly MAX_UPDATES_PER_SECOND = 60;
   private _throttledHandle: ReturnType<typeof setTimeout> | null = null;
 
+  // FRAME-commitvnode-updated-hook: commitVNode (component.ts) is a second, independent
+  // DOM-commit path (reactive state writes, via reactivity-setup.ts's queued microtask) that
+  // does not go through performUpdate at all, so it can't share performUpdate's
+  // updateCount/lastUpdateTime gate above without changing that gate's meaning for renders.
+  // An `on('updated')` hook that itself writes state re-triggers the reactive effect, which
+  // queues another commitVNode, which fires `updated` again -- an unbounded loop with nothing
+  // else in the picture. This is commitVNode's own budget for firing that hook, same shape
+  // and same per-second budget as the render throttle above, tracked separately so a burst on
+  // one path doesn't starve the other.
+  private commitHookCount: number = 0;
+  private lastCommitHookTime: number = 0;
+
   constructor(private component: SwissComponent) {}
+
+  /**
+   * Throttle guard for firing the "updated" hook from commitVNode's reactive-state-write
+   * commit path. Returns true if the hook should be SKIPPED (budget exhausted -- likely an
+   * `updated` hook that writes state, looping). Call only after a real DOM commit.
+   */
+  public guardCommitUpdatedHook(): boolean {
+    const now = typeof performance !== "undefined" && performance.now ? performance.now() : Date.now();
+    if (now - this.lastCommitHookTime > 1000) this.commitHookCount = 0;
+
+    if (this.commitHookCount >= this.MAX_UPDATES_PER_SECOND) {
+      logger.warn(`"updated" hook throttled for ${this.component.constructor.name} - too many reactive commits (${this.commitHookCount}/s). Possible infinite loop (an "updated" hook writing state?).`);
+      return true;
+    }
+
+    this.commitHookCount++;
+    this.lastCommitHookTime = now;
+    return false;
+  }
 
   public scheduleUpdate(): void {
     if (this.component._signalCommitPending) {
@@ -142,11 +173,23 @@ export class UpdateManager {
         updateRootComponent(this.component, container, newVNode);
       } else if (c._domNode) {
         updateWithDomNode(this.component, newVNode);
+        void this.component.executeHookPhase("updated");
+        this.reportUpdateMetrics(t0, typeof performance !== "undefined" && performance.now ? performance.now() : Date.now());
         return;
       } else if (vnodeBase?.dom) {
         updateChildComponent(this.component, newVNode, container);
       } else {
-        handleNoUpdatePath(this.component, newVNode);
+        // FRAME-commitvnode-updated-hook: this fallback path (no container, no _domNode,
+        // no vnode.dom) still performs a real DOM commit via handleNoUpdatePath when it
+        // manages to recover a root container or an old DOM reference (see
+        // update-strategies.ts) -- it only truly no-ops in its last branch ("waiting for
+        // renderer"). handleNoUpdatePath reports which case happened; only fire
+        // "updated" when it actually committed something.
+        const committed = handleNoUpdatePath(this.component, newVNode);
+        if (committed) {
+          void this.component.executeHookPhase("updated");
+          this.reportUpdateMetrics(t0, typeof performance !== "undefined" && performance.now ? performance.now() : Date.now());
+        }
         return;
       }
 

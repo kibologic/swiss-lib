@@ -199,6 +199,56 @@ export function filterValidVNodes(children: unknown[]): VNode[] {
   ) as VNode[];
 }
 
+// FRAME-fragment-sibling-count-mismatch: a Fragment vnode -- `<>...</>` / `jsx(Fragment, {
+// children: [...] })`, produced either directly at a call site or by component-rendering.ts's
+// multi-slot collapse (`createVNode(Fragment, {}, ...slotNodes)`) -- creates a
+// document.createDocumentFragment() at mount (dom-creation.ts's isFragmentVNode branch) whose
+// CHILD nodes get merged directly into the real parent element when appended (a DocumentFragment
+// never persists as its own node -- DOM spec). So a Fragment sitting among sibling vnodes in a
+// `children` array is ONE entry in that logical array but contributes N (however many of its own
+// children survive filtering) entries to `parent.childNodes` -- the same "one logical entry can
+// expand to a different number of real DOM nodes" hazard the 2026-07-17 CLICK-NO-RESPONSE fix
+// solved for null/false conditional children (see reconciliation.ts's own comment), but never
+// extended to Fragments. filterValidVNodes only drops null/false; it still counts a 2-child
+// Fragment as 1. reconcileChildren's staleness guard (`oldChildrenRendered.length !==
+// oldChildNodes.length`) and updateElementNode's DOM-reference-restore loops (dom-updates.ts)
+// both compare a filtered-but-unflattened logical count against the real (already-flattened)
+// live DOM count -- for ANY element with a >1-child Fragment among its direct children, on
+// EVERY commit, starting with the first update after mount, that comparison permanently
+// mismatches and the guard bails the whole child-list reconciliation, silently: a click/state
+// change re-renders correctly (telemetry shows it) but nothing in the DOM under that element
+// ever patches. Live-confirmed: office's PdfViewerPage.uix wraps `<PdfViewerToolbar/>` and
+// `<main>...</main>` (2 siblings) in a single `<>...</>` returned from
+// `!docLoading && !docError && (<>...</>)` -- clicking a sidebar tab (deep inside that
+// <main>) re-renders leftTab correctly but never touches the DOM (repro:
+// fragment-sibling-count-mismatch-repro.test.ts). Fix: recursively expand Fragment (and raw
+// array) entries into their own contained vnodes wherever a children array is treated as
+// 1:1 with real DOM nodes, so the "logical" count/positional view actually matches what's
+// live -- mirroring what dom-creation.ts's createElementNode already does for raw JS-array
+// children (`Array.isArray(child)`) but never did for Fragment-typed vnode objects.
+export function flattenRenderedChildren(children: unknown[]): VNode[] {
+  const out: VNode[] = [];
+  for (const child of children) {
+    if (child === null || child === undefined || typeof child === "boolean") continue;
+    if (Array.isArray(child)) {
+      out.push(...flattenRenderedChildren(child));
+      continue;
+    }
+    if (typeof child === "object" && isFragmentVNode(child as VNode)) {
+      const fragChildren = (child as VElement).children;
+      const asArray = Array.isArray(fragChildren)
+        ? fragChildren
+        : fragChildren !== null && fragChildren !== undefined
+          ? [fragChildren]
+          : [];
+      out.push(...flattenRenderedChildren(asArray));
+      continue;
+    }
+    out.push(child as VNode);
+  }
+  return out;
+}
+
 import { eventListeners, vnodeMetadata, componentInstances, domToHostComponent } from "./storage.js";
 import { asInternal } from "../component/internal.js";
 import { logger } from "../utils/logger.js";
