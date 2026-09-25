@@ -143,10 +143,49 @@ export function canUpdateInPlace(
 
   // CRITICAL: Component VNodes can update in place if they have the same type
   // This prevents creating new instances during reactive updates
-  if (isComponentVNode(newVNode) && oldVNode && isComponentVNode(oldVNode)) {
-    // Same component type - can update in place
-    if (newVNode.type === oldVNode.type) {
+  if (isComponentVNode(newVNode)) {
+    // Same component type as the previous vnode at this position - update in place.
+    if (oldVNode && isComponentVNode(oldVNode) && newVNode.type === oldVNode.type) {
       return true;
+    }
+
+    // FRAME (component-renders-component): a component whose render() returns ANOTHER
+    // component directly, with no wrapping element (e.g. ErrorBoundary.renderWithBoundary
+    // returning its single child, or any `render() { return <Child/> }`), shares its host
+    // DOM node with that child. When applyRenderedOutput reconciles such a component output,
+    // the oldVNode it passes is `dom`'s STORED baseline -- and updateDOMNode deliberately
+    // never stores a component vnode as a baseline (it stores the grandchild's rendered
+    // ELEMENT output instead, see dom-updates.ts). So oldVNode here is that element vnode,
+    // the isComponentVNode(oldVNode) check above can never match, and this returns false --
+    // making applyRenderedOutput tear down and recreate the entire live subtree on every
+    // reactive update. That recreation races the child's own signal-effect commit and ends
+    // with the child rendered against emptied props, wiping the subtree (repro:
+    // nested-grandchild-prop-through-passthrough-repro.test.ts -- the office study-reader's
+    // ErrorBoundary>ReaderEngine>ProseEngine "chapter switch doesn't repaint" bug). The DOM
+    // node already hosts a live component subtree, so an in-place update (updateComponentNode
+    // finds and reuses that instance) is both correct and what the same-type-vnode branch
+    // above already does whenever a component vnode baseline happens to be present -- this
+    // just recovers the identical decision from the live instance when the baseline is the
+    // child's element output instead. Two ways the type can match:
+    //   1. the DOM node's registered owner IS an instance of this exact type (a component
+    //      re-rendering directly onto its own node), or
+    //   2. the owner is the OUTER component of a component-renders-component pair and its
+    //      last render output (owner._vnode) was a component vnode of this exact type -- the
+    //      ErrorBoundary>child case, where the shared node's single registration slot holds
+    //      the outer (Boundary) while the vnode being reconciled is its child (Mid) output.
+    const owner = componentInstances.get(dom) ?? domToHostComponent.get(dom);
+    if (owner) {
+      if (owner.constructor === newVNode.type) {
+        return true;
+      }
+      const ownerRendered = (owner as unknown as { _vnode?: VNode })._vnode;
+      if (
+        ownerRendered &&
+        isComponentVNode(ownerRendered) &&
+        ownerRendered.type === newVNode.type
+      ) {
+        return true;
+      }
     }
   }
 
@@ -160,7 +199,57 @@ export function filterValidVNodes(children: unknown[]): VNode[] {
   ) as VNode[];
 }
 
-import { eventListeners, vnodeMetadata, componentInstances } from "./storage.js";
+// FRAME-fragment-sibling-count-mismatch: a Fragment vnode -- `<>...</>` / `jsx(Fragment, {
+// children: [...] })`, produced either directly at a call site or by component-rendering.ts's
+// multi-slot collapse (`createVNode(Fragment, {}, ...slotNodes)`) -- creates a
+// document.createDocumentFragment() at mount (dom-creation.ts's isFragmentVNode branch) whose
+// CHILD nodes get merged directly into the real parent element when appended (a DocumentFragment
+// never persists as its own node -- DOM spec). So a Fragment sitting among sibling vnodes in a
+// `children` array is ONE entry in that logical array but contributes N (however many of its own
+// children survive filtering) entries to `parent.childNodes` -- the same "one logical entry can
+// expand to a different number of real DOM nodes" hazard the 2026-07-17 CLICK-NO-RESPONSE fix
+// solved for null/false conditional children (see reconciliation.ts's own comment), but never
+// extended to Fragments. filterValidVNodes only drops null/false; it still counts a 2-child
+// Fragment as 1. reconcileChildren's staleness guard (`oldChildrenRendered.length !==
+// oldChildNodes.length`) and updateElementNode's DOM-reference-restore loops (dom-updates.ts)
+// both compare a filtered-but-unflattened logical count against the real (already-flattened)
+// live DOM count -- for ANY element with a >1-child Fragment among its direct children, on
+// EVERY commit, starting with the first update after mount, that comparison permanently
+// mismatches and the guard bails the whole child-list reconciliation, silently: a click/state
+// change re-renders correctly (telemetry shows it) but nothing in the DOM under that element
+// ever patches. Live-confirmed: office's PdfViewerPage.uix wraps `<PdfViewerToolbar/>` and
+// `<main>...</main>` (2 siblings) in a single `<>...</>` returned from
+// `!docLoading && !docError && (<>...</>)` -- clicking a sidebar tab (deep inside that
+// <main>) re-renders leftTab correctly but never touches the DOM (repro:
+// fragment-sibling-count-mismatch-repro.test.ts). Fix: recursively expand Fragment (and raw
+// array) entries into their own contained vnodes wherever a children array is treated as
+// 1:1 with real DOM nodes, so the "logical" count/positional view actually matches what's
+// live -- mirroring what dom-creation.ts's createElementNode already does for raw JS-array
+// children (`Array.isArray(child)`) but never did for Fragment-typed vnode objects.
+export function flattenRenderedChildren(children: unknown[]): VNode[] {
+  const out: VNode[] = [];
+  for (const child of children) {
+    if (child === null || child === undefined || typeof child === "boolean") continue;
+    if (Array.isArray(child)) {
+      out.push(...flattenRenderedChildren(child));
+      continue;
+    }
+    if (typeof child === "object" && isFragmentVNode(child as VNode)) {
+      const fragChildren = (child as VElement).children;
+      const asArray = Array.isArray(fragChildren)
+        ? fragChildren
+        : fragChildren !== null && fragChildren !== undefined
+          ? [fragChildren]
+          : [];
+      out.push(...flattenRenderedChildren(asArray));
+      continue;
+    }
+    out.push(child as VNode);
+  }
+  return out;
+}
+
+import { eventListeners, vnodeMetadata, componentInstances, domToHostComponent } from "./storage.js";
 import { asInternal } from "../component/internal.js";
 import { logger } from "../utils/logger.js";
 

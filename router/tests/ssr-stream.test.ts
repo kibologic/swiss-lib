@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { createRouter, createServerRenderer } from '../src/index';
-import { SwissComponent, createElement } from '@swissjs/core';
+import { SwissComponent, createElement, setTitle } from '@swissjs/core';
 import type { VNode } from '@swissjs/core';
 
 // FRAME-006-follow-up: ServerRenderer.renderStream -- the router-level streaming path.
@@ -121,5 +121,36 @@ describe('ServerRenderer.renderStream: parity with render()', () => {
         }
         const buffered = await renderer.render('/hello/world');
         expect(rest.join('')).toBe(buffered.html);
+    });
+
+    // HEAD-001 (document-head management) merged into `development` after this streaming
+    // branch was opened. render() honors useHead()/setTitle()/addMeta() calls made from a
+    // component's render() because it fully buffers componentHtml before building the head
+    // markup from the now-populated HeadContext. renderStream() cannot: its shell chunk
+    // (including <title>) is yielded BEFORE any component executes, by design (see
+    // 'flushes the document shell chunk before any component markup chunk' above). This
+    // test pins that documented divergence -- see server-renderer.ts's renderStream() doc
+    // comment ("KNOWN GAP against HEAD-001") -- so the two paths silently drifting further
+    // apart, or the gap silently disappearing without the doc comment being updated, both
+    // fail this test.
+    it('does not reflect useHead()/setTitle() set during a streamed component\'s render, unlike render()', async () => {
+        class TitledPage extends SwissComponent {
+            render(): VNode {
+                setTitle('Custom Streamed Title');
+                return createElement('p', {}, 'content') as VNode;
+            }
+        }
+        const router = createRouter({ routes: [{ path: '/titled', component: TitledPage }] });
+        const renderer = createServerRenderer(router);
+
+        const buffered = await renderer.render('/titled');
+        expect(buffered.html).toContain('<title>Custom Streamed Title</title>');
+
+        const { html } = await collect(renderer.renderStream('/titled'));
+        expect(html).toContain('<title>Swiss App</title>');
+        expect(html).not.toContain('Custom Streamed Title');
+
+        // Parity does NOT hold for this route -- that is exactly the documented gap.
+        expect(html).not.toBe(buffered.html);
     });
 });

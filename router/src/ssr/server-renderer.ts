@@ -20,7 +20,16 @@
  * claim general hydration correctness for arbitrary conditional/list content until then.
  */
 import { Router, type Route, type RouteMatch } from "../core/router.js";
-import { createElement, renderToString, renderToStringChunks } from "@swissjs/core";
+import {
+  createElement,
+  renderToString,
+  renderToStringChunks,
+  pushHeadContext,
+  popHeadContext,
+  renderHeadToString,
+  htmlAttrsString,
+  bodyAttrsString,
+} from "@swissjs/core";
 import type { VNode } from "@swissjs/core";
 
 export interface SSRContext {
@@ -68,7 +77,21 @@ export class ServerRenderer {
     // Each match may have a `layout` wrapper. We compose them inside-out:
     //   matches = [root, parent, leaf]
     //   tree = <RootLayout><ParentLayout><Leaf /></ParentLayout></RootLayout>
-    const componentHtml = renderToString(buildRouteTree(matches, data));
+    //
+    // HEAD-001: pushHeadContext()/popHeadContext() bracket the renderToString call so any
+    // useHead()/setTitle()/addMeta()/addLink() call made synchronously from a component's
+    // render() (which executes inside this same, fully synchronous renderToString call
+    // stack -- see renderer.ts's renderToString) lands in THIS request's HeadContext, not a
+    // module-global shared across requests. Because renderToString never awaits mid-render,
+    // no other request's push/pop can interleave between this push and its matching pop
+    // (pop runs in `finally`, so a throw from renderToString still leaves the stack clean).
+    const headCtx = pushHeadContext();
+    let componentHtml: string;
+    try {
+      componentHtml = renderToString(buildRouteTree(matches, data));
+    } finally {
+      popHeadContext();
+    }
     const hadRenderErrors = componentHtml.includes(ERROR_BOUNDARY_MARKER);
 
     const safeData = JSON.stringify(data)
@@ -76,13 +99,21 @@ export class ServerRenderer {
       .replace(/>/g, '\\u003e')
       .replace(/&/g, '\\u0026');
 
+    // Default the title (renderHeadToString only emits a <title> tag when one was set) so
+    // the existing "Swiss App" default behavior is preserved for pages that never call
+    // useHead()/setTitle().
+    if (headCtx.title === undefined) headCtx.title = "Swiss App";
+    const headHtml = renderHeadToString(headCtx);
+    const htmlAttrs = htmlAttrsString(headCtx);
+    const bodyAttrs = bodyAttrsString(headCtx);
+
     const html = `<!DOCTYPE html>
-<html>
+<html${htmlAttrs ? ` ${htmlAttrs}` : ""}>
   <head>
     <meta charset="utf-8" />
-    <title>Swiss App</title>
+    ${headHtml}
   </head>
-  <body>
+  <body${bodyAttrs ? ` ${bodyAttrs}` : ""}>
     <div id="app" data-swiss-route="${escapeAttr(url)}">${componentHtml}</div>
     <script>window.__SWISS_DATA__ = ${safeData};</script>
   </body>
@@ -112,6 +143,27 @@ export class ServerRenderer {
    * data script, body/html close) render() appends. No route-level markup is invented here;
    * this only changes accumulation into yields instead of `+=`, exactly as core's
    * renderToStream does for a bare component tree (see ssr-stream.ts's header comment).
+   *
+   * KNOWN GAP against HEAD-001 (document-head management, merged into `development` after
+   * this branch was opened): the parity contract above holds ONLY for routes whose
+   * components never call useHead()/setTitle()/addMeta()/addLink(). render() can honor
+   * those calls because it fully buffers componentHtml (via renderToString) BEFORE
+   * building headHtml/htmlAttrs/bodyAttrs from the populated HeadContext. renderStream()
+   * cannot: the shell -- including <title> -- is yielded as the FIRST chunk, before
+   * renderToStringChunks has executed a single component, by design (see "flushes the
+   * document shell chunk before any component markup chunk" in ssr-stream.test.ts and the
+   * matching comment in ssr-stream.ts). So renderStream() always emits the hard-coded
+   * default shell (bare <head>, `<title>Swiss App</title>`, no htmlAttrs/bodyAttrs) and
+   * silently ignores any useHead() call a streamed component makes -- it does NOT push/pop
+   * a HeadContext around the chunk loop at all. This is deliberate, not an oversight: doing
+   * so would require buffering the component tree to know its head contribution before the
+   * shell can be flushed, which defeats the point of streaming. Do not route a page that
+   * depends on per-request head customization through renderStream() until a deferred/
+   * two-pass head design lands (candidate: flush an empty <head></head> and patch it via
+   * a trailing <script> once head calls are known, matching how streaming frameworks
+   * elsewhere solve this). See router/tests/ssr-stream.test.ts's
+   * "does not reflect useHead()/setTitle() set during a streamed component's render" test,
+   * which pins this divergence so it cannot regress silently in either direction.
    *
    * The 404 and route-data-loading steps happen before any chunk is yielded (matching
    * render()'s `await this.router.loadRouteData(url)` position), so -- unlike the component

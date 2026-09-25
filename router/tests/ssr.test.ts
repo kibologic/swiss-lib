@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { createRouter, createServerRenderer } from '../src/index';
-import { SwissComponent, createElement } from '@swissjs/core';
+import { SwissComponent, createElement, setTitle, addMeta } from '@swissjs/core';
 import type { VNode } from '@swissjs/core';
 
 describe('SSR - Comprehensive Tests', () => {
@@ -258,6 +258,87 @@ describe('SSR - Comprehensive Tests', () => {
 
             expect(result.statusCode).toBe(200);
             expect(result.hadRenderErrors).toBeUndefined();
+        });
+    });
+
+    describe('HEAD-001: document-head management through the real SSR path', () => {
+        // A component calling useHead()/setTitle()/addMeta() from render() executes inside
+        // renderToString's synchronous call stack, which ServerRenderer.render() now
+        // brackets with pushHeadContext()/popHeadContext() -- so the contribution should
+        // land in the response's own <head>, replacing the hardcoded "Swiss App" default.
+        class PageA extends SwissComponent {
+            render(): VNode {
+                setTitle('Page A');
+                addMeta({ name: 'description', content: 'This is page A' });
+                return createElement('p', {}, 'a') as VNode;
+            }
+        }
+        class PageB extends SwissComponent {
+            render(): VNode {
+                setTitle('Page B');
+                return createElement('p', {}, 'b') as VNode;
+            }
+        }
+        class NoHead extends SwissComponent {
+            render(): VNode {
+                return createElement('p', {}, 'plain') as VNode;
+            }
+        }
+
+        it('injects a component-set title and meta tag into the SSR HTML', async () => {
+            const router = createRouter({ routes: [{ path: '/a', component: PageA }] });
+            const renderer = createServerRenderer(router);
+            const result = await renderer.render('/a');
+
+            expect(result.html).toContain('<title>Page A</title>');
+            expect(result.html).toContain('<meta name="description" content="This is page A" />');
+        });
+
+        it('falls back to the "Swiss App" default title when no component calls useHead', async () => {
+            const router = createRouter({ routes: [{ path: '/plain', component: NoHead }] });
+            const renderer = createServerRenderer(router);
+            const result = await renderer.render('/plain');
+
+            expect(result.html).toContain('<title>Swiss App</title>');
+        });
+
+        it('does not leak head state between separate renders (A\'s title never appears in B\'s HTML, and vice versa)', async () => {
+            const routerA = createRouter({ routes: [{ path: '/a', component: PageA }] });
+            const routerB = createRouter({ routes: [{ path: '/b', component: PageB }] });
+
+            const resultA = await createServerRenderer(routerA).render('/a');
+            const resultB = await createServerRenderer(routerB).render('/b');
+
+            expect(resultA.html).toContain('<title>Page A</title>');
+            expect(resultA.html).not.toContain('Page B');
+
+            expect(resultB.html).toContain('<title>Page B</title>');
+            expect(resultB.html).not.toContain('Page A');
+            expect(resultB.html).not.toContain('This is page A');
+        });
+
+        it('interleaved renders (B starts before A finishes awaiting) each keep their own head', async () => {
+            // loadRouteData is awaited BEFORE renderToString/push/pop run, so two renders
+            // triggered back-to-back without awaiting the first can have their data-loading
+            // phases interleaved by the event loop; only the synchronous
+            // push-renderToString-pop section must never interleave. This exercises exactly
+            // that: two render() calls started concurrently via Promise.all.
+            const routerA = createRouter({
+                routes: [{ path: '/a', component: PageA, loader: async () => ({}) }],
+            });
+            const routerB = createRouter({
+                routes: [{ path: '/b', component: PageB, loader: async () => ({}) }],
+            });
+
+            const [resultA, resultB] = await Promise.all([
+                createServerRenderer(routerA).render('/a'),
+                createServerRenderer(routerB).render('/b'),
+            ]);
+
+            expect(resultA.html).toContain('<title>Page A</title>');
+            expect(resultA.html).not.toContain('Page B');
+            expect(resultB.html).toContain('<title>Page B</title>');
+            expect(resultB.html).not.toContain('Page A');
         });
     });
 });

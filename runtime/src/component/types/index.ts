@@ -13,6 +13,37 @@ export type LifecyclePhase =
   | 'render' | 'error'
   | string;
 
+/**
+ * FRAME-on-collision: the exact set of phase names `executeHookPhase()` actually fires
+ * (component-lifecycle.ts, component.ts, update-manager.ts, dom-creation.ts, hydration.ts,
+ * ssr.ts, dom-updates.ts -- verified by grep against every `executeHookPhase("...")` call
+ * site). `SwissComponent.prototype.on` (component.ts) is the class's own lifecycle-hook
+ * registrar, delegating to `_lifecycle.on()` (LifecycleManager) -- but event-system.ts's
+ * module-level `SwissComponent.prototype.on = function(eventType, ...) {...}` (a DOM-style
+ * capture/bubble custom-event emitter, `_eventRegistry`-backed) unconditionally OVERWRITES
+ * it at import time, since both attach to the exact same property name. Whichever module
+ * happens to be imported/evaluated last wins outright -- there is no merge. Live-confirmed:
+ * once event-system.ts loads, `this.on('updated', cb)` (the documented pattern for a
+ * component to react to its own commits, e.g. office's PdfViewerPage) silently registers
+ * into `_eventRegistry` instead of `_lifecycle.hooks`, and `executeHookPhase('updated')`
+ * (which only ever reads `_lifecycle.hooks`) never invokes it -- no error, no warning,
+ * the callback just never runs. event-system.ts's `on()` checks this set first and
+ * delegates to the ORIGINAL lifecycle registrar for these names, restoring the class's own
+ * intended behavior, while every other event name still goes through the custom emitter.
+ */
+export const KNOWN_LIFECYCLE_HOOK_PHASES: ReadonlySet<string> = new Set([
+  'init', 'mount',
+  'beforeMount', 'mounted',
+  'beforeUnmount', 'unmounted',
+  'beforeRender', 'afterRender',
+  'updated',
+  // FRAME-PROPS-CHANGE-HOOK: fired by executeHookPhase("updated") when a shallow props diff
+  // finds a real change (props-change-lifecycle.ts). Must be in this set for the same
+  // reason "updated" is: this.on("propsChanged", cb) must reach the lifecycle registrar,
+  // not event-system.ts's custom-event emitter.
+  'propsChanged',
+]);
+
 // Context storage used by components
 export type ContextMap = Map<symbol, unknown>;
 

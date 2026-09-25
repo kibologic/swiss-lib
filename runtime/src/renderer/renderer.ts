@@ -50,7 +50,7 @@ let renderComponentBound: (
   vnode: ComponentVNode,
   existingInstance?: SwissComponent,
 ) => VNode;
-let updateDOMNodeBound: (dom: Node, vnode: VNode) => void;
+let updateDOMNodeBound: (dom: Node, vnode: VNode) => Node;
 let createDOMNodeBound: (vnode: VNode | null | undefined | boolean) => Node;
 let updateElementNodeBound: (
   dom: HTMLElement,
@@ -125,13 +125,17 @@ updateComponentNodeBound = (
 };
 
 // Create bound updateDOMNode that includes all update functions
-updateDOMNodeBound = (dom: Node, vnode: VNode): void => {
+updateDOMNodeBound = (dom: Node, vnode: VNode): Node => {
   return updateDOMNodeImpl(
     dom,
     vnode,
     updateTextNode,
     updateElementNodeBound,
     updateComponentNodeBound,
+    // FRAME-WA-005: lets updateDOMNode replace `dom` outright when its actual node type
+    // (Text vs Element) doesn't match the new vnode's kind, instead of miscasting it into
+    // updateTextNodeFn/updateElementNodeFn -- see the comment in dom-updates.ts.
+    createDOMNodeBound,
   );
 };
 

@@ -1,5 +1,69 @@
 # @kibologic/router
 
+## Unreleased
+
+### Minor Changes
+
+- ROUTER-PER-ROUTE-GUARDS: `Route.guard?: NavigationGuard` (plus a passthrough
+  `Route.meta?: Record<string, unknown>`), checked only when that route or a descendant
+  is the actual navigation target, after the router's global `beforeEach()` guards. Same
+  block(`false`)/redirect(`string`)/allow contract as a global guard.
+- ROUTER-LAZY-ROUTES: `lazy(loader)` wraps a dynamic-import loader as a `Route.component`;
+  `Outlet` starts the load on first render (`outlet-lazy-pending` placeholder), renders
+  the resolved component once it settles, and renders `outlet-lazy-error` (never throws)
+  if the import rejects. `preloadLazy(component)` lets a caller start/await the load ahead
+  of rendering. A bare `() => Promise<ComponentLike>` is intentionally not accepted
+  directly as `Route.component` -- see README for why.
+
+- ROUTER-NOT-FOUND: `RouterOptions.notFound?: ComponentLike`, rendered by `Outlet` when
+  no route matches the current path, instead of the previous empty
+  `<div class="outlet-empty">`. Omit it to keep the previous behavior unchanged.
+- ROUTER-PARAM-MERGE: added an explicit `mergeParams(matches)` export (`matcher.ts`) and
+  switched `Outlet` to use it rather than the leaf match's own `params` object. Evidence:
+  the leaf's own `params` already carried every ancestor's captured value in practice
+  (a side effect of how `matchRoute` re-derives params against the full concatenated
+  route path at each level) -- `mergeParams()` makes that contract explicit and tested
+  instead of leaving it as an accidental byproduct of the matcher's internals.
+
+- ROUTER-HISTORY-STACK: `Router` now keeps an ordered history stack (`entries`,
+  `historyIndex`) plus `back()`/`forward()`/`go(n)`/`canGoBack`/`canGoForward`, kept
+  consistent with native `popstate` -- the router's own API and the browser's own
+  back/forward buttons always agree on the current entry. `push()` after a `back()`
+  truncates the forward branch, matching confirmed-correct browser semantics.
+- ROUTER-PER-ENTRY-STATE: `push()`/`replace()` accept an optional serializable `state`
+  payload per entry; `onStateRestore()` fires with that state, verbatim, whenever the
+  router lands back on an existing entry. `setEntryState()` updates the current entry's
+  state without navigating. Persistence is entirely pluggable via an optional
+  `historyAdapter: HistoryStateAdapter` (`save`/`load`) passed in `RouterOptions` -- the
+  router itself never hard-codes `localStorage` or any other storage backend. See
+  office's `docs/design/office-navigation-shell.md` Part 5.3 items 1-2 for the design
+  this closes.
+
+## 1.3.0
+
+### Minor Changes
+
+- Add document-head management (HEAD-001). Components declare `<title>`/`<meta>`/
+  `<link>` and `<html>`/`<body>` attributes from `render()` via `useHead()` (and
+  `setTitle`/`addMeta`/`addLink`); the server renderer collects them into the SSR
+  `<head>`, and on the client they apply to `document.head`.
+  - `@swissjs/core`: the `useHead` API and a per-render `HeadContext` with
+    title/meta/link de-duplication and HTML escaping.
+  - `@swissjs/router`: `ServerRenderer` brackets `renderToString` with the head
+    context (push/pop around the synchronous render), so concurrent SSR requests
+    never leak head state into each other.
+
+  Ships with head unit tests and router SSR-injection tests (incl. a `Promise.all`
+  concurrency test). See swiss-lib PR #111.
+
+### Patch Changes
+
+- Updated dependencies
+- Updated dependencies [565e472]
+- Updated dependencies
+- Updated dependencies
+  - @swissjs/core@1.3.0
+
 ## 1.2.13
 
 ### Patch Changes

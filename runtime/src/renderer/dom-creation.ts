@@ -32,6 +32,8 @@ import {
 import { DiffingError } from "./errors.js";
 import { reconcileProps } from "./props-updates.js";
 import { logger } from "../utils/logger.js";
+import { registerTransition } from "../transitions/transition-registry.js";
+import { runEnterTransition } from "../transitions/transition-runtime.js";
 
 /**
  * Arm the one-tick post-initialize update skip on a freshly created child component.
@@ -344,7 +346,16 @@ export function createDOMNode(
       const Component = vnode.type;
       let instance: SwissComponent | undefined = undefined;
       if (isClassComponent(Component)) {
-        instance = vb(rendered)?.__componentInstance;
+        // FRAME-WA-005: `rendered` carries `__componentInstance` only when it's an object
+        // (vb() returns null for primitives) -- a component whose render() returns a raw
+        // string/number/boolean (no wrapping element) would otherwise never be found here,
+        // so ci.initialize()/setupReactivity() below never runs and the component gets no
+        // render effect at all. Fall back to the tag renderComponent() (component-rendering.ts)
+        // now also sets on the INCOMING vnode, which is always an object regardless of what
+        // render() returns.
+        instance =
+          vb(rendered)?.__componentInstance ??
+          (vnode as unknown as VNodeBase).__componentInstance;
       }
 
       const prevInstance = getCurrentComponentInstance();
@@ -370,7 +381,19 @@ export function createDOMNode(
           rendered != null &&
           typeof rendered === "object" &&
           isComponentVNode(rendered);
-        if (isRenderedComponent && vb(rendered)?.__componentInstance === instance) {
+        // FRAME-002: a component whose render() returns ANOTHER component vnode
+        // (component-renders-component, e.g. an ErrorBoundary returning its single child)
+        // shares this host DOM node with that child. The INNER child's own createDOMNode
+        // recursion has already registered the mounted inner instance in componentInstances
+        // for this node; the OUTER instance is only a host for parent-side reconciliation and
+        // belongs in domToHostComponent, so it never clobbers the inner mounted owner. The old
+        // guard also required vb(rendered)?.__componentInstance === instance, but
+        // renderComponent overwrites the rendered child vnode's __componentInstance with the
+        // INNER instance during that recursion, so it could never hold -- the outer always
+        // fell through to componentInstances.set, evicting the mounted inner instance and
+        // leaving domToHostComponent empty. Route purely on whether the render output is a
+        // component vnode.
+        if (isRenderedComponent) {
           domToHostComponent.set(dom, instance);
         } else {
           componentInstances.set(dom, instance);
@@ -474,6 +497,15 @@ export function createElementNode(
 
   reconcileProps(element, {}, vnode.props || {});
 
+  // Transition registration + enter must happen after reconcileProps (so the element's
+  // own class/style props are already applied -- transition classes are additive) but
+  // before children are appended below, matching where `ref` is captured above: as soon
+  // as the element exists and is addressable, not deferred to some later commit phase.
+  const transitionProp = vnode.props?.transition;
+  if (transitionProp != null && transitionProp !== false) {
+    registerTransition(element, transitionProp);
+  }
+
   let childrenToProcess: VNode[];
   if (vnode.__normalizedChildren) {
     childrenToProcess = vnode.__normalizedChildren;
@@ -502,6 +534,10 @@ export function createElementNode(
   });
 
   logger.dom(`<${vnode.type}>: ${element.childNodes.length} children`);
+
+  if (transitionProp != null && transitionProp !== false) {
+    runEnterTransition(element);
+  }
 
   return element;
 }

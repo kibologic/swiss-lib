@@ -170,4 +170,69 @@ describe("Context: real mount/unmount integration (not the FakeComponent unit st
 
     expect(container.querySelector("span")!.textContent).toBe("already-set-before-child-existed");
   });
+
+  // FRAME-006-capability-build-context: the "real unmount" test above proves cleanup fires for
+  // a single consumer removed with the rest of its tree. What it does NOT prove is that
+  // unmounting ONE subscriber, while a SIBLING subscriber on the same context stays mounted,
+  // leaves the sibling's subscription intact -- i.e. that cleanup for one component doesn't
+  // corrupt the shared `subscribers` Set that the Provider notification loop iterates. That is
+  // the actual "unmount ordering" risk: cleanup for A running while B is still subscribed.
+  it("unmount ordering: removing one of several sibling consumers (via real reconciler-driven removal) does not disturb a still-mounted sibling's subscription, and removing the last one leaves a later Provider update a no-op", async () => {
+    const Ctx = createContext<number>();
+    let providerInstance: Provider | null = null;
+
+    class ConsumerA extends SwissComponent {
+      render() {
+        return jsx("span", { className: "a", children: `a:${Ctx.use(this)}` });
+      }
+    }
+    class ConsumerB extends SwissComponent {
+      render() {
+        return jsx("span", { className: "b", children: `b:${Ctx.use(this)}` });
+      }
+    }
+    class Provider extends SwissComponent {
+      state = { showA: true } as { showA: boolean };
+      constructor(p: unknown) {
+        super(p as never);
+        providerInstance = this;
+      }
+      render() {
+        Ctx.Provider(1)(this);
+        return jsx("div", {
+          children: [
+            this.state.showA ? jsx(ConsumerA, {}) : null,
+            jsx(ConsumerB, {}),
+          ],
+        });
+      }
+    }
+
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    renderToDOM(jsx(Provider, {}), container);
+    await flush();
+    expect(container.querySelector("span.a")!.textContent).toBe("a:1");
+    expect(container.querySelector("span.b")!.textContent).toBe("b:1");
+
+    // Unmount A via the ordinary reconciler path (conditional removal on re-render), the same
+    // "remove one child, leave its siblings" shape every real app hits -- not cleanupNode on the
+    // whole container. B must never observe A's cleanup.
+    providerInstance!.state.showA = false;
+    await flush();
+    expect(container.querySelector("span.a")).toBeNull();
+    expect(container.querySelector("span.b")!.textContent).toBe("b:1");
+
+    // B is still subscribed: a Provider update must still reach it, proving A's unsubscribe
+    // closure only removed A from `subscribers` and left B's entry untouched.
+    Ctx.Provider(2)(providerInstance!);
+    await flush();
+    expect(container.querySelector("span.b")!.textContent).toBe("b:2");
+
+    // Now tear down the whole tree (B included) and confirm a further Provider call -- with
+    // zero subscribers left -- does not throw. An empty `subscribers` Set is the terminal state
+    // of "everyone unmounted in some order"; the notification loop must tolerate it.
+    cleanupNode(container);
+    expect(() => Ctx.Provider(3)(providerInstance!)).not.toThrow();
+  });
 });

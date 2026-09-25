@@ -1,5 +1,66 @@
 # @swissjs/core
 
+## 1.3.0
+
+### Minor Changes
+
+- Add a headless, reactive form-state primitive: `createForm()` plus composable
+  validators (`required`, `minLength`, `maxLength`, `pattern`, `email`, `min`,
+  `max`). Exposes per-field and whole-form reactive state (values, errors, touched,
+  dirty, isValid, isSubmitting) and handlers (setValue, setTouched, handleChange,
+  handleBlur, reset, handleSubmit), including async validation.
+
+  Framework-agnostic of the DOM — handlers work with a DOM `Event` or a plain
+  `(field, value)` call, so forms are unit-testable without a DOM. Built entirely
+  on the existing SwissJS reactivity primitives (`signal`/`computed`) — no new
+  dependencies. Ships with `runtime/src/__tests__/forms.test.ts` (13 tests). See
+  swiss-lib PR #110.
+
+- 565e472: Remove `runtime/src/fenestration/` and its published export surface
+  (`FenestrationRegistry`, `FenestrationContext`, `SwissComponent.fenestrate`/
+  `fenestrateAsync`, `CapabilityManagerComponent`). This is a breaking change for
+  any consumer that imported `FenestrationRegistry`/`FenestrationContext` from
+  `@swissjs/core` or called `fenestrate`/`fenestrateAsync` on a `SwissComponent`
+  instance.
+
+  Disposition and full rationale: `registry/fable/framework/FABLE-FRAME-004-fenestration-disposition.md`
+  (FABLE-FRAME-004). Read that document before concluding the underlying idea was
+  judged worthless -- it was not. The _implementation_ is removed (zero product
+  consumers, zero tests, decorative security -- `register()` hardcoded
+  `security: {}`/`scope: "component"` so `validateSecurity` degenerated to "do
+  you have a component?", and `FenestrationContext` let the caller assert its
+  own `user.roles`/`session.permissions`). The _idea_ -- capabilities brokered
+  and audited at a boundary crossing, rather than propagated through layers --
+  is preserved as the design of record for `AR-031`, the federation trust
+  boundary finding, gated on that work being scheduled.
+
+  `SwissComponent.validateCapabilities()` and `clearCapabilityCache()` are kept
+  as no-op lifecycle hooks (still called unconditionally by `ssr.ts` and
+  `component-lifecycle.ts`); only the fenestration-backed capability resolution
+  path is removed.
+
+- Add document-head management (HEAD-001). Components declare `<title>`/`<meta>`/
+  `<link>` and `<html>`/`<body>` attributes from `render()` via `useHead()` (and
+  `setTitle`/`addMeta`/`addLink`); the server renderer collects them into the SSR
+  `<head>`, and on the client they apply to `document.head`.
+  - `@swissjs/core`: the `useHead` API and a per-render `HeadContext` with
+    title/meta/link de-duplication and HTML escaping.
+  - `@swissjs/router`: `ServerRenderer` brackets `renderToString` with the head
+    context (push/pop around the synchronous render), so concurrent SSR requests
+    never leak head state into each other.
+
+  Ships with head unit tests and router SSR-injection tests (incl. a `Promise.all`
+  concurrency test). See swiss-lib PR #111.
+
+- Add a transition API for enter/leave/move animations. Elements can now animate
+  on enter, leave, and reorder via a name-keyed transition registry and a runtime
+  that applies enter/leave/move classes and waits on `transitionend`/`animationend`
+  before committing removals. Public API exported from `@swissjs/core`.
+
+  Built entirely on the existing renderer (reconciliation/dom-creation/dom-updates
+  hooks). Runtime suite green. Ships with `runtime/src/__tests__/transition-api.test.ts`
+  (8 tests). See swiss-lib PR #108.
+
 ## 1.2.13
 
 ### Patch Changes

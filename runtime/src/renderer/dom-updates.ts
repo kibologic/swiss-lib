@@ -28,7 +28,7 @@ import {
   isElementVNode,
   isComponentVNode,
   cleanupNode,
-  filterValidVNodes,
+  flattenRenderedChildren,
 } from "./types.js";
 import { DiffingError } from "./errors.js";
 import { clearRenderCache } from "./render-cache.js";
@@ -41,6 +41,7 @@ import {
   applyRenderedOutput,
   transferDOMReferencesFromOldTree,
 } from "./dom-update-refs.js";
+import { removeWithTransition } from "../transitions/transition-runtime.js";
 
 // ─── Type aliases ─────────────────────────────────────────────────────────────
 
@@ -70,29 +71,89 @@ export function updateDOMNode(
   updateTextNodeFn: UpdateTextNodeFn,
   updateElementNodeFn: UpdateElementNodeFn,
   updateComponentNodeFn: UpdateComponentNodeFn,
-): void {
+  createDOMNodeFn?: CreateDOMNodeFn,
+): Node {
   try {
     if (vnode == null || typeof vnode === "boolean") {
       const parent = dom.parentNode;
       if (parent) {
-        parent.removeChild(dom);
-        cleanupNode(dom);
+        // FRAME-transition-api: same deferral as reconciliation.ts's leftover-node pass --
+        // a registered `transition` prop defers removal until the leave sequence settles;
+        // untransitioned nodes take the exact synchronous path this replaced.
+        removeWithTransition(dom, () => {
+          if (dom.parentNode === parent) {
+            parent.removeChild(dom);
+          }
+          cleanupNode(dom);
+        });
       }
-      return;
+      return dom;
     }
 
     if (isSignal(vnode)) {
-      updateDOMNode(
+      return updateDOMNode(
         dom,
         vnode.value as VNode,
         updateTextNodeFn,
         updateElementNodeFn,
         updateComponentNodeFn,
+        createDOMNodeFn,
       );
-      return;
     }
 
     const oldVNode = vnodeMetadata.get(dom);
+
+    // FRAME-WA-005 (ternary text-to-subtree swap never patches): this dispatcher used to
+    // route purely on the NEW vnode's kind -- `isElementVNode(vnode)` -> always call
+    // updateElementNodeFn(dom as HTMLElement, ...), `isTextVNode(vnode)` -> always call
+    // updateTextNodeFn(dom as Text, ...) -- with no check that `dom`'s ACTUAL runtime node
+    // type is the kind those functions assume. Every direct caller that reaches this
+    // function without its own prior canUpdateInPlace() gate (commitVNode in
+    // component.ts is the one that matters here: it's the signal-effect-driven self-commit
+    // path a component takes to apply its OWN new render output to its OWN existing DOM
+    // node) hit this blindly. Concretely: a component whose render() flips from a bare
+    // text vnode (dom = a Text node) to an element vnode (e.g. `cond ? "text" : <div>...
+    // </div>`) got updateElementNodeFn(TextNode, divVNode, ...) -- which reconciles props
+    // and children onto the Text node as if it already were the target <div>. Text nodes
+    // have no attributes and, per the DOM spec, reject child insertion entirely
+    // (Node.appendChild/insertBefore throw HierarchyRequestError for a CharacterData
+    // parent) -- reconcileChildren's own reorder pass throws the moment it tries to give
+    // the Text node its first child, updateDOMNode's catch below turns that into a
+    // DiffingError, and the component's DOM is left exactly as before: permanently stuck
+    // on the old text, since nothing about this call was applied. (The inverse, text
+    // vnode onto an Element dom, doesn't throw -- `updateTextNode` just sets
+    // `dom.textContent`, which Elements also have -- but it silently overwrites the
+    // element's real children with a plain string instead of ever becoming a text node,
+    // an equally wrong outcome.)
+    //
+    // The reconciler already has the right primitive for this: canUpdateInPlace() (used by
+    // reconcileChildren and applyRenderedOutput/dom-update-refs.ts to decide, before ever
+    // calling this function, whether an existing DOM node can be reused for a new vnode or
+    // must be replaced). Apply the same check here so updateDOMNode is safe to call
+    // directly against ANY existing DOM node, not just ones a caller has already verified.
+    // Component vnodes are excluded: a component's own DOM node can legitimately be
+    // anything (whatever ITS render() produces), and updateComponentNodeFn / its
+    // applyRenderedOutput already carries its own canUpdateInPlace-guarded replace path.
+    const domKindMismatch =
+      createDOMNodeFn != null &&
+      ((isTextVNode(vnode) && dom.nodeType !== Node.TEXT_NODE) ||
+        (isElementVNode(vnode) && dom.nodeType !== Node.ELEMENT_NODE));
+
+    if (domKindMismatch) {
+      const parent = dom.parentNode;
+      const newDom = createDOMNodeFn(vnode);
+      if (parent) {
+        parent.replaceChild(newDom, dom);
+        cleanupNode(dom);
+      }
+      if (vnode != null && typeof vnode !== "boolean") {
+        vnodeMetadata.set(newDom, vnode);
+      }
+      if (typeof vnode === "object" && vnode !== null && "dom" in vnode) {
+        (vnode as { dom: Node }).dom = newDom;
+      }
+      return newDom;
+    }
 
     if (isTextVNode(vnode)) {
       updateTextNodeFn(dom as Text, vnode);
@@ -117,6 +178,7 @@ export function updateDOMNode(
     if (typeof vnode === "object" && vnode !== null && "dom" in vnode) {
       (vnode as { dom: Node }).dom = dom;
     }
+    return dom;
   } catch (error) {
     console.error("DOM update error:", error);
     const updateErrorMessage =
@@ -184,8 +246,12 @@ export function updateElementNode(
     // its raw length against domChildren.length, and indexing domChildren by oldChildren's raw
     // index, therefore never lines up for an element with such a conditional among its direct
     // children. Restore against the same filtered view createDOMNode used.
+    //
+    // FRAME-fragment-sibling-count-mismatch: filterValidVNodes alone still undercounts a
+    // Fragment vnode (1 array entry, N real DOM nodes -- see flattenRenderedChildren's doc
+    // comment in types.ts), so use the flattened view for the same reason.
     const domChildren = Array.from(dom.childNodes);
-    const oldChildrenRendered = filterValidVNodes(oldChildren);
+    const oldChildrenRendered = flattenRenderedChildren(oldChildren);
     const oldChildCountMatchesLiveDom = oldChildrenRendered.length === domChildren.length;
     oldChildrenRendered.forEach((oldChild, index) => {
       // If old child already has DOM reference, keep it
@@ -256,8 +322,11 @@ export function updateElementNode(
   // CLICK-NO-RESPONSE FIX (registry/fable/click-bug/, 2026-07-17): same raw-vs-filtered
   // mismatch as the old-children loop above -- newChildren can contain `null`/`false`
   // conditional placeholders too, so compare/index against the filtered view.
+  //
+  // FRAME-fragment-sibling-count-mismatch: same Fragment undercount as above -- flatten here
+  // too so this loop's counts agree with the live DOM regardless of Fragment siblings.
   const domChildren = Array.from(dom.childNodes);
-  const newChildrenRendered = filterValidVNodes(newChildren);
+  const newChildrenRendered = flattenRenderedChildren(newChildren);
   const newChildCountMatchesLiveDom = newChildrenRendered.length === domChildren.length;
   newChildrenRendered.forEach((newChild, i) => {
     const newChildBase = typeof newChild === "object" && newChild !== null
@@ -303,6 +372,30 @@ export function updateElementNode(
 }
 
 // ─── updateComponentNode ──────────────────────────────────────────────────────
+
+/**
+ * FRAME-updated-hook-child-components: updateComponentNode is the commit path a PARENT's
+ * OWN reconciliation takes when it revisits an already-mounted CHILD component's vnode
+ * position (e.g. an ancestor's unrelated state change produces a fresh render tree that
+ * still has this child at the same position). It calls renderComponentFn() directly and
+ * patches the DOM via applyRenderedOutput -- a real, independent commit strategy, distinct
+ * from (and never routed through) either of the child's own two commit paths
+ * (component.ts's commitVNode, update-manager.ts's performUpdate), both of which
+ * PR #134 / FRAME-commitvnode-updated-hook made fire "updated" after every real commit.
+ * This path never did, so a child whose visible re-render is driven entirely by its
+ * parent's reconciliation (its own render effect never re-subscribes here -- renderComponentFn
+ * calls render() under `untrack()`) never got "updated" at all, live-confirmed on
+ * office's PdfViewerPage. Reuses UpdateManager's own per-instance throttle/guard (via
+ * asInternal -- see internal.ts's `updateManager` field) so a pathological `updated` hook
+ * that writes state shares the same budget as the other two commit-hook call sites instead
+ * of getting its own unbounded one.
+ */
+function fireUpdatedHookAfterParentCommit(instance: SwissComponent): void {
+  const ci = asInternal(instance);
+  if (!ci._isMounted) return;
+  if (ci.updateManager.guardCommitUpdatedHook()) return;
+  void ci.executeHookPhase("updated");
+}
 
 export function updateComponentNode(
   dom: HTMLElement,
@@ -373,7 +466,17 @@ export function updateComponentNode(
     const newInstance = (newRendered as unknown as VNodeBase | null)?.__componentInstance;
     if (newInstance) {
       const nci = asInternal(newInstance);
-      componentInstances.set(dom, newInstance);
+      // FRAME-002: when this component's render output is itself a component vnode
+      // (component-renders-component), newInstance is the OUTER instance (renderComponent
+      // tags its rendered child vnode with the rendering instance). The shared node's
+      // componentInstances slot belongs to the INNER mounted instance; registering the outer
+      // here would clobber it and force the inner reconcile below to build a never-mounted
+      // phantom. Keep the outer in the host slot instead.
+      if (isComponentVNode(newRendered as VNode)) {
+        domToHostComponent.set(dom, newInstance);
+      } else {
+        componentInstances.set(dom, newInstance);
+      }
       vnode.__componentInstance = newInstance;
       const oldVNodeBase = nci._vnode as unknown as VNodeBase | null;
       if (oldVNodeBase) oldVNodeBase.dom = dom;
@@ -391,6 +494,7 @@ export function updateComponentNode(
       canUpdateInPlaceFn,
       updateDOMNodeFn,
     );
+    fireUpdatedHookAfterParentCommit(existingInstance);
     return;
   }
 
@@ -416,7 +520,17 @@ export function updateComponentNode(
     const newInstance = (newRendered as unknown as VNodeBase | null)?.__componentInstance;
     if (newInstance) {
       const nci = asInternal(newInstance);
-      componentInstances.set(dom, newInstance);
+      // FRAME-002: when this component's render output is itself a component vnode
+      // (component-renders-component), newInstance is the OUTER instance (renderComponent
+      // tags its rendered child vnode with the rendering instance). The shared node's
+      // componentInstances slot belongs to the INNER mounted instance; registering the outer
+      // here would clobber it and force the inner reconcile below to build a never-mounted
+      // phantom. Keep the outer in the host slot instead.
+      if (isComponentVNode(newRendered as VNode)) {
+        domToHostComponent.set(dom, newInstance);
+      } else {
+        componentInstances.set(dom, newInstance);
+      }
       vnode.__componentInstance = newInstance;
       const oldVNodeBase = nci._vnode as unknown as VNodeBase | null;
       if (oldVNodeBase) oldVNodeBase.dom = dom;
@@ -434,6 +548,7 @@ export function updateComponentNode(
       canUpdateInPlaceFn,
       updateDOMNodeFn,
     );
+    if (existingInstance) fireUpdatedHookAfterParentCommit(existingInstance);
     return;
   } else {
     // Component types don't match (e.g., LoginPage → ForgotPasswordPage)

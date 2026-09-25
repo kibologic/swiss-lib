@@ -200,10 +200,278 @@ export class UiCompiler {
     }
   }
 
-  // Strip JSDoc comments from source code
-  // This prevents parsing issues in .ui/.uix files where JSDoc syntax might not be handled correctly
+  // Strip JSDoc comments (/** ... */) from source code.
+  // This prevents parsing issues in .ui/.uix files where JSDoc syntax might
+  // not be handled correctly.
+  //
+  // DISC-2026-08-24-001: this used to be a single regex
+  // (/\/\*\*[\s\S]*?\*\//g) applied to the raw source. Because it had no
+  // notion of // line comments or string/template/regex literals, a "/**"
+  // appearing inside any of those (e.g. a glob like `queue/**/*.yaml` inside
+  // a // comment) opened a false JSDoc block that consumed everything up to
+  // the next literal "*/" anywhere later in the file, silently deleting real
+  // code. This scans token-by-token instead, so only a genuine `/**...*/`
+  // block comment -- one that actually starts a comment at that position --
+  // is ever removed.
   private stripJSDocComments(source: string): string {
-    return source.replace(/\/\*\*[\s\S]*?\*\//g, "");
+    const n = source.length;
+    let result = "";
+    let i = 0;
+    // Last significant (non-whitespace, non-comment) token text, used for
+    // the standard regex-vs-division heuristic: a `/` starts a regex
+    // literal unless the previous token was something a value could follow
+    // a binary/division operator (an identifier/number/`)`/`]`), in which
+    // case `/` is division.
+    let lastToken = "";
+
+    while (i < n) {
+      const c = source[i];
+      const c2 = i + 1 < n ? source[i + 1] : "";
+
+      // Line comment: copy through end of line untouched.
+      if (c === "/" && c2 === "/") {
+        const end = source.indexOf("\n", i);
+        const stop = end === -1 ? n : end;
+        result += source.slice(i, stop);
+        i = stop;
+        continue;
+      }
+
+      // Block comment: either a JSDoc block (/** ... */) to strip, or a
+      // regular block comment (/* ... */) to preserve verbatim.
+      if (c === "/" && c2 === "*") {
+        const isJSDoc = i + 2 < n && source[i + 2] === "*";
+        // Mirrors the original regex's lazy match: search for the closing
+        // "*/" starting right after the opening delimiter (3 chars for
+        // "/**", 2 chars for "/*").
+        const searchFrom = i + (isJSDoc ? 3 : 2);
+        const end = source.indexOf("*/", searchFrom);
+        if (end === -1) {
+          // Unterminated block comment: never delete to EOF. Leave the
+          // remainder of the source exactly as-is.
+          result += source.slice(i);
+          i = n;
+          break;
+        }
+        if (isJSDoc) {
+          // Strip: emit nothing for this block.
+          i = end + 2;
+        } else {
+          result += source.slice(i, end + 2);
+          i = end + 2;
+        }
+        continue;
+      }
+
+      // String literals.
+      if (c === "'" || c === '"') {
+        const quote = c;
+        let j = i + 1;
+        while (j < n) {
+          if (source[j] === "\\") {
+            j += 2;
+            continue;
+          }
+          if (source[j] === quote) {
+            j++;
+            break;
+          }
+          j++;
+        }
+        result += source.slice(i, j);
+        i = j;
+        lastToken = quote;
+        continue;
+      }
+
+      // Template literals, including nested `${ ... }` expressions (which
+      // may themselves contain strings, comments, regexes, and further
+      // nested templates). Preserved verbatim: we don't attempt to strip
+      // JSDoc-shaped comments that live inside a template expression, since
+      // walking back out of the template correctly matters far more than
+      // that cosmetic case.
+      if (c === "`") {
+        const end = this.scanTemplateLiteral(source, i);
+        result += source.slice(i, end);
+        i = end;
+        lastToken = "`";
+        continue;
+      }
+
+      // Regex literal vs division: only scan `/` as a regex when the
+      // previous token means a value is expected here (i.e. NOT after an
+      // identifier/number/`)`/`]`, which would make `/` division instead).
+      if (c === "/" && this.isRegexContext(lastToken)) {
+        const end = this.scanRegexLiteral(source, i);
+        if (end !== -1) {
+          result += source.slice(i, end);
+          i = end;
+          lastToken = "/";
+          continue;
+        }
+        // Not actually a valid regex literal (no unescaped closing `/`
+        // before EOF/newline) -- fall through and treat `/` as an ordinary
+        // character.
+      }
+
+      // Default: copy the character through, tracking the last significant
+      // token for the regex-vs-division heuristic.
+      if (/\s/.test(c)) {
+        result += c;
+        i++;
+        continue;
+      }
+      if (/[A-Za-z0-9_$]/.test(c)) {
+        let j = i;
+        while (j < n && /[A-Za-z0-9_$]/.test(source[j])) j++;
+        const word = source.slice(i, j);
+        result += word;
+        lastToken = word;
+        i = j;
+        continue;
+      }
+      result += c;
+      lastToken = c;
+      i++;
+    }
+
+    return result;
+  }
+
+  // Keywords after which a following `/` must be a regex literal (they
+  // never leave a value on the "stack" for `/` to divide).
+  private static readonly REGEX_CONTEXT_KEYWORDS = new Set([
+    "return", "typeof", "instanceof", "in", "of", "new", "delete", "void",
+    "throw", "case", "do", "else", "yield", "await",
+  ]);
+
+  private isRegexContext(lastToken: string): boolean {
+    if (lastToken === "") return true; // start of source
+    if (/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(lastToken)) {
+      // Ends in an identifier/keyword: regex only after a keyword that
+      // expects an expression next; otherwise it's division (e.g. `a / b`).
+      return UiCompiler.REGEX_CONTEXT_KEYWORDS.has(lastToken);
+    }
+    if (/^[0-9]/.test(lastToken)) return false; // number literal -> division
+    if (lastToken === ")" || lastToken === "]") return false; // division
+    return true; // operators, `(`, `{`, `,`, `;`, `=`, etc. -> regex
+  }
+
+  // Scans a regex literal starting at `source[start]` (`/`). Returns the
+  // index just past the closing `/` and its flags, or -1 if this isn't a
+  // valid (single-line) regex literal.
+  private scanRegexLiteral(source: string, start: number): number {
+    const n = source.length;
+    let i = start + 1;
+    let inClass = false;
+    while (i < n) {
+      const c = source[i];
+      if (c === "\n") return -1; // unterminated on this line -> not a regex
+      if (c === "\\") {
+        i += 2;
+        continue;
+      }
+      if (c === "[") {
+        inClass = true;
+        i++;
+        continue;
+      }
+      if (c === "]") {
+        inClass = false;
+        i++;
+        continue;
+      }
+      if (c === "/" && !inClass) {
+        i++;
+        break;
+      }
+      i++;
+    }
+    if (i >= n || source[i - 1] !== "/") return -1;
+    // Consume flags.
+    while (i < n && /[A-Za-z]/.test(source[i])) i++;
+    return i;
+  }
+
+  // Scans a template literal starting at `source[start]` (the opening `` ` ``),
+  // including nested `${ ... }` expressions which may contain strings,
+  // further template literals, comments, and braces. Returns the index just
+  // past the closing `` ` ``, or the source length if unterminated.
+  private scanTemplateLiteral(source: string, start: number): number {
+    const n = source.length;
+    let i = start + 1;
+    while (i < n) {
+      const c = source[i];
+      if (c === "\\") {
+        i += 2;
+        continue;
+      }
+      if (c === "`") {
+        return i + 1;
+      }
+      if (c === "$" && source[i + 1] === "{") {
+        i = this.scanTemplateExpression(source, i + 2);
+        continue;
+      }
+      i++;
+    }
+    return n; // unterminated -> consume to end
+  }
+
+  // Scans the body of a `${ ... }` template expression starting just after
+  // the `{`, tracking nested braces, strings, nested templates, and
+  // comments so an embedded `}` (e.g. inside a string) doesn't end the
+  // expression early. Returns the index just past the matching `}`.
+  private scanTemplateExpression(source: string, start: number): number {
+    const n = source.length;
+    let i = start;
+    let depth = 1;
+    while (i < n && depth > 0) {
+      const c = source[i];
+      if (c === "{") {
+        depth++;
+        i++;
+        continue;
+      }
+      if (c === "}") {
+        depth--;
+        i++;
+        continue;
+      }
+      if (c === "`") {
+        i = this.scanTemplateLiteral(source, i);
+        continue;
+      }
+      if (c === "'" || c === '"') {
+        const quote = c;
+        let j = i + 1;
+        while (j < n) {
+          if (source[j] === "\\") {
+            j += 2;
+            continue;
+          }
+          if (source[j] === quote) {
+            j++;
+            break;
+          }
+          j++;
+        }
+        i = j;
+        continue;
+      }
+      if (c === "/" && source[i + 1] === "/") {
+        const end = source.indexOf("\n", i);
+        i = end === -1 ? n : end;
+        continue;
+      }
+      if (c === "/" && source[i + 1] === "*") {
+        const end = source.indexOf("*/", i + 2);
+        i = end === -1 ? n : end + 2;
+        continue;
+      }
+      i++;
+    }
+    return i;
   }
 
   async compileDirectory(inputDir: string, outputDir: string): Promise<void> {

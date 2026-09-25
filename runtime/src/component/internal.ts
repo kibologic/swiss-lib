@@ -38,9 +38,21 @@ export interface ComponentInternals {
   __vnodeKey?: string | number;
   _swissEventHandlers?: SwissEventHandlerEntry[];
   state: Record<string, unknown>;
+  /** Error boundary system internals (component-error-boundary.ts). */
+  _errorHandlingPhase: boolean;
+  _childErrors: Map<SwissComponent, unknown>;
+  _capturedError: unknown;
   clearCapabilityCache(): void;
   initialize(): void;
-  executeHookPhase(phase: string): Promise<void>;
+  executeHookPhase(
+    phase: string,
+    error?: unknown,
+    extraArgs?: unknown[],
+  ): Promise<void>;
+  /** FRAME-PROPS-CHANGE-HOOK: shallow snapshot of props as of the last "propsChanged"
+   *  diff (or the first post-mount "updated" call, which only baselines it). undefined
+   *  until that first diff runs -- see props-change-lifecycle.ts. */
+  _lastPropsSnapshot?: Record<string, unknown>;
   captureError(error: unknown, phase: string): void;
   captureChildError(child: SwissComponent, errorInfo: unknown): boolean;
   unmountComponent?(): void;
@@ -48,6 +60,31 @@ export interface ComponentInternals {
   safeRender(): VNode | null;
   clearEffects(): void;
   scheduleUpdate(): void;
+  /**
+   * FRAME-updated-hook-child-components: narrow view onto the private UpdateManager
+   * instance, exposing only its "updated"-hook throttle guard. dom-updates.ts's
+   * updateComponentNode (the commit path a PARENT's reconciliation takes when it
+   * revisits an already-mounted CHILD component's vnode position) is a legitimate
+   * external caller that needs the same per-second budget commitVNode's own post-commit
+   * hook fire uses, without making the whole UpdateManager public.
+   */
+  updateManager: { guardCommitUpdatedHook(): boolean };
+  /**
+   * FRAME-on-collision: narrow view onto the protected LifecycleManager instance, exposing
+   * only its registrar. event-system.ts's module-level `SwissComponent.prototype.on`
+   * override (a DOM-style custom-event emitter) is not itself a class method, so it can't
+   * reach a `protected` member the way a real subclass method could -- it needs this to
+   * delegate registrations for known lifecycle phase names (mounted/updated/...) back to
+   * the ORIGINAL lifecycle registrar it would otherwise silently shadow. See
+   * KNOWN_LIFECYCLE_HOOK_PHASES's doc comment (types/index.ts) for the full defect.
+   */
+  _lifecycle: {
+    on(
+      phase: string,
+      callback: (...args: unknown[]) => void,
+      options?: { once?: boolean; priority?: number; capability?: string },
+    ): void;
+  };
   [method: string]: unknown;
 }
 

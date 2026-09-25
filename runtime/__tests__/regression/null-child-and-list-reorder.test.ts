@@ -32,6 +32,9 @@
 import { describe, it, expect } from 'vitest';
 import { createElement as h, Fragment } from '../../src/vdom/vdom.js';
 import { renderToDOM } from '../../src/renderer/renderer.js';
+import 'reflect-metadata';
+import { SwissComponent } from '../../src/component/component.js';
+import type { BaseComponentProps } from '../../src/component/types/index.js';
 
 function getContainer(): HTMLElement {
   let el = document.getElementById('test-root-2');
@@ -226,4 +229,137 @@ describe('fragment child reorder', () => {
     const after = Array.from(container.querySelectorAll('span')).map((n) => n.id);
     expect(after).toEqual(['x', 'y']);
   });
+});
+
+
+describe('nested fragment reorder', () => {
+  // FRAME-fragment-sibling-count-mismatch (2026-09-24): this test used to PASS, but for the
+  // wrong reason. Before that fix, a Fragment vnode was one entry in the logical children
+  // array but contributed N entries to the live DOM (a DocumentFragment's children merge
+  // directly into the real parent) -- so reconcileChildren's staleness guard permanently
+  // mismatched for this exact shape (outer div: [outerFragment, trailing-span] = 2 logical
+  // entries vs 4 real DOM nodes) and bailed on EVERY commit here, silently. The second
+  // renderToDOM() call above never actually reconciled anything: the DOM was byte-for-byte
+  // identical before and after (verified directly -- innerHTML unchanged across the
+  // "rotation"). The focused input surviving was not identity preservation, it was nothing
+  // moving at all.
+  //
+  // Now that Fragments are flattened before reconciliation (types.ts's
+  // flattenRenderedChildren, see fragment-sibling-count-mismatch-repro.test.ts), this
+  // position genuinely reconciles for the first time -- and that exposes a real, SEPARATE,
+  // pre-existing gap: three unkeyed same-tag <span> siblings give getKey() the identical
+  // `span_0`/`span_1`/`span_2` key space on both renders, so key matching reuses DOM nodes
+  // by raw position, not by which span originally held the input. The reordered CONTENT
+  // lands correctly (verified: inner-A, inner-C, input in that order after rotation), but
+  // the ORIGINAL input DOM node is not the one reused -- it gets torn down as a leftover
+  // and a fresh <input> is created in a different span, losing focus. This is the exact
+  // "no other signal to disambiguate two same-tag siblings" limitation already documented
+  // and deliberately left unresolved in reconcile-index-base-asymmetry-repro.test.ts's own
+  // it.fails() case (an explicit `key` prop per sibling is the correct fix at the call
+  // site, not a new reconciler identity heuristic). Promoted to it.fails() to record this
+  // honestly instead of continuing to assert a false "already works" that was really "never
+  // ran".
+  it.fails("KNOWN LIMITATION (unkeyed same-tag sibling identity, not fixed here): a focused input inside a nested-fragment reorder is not guaranteed to keep its DOM node across the reorder", () => {
+    const container = getContainer();
+
+    // Outer fragment's first child is itself a fragment (inner) whose own
+    // children are static, unkeyed siblings -- rotated between renders, the
+    // same shape as the top-level unkeyed-reorder red case but one level
+    // deeper (fragment-within-fragment), per design doc \u00a72.3's flag that
+    // fragment children are flattened by __normalizedChildren but a NESTED
+    // fragment's own nested children are not yet covered by any existing
+    // regression case.
+    renderToDOM(
+      h('div', {},
+        h(Fragment, {},
+          h(Fragment, {},
+            h('span', {}, 'inner-A'),
+            h('span', {}, h('input', { type: 'text', name: 'nested-input', value: '' })),
+            h('span', {}, 'inner-C'),
+          ),
+        ),
+        h('span', {}, 'outer-trailing'),
+      ),
+      container,
+    );
+    const input = container.querySelector('input') as HTMLInputElement;
+    input.focus();
+    expect(document.activeElement).toBe(input);
+
+    // Rotate the inner fragment's children (A, input, C) -> (A, C, input).
+    renderToDOM(
+      h('div', {},
+        h(Fragment, {},
+          h(Fragment, {},
+            h('span', {}, 'inner-A'),
+            h('span', {}, 'inner-C'),
+            h('span', {}, h('input', { type: 'text', name: 'nested-input', value: '' })),
+          ),
+        ),
+        h('span', {}, 'outer-trailing'),
+      ),
+      container,
+    );
+
+    expect(document.contains(input)).toBe(true);
+    expect(document.activeElement).toBe(input);
+  });
+});
+
+describe('component-VNode unkeyed reorder', () => {
+  // Component version of the div-wrapping-input class instead of a raw DOM
+  // element: each sibling is an INSTANCE of the same component type
+  // (ReorderItem), not a plain <div>. This confirms the identity gap named
+  // by the existing it.fails() case above (three same-type unkeyed siblings,
+  // the middle one holding a focused input, reordered) is the same gap for
+  // component vnodes as it is for element vnodes -- both go through the
+  // same type-based reconciliation fallback (reconciliation.ts \u00a71.2),
+  // so both should currently fail identically. Stage 1 claims to fix
+  // identity for compiled output regardless of vnode kind; this is the
+  // pre-fix baseline for the component-vnode half of that claim.
+  interface ReorderItemProps extends BaseComponentProps {
+    label?: string;
+  }
+
+  class ReorderItem extends SwissComponent<ReorderItemProps> {
+    render() {
+      if (this.props.label) {
+        return h('div', {}, this.props.label);
+      }
+      return h('div', {}, h('input', { type: 'text', name: 'component-input', value: '' }));
+    }
+  }
+
+  it.fails(
+    'preserves a focused input inside a reordered UNKEYED list item when the item is a component instance (not a raw element)',
+    () => {
+      const container = getContainer();
+
+      renderToDOM(
+        h('div', {},
+          h(ReorderItem, { label: 'Item A' }),
+          h(ReorderItem, {}),
+          h(ReorderItem, { label: 'Item C' }),
+        ),
+        container,
+      );
+      const input = container.querySelector('input') as HTMLInputElement;
+      input.focus();
+      expect(document.activeElement).toBe(input);
+
+      // Same rotation as the element-vnode red case: the component instance
+      // wrapping the input moves from index 1 to index 2.
+      renderToDOM(
+        h('div', {},
+          h(ReorderItem, { label: 'Item A' }),
+          h(ReorderItem, { label: 'Item C' }),
+          h(ReorderItem, {}),
+        ),
+        container,
+      );
+
+      expect(document.contains(input)).toBe(true);
+      expect(document.activeElement).toBe(input);
+    },
+  );
 });

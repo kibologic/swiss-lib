@@ -45,14 +45,6 @@ import { logger } from "../utils/logger.js";
 import type { Plugin, PluginContext } from "../plugins/pluginInterface.js";
 import { CapabilityManager } from "../security/capability-manager.js";
 
-// Devtools imports
-import {
-  getDevtoolsBridge,
-  isDevtoolsEnabled,
-  isTelemetryEnabled,
-} from "../devtools/bridge.js";
-import { getRemediationMessage } from "../error/remediation.js";
-
 // Manager imports
 import { UpdateManager } from "./update-manager.js";
 import { ReactivityManager } from "./reactivity-setup.js";
@@ -63,6 +55,17 @@ import {
   mountComponent,
   unmountComponent,
 } from "./component-lifecycle.js";
+import {
+  wireDeclaredHooks,
+  checkAndFirePropsChanged,
+  baselinePropsSnapshot,
+} from "./props-change-lifecycle.js";
+import {
+  captureChildError as captureChildErrorImpl,
+  resetErrorBoundary as resetErrorBoundaryImpl,
+  captureError as captureErrorImpl,
+  dispatchGlobalError as dispatchGlobalErrorImpl,
+} from "./component-error-boundary.js";
 
 export class SwissComponent<
   P extends BaseComponentProps = BaseComponentProps,
@@ -184,121 +187,29 @@ export class SwissComponent<
   onMount?(): void | Promise<void>;
   mounted?(): void;
   unmounted?(): void;
+  /** FRAME-PROPS-CHANGE-HOOK: fires once per actual (shallow-diffed) prop change, after the
+   *  DOM commit reflecting it, never on mount. Receives the previous and next props. Compare
+   *  a specific key inside the hook (e.g. `prevProps.id !== nextProps.id`) for narrower
+   *  reactions than the default whole-object shallow diff. See runtime/README.md. */
+  onPropsChange?(prevProps: P, nextProps: P): void;
 
   // ===== Error Boundary System =====
+  // Implementations live in component-error-boundary.ts (FRAME-PROPS-CHANGE-HOOK split, to
+  // stay within the 700-line module-size limit after adding the prop-change hook).
   captureChildError(child: SwissComponent, errorInfo: SwissErrorInfo): boolean {
-    if (
-      (this.constructor as typeof SwissComponent).isErrorBoundary &&
-      !this.error
-    ) {
-      this._childErrors.set(child, errorInfo);
-      this.error = {
-        error: new Error(`Error in child component ${child.constructor.name}`),
-        phase: "render",
-        component: this,
-        timestamp: Date.now(),
-      };
-      this.scheduleUpdate();
-      return true;
-    }
-
-    if (this._parent) {
-      return this._parent.captureChildError(this, errorInfo);
-    }
-
-    return false;
+    return captureChildErrorImpl(this, child, errorInfo);
   }
 
   resetErrorBoundary(): void {
-    if (this.error || this._capturedError) {
-      this.error = null;
-      this._capturedError = null;
-      this._childErrors.clear();
-      this.scheduleUpdate();
-    }
-
-    this._children.forEach((child) => {
-      if ((child.constructor as typeof SwissComponent).isErrorBoundary) {
-        child.resetErrorBoundary();
-      }
-    });
+    resetErrorBoundaryImpl(this);
   }
 
   public captureError(error: unknown, phase: string): void {
-    if (this._errorHandlingPhase) return;
-    this._errorHandlingPhase = true;
-
-    const normalizedError =
-      error === undefined || error === null
-        ? new Error(`${phase}: component threw ${String(error)}`)
-        : error;
-
-    const errorInfo: SwissErrorInfo = {
-      error: normalizedError,
-      phase,
-      component: this,
-      timestamp: Date.now(),
-    };
-
-    this.error = errorInfo;
-
-    console.error(
-      `Error in component ${this.constructor.name} during ${phase}:`,
-      error,
-    );
-
-    if (isDevtoolsEnabled()) {
-      try {
-        const required =
-          (this.constructor as typeof SwissComponent).requires ?? [];
-        const advice = getRemediationMessage(error, phase, this, required);
-        getDevtoolsBridge().recordEvent({
-          t: Date.now(),
-          type: "error",
-          msg: `${this._devtoolsId}:${advice.message}`,
-        });
-        if (isTelemetryEnabled() && getDevtoolsBridge().recordEventTyped) {
-          try {
-            getDevtoolsBridge().recordEventTyped!({
-              t: Date.now(),
-              category: "error",
-              name: "boundary-error",
-              componentId: this._devtoolsId,
-              data: { message: advice.message, phase },
-            });
-          } catch {
-            /* ignore */
-          }
-        }
-      } catch {
-        /* ignore */
-      }
-    }
-
-    let boundary = this._parent;
-    while (boundary && !boundary.captureChildError(this, errorInfo)) {
-      boundary = boundary._parent;
-    }
-
-    if (!boundary) {
-      this.dispatchGlobalError(error, phase);
-    }
-
-    this._errorHandlingPhase = false;
+    captureErrorImpl(this, error, phase);
   }
 
   public dispatchGlobalError(error: unknown, phase: string): void {
-    const event = new CustomEvent("swiss-error", {
-      detail: {
-        error,
-        phase,
-        component: this,
-        timestamp: Date.now(),
-      },
-      bubbles: true,
-      cancelable: true,
-    });
-    window.dispatchEvent(event);
+    dispatchGlobalErrorImpl(this, error, phase);
   }
 
   // ===== Lifecycle Management =====
@@ -319,11 +230,32 @@ export class SwissComponent<
     return this;
   }
 
+  /**
+   * FRAME-PROPS-CHANGE-HOOK: `extraArgs` is passed through to every hook callback for this
+   * phase (LifecycleManager.executeHookPhase), used to deliver (prevProps, nextProps) to
+   * "propsChanged" hooks. Every other call site is unaffected (defaults to no extra args).
+   * When phase is "updated", first diffs props against the last-observed snapshot and fires
+   * "propsChanged" if they changed -- "updated" fires on every DOM commit including
+   * state-only re-renders, so this is the single choke point that narrows it to real prop
+   * changes for every "updated" call site (update-manager.ts, dom-updates.ts, this file's own
+   * commitVNode) without duplicating the diff at each one. Also baselines the prop-change
+   * snapshot when phase is "mounted" -- there are FOUR independent mount-completion call
+   * sites (component-lifecycle.ts's mountComponent for root mounts, two child-mount paths in
+   * dom-creation.ts, and hydration.ts), and every one of them fires "mounted" through this
+   * same method, so this is the single choke point that catches all of them without having
+   * to hunt down and instrument each site individually.
+   */
   public async executeHookPhase(
     phase: string,
     error?: Error | unknown,
+    extraArgs?: unknown[],
   ): Promise<void> {
-    await this._lifecycle.executeHookPhase(phase, this, error);
+    if (phase === "mounted") {
+      baselinePropsSnapshot(this);
+    } else if (phase === "updated") {
+      await checkAndFirePropsChanged(this);
+    }
+    await this._lifecycle.executeHookPhase(phase, this, error, extraArgs);
   }
 
   // ===== Initialization =====
@@ -336,24 +268,7 @@ export class SwissComponent<
     this.loadPlugins();
     this.validateCapabilities();
 
-    if (typeof this.onMount === "function") {
-      this._lifecycle.on("mounted", async () => {
-        try {
-          await this.onMount!();
-        } catch (error) {
-          this.captureError(error, "mounted");
-        }
-      });
-    }
-    if (typeof this.mounted === "function") {
-      this._lifecycle.on("mounted", () => {
-        try {
-          this.mounted!();
-        } catch (error) {
-          this.captureError(error, "mounted");
-        }
-      });
-    }
+    wireDeclaredHooks(this);
   }
 
   public validateCapabilities(): Promise<void> {
@@ -488,15 +403,35 @@ export class SwissComponent<
     // an error thrown inside it could never find an ancestor ErrorBoundary either, since both
     // walk the same _parent chain. Reproduced directly: a Context consumer mounted one tick
     // after its provider read "undefined" instead of the provided value.
+    //
+    // FRAME-WA-005: `resultDom` captures whatever updateDOMNode() (dom-updates.ts)
+    // actually ended up using for this commit -- normally `existingDom` itself (in-place
+    // update), but now sometimes a BRAND NEW node when the new vnode's kind doesn't match
+    // the old DOM node's actual type (e.g. a component's render() flips from a bare text
+    // vnode to an element vnode, or back) and updateDOMNode replaces it instead of
+    // miscasting it. Previously this block unconditionally forced `newVNodeBase.dom` (and
+    // therefore `this._domNode` below) back to the PRE-update `existingDom` reference,
+    // trusting that updateDOMNode always mutated in place. Once updateDOMNode can replace
+    // the node, that overwrite clobbers updateDOMNode's own correct `.dom` assignment with
+    // a now-DETACHED node -- `this._domNode` for the next commit then points at an
+    // orphaned node no longer in the document, so the NEXT update silently mutates
+    // something invisible instead of the live DOM (the live content just never changes
+    // again, with no error). And when the new vnode is a bare string/number, `newVNodeBase`
+    // is null (primitives can't carry `.dom`) -- there was no channel back to `this
+    // ._domNode` at all in that direction, so it silently stayed on the OLD (also
+    // now-replaced) dom forever. Use updateDOMNode's own return value -- the actual live
+    // node for this vnode, object or primitive alike -- as the single source of truth.
     const prevInstance = getCurrentComponentInstance();
     setCurrentComponentInstance(this);
+    let resultDom: Node | null = null;
     try {
       untrack(() => {
         if (existingDom) {
-          updateDOMNode(existingDom, newVNode);
-          if (newVNodeBase) newVNodeBase.dom = existingDom as HTMLElement | Text;
+          resultDom = updateDOMNode(existingDom, newVNode);
+          if (newVNodeBase) newVNodeBase.dom = resultDom as HTMLElement | Text;
         } else {
           renderToDOM(newVNode, container!);
+          resultDom = container!.firstChild;
           if (newVNodeBase && container!.firstChild) {
             newVNodeBase.dom = container!.firstChild as HTMLElement | Text;
           }
@@ -507,9 +442,26 @@ export class SwissComponent<
     }
 
     this._vnode = newVNode;
-    this._domNode = (newVNodeBase?.dom as Node | null) ?? this._domNode;
+    this._domNode = resultDom ?? (newVNodeBase?.dom as Node | null) ?? this._domNode;
 
     restoreFocusState(focusState);
+
+    // FRAME-commitvnode-updated-hook: this is the commit path for reactive state writes
+    // (reactivity-setup.ts queues a microtask that calls commitVNode directly on every
+    // state change after the first) -- performUpdate's own commit branches already run
+    // the "updated" hook phase after committing (update-manager.ts); this path silently
+    // never did, so `this.on('updated', cb)` never fired for components whose re-renders
+    // are driven by state writes rather than an explicit scheduleUpdate()/performUpdate()
+    // call. Skip on the component's OWN initial mount commit (component-lifecycle.ts's
+    // mountComponent calls commitVNode once before `_isMounted` is set -- that commit is
+    // the mount, not an update; "mounted" fires separately for it) -- fire only for
+    // genuine post-mount re-commits. Guarded against an `updated` hook that writes state
+    // (re-triggering this same path) looping unboundedly by the UpdateManager's own
+    // per-second budget, shared in spirit with performUpdate's MAX_UPDATES_PER_SECOND
+    // throttle but tracked separately since this path doesn't go through performUpdate.
+    if (this._isMounted && !this.updateManager.guardCommitUpdatedHook()) {
+      void this.executeHookPhase("updated");
+    }
   }
 
   public renderErrorFallback(): VNode {

@@ -46,8 +46,30 @@ export {
   renderToStringChunks,
 } from "./renderer/ssr-stream.js";
 
+// Document-head management (HEAD-001)
+export {
+  useHead,
+  setTitle,
+  addMeta,
+  addLink,
+  collectHead,
+  pushHeadContext,
+  popHeadContext,
+  currentHeadContext,
+  renderHeadToString,
+  htmlAttrsString,
+  bodyAttrsString,
+  type HeadConfig,
+  type HeadInput,
+  type HeadMeta,
+  type HeadLink,
+} from "./head/index.js";
+
 // Reactivity
 export * from "./reactivity/index.js";
+
+// Forms — headless, reactive form state + validation (built on Reactivity above)
+export * from "./forms/index.js";
 
 // Security
 export * from "./security/index.js";
@@ -90,6 +112,9 @@ export type {
 
 // Refs
 export { ref, type Ref } from "./component/refs.js";
+
+// Transitions & animation
+export type { TransitionSpec, TransitionHooks } from "./transitions/transition-types.js";
 
 // Utils
 export { html, escapeHTML, unsafe, css, classNames } from "./utils/html.js";

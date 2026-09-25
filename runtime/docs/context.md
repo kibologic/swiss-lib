@@ -14,6 +14,15 @@ consumers as of this writing (FRAME-006-capability-build-context, 2026-08-14) â€
 describes the framework capability's contract, not an established usage pattern in any Alpine
 vertical.
 
+**2026-08-19 follow-up:** the four completion-criteria gaps below (flag resolution, real
+mount/unmount integration, nested/late-mount/value-propagation coverage, this document) were
+closed in the 2026-08-14 pass (PR #96). This follow-up pass re-verified all of it against
+`origin/development`, found the suite still green (215/215 runtime tests), and closed the one
+remaining scope item that pass didn't cover explicitly: **unmount ordering** â€” does cleaning up
+one subscriber corrupt a still-mounted sibling's subscription, or crash the notification loop
+once every subscriber is gone. See "Unmount ordering is safe" below and
+`context-integration.test.ts`'s "unmount ordering" test.
+
 ## What it guarantees
 
 - **Nearest-ancestor resolution.** `Consumer`/`use`/`consume` walk `component._parent` upward
@@ -33,6 +42,12 @@ vertical.
   context's `subscribers` set and clears its selector/selection bookkeeping. A subsequent
   `Provider` update does not touch an unmounted component (`context-integration.test.ts`,
   `cleanupContextSubscriptions()` unit tests in `context.test.ts`).
+- **Unmount ordering is safe.** Unsubscribing one consumer never disturbs a sibling consumer's
+  subscription on the same context: cleanup mutates only that component's own entries in
+  `subscribers`/`selectors`/`selections`, so a still-mounted sibling keeps receiving `Provider`
+  updates after another subscriber is removed (`context-integration.test.ts`, "unmount
+  ordering"). Once every subscriber has been removed, a further `Provider` call over an empty
+  `subscribers` set is a documented no-op, not an error.
 - **Selector dedup.** Calling `Consumer()` repeatedly on the same component across re-renders
   registers exactly one unsubscribe closure per (component, context) pair, not one per call.
 
