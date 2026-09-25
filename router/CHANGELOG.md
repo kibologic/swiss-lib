@@ -4,6 +4,17 @@
 
 ### Minor Changes
 
+- ROUTER-PER-ROUTE-GUARDS: `Route.guard?: NavigationGuard` (plus a passthrough
+  `Route.meta?: Record<string, unknown>`), checked only when that route or a descendant
+  is the actual navigation target, after the router's global `beforeEach()` guards. Same
+  block(`false`)/redirect(`string`)/allow contract as a global guard.
+- ROUTER-LAZY-ROUTES: `lazy(loader)` wraps a dynamic-import loader as a `Route.component`;
+  `Outlet` starts the load on first render (`outlet-lazy-pending` placeholder), renders
+  the resolved component once it settles, and renders `outlet-lazy-error` (never throws)
+  if the import rejects. `preloadLazy(component)` lets a caller start/await the load ahead
+  of rendering. A bare `() => Promise<ComponentLike>` is intentionally not accepted
+  directly as `Route.component` -- see README for why.
+
 - ROUTER-NOT-FOUND: `RouterOptions.notFound?: ComponentLike`, rendered by `Outlet` when
   no route matches the current path, instead of the previous empty
   `<div class="outlet-empty">`. Omit it to keep the previous behavior unchanged.
