@@ -175,7 +175,7 @@ importers:
         version: 0.15.0
       pnpm:
         specifier: '>=10.34.4'
-        version: 10.34.4
+        version: 10.34.5
       prettier:
         specifier: ^3.6.2
         version: 3.6.2
@@ -290,7 +290,7 @@ importers:
         version: 18.19.121
       pnpm:
         specifier: '>=10.34.4'
-        version: 10.34.4
+        version: 10.34.5
       typescript:
         specifier: 5.8.2
         version: 5.8.2
@@ -333,7 +333,7 @@ importers:
         version: 30.2.0(@types/node@18.19.121)(ts-node@10.9.2(@types/node@18.19.121)(typescript@5.8.2))
       pnpm:
         specifier: '>=10.34.4'
-        version: 10.34.4
+        version: 10.34.5
       ts-jest:
         specifier: ^29.4.5
         version: 29.4.5(@babel/core@8.0.1)(@jest/transform@30.2.0)(@jest/types@30.2.0)(babel-jest@30.2.0(@babel/core@8.0.1))(esbuild@0.25.12)(jest-util@30.2.0)(jest@30.2.0(@types/node@18.19.121)(ts-node@10.9.2(@types/node@18.19.121)(typescript@5.8.2)))(typescript@5.8.2)
@@ -402,7 +402,7 @@ importers:
         version: 4.21.2
       pnpm:
         specifier: '>=10.34.4'
-        version: 10.34.4
+        version: 10.34.5
       typescript:
         specifier: 5.8.2
         version: 5.8.2
@@ -487,7 +487,7 @@ importers:
         version: 25.0.1
       pnpm:
         specifier: '>=10.34.4'
-        version: 10.34.4
+        version: 10.34.5
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
@@ -529,7 +529,7 @@ importers:
         version: 11.3.0
       pnpm:
         specifier: '>=10.34.4'
-        version: 10.34.4
+        version: 10.34.5
       typescript:
         specifier: 5.8.2
         version: 5.8.2
@@ -5368,8 +5368,8 @@ packages:
     resolution: {integrity: sha512-Nc3IT5yHzflTfbjgqWcCPpo7DaKy4FnpB0l/zCAW0Tc7jxAiuqSxHasntB3D7887LSrA93kDJ9IXovxJYxyLCA==}
     engines: {node: '>=4'}
 
-  pnpm@10.34.4:
-    resolution: {integrity: sha512-h2i+VSAK4/Iia2Un/Momh+FLxOXxLXchoPJdo99HkVF3BYZI20F3uvNIEg+guidS2NjZP2vq8f5krhjajelhrw==}
+  pnpm@10.34.5:
+    resolution: {integrity: sha512-pO4F8vc2WCVb1qiYWcBlpFwopX2u+uLIk6Fo7itzFow3uR6D5X6mdlStA/AwMXRkMOi84442LgQmBfuKvIAZLg==}
     engines: {node: '>=18.12'}
     hasBin: true
 
@@ -12476,7 +12476,7 @@ snapshots:
 
   pluralize@8.0.0: {}
 
-  pnpm@10.34.4: {}
+  pnpm@10.34.5: {}
 
   possible-typed-array-names@1.1.0: {}
 
