@@ -90,7 +90,7 @@
     "husky": "^9.1.7",
     "lint-staged": "^16.1.2",
     "markdownlint-cli2": "^0.15.0",
-    "pnpm": "^10.34.4",
+    "pnpm": "^10.34.5",
     "prettier": "^3.6.2",
     "rollup": "^4.59.0",
     "ts-node": "^10.9.2",
