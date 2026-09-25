@@ -4,6 +4,16 @@
 
 ### Minor Changes
 
+- ROUTER-NOT-FOUND: `RouterOptions.notFound?: ComponentLike`, rendered by `Outlet` when
+  no route matches the current path, instead of the previous empty
+  `<div class="outlet-empty">`. Omit it to keep the previous behavior unchanged.
+- ROUTER-PARAM-MERGE: added an explicit `mergeParams(matches)` export (`matcher.ts`) and
+  switched `Outlet` to use it rather than the leaf match's own `params` object. Evidence:
+  the leaf's own `params` already carried every ancestor's captured value in practice
+  (a side effect of how `matchRoute` re-derives params against the full concatenated
+  route path at each level) -- `mergeParams()` makes that contract explicit and tested
+  instead of leaving it as an accidental byproduct of the matcher's internals.
+
 - ROUTER-HISTORY-STACK: `Router` now keeps an ordered history stack (`entries`,
   `historyIndex`) plus `back()`/`forward()`/`go(n)`/`canGoBack`/`canGoForward`, kept
   consistent with native `popstate` -- the router's own API and the browser's own
