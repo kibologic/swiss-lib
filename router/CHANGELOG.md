@@ -1,5 +1,23 @@
 # @kibologic/router
 
+## Unreleased
+
+### Minor Changes
+
+- ROUTER-HISTORY-STACK: `Router` now keeps an ordered history stack (`entries`,
+  `historyIndex`) plus `back()`/`forward()`/`go(n)`/`canGoBack`/`canGoForward`, kept
+  consistent with native `popstate` -- the router's own API and the browser's own
+  back/forward buttons always agree on the current entry. `push()` after a `back()`
+  truncates the forward branch, matching confirmed-correct browser semantics.
+- ROUTER-PER-ENTRY-STATE: `push()`/`replace()` accept an optional serializable `state`
+  payload per entry; `onStateRestore()` fires with that state, verbatim, whenever the
+  router lands back on an existing entry. `setEntryState()` updates the current entry's
+  state without navigating. Persistence is entirely pluggable via an optional
+  `historyAdapter: HistoryStateAdapter` (`save`/`load`) passed in `RouterOptions` -- the
+  router itself never hard-codes `localStorage` or any other storage backend. See
+  office's `docs/design/office-navigation-shell.md` Part 5.3 items 1-2 for the design
+  this closes.
+
 ## 1.3.0
 
 ### Minor Changes
