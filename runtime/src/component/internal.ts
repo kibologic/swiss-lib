@@ -38,9 +38,21 @@ export interface ComponentInternals {
   __vnodeKey?: string | number;
   _swissEventHandlers?: SwissEventHandlerEntry[];
   state: Record<string, unknown>;
+  /** Error boundary system internals (component-error-boundary.ts). */
+  _errorHandlingPhase: boolean;
+  _childErrors: Map<SwissComponent, unknown>;
+  _capturedError: unknown;
   clearCapabilityCache(): void;
   initialize(): void;
-  executeHookPhase(phase: string): Promise<void>;
+  executeHookPhase(
+    phase: string,
+    error?: unknown,
+    extraArgs?: unknown[],
+  ): Promise<void>;
+  /** FRAME-PROPS-CHANGE-HOOK: shallow snapshot of props as of the last "propsChanged"
+   *  diff (or the first post-mount "updated" call, which only baselines it). undefined
+   *  until that first diff runs -- see props-change-lifecycle.ts. */
+  _lastPropsSnapshot?: Record<string, unknown>;
   captureError(error: unknown, phase: string): void;
   captureChildError(child: SwissComponent, errorInfo: unknown): boolean;
   unmountComponent?(): void;
