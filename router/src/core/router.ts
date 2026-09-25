@@ -7,6 +7,7 @@ import {
   type HistoryStateAdapter,
   type NativeHistoryState,
 } from "./history-state.js";
+import type { LazyComponent } from "./lazy.js";
 
 export type {
   HistoryEntry,
@@ -45,11 +46,21 @@ export type ComponentLike = ComponentType;
 
 export interface Route {
   path: string;
-  component: ComponentLike;
+  /** A regular component, or `lazy(() => import(...))` (ROUTER-LAZY-ROUTES). */
+  component: ComponentLike | LazyComponent;
   layout?: ComponentLike;
   children?: Route[];
   loader?: LoaderFunction;
   action?: ActionFunction;
+  /**
+   * Per-route guard (ROUTER-PER-ROUTE-GUARDS), checked only when this route -- or one of
+   * its descendants -- is the navigation target, in addition to (and after) the router's
+   * global `beforeEach()` guards. Same block/redirect contract as a global guard: `false`
+   * blocks, a string redirects, anything else allows.
+   */
+  guard?: NavigationGuard;
+  /** Opaque, framework-agnostic per-route data (e.g. role requirements) for `guard` to read. */
+  meta?: Record<string, unknown>;
 }
 
 export interface RouterOptions {
@@ -239,15 +250,31 @@ export class Router {
     this.beforeHooks.push(guard);
   }
 
+  private async runGuard(guard: NavigationGuard, to: string): Promise<boolean> {
+    const result = await guard(to, this._currentPath);
+    if (result === false) return false;
+    if (typeof result === "string") {
+      this.push(result);
+      return false;
+    }
+    return true;
+  }
+
   private async runGuards(to: string): Promise<boolean> {
     for (const guard of this.beforeHooks) {
-      const result = await guard(to, this._currentPath);
-      if (result === false) return false;
-      if (typeof result === "string") {
-        this.push(result);
-        return false;
+      if (!(await this.runGuard(guard, to))) return false;
+    }
+
+    // Per-route guards (ROUTER-PER-ROUTE-GUARDS): only the routes actually matched by
+    // `to` are checked -- a guard on an unrelated route is never invoked.
+    const matches = this.match(to);
+    if (matches) {
+      for (const match of matches) {
+        if (!match.route.guard) continue;
+        if (!(await this.runGuard(match.route.guard, to))) return false;
       }
     }
+
     return true;
   }
 
@@ -395,6 +422,7 @@ export class Router {
 export * from "./matcher.js";
 export * from "./link.js";
 export * from "./outlet.js";
+export * from "./lazy.js";
 
 export function createRouter(options: RouterOptions): Router {
   return new Router(options);

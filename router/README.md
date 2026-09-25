@@ -52,6 +52,51 @@ router.beforeEach(async (to, from) => {
 });
 ```
 
+### Per-route guards
+
+A `guard` on a `Route` is checked only when that route -- or one of its descendants -- is
+the actual navigation target, after the router's global `beforeEach()` guards. Same
+block/redirect contract: `false` blocks, a string redirects, anything else allows.
+
+```typescript
+const router = new Router({
+  routes: [
+    {
+      path: '/admin',
+      component: AdminLayout,
+      guard: (to) => (isAdmin() ? true : '/forbidden'),
+      children: [{ path: 'users', component: AdminUsers }],
+    },
+    { path: '/public', component: Public }, // never triggers the /admin guard
+  ],
+});
+```
+
+### Lazy-loaded routes
+
+Wrap a dynamic import with `lazy()` and `Outlet` loads it on first render, showing an
+`outlet-lazy-pending` placeholder until it resolves (`outlet-lazy-error` if the import
+rejects -- it is never thrown):
+
+```typescript
+import { lazy } from '@swissjs/router';
+
+const router = new Router({
+  routes: [
+    { path: '/', component: Home },
+    { path: '/settings', component: lazy(() => import('./Settings.ui').then((m) => m.Settings)) },
+  ],
+});
+
+// Optional: preload ahead of navigating there, so Outlet renders it resolved immediately.
+import { preloadLazy } from '@swissjs/router';
+await preloadLazy(settingsRoute.component); // only if settingsRoute.component is a LazyComponent
+```
+
+A bare `() => Promise<ComponentLike>` is not accepted directly as `Route.component` --
+a plain function is already a valid component in this framework (`(props) => VNode`), so
+`lazy()`'s wrapper is what makes "this is a loader, not a component" unambiguous.
+
 ### History stack: `back()` / `forward()` / `go()`
 
 Every `Router` keeps an ordered stack of visited entries plus a current index, kept
