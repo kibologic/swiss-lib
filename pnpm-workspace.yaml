@@ -5,6 +5,7 @@ packages:
   - "router"
   - "components"
   - "security"
+  - "testing"
   - "cli"
   - "plugins/*"
   - "apps/*"

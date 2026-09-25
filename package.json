@@ -11,6 +11,7 @@
     "css",
     "components",
     "security",
+    "testing",
     "plugins/*",
     "apps/*",
     "e2e"

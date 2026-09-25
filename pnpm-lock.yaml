@@ -534,6 +534,28 @@ importers:
         specifier: 5.8.2
         version: 5.8.2
 
+  testing:
+    dependencies:
+      '@swissjs/core':
+        specifier: workspace:*
+        version: link:../runtime
+    devDependencies:
+      '@types/node':
+        specifier: 18.19.121
+        version: 18.19.121
+      jsdom:
+        specifier: ^25.0.1
+        version: 25.0.1
+      reflect-metadata:
+        specifier: ^0.2.2
+        version: 0.2.2
+      typescript:
+        specifier: 5.8.2
+        version: 5.8.2
+      vitest:
+        specifier: ^3.2.6
+        version: 3.2.6(@types/node@18.19.121)(@vitest/ui@3.2.6)(jsdom@25.0.1)(lightningcss@1.32.0)(yaml@2.9.0)
+
 packages:
 
   '@algolia/abtesting@1.1.0':
