@@ -7,6 +7,7 @@
 export * from './component.js';
 export * from './lifecycle.js';
 export * from './error-boundary.js';
+export * from './suspense.js';
 export {
   SwissContext,
   createContext,
