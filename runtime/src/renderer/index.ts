@@ -5,3 +5,8 @@
  */
 
 export * from './renderer.js';
+export {
+  renderToStream,
+  renderToStreamWeb,
+  renderToStringChunks,
+} from './ssr-stream.js';
