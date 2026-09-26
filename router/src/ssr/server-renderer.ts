@@ -20,6 +20,7 @@
  * claim general hydration correctness for arbitrary conditional/list content until then.
  */
 import { Router, type Route, type RouteMatch } from "../core/router.js";
+import { isLazyComponent } from "../core/lazy.js";
 import {
   createElement,
   renderToString,
@@ -30,7 +31,7 @@ import {
   htmlAttrsString,
   bodyAttrsString,
 } from "@swissjs/core";
-import type { VNode } from "@swissjs/core";
+import type { VNode, ComponentType } from "@swissjs/core";
 
 export interface SSRContext {
   url: string;
@@ -56,6 +57,24 @@ export interface SSRResult {
  *  failure -- no structured-error channel needs threading through the shared client/server
  *  rendering path to answer "did anything fail" from the final HTML string alone. */
 const ERROR_BOUNDARY_MARKER = 'data-swiss-error-boundary="true"';
+
+/** SSR-002-style fallback for a lazy route whose dynamic import rejected (see
+ *  buildComponentVNode's comment). Deliberately built with `createElement` + the same
+ *  `data-swiss-error-boundary="true"` marker `ERROR_BOUNDARY_MARKER` checks for, rather
+ *  than importing runtime's own `createErrorBoundary` -- the *public* `@swissjs/core`
+ *  export of that name (error/error-boundary.ts) is a different, older implementation
+ *  than the one renderToString/renderToStringChunks actually use internally for a
+ *  throwing component (renderer/errors.ts, not re-exported), and does not carry this
+ *  marker at all. Router has no access to the internal one, so it reproduces just the
+ *  one thing ServerRenderer actually depends on -- the marker attribute -- rather than
+ *  the rest of that internal component's presentation. */
+function createLazyLoadErrorBoundary(message: string): VNode {
+  return createElement(
+    "div",
+    { class: "swiss-router-lazy-error", "data-swiss-error-boundary": "true" },
+    message,
+  ) as VNode;
+}
 
 export class ServerRenderer {
   constructor(private router: Router) {}
@@ -85,10 +104,11 @@ export class ServerRenderer {
     // module-global shared across requests. Because renderToString never awaits mid-render,
     // no other request's push/pop can interleave between this push and its matching pop
     // (pop runs in `finally`, so a throw from renderToString still leaves the stack clean).
+    const tree = await buildRouteTree(matches, data);
     const headCtx = pushHeadContext();
     let componentHtml: string;
     try {
-      componentHtml = renderToString(buildRouteTree(matches, data));
+      componentHtml = renderToString(tree);
     } finally {
       popHeadContext();
     }
@@ -179,7 +199,7 @@ export class ServerRenderer {
     }
 
     const data = await this.router.loadRouteData(url);
-    const tree = buildRouteTree(matches, data);
+    const tree = await buildRouteTree(matches, data);
 
     const safeData = JSON.stringify(data)
       .replace(/</g, '\\u003c')
@@ -217,8 +237,24 @@ export class ServerRenderer {
  *   - Root layout wraps everything
  *
  * Each component receives its matched params merged with loader data as props.
+ *
+ * ROUTER-LAZY-ROUTES x SSR: `match.route.component` may be a `LazyComponent` (see
+ * core/lazy.ts's `lazy()`) rather than a plain `ComponentLike`. SSR is fully async already
+ * (this function's caller always awaits it before the first `createElement` call), so it
+ * resolves the loader here -- via `await component.load()` -- instead of the client
+ * Outlet's synchronous-cache-plus-placeholder dance (outlet.ts's `ensureLazyLoadStarted`),
+ * which exists only because a browser render() call cannot itself be async. There is no
+ * pending/placeholder state to render server-side: the render call simply waits for the
+ * one loader promise (memoized by `lazy()` itself, so awaiting it here never re-triggers
+ * the dynamic import) and then builds the tree with the real, resolved component -- never
+ * the `LazyComponent` wrapper object itself, which is not a valid `createElement` `type`
+ * (it fails `isComponentVNode`'s `typeof vnode.type === "function"` check and silently
+ * renders as empty markup, matching the FRAME-006 comment above for plain-object stubs).
  */
-function buildRouteTree(matches: RouteMatch[], data: Record<string, unknown>): VNode {
+async function buildRouteTree(
+  matches: RouteMatch[],
+  data: Record<string, unknown>,
+): Promise<VNode> {
   // Innermost first: start with the leaf component, then walk inward → outward wrapping
   // each layer's layout (including the leaf's own) around whatever has been built so far.
   //
@@ -239,7 +275,7 @@ function buildRouteTree(matches: RouteMatch[], data: Record<string, unknown>): V
   // signature) is the fix -- this also drops the function's old second pass, which existed
   // only to special-case "does the leaf have its own layout" and rebuilt the entire tree
   // from scratch to work around the same children-passing mistake once more.
-  let tree: VNode = buildComponentVNode(matches[matches.length - 1], data);
+  let tree: VNode = await buildComponentVNode(matches[matches.length - 1], data);
 
   const leafMatch = matches[matches.length - 1];
   if (leafMatch.route.layout) {
@@ -258,9 +294,39 @@ function buildRouteTree(matches: RouteMatch[], data: Record<string, unknown>): V
   return tree;
 }
 
-function buildComponentVNode(match: RouteMatch, data: Record<string, unknown>): VNode {
+async function buildComponentVNode(
+  match: RouteMatch,
+  data: Record<string, unknown>,
+): Promise<VNode> {
   const props = mergeProps(match, data);
-  return createElement(match.route.component, props) as VNode;
+  const component = await resolveComponent(match.route.component);
+  // SSR-002: a lazy route whose dynamic import rejects (bad chunk, network failure, ...)
+  // is a render failure like any other -- it must surface via the same error-boundary
+  // marker a throwing component's render() produces (renderToString's/
+  // renderToStringChunks' own catch sites), not crash the whole `render()`/`renderStream()`
+  // call with an unhandled rejection. `resolveComponent` never throws for this reason; it
+  // hands back the failure as a value instead.
+  if (typeof component === "object" && "__lazyLoadError" in component) {
+    const error = (component as { __lazyLoadError: unknown }).__lazyLoadError;
+    const message = error instanceof Error ? error.message : String(error);
+    return createLazyLoadErrorBoundary(`Lazy component failed to load: ${message}`);
+  }
+  return createElement(component, props) as VNode;
+}
+
+/** Resolve `route.component` to a real `ComponentLike`, awaiting the loader when it is a
+ *  `LazyComponent` (see buildRouteTree's doc comment). A no-op for a plain component. A
+ *  rejected loader is reported as `{ __lazyLoadError }` rather than thrown -- see
+ *  buildComponentVNode's SSR-002 comment. */
+async function resolveComponent(
+  component: Route["component"],
+): Promise<ComponentType | { __lazyLoadError: unknown }> {
+  if (!isLazyComponent(component)) return component;
+  try {
+    return await component.load();
+  } catch (error) {
+    return { __lazyLoadError: error };
+  }
 }
 
 function mergeProps(match: RouteMatch, data: Record<string, unknown>): Record<string, unknown> {

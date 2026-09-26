@@ -10,6 +10,7 @@
     "build": "pnpm exec tsc -b",
     "dev": "pnpm exec tsc -b --watch",
     "test": "pnpm exec vitest",
+    "type-check": "pnpm exec tsc -b",
     "lint": "pnpm exec eslint src"
   },
   "keywords": [
