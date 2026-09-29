@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { createRouter, createServerRenderer } from '../src/index';
+import { createRouter } from '../src/index';
+import { createServerRenderer } from '../src/server';
 import { SwissComponent, createElement, setTitle } from '@swissjs/core';
 import type { VNode } from '@swissjs/core';
 

@@ -24,7 +24,8 @@ function isNodeBuiltin(specifier: string): boolean {
 function specifiersOf(source: string): string[] {
   const out: string[] = [];
   const re = /(?:^|[\s;}])(?:import|export)\s+(?:type\s+)?(?:[^'"()]*?\s+from\s+)?['"]([^'"]+)['"]|import\(\s*['"]([^'"]+)['"]\s*\)/g;
-  for (const m of source.matchAll(re)) out.push(m[1] ?? m[2]);
+  const code = source.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+  for (const m of code.matchAll(re)) out.push(m[1] ?? m[2]);
   return out;
 }
 
@@ -90,5 +91,23 @@ describe('@swissjs/router/server subpath', () => {
     for (const name of ['ServerRenderer', 'createServerRenderer', 'APIRouteHandler', 'createAPIHandler', 'APIRouteScanner', 'createAPIScanner']) {
       expect(server, name).toHaveProperty(name);
     }
+  });
+});
+
+describe('package.json exports map', () => {
+  const pkg = JSON.parse(readFileSync(resolve(SRC, '../package.json'), 'utf8')) as {
+    module?: string;
+    exports: Record<string, { types: string; import: string }>;
+  };
+
+  it('maps "." to the browser entry and "./server" to the server entry, both typed', () => {
+    expect(pkg.exports['.'].import).toBe('./dist/index.js');
+    expect(pkg.exports['.'].types).toBe('./dist/index.d.ts');
+    expect(pkg.exports['./server'].import).toBe('./dist/server.js');
+    expect(pkg.exports['./server'].types).toBe('./dist/server.d.ts');
+  });
+
+  it('does not declare a "module" file that the build never emits', () => {
+    expect(pkg.module).toBeUndefined();
   });
 });
