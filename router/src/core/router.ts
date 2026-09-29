@@ -2,12 +2,15 @@ import { matchRoute, type RouteMatch } from "./matcher.js";
 import type { ComponentType } from "@swissjs/core";
 import {
   HISTORY_INDEX_KEY,
+  MAX_HISTORY_ENTRIES,
   type HistoryEntry,
   type HistorySnapshot,
   type HistoryStateAdapter,
   type NativeHistoryState,
 } from "./history-state.js";
 import type { LazyComponent } from "./lazy.js";
+
+export { MAX_HISTORY_ENTRIES } from "./history-state.js";
 
 export type {
   HistoryEntry,
@@ -104,6 +107,15 @@ export class Router {
 
   private _entries: HistoryEntry[];
   private _index = 0;
+  /**
+   * Parallel to `_entries`: whether that entry is backed by a real native history entry in
+   * THIS tab (reachable with `history.go`). Entries restored from a snapshot that this tab
+   * never visited are "restored-only" (false) and are navigated with `replaceState`.
+   * Invariant: the current entry is always live, and live entries are in native order.
+   */
+  private _live: boolean[] = [true];
+  /** Number of entries trimmed from the front; native markers are `index + _base`. */
+  private _base = 0;
   private historyAdapter?: HistoryStateAdapter;
 
   /** Rendered by `Outlet` when no route matches (ROUTER-NOT-FOUND). */
@@ -135,12 +147,11 @@ export class Router {
       // Tag the entry the browser is already on with index 0, so a later native back/
       // forward landing here (or our own go()) can find it via history.state -- without
       // this, the very first entry would never carry our correlation marker.
-      const existing = (window.history.state ?? {}) as NativeHistoryState;
-      const nativeState: NativeHistoryState = {
-        ...existing,
-        [HISTORY_INDEX_KEY]: 0,
-      };
-      history.replaceState(nativeState, "", this._currentPath);
+      // Only when the entry carries no marker yet: on a same-tab reload the existing marker
+      // is the truth and re-tagging it would break later back/forward (ROUTER-HISTORY-RESTORE).
+      if (this.readIndexFromHistoryState() === null) {
+        this.tagNative(0, "replace", this._currentPath);
+      }
       window.addEventListener("popstate", this.handlePopState.bind(this));
     }
 
@@ -175,9 +186,34 @@ export class Router {
     return matches[matches.length - 1].params;
   }
 
+  /** Pathname + query string of the live browser location (the URL always wins). */
   private getPath(): string {
     if (typeof window === "undefined") return "/";
-    return window.location.pathname;
+    return window.location.pathname + (window.location.search ?? "");
+  }
+
+  /** Write (push or replace) a native history entry carrying our index marker. */
+  private tagNative(index: number, how: "push" | "replace", path: string) {
+    const existing =
+      how === "replace"
+        ? ((window.history.state ?? {}) as NativeHistoryState)
+        : {};
+    const nativeState: NativeHistoryState = {
+      ...existing,
+      [HISTORY_INDEX_KEY]: index + this._base,
+    };
+    if (how === "push") history.pushState(nativeState, "", path);
+    else history.replaceState(nativeState, "", path);
+  }
+
+  /** Drop the oldest entries beyond {@link MAX_HISTORY_ENTRIES}, keeping index/live in step. */
+  private trimToCap() {
+    const drop = this._entries.length - MAX_HISTORY_ENTRIES;
+    if (drop <= 0) return;
+    this._entries.splice(0, drop);
+    this._live.splice(0, drop);
+    this._index = Math.max(0, this._index - drop);
+    this._base += drop;
   }
 
   private readIndexFromHistoryState(): number | null {
@@ -189,10 +225,13 @@ export class Router {
 
   private handlePopState() {
     this._currentPath = this.getPath();
-    const idx = this.readIndexFromHistoryState();
+    const marker = this.readIndexFromHistoryState();
+    const idx = marker === null ? null : marker - this._base;
     if (idx !== null && idx >= 0 && idx < this._entries.length) {
       this._index = idx;
+      this._live[idx] = true;
       const entry = this._entries[idx];
+      // The live URL (path + query) wins over what we remembered.
       entry.path = this._currentPath;
       this.notifyStateRestore(entry);
     }
@@ -216,13 +255,60 @@ export class Router {
     const snapshot = await this.historyAdapter.load();
     if (!snapshot || snapshot.entries.length === 0) return;
 
-    this._entries = snapshot.entries.map((entry) => ({ ...entry }));
-    this._index = Math.min(
+    const entries = snapshot.entries.map((entry) => ({ ...entry }));
+    const snapIndex = Math.min(
       Math.max(snapshot.index, 0),
-      this._entries.length - 1,
+      entries.length - 1,
     );
-    this._currentPath = this._entries[this._index].path;
-    this.notifyStateRestore(this._entries[this._index]);
+    const loc = this.getPath();
+    const nativeIdx = this.readIndexFromHistoryState();
+
+    // Same-tab reload: the native entry carries a marker naming a snapshot entry that is
+    // this very location. Adopt the snapshot and that index; do not re-tag. The tab's native
+    // history is still there, so the entries around it are reachable with history.go().
+    if (
+      typeof window !== "undefined" &&
+      nativeIdx !== null &&
+      nativeIdx >= 0 &&
+      nativeIdx < entries.length &&
+      entries[nativeIdx].path === loc
+    ) {
+      const pos = Math.min(nativeIdx, window.history.length - 1);
+      const forward = Math.max(window.history.length - 1 - pos, 0);
+      this._entries = entries;
+      this._index = nativeIdx;
+      this._base = 0;
+      this._live = entries.map(
+        (_, i) => i >= nativeIdx - pos && i <= nativeIdx + forward,
+      );
+      this.trimToCap();
+      this._currentPath = loc;
+      this.notifyStateRestore(this._entries[this._index]);
+      return;
+    }
+
+    // Otherwise (new tab/device/restart, or a marker that does not match): the snapshot is
+    // the stack's back-history, but the URL the browser is on wins for the current entry.
+    let isNew = false;
+    let index = snapIndex;
+    if (typeof window !== "undefined" && entries[index].path !== loc) {
+      entries.splice(index + 1);
+      entries.push({ path: loc, params: this.leafParamsFor(loc) });
+      index = entries.length - 1;
+      isNew = true;
+    }
+    this._entries = entries;
+    this._index = index;
+    this._base = 0;
+    this._live = entries.map((_, i) => i === index);
+    this.trimToCap();
+    if (typeof window !== "undefined") {
+      this.tagNative(this._index, "replace", loc);
+      this._currentPath = loc;
+    } else {
+      this._currentPath = this._entries[this._index].path;
+    }
+    if (!isNew) this.notifyStateRestore(this._entries[this._index]);
   }
 
   /**
@@ -281,18 +367,18 @@ export class Router {
   public async push(path: string, options?: NavigateOptions) {
     if (await this.runGuards(path)) {
       this._entries = this._entries.slice(0, this._index + 1);
+      this._live = this._live.slice(0, this._index + 1);
       this._entries.push({
         path,
         params: this.leafParamsFor(path),
         state: options?.state,
       });
+      this._live.push(true);
       this._index = this._entries.length - 1;
+      this.trimToCap();
 
       if (typeof window !== "undefined") {
-        const nativeState: NativeHistoryState = {
-          [HISTORY_INDEX_KEY]: this._index,
-        };
-        history.pushState(nativeState, "", path);
+        this.tagNative(this._index, "push", path);
         this._currentPath = this.getPath();
       } else {
         this._currentPath = path;
@@ -311,16 +397,15 @@ export class Router {
       };
       if (this._entries.length === 0) {
         this._entries = [entry];
+        this._live = [true];
         this._index = 0;
       } else {
         this._entries[this._index] = entry;
+        this._live[this._index] = true;
       }
 
       if (typeof window !== "undefined") {
-        const nativeState: NativeHistoryState = {
-          [HISTORY_INDEX_KEY]: this._index,
-        };
-        history.replaceState(nativeState, "", path);
+        this.tagNative(this._index, "replace", path);
         this._currentPath = this.getPath();
       } else {
         this._currentPath = path;
@@ -351,13 +436,37 @@ export class Router {
       return;
     }
 
+    const from = this._index;
+    if (!this._live[targetIndex]) {
+      // Restored-only entry: there is no native entry to travel to (and so no popstate to
+      // wait for). Re-point the CURRENT native entry at the target with replaceState. That
+      // native slot now belongs to the target; the entries we jumped over and the one we
+      // left are no longer separately reachable natively, so they become restored-only.
+      const lo = Math.min(from, targetIndex);
+      const hi = Math.max(from, targetIndex);
+      for (let i = lo; i <= hi; i++) this._live[i] = false;
+      this._live[targetIndex] = true;
+      this._index = targetIndex;
+      const entry = this._entries[targetIndex];
+      this.tagNative(targetIndex, "replace", entry.path);
+      this._currentPath = this.getPath();
+      entry.path = this._currentPath;
+      this.notifyStateRestore(entry);
+      this._navigationListeners.forEach((fn) => fn(this._currentPath));
+      await this.persist();
+      return;
+    }
+
+    // Live entry: live entries are contiguous natively, so the native distance is the
+    // number of live entries crossed on the way.
+    const step = delta > 0 ? 1 : -1;
+    let nativeDelta = 0;
+    for (let i = from + step; i !== targetIndex + step; i += step) {
+      if (this._live[i]) nativeDelta += step;
+    }
     await new Promise<void>((resolve) => {
-      window.addEventListener(
-        "popstate",
-        () => resolve(),
-        { once: true },
-      );
-      window.history.go(delta);
+      window.addEventListener("popstate", () => resolve(), { once: true });
+      window.history.go(nativeDelta);
     });
     await this.persist();
   }
@@ -387,7 +496,8 @@ export class Router {
   }
 
   public match(path: string): RouteMatch[] | undefined {
-    return matchRoute(this.routes, path);
+    // Route matching is on the pathname only; a query string or hash is not part of it.
+    return matchRoute(this.routes, path.split(/[?#]/, 1)[0]);
   }
 
   public async loadRouteData(path: string): Promise<Record<string, unknown>> {

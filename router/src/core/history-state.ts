@@ -43,3 +43,9 @@ export const HISTORY_INDEX_KEY = "__swissRouterIndex";
 export interface NativeHistoryState {
   [HISTORY_INDEX_KEY]?: number;
 }
+
+/**
+ * Upper bound on the number of entries the router keeps (and therefore persists). When a
+ * push would exceed it, the OLDEST entries are dropped (ROUTER-HISTORY-RESTORE).
+ */
+export const MAX_HISTORY_ENTRIES = 200;
