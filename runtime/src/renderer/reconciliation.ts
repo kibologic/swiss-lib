@@ -262,6 +262,11 @@ function reconcileChildrenPass(
     const key = getKey(newVNode, newIndex);
     let oldEntry = oldKeyMap.get(key);
 
+    // FRAME-010: an exact key match whose DOM node an earlier sibling's type-based fallback
+    // (below) already claimed must not be claimed twice -- two new children mapped onto one
+    // DOM node collapse into a single node and the other old node is swept as a leftover.
+    if (oldEntry && processedNodes.has(oldEntry.dom as Node)) oldEntry = undefined;
+
     // Type-based fallback for unkeyed component VNodes.
     //
     // When a conditional element is inserted before existing siblings (e.g. a
@@ -280,7 +285,9 @@ function reconcileChildrenPass(
       newVNode.key == null &&
       newVNode.props?.key == null
     ) {
-      for (const candidate of oldKeyMap.values()) {
+      for (const [candidateKey, candidate] of oldKeyMap) {
+        // FRAME-010: never take a node whose exact key a later new sibling will claim.
+        if (newKeyMap.has(candidateKey)) continue;
         if (
           !processedNodes.has(candidate.dom as Node) &&
           isComponentVNode(candidate.vnode) &&
@@ -308,7 +315,9 @@ function reconcileChildrenPass(
       newVNode.key == null &&
       newVNode.props?.key == null
     ) {
-      for (const candidate of oldKeyMap.values()) {
+      for (const [candidateKey, candidate] of oldKeyMap) {
+        // FRAME-010: never take a node whose exact key a later new sibling will claim.
+        if (newKeyMap.has(candidateKey)) continue;
         if (
           !processedNodes.has(candidate.dom as Node) &&
           isElementVNode(candidate.vnode) &&
