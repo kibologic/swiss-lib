@@ -115,6 +115,9 @@ describe('Router per-entry state', () => {
       load: vi.fn(async () => snapshot),
     };
 
+    // The browser is on /a (the snapshot's current entry): the live URL wins
+    // (ROUTER-HISTORY-RESTORE), so a snapshot is only adopted when it agrees with it.
+    history.replaceState(null, '', '/a');
     const restored: unknown[] = [];
     const router = createRouter({
       routes: [

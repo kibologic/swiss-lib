@@ -168,6 +168,28 @@ const router = new Router({ routes, historyAdapter: sessionStorageAdapter });
 await router.ready; // resolves once historyAdapter.load() has been applied, if configured
 ```
 
+### Restoring history against the live browser
+
+A `historyAdapter` snapshot can come from another tab, device, or browser session, so the
+router reconciles it with the browser it is actually running in (ROUTER-HISTORY-RESTORE):
+
+- **The URL the browser is on always wins for the current entry.** Paths keep their query
+  string everywhere (`push`, `replace`, popstate, persistence). `currentPath` is
+  `pathname + search`; route matching uses the pathname only.
+- **Same-tab reload:** if the native `history.state` carries a `__swissRouterIndex` that
+  names a snapshot entry whose path (and query) equals `location`, the snapshot and that
+  index are adopted and the marker is not re-tagged, so back/forward land on the exact
+  indices.
+- **Otherwise (new tab, new device, browser restart, or a mismatch):** the snapshot entries
+  stay as the stack's back-history, so the user can go back across devices. If the snapshot's
+  current entry is not the current location, the location is appended after it (forward
+  entries are dropped) and becomes the top entry. Entries this tab never visited are
+  *restored-only*: `back()`/`forward()`/`go()` onto them navigate with `replaceState` and
+  re-render instead of awaiting a native `popstate` that could never arrive, and always
+  resolve. `canGoBack`/`canGoForward` reflect the router's stack.
+- **Bounded:** the stack holds at most `MAX_HISTORY_ENTRIES` (200) entries; the oldest are
+  dropped first, in memory and in what is persisted.
+
 ### `RouterLink` component
 
 ```typescript
