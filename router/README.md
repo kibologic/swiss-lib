@@ -244,6 +244,34 @@ child, navigated to `/teams/eng/members/42`, renders the child with
 `mergeParams(matches)` (exported alongside `matchRoute`) for any other consumer of
 `router.match()`.
 
+### Splat (catch-all) segments
+
+A route whose **final** segment starts with `*` captures the whole remainder of the path --
+one or more segments -- as a single param. `/docs/*path` matches `/docs/a`, `/docs/a/b/c`,
+and so on, with `params.path` set to `'a'`, `'a/b/c'`, ... A bare `*` captures under the
+param name `'*'`.
+
+```typescript
+const router = new Router({
+  routes: [
+    { path: '/docs', component: DocsIndex },       // the empty remainder is its own route
+    { path: '/docs/*path', component: DocsPage },  // params.path === 'a/b/c'
+  ],
+});
+```
+
+- **Empty remainder does not match.** `/docs` (and `/docs/`) is not matched by `/docs/*path`;
+  declare `/docs` as its own route, as above. This keeps "the index" and "a page" as
+  distinct routes rather than a page with an empty name.
+- **Precedence.** Among siblings a splat is always tried last, whatever the declaration
+  order, so it never shadows a static or `:param` route. `/docs/intro` and `/docs/:id` win
+  over `/docs/*path` for one-segment paths; deeper paths fall through to the splat.
+- **Encoding.** Like `:param`, the value is the raw URL text: the router does not decode.
+  `/docs/a%20b/c` gives `'a%20b/c'`; a trailing slash is ignored. Decode in the consumer.
+- **Must be last.** A splat anywhere but the final segment (`/a/*x/b`) throws when matched.
+  A splat route is a leaf; it does not take `children`. Nested routes may end in a splat
+  (`wiki/*page` under `/teams/:teamId`), and `mergeParams` includes it.
+
 ---
 
 ## File-based routing
@@ -252,28 +280,68 @@ For automatic route generation from the file system, use `@swissjs/plugin-file-r
 
 ---
 
-## Server-side rendering
+## Entry points
 
-### `serverRenderer`
-
-Renders a component tree to an HTML string for SSR:
+The package has two entry points. The main entry is **browser-safe** (nothing reachable from
+it imports a Node built-in, enforced by `tests/browser-entry.test.ts`); server-only modules
+live under `/server`.
 
 ```typescript
-import { serverRenderer } from '@swissjs/router';
-import { App } from './App.ui';
+// browser + server
+import {
+  Router,
+  StatefulRouter,
+  Outlet,
+  Link,
+  lazy,
+  matchRoute,
+  mergeParams,
+  hydrate,
+  getServerData,
+} from '@swissjs/router';
+import type { Route, RouterOptions, RouteMatch } from '@swissjs/router';
 
-const html = await serverRenderer.renderToString(App, { url: '/about' });
+// Node only -- never import from browser code
+import {
+  ServerRenderer,
+  createServerRenderer,
+  APIRouteHandler,
+  createAPIHandler,
+  APIRouteScanner,
+  createAPIScanner,
+} from '@swissjs/router/server';
+```
+
+**Migration (breaking for Node consumers of the barrel):** `ServerRenderer`,
+`createServerRenderer`, `SSRContext`, `SSRResult`, the API handler exports and the API
+scanner exports are no longer exported from `@swissjs/router`; import them from
+`@swissjs/router/server`. The dead `"module": "dist/index.mjs"` field was removed (the build
+only emits `dist/index.js`).
+
+---
+
+## Server-side rendering
+
+### `createServerRenderer`
+
+Renders the matched route tree to an HTML string for SSR:
+
+```typescript
+import { createRouter } from '@swissjs/router';
+import { createServerRenderer } from '@swissjs/router/server';
+
+const router = createRouter({ routes });
+const { html } = await createServerRenderer(router).render('/about');
 ```
 
 ### `hydrate`
 
-Attaches event listeners to server-rendered HTML on the client:
+Attaches the client to server-rendered HTML (main entry, safe in the browser):
 
 ```typescript
 import { hydrate } from '@swissjs/router';
-import { App } from './App.ui';
 
-hydrate(App, document.querySelector('#app')!);
+hydrate(document.querySelector('#app')!, data);
 ```
 
 ---
@@ -281,35 +349,8 @@ hydrate(App, document.querySelector('#app')!);
 ## API routes
 
 ```typescript
-import { apiHandler, apiScanner } from '@swissjs/router';
-
-// Register an API route handler
-apiHandler.register('GET', '/api/users', async (req) => {
-  const users = await db.getUsers();
-  return Response.json(users);
-});
+import { createAPIHandler, createAPIScanner } from '@swissjs/router/server';
 ```
 
----
-
-## Exports
-
-```typescript
-import {
-  Router,
-  RouterLink,
-  RouterOutlet,
-  StatefulRouter,
-  serverRenderer,
-  hydrate,
-  apiHandler,
-  apiScanner,
-} from '@swissjs/router';
-
-import type {
-  Route,
-  RouterOptions,
-  NavigationGuard,
-  RouteMatch,
-} from '@swissjs/router';
-```
+`APIRouteHandler` registers and dispatches API routes; `APIRouteScanner` discovers route
+files from the file system (which is why it is server-only).

@@ -13,7 +13,8 @@
 // BOTH render() and renderStream() -- SSR is already async end to end, so there is no
 // pending/placeholder state to render, unlike the client Outlet (outlet.ts).
 import { describe, it, expect } from 'vitest';
-import { createRouter, createServerRenderer } from '../src/index';
+import { createRouter } from '../src/index';
+import { createServerRenderer } from '../src/server';
 import { SwissComponent, createElement } from '@swissjs/core';
 import type { VNode } from '@swissjs/core';
 import { lazy } from '../src/core/lazy';

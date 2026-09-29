@@ -12,7 +12,13 @@ export function matchRoute(
   path: string,
   basePath = "",
 ): RouteMatch[] | undefined {
-  for (const route of routes) {
+  // A catch-all (`*name`) is the last resort among its siblings whatever the declaration
+  // order, so it can never shadow a static or `:param` route (ROUTER-SPLAT-SEGMENT).
+  const ordered = [
+    ...routes.filter((r) => !hasSplat(r.path)),
+    ...routes.filter((r) => hasSplat(r.path)),
+  ];
+  for (const route of ordered) {
     const fullPath = (basePath + "/" + route.path).replace(/\/+/g, "/");
 
     // Check if current path matches this route segment
@@ -55,6 +61,17 @@ export function mergeParams(matches: RouteMatch[]): Record<string, string> {
   );
 }
 
+/**
+ * Splat (catch-all) syntax: a FINAL segment starting with `*` -- `/docs/*path` -- captures
+ * the whole remainder (one or more segments, slash-joined, verbatim like `:param`) under the
+ * name after the `*`; a bare `*` captures under the name `"*"`. It needs at least one
+ * remaining segment, so `/docs` does not match `/docs/*path` (declare `/docs` separately).
+ */
+function hasSplat(routePath: string): boolean {
+  const parts = routePath.split("/").filter(Boolean);
+  return parts.length > 0 && parts[parts.length - 1].startsWith("*");
+}
+
 function matchPath(
   routePath: string,
   currentPath: string,
@@ -63,6 +80,25 @@ function matchPath(
   // Normalize paths
   const routeParts = routePath.split("/").filter(Boolean);
   const currentParts = currentPath.split("/").filter(Boolean);
+
+  const splatAt = routeParts.findIndex((p) => p.startsWith("*"));
+  if (splatAt !== -1 && splatAt !== routeParts.length - 1) {
+    throw new Error(
+      `Invalid route "${routePath}": a splat segment ("*name") must be the last segment`,
+    );
+  }
+  if (splatAt !== -1) {
+    // Needs at least one segment for the splat itself; always a leaf (exact) match.
+    if (currentParts.length <= splatAt) return null;
+    const params: Record<string, string> = {};
+    for (let i = 0; i < splatAt; i++) {
+      const routePart = routeParts[i];
+      if (routePart.startsWith(":")) params[routePart.slice(1)] = currentParts[i];
+      else if (routePart !== currentParts[i]) return null;
+    }
+    params[routeParts[splatAt].slice(1) || "*"] = currentParts.slice(splatAt).join("/");
+    return { params, isExact: true };
+  }
 
   // If strict match requested (end=true), lengths must match
   if (end && routeParts.length !== currentParts.length) {
