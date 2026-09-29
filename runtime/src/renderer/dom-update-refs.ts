@@ -174,6 +174,15 @@ export function transferDOMReferencesFromOldTree(
     }
 
     if (domNode instanceof HTMLElement) {
+      // Instances already backing a vnode in this children list (positional matches above, or
+      // a match handed out below) can never be given to a second sibling: two vnodes sharing one
+      // instance share one DOM node, so all but the last new sibling vanish
+      // (FRAME-component-list-sibling-instance-steal).
+      const claimedInstances = new Set<SwissComponent>();
+      for (const c of newChildren) {
+        const inst = c && typeof c === "object" ? vb(c as VNode)?.__componentInstance : undefined;
+        if (inst) claimedInstances.add(inst);
+      }
       const searchForMatchingComponent = (
         element: HTMLElement,
         targetType: ComponentType,
@@ -183,7 +192,7 @@ export function transferDOMReferencesFromOldTree(
         vnode: VNode | undefined;
       } | null => {
         const instance = componentInstances.get(element);
-        if (instance && instance.constructor === targetType) {
+        if (instance && instance.constructor === targetType && !claimedInstances.has(instance)) {
           const vnode = vnodeMetadata.get(element);
           return { instance, dom: element, vnode };
         }
@@ -229,6 +238,7 @@ export function transferDOMReferencesFromOldTree(
               if (newChildBase) {
                 newChildBase.__componentInstance = found.instance;
                 newChildBase.dom = found.dom;
+                claimedInstances.add(found.instance);
               }
               transferDOMReferencesFromOldTree(
                 newChild as VNode,
