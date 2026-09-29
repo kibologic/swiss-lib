@@ -7,7 +7,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync, existsSync } from 'node:fs';
 import { builtinModules } from 'node:module';
-import { dirname, resolve } from 'node:path';
+import { dirname, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const SRC = resolve(dirname(fileURLToPath(import.meta.url)), '../src');
@@ -67,7 +67,7 @@ describe('browser-safe main entry', () => {
 
   it('main entry does not reach the server-only modules', () => {
     const { modules } = walk(resolve(SRC, 'index.ts'));
-    const rel = modules.map((f) => f.slice(SRC.length + 1).replace(/\/g, '/'));
+    const rel = modules.map((f) => f.slice(SRC.length + 1).split(sep).join('/'));
     expect(rel).not.toContain('api/scanner.ts');
     expect(rel).not.toContain('api/handler.ts');
     expect(rel).not.toContain('ssr/server-renderer.ts');
