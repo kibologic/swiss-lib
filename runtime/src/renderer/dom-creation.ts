@@ -19,6 +19,8 @@ import {
   getCurrentComponentInstance,
   setCurrentComponentInstance,
   containerToInstance,
+  isDomClaimed,
+  isFreshMount,
 } from "./storage.js";
 import {
   isSignal,
@@ -172,7 +174,7 @@ export function createDOMNode(
       }
 
       // CRITICAL FIX: If no instance found yet, try to find it by component type in the DOM
-      if (!existingInstance && isComponentVNode(vnode)) {
+      if (!existingInstance && isComponentVNode(vnode) && !isFreshMount()) {
         const vnodeKey = vnode.key;
         const componentName = (vnode.type as { name?: string }).name ?? "Unknown";
         logger.reconcile(`${componentName}: searching for existing instance`);
@@ -248,7 +250,9 @@ export function createDOMNode(
               return null;
             }
             const instance = componentInstances.get(element);
-            if (instance && instance.constructor === vnode.type) {
+            // An instance already claimed by a sibling in the reconcile pass in flight cannot be
+            // reused for a different vnode (see storage.ts isDomClaimed).
+            if (instance && instance.constructor === vnode.type && !isDomClaimed(element)) {
               const instanceKey = asInternal(instance).__vnodeKey;
               if (vnodeKey && instanceKey) {
                 if (vnodeKey === instanceKey) {

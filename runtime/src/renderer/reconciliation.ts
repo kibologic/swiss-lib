@@ -11,6 +11,10 @@ import {
   componentInstances,
   domToHostComponent,
   vnodeMetadata,
+  beginClaimScope,
+  endClaimScope,
+  beginFreshMount,
+  endFreshMount,
 } from "./storage.js";
 import {
   getKey,
@@ -90,6 +94,25 @@ export function reconcileChildren(
   newChildren: VNode[],
   updateDOMNodeFn: typeof updateDOMNode,
   createDOMNodeFn: typeof createDOMNode,
+) {
+  // Every DOM node this pass has matched/created is registered as claimed for the duration of
+  // the pass (nested passes included) so instance searches can't hand it to another sibling.
+  const processedNodes = new Set<Node>();
+  beginClaimScope(processedNodes);
+  try {
+    reconcileChildrenPass(parent, oldChildren, newChildren, updateDOMNodeFn, createDOMNodeFn, processedNodes);
+  } finally {
+    endClaimScope(processedNodes);
+  }
+}
+
+function reconcileChildrenPass(
+  parent: HTMLElement,
+  oldChildren: VNode[],
+  newChildren: VNode[],
+  updateDOMNodeFn: typeof updateDOMNode,
+  createDOMNodeFn: typeof createDOMNode,
+  processedNodes: Set<Node>,
 ) {
   const oldChildNodes = Array.from(parent.childNodes);
 
@@ -232,7 +255,6 @@ export function reconcileChildren(
     newKeyMap.set(key, { vnode, index });
   });
 
-  const processedNodes = new Set<Node>();
   const newDoms: Node[] = [];
 
   // First pass: update existing nodes
@@ -438,11 +460,18 @@ export function reconcileChildren(
         cleanupNode(staleNode);
       }
 
-      const newDom = createDOMNodeFn(newVNode);
+      let newDom: Node;
+      beginFreshMount();
+      try {
+        newDom = createDOMNodeFn(newVNode);
+      } finally {
+        endFreshMount();
+      }
       const elseBase = typeof newVNode === "object" && newVNode !== null
         ? (newVNode as unknown as VNodeBase)
         : null;
       if (elseBase) elseBase.dom = newDom;
+      processedNodes.add(newDom);
       newDoms.push(newDom);
     }
   });
