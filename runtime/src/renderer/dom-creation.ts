@@ -29,6 +29,7 @@ import {
   isElementVNode,
   isComponentVNode,
   filterValidVNodes,
+  flattenRenderedChildren,
   isClassComponent,
 } from "./types.js";
 import { DiffingError } from "./errors.js";
@@ -69,6 +70,25 @@ export function armPostInitSkip(ci: ReturnType<typeof asInternal>): void {
 }
 
 // Forward declarations for functions passed as parameters
+// FRAME-011: a component is mounted as ONE node (its `_domNode`). A render() that returns a
+// Fragment with 2+ nodes spreads N nodes into the parent while the parent's vnode list counts one,
+// which makes the parent's reconcile guard bail on every commit and freeze everything beneath it.
+// Warn once per component class.
+const multiNodeRootWarned = new WeakSet<object>();
+function warnOnMultiNodeFragmentRoot(vnode: ComponentVNode, rendered: unknown): void {
+  if (rendered == null || typeof rendered !== "object" || !isFragmentVNode(rendered as VNode)) return;
+  const kids = (rendered as { children?: unknown }).children;
+  const count = flattenRenderedChildren(Array.isArray(kids) ? kids : kids == null ? [] : [kids]).length;
+  const type = vnode.type as unknown;
+  if (count < 2 || typeof type !== "function" || multiNodeRootWarned.has(type)) return;
+  multiNodeRootWarned.add(type);
+  logger.warn(
+    `[SwissJS] component ${(type as { name?: string }).name || "Unknown"} renders a Fragment root with ${count} nodes. ` +
+      `A component must render ONE root element: a multi-node Fragment root desyncs the parent's child list and ` +
+      `updates beneath that parent are silently dropped (FRAME-011). Wrap the nodes in a single element.`,
+  );
+}
+
 type RenderComponentFn = (
   vnode: ComponentVNode,
   existingInstance?: SwissComponent,
@@ -311,6 +331,7 @@ export function createDOMNode(
         } else {
           logger.reconcile(`${existingInstance.constructor.name}: no DOM yet, creating DOM`);
           const rendered = renderComponentFn(vnode, existingInstance);
+          warnOnMultiNodeFragmentRoot(vnode, rendered);
           const prevInstance = getCurrentComponentInstance();
           setCurrentComponentInstance(existingInstance);
           const dom = createDOMNode(rendered, renderComponentFn, updateDOMNodeFn);
@@ -346,6 +367,7 @@ export function createDOMNode(
       }
 
       const rendered = renderComponentFn(vnode, existingInstance);
+      warnOnMultiNodeFragmentRoot(vnode, rendered);
 
       const Component = vnode.type;
       let instance: SwissComponent | undefined = undefined;

@@ -60,13 +60,33 @@ const MAX_RECONCILE_RETRIES = 3;
 const RECONCILE_RETRY_WINDOW_MS = 1000;
 const reconcileRetryScheduled = new WeakSet<HTMLElement>();
 const reconcileRetryAttempts = new WeakMap<HTMLElement, { count: number; windowStart: number }>();
+const reconcileBailWarned = new WeakSet<HTMLElement>();
+
+// FRAME-011: a persistent bail used to be completely silent. Say so, once per parent, and name
+// the usual causes, so "the state changed, the render ran, the DOM never moved" is diagnosable.
+function warnPersistentReconcileBail(parent: HTMLElement): void {
+  if (reconcileBailWarned.has(parent)) return;
+  reconcileBailWarned.add(parent);
+  const cls = parent.getAttribute("class");
+  const tag = `<${parent.tagName.toLowerCase()}${cls ? ` class="${cls}"` : ""}>`;
+  logger.warn(
+    `[SwissJS] reconciliation skipped under ${tag}: its logical child count keeps disagreeing with the live DOM, ` +
+      `so updates beneath it are dropped. Usual causes: a child component whose render() returns a multi-node ` +
+      `Fragment root (a component must render ONE root element) or code that adds/removes children inside a ` +
+      `framework-rendered element.`,
+  );
+}
+
 function scheduleReconcileRetry(parent: HTMLElement): void {
   if (reconcileRetryScheduled.has(parent)) return;
 
   const now = Date.now();
   const attempts = reconcileRetryAttempts.get(parent);
   if (attempts && now - attempts.windowStart < RECONCILE_RETRY_WINDOW_MS) {
-    if (attempts.count >= MAX_RECONCILE_RETRIES) return;
+    if (attempts.count >= MAX_RECONCILE_RETRIES) {
+      warnPersistentReconcileBail(parent);
+      return;
+    }
     attempts.count++;
   } else {
     reconcileRetryAttempts.set(parent, { count: 1, windowStart: now });
