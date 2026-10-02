@@ -64,7 +64,7 @@ function parseOneStateDecl(
   start: number,
 ): { code: string; next: number } | null {
   const letMatch = /^\s*let\s+(\w+)\s*:\s*/.exec(blockContent.slice(start));
-  if (!letMatch) return null;
+  if (!letMatch) return parseUntypedStateStatement(blockContent, start);
 
   const name = letMatch[1];
   let i = start + letMatch[0].length;
@@ -120,6 +120,89 @@ function parseOneStateDecl(
 }
 
 /**
+ * Splits `text` on commas at bracket depth 0, ignoring commas inside string
+ * and template literals.
+ */
+function splitTopLevelCommas(text: string): string[] {
+  const out: string[] = [];
+  let depth = 0;
+  let quote: string | null = null;
+  let last = 0;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (quote) {
+      if (ch === "\\") i++;
+      else if (ch === quote) quote = null;
+      continue;
+    }
+    if (ch === "'" || ch === '"' || ch === "`") quote = ch;
+    else if (ch === "{" || ch === "(" || ch === "[") depth++;
+    else if (ch === "}" || ch === ")" || ch === "]") depth--;
+    else if (depth === 0 && ch === ",") {
+      out.push(text.slice(last, i));
+      last = i + 1;
+    }
+  }
+  out.push(text.slice(last));
+  return out;
+}
+
+/** Finds the `;` ending a declaration at depth 0 (outside strings), or -1. */
+function findStatementEnd(text: string, from: number): number {
+  let depth = 0;
+  let quote: string | null = null;
+  for (let i = from; i < text.length; i++) {
+    const ch = text[i];
+    if (quote) {
+      if (ch === "\\") i++;
+      else if (ch === quote) quote = null;
+      continue;
+    }
+    if (ch === "'" || ch === '"' || ch === "`") quote = ch;
+    else if (ch === "{" || ch === "(" || ch === "[") depth++;
+    else if (ch === "}" || ch === ")" || ch === "]") depth--;
+    else if (depth === 0 && ch === ";") return i;
+  }
+  return -1;
+}
+
+/**
+ * COMPILER-002: parses an UNTYPED declaration statement — `let x = v;`,
+ * `let a = 1, b = 'x';`, `let g;` — into one Signal-backed getter/setter group
+ * per declarator. No type is invented: the field and accessor types are left
+ * for TypeScript to infer from the initializer (`new Signal(false)` infers
+ * `Signal<boolean>`). Annotate (`let x: T = v`) when the initializer alone
+ * does not carry the type you want (`[]`, `{}`, `null`).
+ * Returns null when the text at `start` is not an untyped `let` statement.
+ */
+function parseUntypedStateStatement(
+  blockContent: string,
+  start: number,
+): { code: string; next: number } | null {
+  const head = /^\s*let\s+(?=[A-Za-z_$])/.exec(blockContent.slice(start));
+  if (!head) return null;
+  const bodyStart = start + head[0].length;
+  const end = findStatementEnd(blockContent, bodyStart);
+  const body = blockContent.slice(bodyStart, end === -1 ? undefined : end);
+  const groups: string[] = [];
+  for (const raw of splitTopLevelCommas(body)) {
+    const d = /^\s*([A-Za-z_$][\w$]*)\s*(?:=\s*([\s\S]*?))?\s*$/.exec(raw);
+    if (!d) return null; // e.g. destructuring or `let a: T` — not our form
+    const [, name, init] = d;
+    const arg = init === undefined || init === "" ? "undefined" : init;
+    groups.push(
+      `private _${name}$ = new Signal(${arg});\n` +
+        `  private get ${name}() { return this._${name}$.value; }\n` +
+        `  private set ${name}(v) { this._${name}$.value = v; }`,
+    );
+  }
+  return {
+    code: groups.join("\n  "),
+    next: end === -1 ? blockContent.length : end + 1,
+  };
+}
+
+/**
  * Parses the content of a `state { }` block and generates a Signal-backed
  * getter/setter pair for EVERY `let` declaration it contains — a `state {}`
  * block is allowed to declare more than one field (seen throughout the
@@ -132,7 +215,11 @@ function parseOneStateDecl(
  * after the first in a multi-declaration block was invisible to reactivity,
  * so reassigning it from application code never triggered a re-render.
  */
-function parseAndReplaceStateBlock(blockContent: string): string {
+function parseAndReplaceStateBlock(
+  blockContent: string,
+  filename: string,
+  line: number,
+): string {
   const parts: string[] = [];
   let pos = 0;
   while (pos < blockContent.length) {
@@ -141,7 +228,25 @@ function parseAndReplaceStateBlock(blockContent: string): string {
     parts.push(decl.code);
     pos = decl.next;
   }
-  if (parts.length === 0) return `{${blockContent}}`;
+  // Anything left over must be whitespace or comments. Emitting it raw would
+  // put a bare block/statement in the class body (invalid TypeScript) — fail
+  // loudly instead (COMPILER-002).
+  const rest = blockContent
+    .slice(pos)
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/\/\/[^\n]*/g, "");
+  if (rest.trim() !== "") {
+    const offending = blockContent.slice(pos);
+    const lead = offending.length - offending.trimStart().length;
+    const errLine =
+      line + (blockContent.slice(0, pos + lead).match(/\n/g)?.length ?? 0);
+    throw new Error(
+      `${filename}:${errLine} SWISS_002: invalid declaration in state {} block: ` +
+        `"${rest.trim().split("\n")[0]}". A state {} block may contain only ` +
+        "`let name = value;` or `let name: Type = value;` declarations.",
+    );
+  }
+  if (parts.length === 0) return blockContent.trim();
   return parts.join("\n  ");
 }
 
@@ -150,7 +255,7 @@ function parseAndReplaceStateBlock(blockContent: string): string {
  * brace-depth counting so the outer closing brace is always found correctly,
  * even when the initializer contains nested object literals. Fixes CG-04.
  */
-function transformStateBlocks(source: string): string {
+function transformStateBlocks(source: string, filename: string): string {
   let result = "";
   let pos = 0;
   const statePattern = /\bstate\s*\{/g;
@@ -182,7 +287,8 @@ function transformStateBlocks(source: string): string {
     }
 
     const blockContent = source.slice(braceOpen + 1, braceClose);
-    result += parseAndReplaceStateBlock(blockContent);
+    const line = (source.slice(0, braceOpen).match(/\n/g)?.length ?? 0) + 1;
+    result += parseAndReplaceStateBlock(blockContent, filename, line);
     pos = braceClose + 1;
     statePattern.lastIndex = pos;
   }
@@ -307,7 +413,7 @@ export function preprocessSwissSyntax(
   // Transform state blocks using brace-depth parsing (CG-04)
   // Handles object literal initializers like `{}` and `{ key: true }` that
   // the previous `[^;}]+?` regex could not capture correctly.
-  result = transformStateBlocks(result);
+  result = transformStateBlocks(result, filePath ?? "<unknown>");
 
   // Inject Signal import when Signal-backed state was generated.
   // Detection is package-agnostic — look for any import that includes Signal,
