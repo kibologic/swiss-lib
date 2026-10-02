@@ -215,6 +215,29 @@ function parseUntypedStateStatement(
  * after the first in a multi-declaration block was invisible to reactivity,
  * so reassigning it from application code never triggered a re-render.
  */
+/**
+ * Advances past whitespace, `// line` comments and `/* block *\/` comments
+ * starting at `pos` inside a state {} block; returns the first index of
+ * real content (or the block length).
+ */
+function skipStateBlockTrivia(blockContent: string, pos: number): number {
+  let i = pos;
+  for (;;) {
+    while (i < blockContent.length && /\s/.test(blockContent[i])) i++;
+    if (blockContent.startsWith("//", i)) {
+      const nl = blockContent.indexOf("\n", i);
+      i = nl === -1 ? blockContent.length : nl + 1;
+      continue;
+    }
+    if (blockContent.startsWith("/*", i)) {
+      const close = blockContent.indexOf("*/", i + 2);
+      i = close === -1 ? blockContent.length : close + 2;
+      continue;
+    }
+    return i;
+  }
+}
+
 function parseAndReplaceStateBlock(
   blockContent: string,
   filename: string,
@@ -223,6 +246,11 @@ function parseAndReplaceStateBlock(
   const parts: string[] = [];
   let pos = 0;
   while (pos < blockContent.length) {
+    // COMPILER-003: comments between declarations are trivia. Without this the
+    // loop stopped at the first comment and (pre-COMPILER-002) silently dropped
+    // every declaration after it.
+    pos = skipStateBlockTrivia(blockContent, pos);
+    if (pos >= blockContent.length) break;
     const decl = parseOneStateDecl(blockContent, pos);
     if (!decl) break;
     parts.push(decl.code);
