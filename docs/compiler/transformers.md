@@ -15,7 +15,7 @@ String-based lexical transformation. Runs first. Returns a string of valid TypeS
 Transformations in order:
 
 1. **Component declaration** — `component Name {}` → `export class Name extends SwissComponent {}`
-2. **State blocks** — each `state { let x: T = v }` block is replaced by a Signal-backed getter/setter triple via `transformStateBlocks()`. Uses character-level brace-depth counting so nested `{}` in initializers (e.g. `{ key: true }`) are handled correctly.
+2. **State blocks** — each `state { let x: T = v }` block is replaced by a Signal-backed getter/setter triple via `transformStateBlocks()`. Uses character-level brace-depth counting so nested `{}` in initializers (e.g. `{ key: true }`) are handled correctly. Type annotations are optional (COMPILER-002): `let narrow = false;` and `let a = 1, b = 'x';` compile to Signal-backed accessors with the type inferred by TypeScript; annotate (`let xs: T[] = []`) when the initializer alone does not carry the type you want.
 3. **Reactive variables** — `reactive let x: T = v` → `private x: T = v`
 4. **Computed getters** — `computed get x()` → `private get x()`
 5. **Lifecycle hooks** — `mount {}` → `private mounted() {}`, `unmount {}` → `private unmounted() {}`, `effect {}` → `private effect() {}`
@@ -86,7 +86,7 @@ Diagnostic error codes emitted by the compiler. Used when invalid Swiss syntax i
 | Code | Description |
 |---|---|
 | SWISS_001 | Component declaration missing name |
-| SWISS_002 | `state {}` block with invalid `let` declaration |
+| SWISS_002 | `state {}` block containing anything other than `let` declarations (error names `file:line`) |
 | SWISS_003 | `computed get` without a valid getter body |
 | SWISS_004 | `@requires` with non-string argument |
 
