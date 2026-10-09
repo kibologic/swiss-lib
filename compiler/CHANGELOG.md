@@ -1,5 +1,27 @@
 # @swissjs/compiler
 
+## 1.4.0
+
+### Patch Changes
+
+- 0006c00: Fix untyped `state { let x = v; }` declarations being emitted as a raw `{ let x = v; }` block
+  inside the class body (COMPILER-002). That is invalid TypeScript, so swite's esbuild step failed
+  with `Expected identifier but found "{"` and the module served HTTP 500. Untyped declarations
+  (including `let a = 1, b = 'x';` and `let g;`) now compile to the same Signal-backed
+  getter/setter as typed ones, with types left for TypeScript to infer. Any other content inside a
+  `state {}` block now raises a clear `SWISS_002` error naming `file:line` instead of being emitted
+  raw.
+- 1cb995b: COMPILER-003: comments between declarations inside a `state {}` block are skipped as trivia. Previously the declaration loop stopped at the first comment and silently dropped every later declaration (they never became Signal-backed state); after COMPILER-002 that became a SWISS_002 error that broke real components (office App.uix).
+- 87ed4c0: Fix `stripJSDocComments()` deleting real code when `/**` appears inside a `//` line comment,
+  string, template literal, or regex (DISC-2026-08-24-001 / COMPILER-001). The previous
+  implementation scanned raw source with `/\/\*\*[\s\S]*?\*\//g` with no awareness of comment or
+  literal context — e.g. a glob like `queue/**/*.yaml` inside a `//` comment opened a false JSDoc
+  block that consumed everything up to the next literal `*/` anywhere later in the file, silently
+  deleting real code. This is what deleted ~120 lines of office's `RegistryPage.uix` in August 2026,
+  surfaced only as a misleading esbuild error.
+
+  Commit: c311b0c (PR #138, merged 2026-09-25).
+
 ## 1.3.1
 
 ### Patch Changes

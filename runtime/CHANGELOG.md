@@ -1,5 +1,108 @@
 # @swissjs/core
 
+## 1.4.0
+
+### Minor Changes
+
+- 24d7f4c: Add a first-class `onPropsChange(prevProps, nextProps)` lifecycle hook (FRAME-PROPS-CHANGE-HOOK).
+
+  A method literally named `onUpdate(prevProps)` was never a real lifecycle hook in this
+  framework — it was never invoked by the compiler or runtime, at any point. office shipped
+  nine components relying on that assumed convention (PRs #167/#169), each a real dead-code
+  stale-UI bug, and had to work around it with an app-side `watchProp()` helper diffing
+  `this.on('updated', ...)`.
+
+  `onPropsChange(prevProps, nextProps)` is now invoked by the framework itself:
+  - fires once per actual (shallow-diffed) prop change, not on every DOM commit;
+  - receives both the previous and next props as plain object snapshots;
+  - fires for a parent-driven prop push into a reused component instance (e.g. a router
+    reusing the same page across a route change) as well as an ordinary parent re-render;
+  - never fires on mount;
+  - coexists with the existing `this.on('updated', cb)` hook, which still fires on every
+    commit (state or props) — `onPropsChange` is the narrower, props-only signal.
+
+  Also adds a dev-mode warning when a component class defines `onUpdate`, `componentDidUpdate`,
+  or `onPropsChanged` — none of which the framework calls — pointing at `onPropsChange` and
+  `this.on('updated', cb)` instead.
+
+  See `runtime/README.md`'s "Reacting to prop changes" section for usage and how to compare a
+  single prop key instead of the default shallow whole-props diff.
+
+- c766f37: Add streaming server-side rendering. `@swissjs/core` exports `renderToStream` (Node
+  `Readable`), `renderToStreamWeb` (Web `ReadableStream`), and `renderToStringChunks` (an
+  async generator yielding one chunk per top-level child of the root vnode instead of
+  buffering into one string), built as a second consumer of `renderToString`'s existing
+  per-vnode HTML generation -- `renderToString` itself is unchanged.
+
+  `@swissjs/router`'s `ServerRenderer` gains `renderStream(url)`, mirroring `render(url)`
+  (same route matching, loader data, `buildRouteTree` tree) but streaming the document shell
+  and component markup instead of buffering.
+
+  Parity: concatenating every chunk from `renderToStream`/`renderStream` equals the
+  corresponding `renderToString`/`render` output byte-for-byte for routes that do not call
+  `useHead()`/`setTitle()`/`addMeta()`/`addLink()` during render. Known, documented gap:
+  `renderStream()` flushes its shell (including `<title>`) before any component executes, so
+  it does not reflect per-request head customization the way `render()` does -- see
+  `router/src/ssr/server-renderer.ts`'s `renderStream()` doc comment ("KNOWN GAP against
+  HEAD-001") and the pinning test in `router/tests/ssr-stream.test.ts`. Do not route a page
+  that depends on `useHead()` through `renderStream()` until a deferred/two-pass head design
+  lands.
+
+### Patch Changes
+
+- 87ed4c0: Fix component-renders-component instance identity (FRAME-002): when a component renders another
+  component directly with no wrapping element (e.g. an `ErrorBoundary` returning its single child),
+  both map to one DOM node. The mount path previously stored the OUTER instance in
+  `componentInstances`, whose guard could never match because `renderComponent` overwrites the
+  rendered child vnode tag with the INNER instance during recursion — so the mounted inner instance
+  was evicted and re-clobbered on every subsequent update. The inner (rendered) instance is now kept
+  as the shared-node owner.
+
+  Commit: 92f50aa.
+
+- 87ed4c0: Fix Fragment sibling-count mismatch (FRAME-008): a `<>...</>` Fragment vnode creates a
+  `document.createDocumentFragment()` at mount, whose children merge directly into the real parent
+  element on insertion (a DocumentFragment never persists as its own node). A Fragment sitting among
+  sibling vnodes in a `children` array was therefore ONE logical entry but contributed N entries to
+  the live `parent.childNodes`, desynchronizing index-derived identity during reconciliation.
+  Fragment children are now flattened before diffing.
+
+  Commit: b0c0a92.
+
+- a7ba67b: Fix conditional branch lost when switching to an element branch (FRAME-010): in
+  reconcileChildren, an unkeyed element's type-based fallback could take the DOM node that a later
+  sibling owned by exact key, and the exact-key match did not check the node was already claimed.
+  Two new children then mapped onto one DOM node and the other node was swept as a leftover, so the
+  branch vanished and the subtree stopped reconciling. Fallbacks now skip nodes whose key a later
+  new child claims, and an already-claimed exact match is not reused.
+- 39eb21c: FRAME-011: a component whose render() returns a multi-node Fragment root spread N DOM nodes into its
+  parent while the parent's vnode list counted one, so the reconcile staleness guard bailed on every
+  commit and everything beneath that parent froze silently (office PDF reader sidebar stuck on
+  "Loading table of contents..."). Components render ONE root element; the runtime now warns once per
+  offending component class at mount, and warns once per parent when the guard's retries are exhausted
+  instead of dropping the update without a trace.
+- 2384b0c: Fix a list of component siblings losing all but one member when it grows on update
+  (FRAME-component-list-sibling-instance-steal). When a `Button`/chip list gained items (actions
+  arriving after data load, a conditional extra chip, shrink-then-grow), every newly added
+  same-type sibling was handed the already-mounted sibling's instance and DOM node -- by
+  `transferDOMReferencesFromOldTree`'s type search and by `createDOMNode`'s live-DOM instance
+  search -- so N positions collapsed onto one DOM node and only the last write survived (the
+  "first Button of a list does not render" report from office). Instances already backing a
+  sibling are now excluded from both searches, and a position that matched no old child is
+  created fresh without the instance search.
+- b22f77c: FRAME-UPDATED-HOOK-GUARD: the UpdateManager loop guards (the `updated`-hook commit guard and the `performUpdate` render gate) now use a true sliding 1-second window. Previously the counter reset only after a >1s gap since the last counted event, so any component committing at least once per second for a minute was reported as "60/s" and, for the commit guard, had its `updated` hook silently skipped until a quiet second. The guards now trip only on 60 or more events within one second (a genuine loop) and recover as soon as the rate drops.
+- 87ed4c0: Fire the `"updated"` lifecycle hook on every DOM-commit path, not just the explicit
+  `scheduleUpdate()`/`performUpdate()` path. Three independent commit strategies existed
+  (`commitVNode`, `performUpdate`, and `dom-updates.ts`'s `updateComponentNode`, which runs when a
+  parent's own reconciliation revisits an already-mounted child component's vnode position); all
+  three now fire `"updated"` after a real DOM commit. Root-caused a bug where `this.on('updated', cb)`
+  was silently dead for any component whose re-renders are driven by reactive state writes rather
+  than an explicit update call (office's `PdfViewerPage` and others). Also fixes `event-system.ts`'s
+  module-level `on()` override shadowing the lifecycle-hook registrar on
+  `SwissComponent.prototype.on`, which was the actual root cause once traced through.
+
+  Commits: 8cbf81d, 7b2d0e9, 560662a.
+
 ## 1.3.0
 
 ### Minor Changes

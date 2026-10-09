@@ -1,5 +1,14 @@
 # @swissjs/vite-plugin
 
+## 0.2.3
+
+### Patch Changes
+
+- Updated dependencies [0006c00]
+- Updated dependencies [1cb995b]
+- Updated dependencies [87ed4c0]
+  - @swissjs/compiler@1.4.0
+
 ## 0.2.2
 
 ### Patch Changes

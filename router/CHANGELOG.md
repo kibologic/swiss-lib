@@ -1,5 +1,104 @@
 # @kibologic/router
 
+## 1.4.0
+
+### Minor Changes
+
+- 9680003: Make the main entry browser-safe (ROUTER-BROWSER-ENTRY). `@swissjs/router` re-exported
+  `./api/scanner`, which imports `node:fs`/`node:path`/`node:url`, so a browser
+  `import('@swissjs/router')` failed to load. The server-only modules (`ServerRenderer` /
+  `createServerRenderer`, the API handler and the API scanner) now live behind
+  `@swissjs/router/server`; the main entry keeps the router core, `StatefulRouter`, `Outlet`,
+  `Link`, `lazy` and `hydrate`. `package.json` gains an `exports` map (with `types`) for both
+  entry points and drops the `"module": "dist/index.mjs"` field, which the build never emitted.
+
+  BREAKING for Node consumers that import the server exports from the barrel: change
+  `import { createServerRenderer } from '@swissjs/router'` to
+  `from '@swissjs/router/server'` (same for `ServerRenderer`, `SSRContext`, `SSRResult`,
+  `APIRouteHandler`, `createAPIHandler`, `APIRouteScanner`, `createAPIScanner`, `APIRoute*`
+  types). Bump is `minor`, not `major`: a survey of swiss-lib and the alpine-core,
+  business-alpine, alpine-shell, hospitality-alpine, swite, examples and create-swissjs clones
+  found no imports of these exports (alpine repos only pin the package in pnpm overrides), and
+  a `major` would drag the whole linked `@swissjs/*` set to 2.0.0. Maintainers may raise it.
+
+- 06b7629: ROUTER-PER-ROUTE-GUARDS: `Route.guard`/`Route.meta`, checked only for the matched route
+  chain of the navigation target, alongside the router's global `beforeEach()` guards.
+
+  ROUTER-LAZY-ROUTES: `lazy(loader)` for lazy-loaded route components, with `Outlet`
+  rendering a pending/error placeholder around the load and `preloadLazy()` for preloading.
+
+- ee399a9: ROUTER-HISTORY-STACK: `Router.entries`/`historyIndex`/`back()`/`forward()`/`go(n)`/
+  `canGoBack`/`canGoForward`, kept consistent with native `popstate`.
+
+  ROUTER-PER-ENTRY-STATE: `push()`/`replace()` accept an optional serializable `state`
+  payload per history entry; `onStateRestore()` restores it on `back()`/`forward()`/`go()`.
+  Persistence is pluggable via an optional `historyAdapter: HistoryStateAdapter` in
+  `RouterOptions` -- the router never hard-codes `localStorage`.
+
+- aa6d50d: ROUTER-NOT-FOUND: `RouterOptions.notFound?: ComponentLike`, rendered by `Outlet` when no
+  route matches, instead of an empty `<div class="outlet-empty">`.
+
+  ROUTER-PARAM-MERGE: explicit `mergeParams(matches)` export; `Outlet` now uses it to pass
+  the merged params of the entire matched chain to the leaf component.
+
+- 9680003: Add catch-all route segments (ROUTER-SPLAT-SEGMENT). A final `*name` segment
+  (`/docs/*path`) captures one or more remaining segments as a single slash-joined, undecoded
+  param (`/docs/a/b/c` gives `params.path === 'a/b/c'`); a bare `*` uses the name `'*'`. The
+  empty remainder does not match (`/docs` needs its own route), a splat is always tried after
+  its static and `:param` siblings regardless of declaration order, and a splat that is not the
+  final segment throws when matched.
+- c766f37: Add streaming server-side rendering. `@swissjs/core` exports `renderToStream` (Node
+  `Readable`), `renderToStreamWeb` (Web `ReadableStream`), and `renderToStringChunks` (an
+  async generator yielding one chunk per top-level child of the root vnode instead of
+  buffering into one string), built as a second consumer of `renderToString`'s existing
+  per-vnode HTML generation -- `renderToString` itself is unchanged.
+
+  `@swissjs/router`'s `ServerRenderer` gains `renderStream(url)`, mirroring `render(url)`
+  (same route matching, loader data, `buildRouteTree` tree) but streaming the document shell
+  and component markup instead of buffering.
+
+  Parity: concatenating every chunk from `renderToStream`/`renderStream` equals the
+  corresponding `renderToString`/`render` output byte-for-byte for routes that do not call
+  `useHead()`/`setTitle()`/`addMeta()`/`addLink()` during render. Known, documented gap:
+  `renderStream()` flushes its shell (including `<title>`) before any component executes, so
+  it does not reflect per-request head customization the way `render()` does -- see
+  `router/src/ssr/server-renderer.ts`'s `renderStream()` doc comment ("KNOWN GAP against
+  HEAD-001") and the pinning test in `router/tests/ssr-stream.test.ts`. Do not route a page
+  that depends on `useHead()` through `renderStream()` until a deferred/two-pass head design
+  lands.
+
+### Patch Changes
+
+- 9324ff8: Reconcile persisted history with the live browser (ROUTER-HISTORY-RESTORE). The browser URL
+  (path + query) now always wins for the current entry; a snapshot restored in a new tab/device
+  keeps its entries as back-history and back()/forward()/go() into restored-only entries navigate
+  with replaceState instead of hanging on a popstate that never arrives; a same-tab reload no
+  longer clobbers the native index marker; popstate and persistence keep the query string; the
+  stack is capped at MAX_HISTORY_ENTRIES (200).
+- 0b44040: ROUTER-LAZY-SSR-TYPING: fix `tsc -b router` failing with TS2769 (a build break bisected to
+  #141's `Route.component: ComponentLike | LazyComponent` widening, on top of #106's streaming
+  SSR). `ServerRenderer`'s `buildRouteTree`/`buildComponentVNode` now resolve a lazy route's
+  `component` (`await component.load()`) before building its `VNode`, for both `render()` and
+  `renderStream()`, instead of passing the `LazyComponent` wrapper straight into
+  `createElement` (which silently rendered empty markup at runtime, and only failed to
+  type-check because vitest never runs `tsc`). A rejected lazy loader now renders an
+  SSR-002-style error-boundary fallback (`statusCode: 500`, `hadRenderErrors: true`) instead
+  of an unhandled rejection. Non-lazy routes are byte-identical (unchanged, pre-existing
+  `ssr.test.ts`/`ssr-stream.test.ts` coverage). Also adds a `type-check` package script
+  (router previously had none, so the repo's own `turbo run type-check` silently skipped it)
+  and a vitest test (`tests/typecheck.test.ts`) that spawns `tsc -b` so a type break fails
+  `vitest` directly, not only a separately-run type-check step.
+- Updated dependencies [87ed4c0]
+- Updated dependencies [87ed4c0]
+- Updated dependencies [a7ba67b]
+- Updated dependencies [39eb21c]
+- Updated dependencies [2384b0c]
+- Updated dependencies [24d7f4c]
+- Updated dependencies [b22f77c]
+- Updated dependencies [c766f37]
+- Updated dependencies [87ed4c0]
+  - @swissjs/core@1.4.0
+
 ## Unreleased
 
 ### Minor Changes
