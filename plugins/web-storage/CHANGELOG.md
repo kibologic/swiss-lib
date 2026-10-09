@@ -1,5 +1,20 @@
 # @kibologic/plugin-web-storage
 
+## 1.4.0
+
+### Patch Changes
+
+- Updated dependencies [87ed4c0]
+- Updated dependencies [87ed4c0]
+- Updated dependencies [a7ba67b]
+- Updated dependencies [39eb21c]
+- Updated dependencies [2384b0c]
+- Updated dependencies [24d7f4c]
+- Updated dependencies [b22f77c]
+- Updated dependencies [c766f37]
+- Updated dependencies [87ed4c0]
+  - @swissjs/core@1.4.0
+
 ## 1.3.0
 
 ### Patch Changes
