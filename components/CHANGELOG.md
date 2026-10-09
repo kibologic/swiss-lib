@@ -1,5 +1,12 @@
 # @swissjs/components
 
+## 0.1.15
+
+### Patch Changes
+
+- Updated dependencies [cc997d4]
+  - @swissjs/core@1.4.1
+
 ## 0.1.14
 
 ### Patch Changes
