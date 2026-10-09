@@ -1,5 +1,12 @@
 # @swissjs/e2e-engine-conformance
 
+## 0.0.4
+
+### Patch Changes
+
+- Updated dependencies [cc997d4]
+  - @swissjs/core@1.4.1
+
 ## 0.0.3
 
 ### Patch Changes
