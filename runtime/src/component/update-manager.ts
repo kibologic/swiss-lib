@@ -11,6 +11,7 @@ import type { SwissComponent } from "./component.js";
 import { asInternal } from "./internal.js";
 import { expandSlots } from "../renderer/component-rendering.js";
 import { logger } from "../utils/logger.js";
+import { SlidingRateWindow } from "./rate-window.js";
 import { saveFocusState, restoreFocusState } from "./focus-guard.js";
 import { isDevtoolsEnabled, getDevtoolsBridge, isTelemetryEnabled } from "../devtools/bridge.js";
 import {
@@ -31,9 +32,12 @@ function scheduleMicrotask(fn: () => void) {
 
 export class UpdateManager {
   private updateScheduled: boolean = false;
-  private updateCount: number = 0;
-  private lastUpdateTime: number = 0;
   private readonly MAX_UPDATES_PER_SECOND = 60;
+  // FRAME-UPDATED-HOOK-GUARD: both guards use a true sliding 1s window. The previous
+  // "reset only after a >1s gap since the last counted event" shape tripped on any
+  // component that merely stayed active (>=1 event/s for a minute) and, for the commit
+  // guard, kept suppressing `updated` hooks for as long as activity continued.
+  private readonly updateWindow = new SlidingRateWindow(this.MAX_UPDATES_PER_SECOND);
   private _throttledHandle: ReturnType<typeof setTimeout> | null = null;
 
   // FRAME-commitvnode-updated-hook: commitVNode (component.ts) is a second, independent
@@ -45,8 +49,7 @@ export class UpdateManager {
   // else in the picture. This is commitVNode's own budget for firing that hook, same shape
   // and same per-second budget as the render throttle above, tracked separately so a burst on
   // one path doesn't starve the other.
-  private commitHookCount: number = 0;
-  private lastCommitHookTime: number = 0;
+  private readonly commitHookWindow = new SlidingRateWindow(this.MAX_UPDATES_PER_SECOND);
 
   constructor(private component: SwissComponent) {}
 
@@ -57,15 +60,10 @@ export class UpdateManager {
    */
   public guardCommitUpdatedHook(): boolean {
     const now = typeof performance !== "undefined" && performance.now ? performance.now() : Date.now();
-    if (now - this.lastCommitHookTime > 1000) this.commitHookCount = 0;
-
-    if (this.commitHookCount >= this.MAX_UPDATES_PER_SECOND) {
-      logger.warn(`"updated" hook throttled for ${this.component.constructor.name} - too many reactive commits (${this.commitHookCount}/s). Possible infinite loop (an "updated" hook writing state?).`);
+    if (!this.commitHookWindow.tryAcquire(now)) {
+      logger.warn(`"updated" hook throttled for ${this.component.constructor.name} - too many reactive commits (${this.commitHookWindow.count(now)}/s). Possible infinite loop (an "updated" hook writing state?).`);
       return true;
     }
-
-    this.commitHookCount++;
-    this.lastCommitHookTime = now;
     return false;
   }
 
@@ -113,24 +111,19 @@ export class UpdateManager {
       }
 
       const now = typeof performance !== "undefined" && performance.now ? performance.now() : Date.now();
-      if (now - this.lastUpdateTime > 1000) this.updateCount = 0;
 
-      if (this.updateCount >= this.MAX_UPDATES_PER_SECOND) {
-        logger.warn(`Update throttled for ${this.component.constructor.name} - too many updates (${this.updateCount}/s). Possible infinite loop.`);
+      if (!this.updateWindow.tryAcquire(now)) {
+        logger.warn(`Update throttled for ${this.component.constructor.name} - too many updates (${this.updateWindow.count(now)}/s). Possible infinite loop.`);
         if (this._throttledHandle === null) {
-          const delay = Math.ceil(Math.max(0, 1000 - (now - this.lastUpdateTime))) + 1;
+          const delay = Math.ceil(this.updateWindow.retryAfter(now)) + 1;
           this._throttledHandle = setTimeout(() => {
             this._throttledHandle = null;
-            this.updateCount = 0;
-            this.lastUpdateTime = 0;
+            this.updateWindow.reset();
             this.performUpdate();
           }, delay);
         }
         return;
       }
-
-      this.updateCount++;
-      this.lastUpdateTime = now;
       const t0 = now;
 
       let newVNode = this.component.safeRender();
