@@ -27,6 +27,7 @@ import {
   isTextVNode,
   isElementVNode,
   isComponentVNode,
+  canUpdateInPlace,
   cleanupNode,
   flattenRenderedChildren,
 } from "./types.js";
@@ -62,6 +63,27 @@ type RenderComponentFn = (
 ) => VNode;
 type CreateDOMNodeFn = (vnode: VNode | null | undefined | boolean) => Node;
 type UpdateDOMNodeFn = (dom: Node, vnode: VNode) => void;
+
+/**
+ * True when `dom` is hosted by a component of class `type`: either of the node's registered
+ * owners (inner instance in componentInstances, outer in domToHostComponent) or any ancestor
+ * that shares the same node (a chain of components each rendering the next with no element
+ * between, e.g. Outer > Boundary > Engine). Used to keep same-class updates in place.
+ */
+function sharedNodeHostsType(dom: Node, type: unknown): boolean {
+  const owners = [componentInstances.get(dom), domToHostComponent.get(dom)];
+  for (const owner of owners) {
+    let current: SwissComponent | null | undefined = owner;
+    let depth = 0;
+    while (current && depth++ < 32) {
+      if (current.constructor === type) return true;
+      const parent: SwissComponent | null = asInternal(current)._parent;
+      if (!parent || asInternal(parent)._domNode !== dom) break;
+      current = parent;
+    }
+  }
+  return false;
+}
 
 // ─── updateDOMNode ────────────────────────────────────────────────────────────
 
@@ -134,10 +156,33 @@ export function updateDOMNode(
     // Component vnodes are excluded: a component's own DOM node can legitimately be
     // anything (whatever ITS render() produces), and updateComponentNodeFn / its
     // applyRenderedOutput already carries its own canUpdateInPlace-guarded replace path.
+    //
+    // FRAME-COMPONENT-SWAP-MOUNT: the same replace-instead-of-miscast rule applies to a
+    // component vnode of a DIFFERENT class than the instance `dom` currently hosts. Without
+    // it, updateComponentNode's "types don't match" branch renders the new class, sees an
+    // element-vs-element output (same tag) and patches the old node in place: the new
+    // instance is constructed and its output painted, but createDOMNode -- the only place
+    // that initializes an instance and fires its mounted/onMount hooks -- never runs, and
+    // the old instance is never unmounted. A parent whose render() returns `<A/>` and later
+    // `<B/>` with no wrapper element therefore shows B's markup with B dead (office
+    // UsersRoute People -> Agents tab swap: the page's data load never started). Only when
+    // `dom` has a live owner instance (so a hosted component is provably being displaced)
+    // and the node is attached; canUpdateInPlace keeps the same-class and
+    // component-renders-component identity rules, so those still update in place.
+    const hostedOwner = componentInstances.get(dom) ?? domToHostComponent.get(dom);
+    const componentClassMismatch =
+      createDOMNodeFn != null &&
+      isComponentVNode(vnode) &&
+      hostedOwner != null &&
+      dom.parentNode != null &&
+      !canUpdateInPlace(dom, vnode, oldVNode) &&
+      !sharedNodeHostsType(dom, vnode.type);
+
     const domKindMismatch =
       createDOMNodeFn != null &&
       ((isTextVNode(vnode) && dom.nodeType !== Node.TEXT_NODE) ||
-        (isElementVNode(vnode) && dom.nodeType !== Node.ELEMENT_NODE));
+        (isElementVNode(vnode) && dom.nodeType !== Node.ELEMENT_NODE) ||
+        componentClassMismatch);
 
     if (domKindMismatch) {
       const parent = dom.parentNode;
@@ -146,7 +191,17 @@ export function updateDOMNode(
         parent.replaceChild(newDom, dom);
         cleanupNode(dom);
       }
-      if (vnode != null && typeof vnode !== "boolean") {
+      if (componentClassMismatch) {
+        // The outer (rendering) component keeps hosting the replacement node; the new
+        // inner instance registered itself in componentInstances during createDOMNode, and
+        // createDOMNode stored its rendered element baseline (never store the component
+        // vnode itself as a baseline -- see the note below).
+        const host = domToHostComponent.get(dom);
+        if (host) {
+          domToHostComponent.delete(dom);
+          domToHostComponent.set(newDom, host);
+        }
+      } else if (vnode != null && typeof vnode !== "boolean") {
         vnodeMetadata.set(newDom, vnode);
       }
       if (typeof vnode === "object" && vnode !== null && "dom" in vnode) {
