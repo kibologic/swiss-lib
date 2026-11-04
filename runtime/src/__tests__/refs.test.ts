@@ -32,6 +32,23 @@ describe("ref()", () => {
     expect(inputRef.current).toBe(container.querySelector("input"));
   });
 
+  it("does not serialize the ref object into a DOM attribute", async () => {
+    const inputRef = ref<HTMLInputElement>();
+    class Form extends SwissComponent {
+      render() {
+        return jsx("input", { ref: inputRef, type: "text" });
+      }
+    }
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    renderToDOM(jsx(Form, {}), container);
+    await flush();
+
+    const input = container.querySelector("input");
+    expect(input).not.toBeNull();
+    expect(input!.hasAttribute("ref")).toBe(false);
+  });
+
   it("starts as null before mount", () => {
     const r = ref<HTMLElement>();
     expect(r.current).toBeNull();
